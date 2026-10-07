@@ -1,0 +1,86 @@
+Admin drill PASS (31/31 checks)
+
+PASS e-unauth: unauthenticated POST /api/admin/item → 401
+PASS c-cookie: Set-Cookie attributes: roses_session=<token>; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200 (Secure is added when served over https)
+PASS admin-pin: admin PIN on the Kebab Land sign-in → 303 to /admin/kebab-land, cookie set: true; the PINs page (admin only) answers 200 with the admin section: true
+PASS pin-create: PIN created for "Drill staff" (staff, senso): shown once on the response page (6 digits: true), hash stored: true
+PASS pin-create: PIN created for "Drill owner" (owner, senso+kebab-land): shown once on the response page (6 digits: true), hash stored: true
+PASS d-hash: pins with a hash not starting with $scrypt$: 0; plain PIN column: none exists (schema has pin_hash only)
+PASS c-logout: logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://127.0.0.1:3100/admin shows the sign-in form and no admin shell (a still-valid token is simply no longer sent: 200)
+PASS pin-login: staff PIN sign-in lands on http://127.0.0.1:3100/admin/senso
+PASS i-restore: price after restoring revision 181: 6.59 (original 6.59); last four revision rows: update 6.59→7.59 | update 7.59→8.59 | update 8.59→9.59 | restore 9.59→6.59
+PASS f-ui: venue page: List button for "Aash-e-Reshteh" (no price) is disabled with the hint "the item needs a price before it can be listed"
+PASS f-form: saving "Aash-e-Reshteh" with Listed ticked and no price → "the item needs a price before it can be listed"
+PASS f-server: direct POST _action=list → 303, error="the item needs a price before it can be listed"
+PASS f-check: SQL "update items set listed = true" on the priceless item → 23514 listed_requires_price: new row for relation "items" violates check constraint "listed_requires_price"
+PASS f-sizes: save "Prosecco" listed with a second size without price → error="every size needs a price before the item can be listed"; row unchanged: true
+PASS f-public-listed: "Aash-e-Reshteh" priced 7.25 and listed → on the public page after 5 ms
+PASS f-public-restored: restored to unlisted/no price → gone from the public page after 4 ms
+PASS g-section: section "Extra" unlisted → heading gone from the public page after 4 ms
+PASS g-section-back: section "Extra" listed again → heading back after 3 ms
+PASS g-last-item: all 3 items of "Beverage" unlisted → the section disappears from the public page after 4 ms
+PASS g-last-item-back: items listed again → "Beverage" back after 2 ms
+PASS h-staff-ui: staff item page: notes inputs present = false; explanatory line shown = true
+PASS h-staff-403: staff POST _action=notes → 403
+PASS h-owner: owner saved notes: {"text":{"en":null,"fa":null},"halal":true,"dietary":[],"allergens":["nuts"]}
+PASS h-admin: admin cleared the notes again: {"text":{"en":null,"fa":null},"halal":null,"dietary":[],"allergens":[]}
+PASS j-create: "Drill test item" created in "Extra" → on the public page after 4 ms
+PASS j-delete: deleted → row gone (true), off the public page after 4 ms
+PASS j-restore: restored from history → row back with section "Extra" (true), on the public page after 6 ms
+PASS venue-staff-403: staff POST /api/admin/venue → 403
+PASS venue-edit: hours changed to "9:00 AM – 11:00 PM, every day (drill)" → public footer after 5 ms; "to confirm" mark for hours cleared: true
+PASS venue-restore: venue details restored from history → public footer back after 4 ms
+PASS b-revoked: revoked staff PIN → 303, error="wrong PIN (4 tries left)", cookie set: false
+
+Transcript:
+2026-10-07T18:50:24.457Z [e-unauth] PASS: unauthenticated POST /api/admin/item → 401
+2026-10-07T18:50:24.796Z [shot] 01-login-pin.jpg
+2026-10-07T18:50:24.890Z [shot] 02-login-admin.jpg
+2026-10-07T18:50:25.136Z [shot] 03-home-admin.jpg
+2026-10-07T18:50:25.187Z [c-cookie] PASS: Set-Cookie attributes: roses_session=<token>; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200 (Secure is added when served over https)
+2026-10-07T18:50:25.323Z [admin-pin] PASS: admin PIN on the Kebab Land sign-in → 303 to /admin/kebab-land, cookie set: true; the PINs page (admin only) answers 200 with the admin section: true
+2026-10-07T18:50:25.363Z [pin-create] PASS: PIN created for "Drill staff" (staff, senso): shown once on the response page (6 digits: true), hash stored: true
+2026-10-07T18:50:25.399Z [pin-create] PASS: PIN created for "Drill owner" (owner, senso+kebab-land): shown once on the response page (6 digits: true), hash stored: true
+2026-10-07T18:50:25.400Z [d-hash] PASS: pins with a hash not starting with $scrypt$: 0; plain PIN column: none exists (schema has pin_hash only)
+2026-10-07T18:50:25.637Z [shot] 04-pins-list.jpg
+2026-10-07T18:50:25.784Z [c-logout] PASS: logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://127.0.0.1:3100/admin shows the sign-in form and no admin shell (a still-valid token is simply no longer sent: 200)
+2026-10-07T18:50:26.198Z [pin-login] PASS: staff PIN sign-in lands on http://127.0.0.1:3100/admin/senso
+2026-10-07T18:50:26.373Z [shot] 05-venue-senso-staff.jpg
+2026-10-07T18:50:26.650Z [shot] 06-item-turkish-coffee.jpg
+2026-10-07T18:50:26.790Z [i-edit] saved price 7.59
+2026-10-07T18:50:26.913Z [i-edit] saved price 8.59
+2026-10-07T18:50:27.030Z [i-edit] saved price 9.59
+2026-10-07T18:50:27.352Z [shot] 07-item-after-3-edits.jpg
+2026-10-07T18:50:27.504Z [i-restore] PASS: price after restoring revision 181: 6.59 (original 6.59); last four revision rows: update 6.59→7.59 | update 7.59→8.59 | update 8.59→9.59 | restore 9.59→6.59
+2026-10-07T18:50:27.749Z [shot] 08-item-after-restore.jpg
+2026-10-07T18:50:27.978Z [f-ui] PASS: venue page: List button for "Aash-e-Reshteh" (no price) is disabled with the hint "the item needs a price before it can be listed"
+2026-10-07T18:50:28.382Z [shot] 09-needs-price-refused.jpg
+2026-10-07T18:50:28.382Z [f-form] PASS: saving "Aash-e-Reshteh" with Listed ticked and no price → "the item needs a price before it can be listed"
+2026-10-07T18:50:28.394Z [f-server] PASS: direct POST _action=list → 303, error="the item needs a price before it can be listed"
+2026-10-07T18:50:28.395Z [f-check] PASS: SQL "update items set listed = true" on the priceless item → 23514 listed_requires_price: new row for relation "items" violates check constraint "listed_requires_price"
+2026-10-07T18:50:28.742Z [f-sizes] PASS: save "Prosecco" listed with a second size without price → error="every size needs a price before the item can be listed"; row unchanged: true
+2026-10-07T18:50:28.932Z [f-public-listed] PASS: "Aash-e-Reshteh" priced 7.25 and listed → on the public page after 5 ms
+2026-10-07T18:50:29.071Z [f-public-restored] PASS: restored to unlisted/no price → gone from the public page after 4 ms
+2026-10-07T18:50:29.100Z [g-section] PASS: section "Extra" unlisted → heading gone from the public page after 4 ms
+2026-10-07T18:50:29.269Z [shot] 10-section-unlisted.jpg
+2026-10-07T18:50:29.292Z [g-section-back] PASS: section "Extra" listed again → heading back after 3 ms
+2026-10-07T18:50:29.359Z [g-last-item] PASS: all 3 items of "Beverage" unlisted → the section disappears from the public page after 4 ms
+2026-10-07T18:50:29.413Z [g-last-item-back] PASS: items listed again → "Beverage" back after 2 ms
+2026-10-07T18:50:29.683Z [shot] 11-staff-no-notes.jpg
+2026-10-07T18:50:29.683Z [h-staff-ui] PASS: staff item page: notes inputs present = false; explanatory line shown = true
+2026-10-07T18:50:29.687Z [h-staff-403] PASS: staff POST _action=notes → 403
+2026-10-07T18:50:30.664Z [shot] 12-owner-notes-saved.jpg
+2026-10-07T18:50:30.664Z [h-owner] PASS: owner saved notes: {"text":{"en":null,"fa":null},"halal":true,"dietary":[],"allergens":["nuts"]}
+2026-10-07T18:50:30.945Z [h-admin] PASS: admin cleared the notes again: {"text":{"en":null,"fa":null},"halal":null,"dietary":[],"allergens":[]}
+2026-10-07T18:50:31.180Z [j-create] PASS: "Drill test item" created in "Extra" → on the public page after 4 ms
+2026-10-07T18:50:31.411Z [shot] 13-item-created.jpg
+2026-10-07T18:50:31.652Z [j-delete] PASS: deleted → row gone (true), off the public page after 4 ms
+2026-10-07T18:50:32.735Z [shot] 14-history.jpg
+2026-10-07T18:50:32.912Z [j-restore] PASS: restored from history → row back with section "Extra" (true), on the public page after 6 ms
+2026-10-07T18:50:32.946Z [j-cleanup] test item deleted again (stays in history)
+2026-10-07T18:50:32.947Z [venue-staff-403] PASS: staff POST /api/admin/venue → 403
+2026-10-07T18:50:33.449Z [shot] 15-venue-details.jpg
+2026-10-07T18:50:33.559Z [venue-edit] PASS: hours changed to "9:00 AM – 11:00 PM, every day (drill)" → public footer after 5 ms; "to confirm" mark for hours cleared: true
+2026-10-07T18:50:33.761Z [shot] 16-venue-details-saved.jpg
+2026-10-07T18:50:33.843Z [venue-restore] PASS: venue details restored from history → public footer back after 4 ms
+2026-10-07T18:50:33.918Z [b-revoked] PASS: revoked staff PIN → 303, error="wrong PIN (4 tries left)", cookie set: false

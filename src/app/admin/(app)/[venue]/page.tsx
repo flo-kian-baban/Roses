@@ -4,7 +4,7 @@ import { getVenueRow } from '@/lib/admin/venue';
 import { venueCounts, venueMenuForAdmin, type AdminItem, type AdminSection } from '@/lib/admin/overview';
 import { listingProblem, persianMissing } from '@/lib/admin/items';
 import { price } from '@/lib/format';
-import { Badge, Empty, Notice, PageHeader, Photo, Stat, one, primary, secondary, sm, type SP } from '../../_ui';
+import { Badge, Empty, Notice, PageHeader, Stat, one, primary, secondary, sm, type SP } from '../../_ui';
 import { Icon } from '../../_ui/icons';
 import { Shell } from '../../_ui/Shell';
 import { SignIn } from '../../_ui/SignIn';
@@ -128,34 +128,37 @@ export default async function VenueAdmin({ params, searchParams }: { params: Pro
   );
 }
 
+// Every card has the same anatomy and fixed row heights, so a grid of cells lines up whatever the photo or the text:
+// photo box (4:3, the image is clipped inside it, never sizes it), two-line title, one-line Persian name, price, one row of pills, footer.
 function ItemCard({ i, back, base }: { i: AdminItem; back: string; base: string }) {
   const problem = listingProblem(i); const missing = persianMissing(i); const edit = `${base}/items/${i.id}`;
   const priceText = i.price != null ? price(i.price) : i.variants.length ? i.variants.map((v) => `${v.label.en ?? ''} ${v.price != null ? price(v.price) : '—'}`.trim()).join(' · ') : null;
   return (
-    <li className={`flex flex-col overflow-hidden rounded-[20px] border bg-white shadow-card ${i.listed ? 'border-line' : 'border-dashed border-neutral-300'}`}>
-      <a href={edit} className="relative block aspect-[4/3] bg-neutral-100">
-        <Photo url={i.photo?.url} className={`h-full w-full ${i.listed ? '' : 'opacity-60'}`} />
-        <span className="absolute left-2 top-2 flex flex-wrap gap-1">
-          {i.listed ? <Badge tone="green" className="shadow-sm">Listed</Badge> : <Badge className="bg-white shadow-sm">Unlisted</Badge>}
+    <li className="group flex flex-col overflow-hidden rounded-[20px] border border-black/[.06] bg-white shadow-card transition hover:shadow-pop">
+      <a href={edit} className="relative block aspect-[4/3] overflow-hidden bg-fill" aria-label={`Edit ${i.name.en}`}>
+        {i.photo?.url
+          ? <img src={i.photo.url} alt="" loading="lazy" decoding="async" className={`absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03] ${i.listed ? '' : 'opacity-60 grayscale'}`} />
+          : <span className="absolute inset-0 flex items-center justify-center text-neutral-300"><Icon name="image" className="h-7 w-7" strokeWidth={1.6} /></span>}
+        <span className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/5" />
+        <span className="absolute left-2.5 top-2.5 flex gap-1 overflow-hidden">
+          {i.listed ? <Badge tone="green" className="glass bg-white/85 text-emerald-800 shadow-sm">Listed</Badge> : <Badge className="glass bg-white/85 shadow-sm">Unlisted</Badge>}
           {problem && <Badge tone="amber" className="shadow-sm">Needs price</Badge>}
         </span>
       </a>
-      <div className="flex flex-1 flex-col p-3">
-        <a href={edit} className="line-clamp-2 font-semibold leading-snug underline-offset-4 hover:underline">{i.name.en}</a>
-        {i.name.fa && <p lang="fa" dir="rtl" className="mt-0.5 truncate text-left text-sm text-ink-muted">{i.name.fa}</p>}
-        <p className="mt-auto pt-2 text-[15px] font-semibold tabular-nums">{priceText ?? <span className="font-normal text-ink-muted">No price yet</span>}</p>
-        {(i.fa_draft.length > 0 || (i.listed && missing.length > 0)) && (
-          <div className="mt-1.5 flex flex-wrap gap-1">
-            {i.listed && missing.length > 0 && <Badge tone="amber">Persian missing: {missing.join(', ')}</Badge>}
-            {i.fa_draft.length > 0 && <Badge tone="blue">Persian draft</Badge>}
-          </div>
-        )}
+      <div className="p-3.5">
+        <a href={edit} className={`block h-10 overflow-hidden text-[15px] font-semibold leading-5 line-clamp-2 underline-offset-4 hover:underline ${i.listed ? 'text-ink' : 'text-ink-muted'}`} title={i.name.en ?? undefined}>{i.name.en}</a>
+        <p lang="fa" dir="rtl" className="mt-0.5 h-5 truncate text-left text-[13px] leading-5 text-ink-muted" title={i.name.fa ?? undefined}>{i.name.fa ?? ''}</p>
+        <p className="mt-2 h-6 truncate text-[15px] font-semibold leading-6 tabular-nums" title={priceText ?? undefined}>{priceText ?? <span className="font-normal text-neutral-400">No price yet</span>}</p>
+        <div className="mt-1.5 flex h-5 gap-1 overflow-hidden">
+          {i.listed && missing.length > 0 && <Badge tone="amber" className="h-5">Persian missing</Badge>}
+          {i.fa_draft.length > 0 && <Badge tone="blue" className="h-5">Persian draft</Badge>}
+        </div>
       </div>
       <div className="grid grid-cols-2 divide-x divide-line border-t border-line">
-        <a href={edit} className="flex min-h-10 items-center justify-center gap-1.5 text-sm font-medium hover:bg-neutral-50"><Icon name="pencil" className="h-4 w-4 text-ink-muted" />Edit</a>
+        <a href={edit} className="flex min-h-10 items-center justify-center gap-1.5 text-sm font-medium transition hover:bg-fill"><Icon name="pencil" className="h-4 w-4 text-ink-muted" />Edit</a>
         <form method="post" action="/api/admin/item" className="flex">
           <input type="hidden" name="id" value={i.id} /><input type="hidden" name="_back" value={back} /><input type="hidden" name="_action" value={i.listed ? 'unlist' : 'list'} />
-          <button type="submit" disabled={!i.listed && !!problem} title={!i.listed && problem ? problem : undefined} className="flex min-h-10 flex-1 items-center justify-center gap-1.5 text-sm font-medium hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white">
+          <button type="submit" disabled={!i.listed && !!problem} title={!i.listed && problem ? problem : undefined} className="flex min-h-10 flex-1 items-center justify-center gap-1.5 text-sm font-medium transition hover:bg-fill disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white">
             <Icon name={i.listed ? 'eyeOff' : 'eye'} className="h-4 w-4 text-ink-muted" />{i.listed ? 'Unlist' : 'List'}
           </button>
         </form>

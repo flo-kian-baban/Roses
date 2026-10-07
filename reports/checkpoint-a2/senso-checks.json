@@ -1,0 +1,340 @@
+{
+  "url": "http://localhost:3000/senso",
+  "at": "2026-10-07T14:33:57.586Z",
+  "checks": {
+    "introInFirstHtml": {
+      "present": true,
+      "headScript": true,
+      "bytes": 102924
+    },
+    "firstVisit": {
+      "introVisibleAtMs": 13,
+      "introDoneAtMs": 1349,
+      "goneWithin1500ms": true,
+      "samples": [
+        {
+          "t": 13,
+          "intro": null,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 67,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 121,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 173,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 226,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 279,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 332,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 387,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 439,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 492,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 545,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 600,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 652,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 706,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 758,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 810,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 864,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 922,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 975,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1027,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1080,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1136,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1190,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1242,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1294,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "0.740204"
+        },
+        {
+          "t": 1349,
+          "intro": "done",
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ]
+    },
+    "images": {
+      "total": 124,
+      "complete": 124,
+      "loaded": 124,
+      "failed": []
+    },
+    "dom": {
+      "lang": "en",
+      "dir": "ltr",
+      "title": "Senso Café & Bites — Menu",
+      "sections": [
+        {
+          "id": "senso-signature",
+          "en": "Senso Signature",
+          "fa": "ویژه سنسو",
+          "items": 6
+        },
+        {
+          "id": "hot-beverage",
+          "en": "Hot Beverage",
+          "fa": "نوشیدنی گرم",
+          "items": 16
+        },
+        {
+          "id": "tea-herbal-tea",
+          "en": "Tea & Herbal Tea",
+          "fa": "چاى و دمنوش",
+          "items": 14
+        },
+        {
+          "id": "cold-beverage",
+          "en": "Cold Beverage",
+          "fa": "نوشیدنی سرد",
+          "items": 9
+        },
+        {
+          "id": "fresh-juice",
+          "en": "Fresh Juice",
+          "fa": "آبمیوه طبیعی",
+          "items": 8
+        },
+        {
+          "id": "dessert",
+          "en": "Dessert",
+          "fa": "دسر",
+          "items": 21
+        },
+        {
+          "id": "ice-cream",
+          "en": "Ice Cream",
+          "fa": "بستنی",
+          "items": 4
+        },
+        {
+          "id": "milkshake",
+          "en": "Milkshake",
+          "fa": "میلک شیک",
+          "items": 4
+        },
+        {
+          "id": "persian-breakfast",
+          "en": "Persian Breakfast",
+          "fa": "صبحانه",
+          "items": 22
+        },
+        {
+          "id": "salad",
+          "en": "Salad",
+          "fa": "سالاد",
+          "items": 4
+        },
+        {
+          "id": "appetizer",
+          "en": "Appetizer",
+          "fa": "پیش غذا",
+          "items": 10
+        },
+        {
+          "id": "main-course",
+          "en": "Main Course",
+          "fa": "غذا اصلی",
+          "items": 7
+        },
+        {
+          "id": "senso-pizza",
+          "en": "Senso Pizza",
+          "fa": "پیتزا",
+          "items": 7
+        },
+        {
+          "id": "beverage",
+          "en": "Beverage",
+          "fa": "نوشیدنی",
+          "items": 3
+        },
+        {
+          "id": "extra",
+          "en": "Extra",
+          "fa": "افزودنی",
+          "items": 13
+        }
+      ],
+      "items": 148,
+      "pricesWithNonWesternDigits": 0,
+      "photos": 123
+    },
+    "fontRequests": {
+      "urls": [
+        "http://localhost:3000/_next/static/media/tinos_latin_700_normal-s.p.3td2yexc0syzd.woff2",
+        "http://localhost:3000/_next/static/media/montserrat_latin_400_normal-s.p.2pd8xj29-n0_9.woff2",
+        "http://localhost:3000/_next/static/media/montserrat_latin_500_normal-s.p.09u00g3252wjk.woff2"
+      ],
+      "thirdParty": []
+    },
+    "persianToggle": {
+      "lang": "fa",
+      "dir": "rtl",
+      "dataLang": "fa",
+      "visibleFaHeadings": 15,
+      "visibleEnHeadings": 0
+    },
+    "imagesFa": {
+      "total": 124,
+      "complete": 124,
+      "loaded": 124,
+      "failed": []
+    },
+    "repeatVisit": {
+      "intro": "skip",
+      "display": "none",
+      "storage": "1",
+      "lang": "fa",
+      "skipped": true
+    },
+    "reducedMotion": {
+      "intro": "skip",
+      "display": "none",
+      "prefersReduced": true,
+      "skipped": true
+    }
+  }
+}

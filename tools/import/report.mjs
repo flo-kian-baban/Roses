@@ -3,7 +3,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-export async function writeReport({ venue, date, out, data, venues, counts }) {
+export async function writeReport({ venue, date, out, data, venues, counts, reconcile }) {
   const L = data.log, md = [];
   const H = (s) => md.push('', s, '');
   const P = (s) => md.push(s);
@@ -57,6 +57,14 @@ export async function writeReport({ venue, date, out, data, venues, counts }) {
     T(['Field', 'Value', 'Source'], venues.sources.map((s) => [s.field, s.value, s.source]));
     H('## 8. Brand: colours and fonts with their sources');
     T(['Token', 'Value', 'Source'], venues.brand.sources.map((s) => [s.token, s.value, s.source]));
+  }
+  if (reconcile) {
+    H('## 9. Reconciliation: capture report "website-only" names vs imported unlisted items');
+    P(`The capture report counted ${reconcile.reportWebsiteOnlyCount} website names with no exact match to a raw Mealsy name. The import holds ${reconcile.importedUnlistedCount} unlisted items. The ${reconcile.rows.length} differences and where each went:`);
+    P('');
+    T(['Website name', 'Website heading(s)', 'Outcome'], reconcile.rows.map((x) => [x.website, x.headings, x.outcome]));
+    P('');
+    P(reconcile.rows.some((x) => x.lost) ? '**Some names were lost; see rows marked NOT FOUND.**' : 'No name was lost: every difference is a match to a primary-source item (spelling fix or juice name by meaning), so no separate unlisted item was needed.');
   }
   await fs.writeFile(path.join(out, 'import-report.md'), md.join('\n') + '\n');
 }

@@ -7,12 +7,12 @@
   --brand-muted: #6b6b6b;
   --font-heading: system-ui, sans-serif;
   --font-body: system-ui, sans-serif;
-  --font-persian: "Vazirmatn", system-ui, sans-serif;
+  --font-persian: var(--font-vazirmatn), system-ui, sans-serif;
 }
 
 html { background: var(--brand-bg); color: var(--brand-fg); }
 body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
-h1, h2 { font-family: var(--font-heading); }
+h1, h2 { font-family: var(--font-heading); font-weight: 700; }
 html[data-lang="fa"] h1, html[data-lang="fa"] h2 { font-family: var(--font-persian); }
 
 /* Language switching: both languages are in the HTML; CSS shows one. */

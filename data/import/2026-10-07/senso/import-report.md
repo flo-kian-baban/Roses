@@ -555,13 +555,31 @@ Website names matched to primary-source items (no new item created): 117. Juice 
 
 | Token | Value | Source |
 | --- | --- | --- |
-| logo | Asset-12.png (271×143): "Roses / SENSO / Café & Bites" | sensocafe.ca homepage image widget (the full logo). The header image Asset-1-1.png (91×48) is a partly white variant for dark backgrounds; favicon.png (67×101) is the gold S alone |
+| logo | public/brand/senso-logo.png (271×143), sha256 5d3f6452b5ed50f8024c37da2ac88170116b2ddd76836e92d0db3a0ec9a66f04 | copied from https://sensocafe.ca/wp-content/uploads/2023/01/Asset-12.png (the full logo on the homepage image widget) on Kian's decision of 2026-10-07; header image Asset-1-1.png (91×48) is a partly white variant, favicon.png is the gold S alone |
 | colors.gold | #CC9434 | Asset-12.png: 33.6% of opaque pixels (plus #C48C24 4.5%, #C4942C 3.6%) |
 | colors.navy (accent) | #042C7C | Asset-12.png: 24.6% of opaque pixels (plus #042474 5.3%); used as the accent colour |
 | colors.grey | #747474 | Asset-12.png: 6% of opaque pixels (the "Roses" and "Café & Bites" lettering) |
 | colors.background | #FFF8EE | sensocafe.ca computed body background, rgb(255, 248, 238) |
 | colors.text | #333333 | sensocafe.ca computed body colour, rgb(51, 51, 51) |
 | colors.siteLink | #CC3366 | sensocafe.ca computed link colour, rgb(204, 51, 102); recorded, not used in the MVP layout |
-| fonts.heading | DUTCHI (fallback Georgia) | sensocafe.ca @font-face in elementor/css/post-88.css: DUTCH-2.ttf, DUTCHB.ttf; used on h1/h2. The files cannot be loaded from another origin (the site sends no Access-Control-Allow-Origin header), so the page falls back to Georgia until the client supplies the font files and licence; to confirm |
-| fonts.body | Proxima Nova (fallback system sans-serif) | sensocafe.ca @font-face in elementor/css/post-88.css: MARK-SIMONSON-PROXIMA-NOVA-{LIGHT,REGULAR,BOLD-1}.ttf; used on paragraphs and buttons. Commercial typeface; same cross-origin block; not copied; to confirm |
-| fonts.persian | Vazirmatn | not on the client's site (it has no Persian typeface); open-licence font bundled with the app; to confirm |
+| fonts.heading | Tinos 700, standing in for DUTCHI | The site's heading font DUTCHI (@font-face in elementor/css/post-88.css: DUTCH-2.ttf, DUTCHB.ttf) is a Times-style serif. Tinos is its free look-alike: metrically compatible with Times New Roman, licence SIL OFL 1.1 (the LICENSE file shipped with the font), files copied into src/fonts/ from the npm package @fontsource/tinos 5.3.0 and served by the app itself (upstream: Google Fonts / Steve Matteson). No runtime request leaves the app for fonts |
+| fonts.body | Montserrat 400/500, standing in for Proxima Nova | The site's body font Proxima Nova (@font-face in elementor/css/post-88.css: MARK-SIMONSON-PROXIMA-NOVA-*.ttf) is commercial and is not copied. Montserrat is the free look-alike, licence SIL OFL 1.1, files copied into src/fonts/ from the npm package @fontsource/montserrat 5.3.0 and served by the app itself (upstream: Google Fonts / Julieta Ulanovsky). Comparison image: reports/checkpoint-a2/font-comparison.png |
+| fonts.persian | Vazirmatn 400/600 | Not on the client's site (it has no Persian typeface). Licence SIL OFL 1.1, files copied into src/fonts/ from the npm package @fontsource/vazirmatn 5.3.0 and served by the app itself (upstream: Saber Rastikerdar); to confirm with the client |
+
+## 9. Reconciliation: capture report "website-only" names vs imported unlisted items
+
+The capture report counted 147 website names with no exact match to a raw Mealsy name. The import holds 138 unlisted items. The 9 differences and where each went:
+
+| Website name | Website heading(s) | Outcome |
+| --- | --- | --- |
+| Match Latte | Hot & Cold Beverages | website spelling fix "Match Latte" → "Matcha Latte" matches the Mealsy item "Matcha Latte" |
+| Caramel Macchiato | Hot & Cold Beverages | matches the Mealsy item after its spelling fix: "Caramel Machiato" → "Caramel Macchiato" |
+| Iced Caramel Macchiato | Hot & Cold Beverages | matches the Mealsy item after its spelling fix: "Iced Caramel Machiato" → "Iced Caramel Macchiato" |
+| Caesar Salad | Salads | matches the Mealsy item after its spelling fix: "Caeser salad" → "Caesar Salad" |
+| Cantaloupe Juice | Juice Bar / Juice Bar › Cantaloupe Juice | juice name matched by meaning to the Mealsy Fresh Juice item "Cantaloupe" |
+| Orange Juice | Juice Bar / Juice Bar › Orange Juice | juice name matched by meaning to the Mealsy Fresh Juice item "Orange" |
+| Mango Juice | Juice Bar / Juice Bar › Mango Juice | juice name matched by meaning to the Mealsy Fresh Juice item "Mango" |
+| Watermelon Juice | Juice Bar / Juice Bar › Watermelon Juice | juice name matched by meaning to the Mealsy Fresh Juice item "Watermelon" |
+| Cancer Killer Juice | Juice Bar / Juice Bar › Cancer Killer Juice | juice name matched by meaning to the Mealsy Fresh Juice item "Cancer Killer" |
+
+No name was lost: every difference is a match to a primary-source item (spelling fix or juice name by meaning), so no separate unlisted item was needed.

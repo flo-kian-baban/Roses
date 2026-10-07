@@ -16,6 +16,20 @@ const url = `${base}/${venue}`;
 const log = { url, at: new Date().toISOString(), checks: {} };
 const DEVICE = { ...devices['iPhone 13'], defaultBrowserType: 'chromium' };
 
+// Scrolls through the whole page so lazy images start loading, then waits until every <img> is complete.
+async function loadAllImages(page) {
+  await page.evaluate(async () => { const step = Math.floor(window.innerHeight * 0.8); for (let y = 0; y < document.documentElement.scrollHeight; y += step) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); } window.scrollTo(0, 0); });
+  const deadline = Date.now() + 60000;
+  let state;
+  do {
+    state = await page.evaluate(() => { const imgs = [...document.images]; return { total: imgs.length, complete: imgs.filter((i) => i.complete).length, loaded: imgs.filter((i) => i.complete && i.naturalWidth > 0).length, failed: imgs.filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.currentSrc || i.src) }; });
+    if (state.complete === state.total) break;
+    await page.waitForTimeout(250);
+  } while (Date.now() < deadline);
+  await page.waitForTimeout(300);
+  return state;
+}
+
 // 1. first HTML response (no JavaScript): the intro overlay and its decision script must be in it
 const html = await (await fetch(url)).text();
 await fs.writeFile(path.join(out, `${venue}-first-response.html`), html);
@@ -27,6 +41,8 @@ const browser = await chromium.launch();
 {
   const ctx = await browser.newContext(DEVICE);
   const page = await ctx.newPage();
+  const fontRequests = [];
+  page.on('request', (r) => { if (r.resourceType() === 'font') fontRequests.push(r.url()); });
   const samples = [];
   await page.goto(url, { waitUntil: 'commit' });
   for (let i = 0; i < 40; i++) {
@@ -39,7 +55,7 @@ const browser = await chromium.launch();
   const gone = samples.find((s) => s.intro === 'done');
   log.checks.firstVisit = { introVisibleAtMs: firstVisible?.t ?? null, introDoneAtMs: gone?.t ?? null, goneWithin1500ms: !!gone && gone.t <= 1500, samples };
   await page.waitForLoadState('networkidle').catch(() => {});
-  await page.waitForTimeout(300);
+  log.checks.images = await loadAllImages(page);
   await page.screenshot({ path: path.join(out, `${venue}-en.png`), fullPage: true });
   const dom = await page.evaluate(() => ({
     lang: document.documentElement.lang, dir: document.documentElement.dir || 'ltr', title: document.title,
@@ -49,10 +65,12 @@ const browser = await chromium.launch();
     photos: document.querySelectorAll('main img').length,
   }));
   log.checks.dom = dom;
+  log.checks.fontRequests = { urls: [...new Set(fontRequests)], thirdParty: [...new Set(fontRequests)].filter((u) => !u.startsWith(base)) };
   await page.click('header button');
   await page.waitForTimeout(400);
   const fa = await page.evaluate(() => ({ lang: document.documentElement.lang, dir: document.documentElement.dir, dataLang: document.documentElement.dataset.lang, visibleFaHeadings: [...document.querySelectorAll('main h2 [lang=fa]')].filter((e) => e.getClientRects().length).length, visibleEnHeadings: [...document.querySelectorAll('main h2 [lang=en]')].filter((e) => e.getClientRects().length).length }));
   log.checks.persianToggle = fa;
+  log.checks.imagesFa = await loadAllImages(page);
   await page.screenshot({ path: path.join(out, `${venue}-fa.png`), fullPage: true });
   // 3. repeat visit in the same context (localStorage kept): the intro must be skipped before first paint
   await page.goto(url, { waitUntil: 'domcontentloaded' });
@@ -74,6 +92,7 @@ await browser.close();
 await fs.writeFile(path.join(out, `${venue}-checks.json`), JSON.stringify(log, null, 2));
 const c = log.checks;
 console.log(JSON.stringify({ introInFirstHtml: c.introInFirstHtml, firstVisit: { introVisibleAtMs: c.firstVisit.introVisibleAtMs, introDoneAtMs: c.firstVisit.introDoneAtMs, goneWithin1500ms: c.firstVisit.goneWithin1500ms }, repeatVisit: c.repeatVisit, reducedMotion: c.reducedMotion, persianToggle: c.persianToggle, dom: { ...c.dom, sections: c.dom.sections.length } }, null, 2));
-const pass = c.introInFirstHtml.present && c.firstVisit.goneWithin1500ms && c.repeatVisit.skipped && c.reducedMotion.skipped && c.persianToggle.dir === 'rtl';
+const pass = c.introInFirstHtml.present && c.firstVisit.goneWithin1500ms && c.repeatVisit.skipped && c.reducedMotion.skipped && c.persianToggle.dir === 'rtl' && c.fontRequests.thirdParty.length === 0 && c.images.loaded === c.images.total && c.imagesFa.loaded === c.imagesFa.total;
+console.log('fonts requested:', JSON.stringify(c.fontRequests), '\nimages EN:', JSON.stringify(c.images), '\nimages FA:', JSON.stringify(c.imagesFa));
 console.log(pass ? 'PASS' : 'FAIL');
 process.exit(pass ? 0 : 1);

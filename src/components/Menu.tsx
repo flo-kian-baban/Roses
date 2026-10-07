@@ -1,5 +1,5 @@
 import type { Section, Venue, Item } from '@/lib/types';
-import { price } from '@/lib/menu';
+import { price } from '@/lib/format';
 import { Bi } from './Bi';
 import { LangToggle } from './LangToggle';
 

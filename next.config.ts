@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   // Nothing vendor-specific: the output must run on any Node host.
   output: 'standalone',
   poweredByHeader: false,
+  // pg is loaded by Node at build/run time, never bundled (its optional Cloudflare socket module cannot be resolved by a bundler).
+  serverExternalPackages: ['pg'],
 };
 
 export default nextConfig;

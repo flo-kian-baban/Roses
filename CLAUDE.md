@@ -95,5 +95,5 @@ Image URLs are recorded only. No photos are downloaded until the owner's written
 - `PLAN.md` — stack, data model, import plan, task sequence, acceptance criteria, risks, open questions.
 - `tools/capture/` — read-only Playwright capture (`npm install && npm run capture`, then `npm run analyze`).
 - `tools/import/` — import per venue (`npm run import -- senso --load`), writes `data/import/<date>/<venue>/import-report.md`; Persian drafts in `persian-drafts.json`; venue seed in `data/import/<date>/venues.json`.
-- `src/` — Next.js app (public pages under `src/app/[venue]`, admin under `src/app/admin`); `db/migrations/` — plain SQL applied by `npm run db:migrate`; `scripts/` — checks and backups; `reports/` — checkpoint evidence.
+- `src/` — Next.js app: public venue pages in `src/pages/[venue].tsx` (Pages Router, runtime JavaScript disabled, plain HTML), admin under `src/app/admin` (App Router), fonts in `src/fonts/` (self-hosted look-alikes, see SOURCES.md), logo in `public/brand/`; `db/migrations/` — plain SQL applied by `npm run db:migrate`; `scripts/` — checks and backups; `reports/` — checkpoint evidence.
 - `data/raw/<source-slug>/<YYYY-MM-DD>/` — `responses/` (raw JSON, byte-for-byte), `decoded/` (gunzipped copies of Mealsy payloads, derived), `screenshots/`, `html/`, `manifest.json` (maps every file to its request URL and records what was on screen).

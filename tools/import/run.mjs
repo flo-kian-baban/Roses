@@ -7,6 +7,8 @@ import path from 'node:path';
 import { buildSenso } from './senso.mjs';
 import { loadVenueFile, loadVenues } from './load.mjs';
 import { writeReport } from './report.mjs';
+import { reconcileSenso } from './reconcile-senso.mjs';
+import { norm } from './lib.mjs';
 import { loadEnv } from '../../scripts/load-env.mjs';
 
 loadEnv();
@@ -33,5 +35,6 @@ if (args.load) {
   counts = await loadVenueFile(data, { databaseUrl: process.env.DATABASE_URL });
   console.log(`venues upserted: ${n}; sections +${counts.sectionsInserted} ~${counts.sectionsUpdated} =${counts.sectionsKept}; items +${counts.itemsInserted} ~${counts.itemsUpdated} =${counts.itemsKept}`);
 }
-await writeReport({ venue, date, out, data, venues: venues.find((v) => v.id === venue) || null, counts });
+const reconcile = venue === 'senso' ? await reconcileSenso({ raw, date, importedUnlistedKeys: new Set(data.items.filter((i) => !i.listed).map((i) => norm(i.name.en))) }) : null;
+await writeReport({ venue, date, out, data, venues: venues.find((v) => v.id === venue) || null, counts, reconcile });
 console.log(`report: ${path.join(out, 'import-report.md')}`);

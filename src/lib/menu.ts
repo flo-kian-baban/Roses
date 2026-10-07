@@ -36,7 +36,3 @@ function stripDrafts<T extends { fa_draft: string[]; name: Item['name']; descrip
   return out;
 }
 
-export function price(n: number | null | undefined): string | null {
-  if (n == null) return null;
-  return `$${Number(n).toFixed(2).replace(/\.00$/, '')}`;
-}

@@ -1,0 +1,1649 @@
+{
+  "source": {
+    "n": 1,
+    "slug": "mealsy-ro-sensocafe",
+    "kind": "mealsy",
+    "url": "https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus",
+    "label": "Mealsy - Senso Cafe (ro-SensoCafe)"
+  },
+  "capturedAt": "2026-10-07T04:57:48.605Z",
+  "tool": {
+    "playwright": "1.63.0",
+    "browser": "153.0.8010.12"
+  },
+  "device": {
+    "name": "iPhone 13 (Chromium)",
+    "viewport": {
+      "width": 390,
+      "height": 664
+    },
+    "deviceScaleFactor": 2,
+    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Mobile/15E148 Safari/604.1",
+    "isMobile": true,
+    "hasTouch": true
+  },
+  "captureLimits": "read-only: no login, no form submission, no add-to-cart, no orders, no personal data entered; request headers, cookies and tokens never saved",
+  "files": [
+    {
+      "path": "responses/001-maps-googleapis-com-maps-api-mapsjs-gen_204_csp_test-true.json",
+      "type": "response",
+      "url": "https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "resourceType": "xhr",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/002-prod1-api-mymealsy-com-online-ordering-api-v1-businessaccounts_xrefcode-sensocafe_clientnamespace.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/BusinessAccounts?xRefCode=SensoCafe&clientNamespace=",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "resourceType": "xhr",
+      "bytes": 236,
+      "sha256": "0343251fc86addee42efa361c23915aa3279cbf0d8074df2cecad15b9f5d306b",
+      "savedUnmodified": false,
+      "removedKeys": [
+        "AcceptDelivery",
+        "AcceptPickup",
+        "AccountSetting",
+        "EnableRedeemItemPoints",
+        "ApplicationContents"
+      ],
+      "note": "account lookup reduced to BusinessAccountId, BusinessLocationId, BusinessAccountName, ClientNamespace, SupportedLanguages, PrimaryLanguageId; account settings and contact details removed"
+    },
+    {
+      "path": "responses/003-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-02b88e71-2d3b-11ed-80d2-12f602b54861_datacategory-2_ispreview-false.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=02b88e71-2d3b-11ed-80d2-12f602b54861&dataCategory=2&isPreview=false",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "resourceType": "xhr",
+      "bytes": 1443,
+      "sha256": "53f23a34ac9173152b012e5fd502bec50e315fed82c565621a5ddd9f8ad25576",
+      "savedUnmodified": true
+    },
+    {
+      "path": "decoded/003-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-02b88e71-2d3b-11ed-80d2-12f602b54861_datacategory-2_ispreview-false.decoded.json",
+      "type": "decoded",
+      "derivedFrom": "responses/003-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-02b88e71-2d3b-11ed-80d2-12f602b54861_datacategory-2_ispreview-false.json",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=02b88e71-2d3b-11ed-80d2-12f602b54861&dataCategory=2&isPreview=false",
+      "note": "gunzip(base64(Data)) of the response envelope; derived copy, not raw",
+      "bytes": 3558,
+      "sha256": "1b72aa4e338b7e53e0a6a739ef313edcf951f73138684dc3e054842639a1a799"
+    },
+    {
+      "path": "responses/005-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-02b88e71-2d3b-11ed-80d2-12f602b54861_datacategory-1_ispreview-false.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=02b88e71-2d3b-11ed-80d2-12f602b54861&dataCategory=1&isPreview=false",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "resourceType": "xhr",
+      "bytes": 32639,
+      "sha256": "0924fa6fdd31dfa10826be59ebfab51339c6946050014c0e9ca86c2911f93466",
+      "savedUnmodified": true
+    },
+    {
+      "path": "decoded/005-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-02b88e71-2d3b-11ed-80d2-12f602b54861_datacategory-1_ispreview-false.decoded.json",
+      "type": "decoded",
+      "derivedFrom": "responses/005-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-02b88e71-2d3b-11ed-80d2-12f602b54861_datacategory-1_ispreview-false.json",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=02b88e71-2d3b-11ed-80d2-12f602b54861&dataCategory=1&isPreview=false",
+      "note": "gunzip(base64(Data)) of the response envelope; derived copy, not raw",
+      "bytes": 257784,
+      "sha256": "176c8fe64c6eb50a72ea35f7c275e411884c439cbc56c5a68304f2908bc9b9b3"
+    },
+    {
+      "path": "responses/007-prod1-api-mymealsy-com-online-ordering-api-v1-applicationcontents-contents_businessaccountid-02b2d7b9-2d3b-11ed-80d2-12f602b54861.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/ApplicationContents/Contents?businessAccountId=02b2d7b9-2d3b-11ed-80d2-12f602b54861",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "resourceType": "xhr",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/008-play-google-com-log_format-json_hasfast-true_authuser-0.json",
+      "type": "response",
+      "url": "https://play.google.com/log?format=json&hasfast=true&authuser=0",
+      "method": "POST",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "resourceType": "fetch",
+      "bytes": 131,
+      "sha256": "502e9680cfa78fa8be779cbf4f1947c8eaa3d43bf8c7464800ec772b2ddea358",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/010-play-google-com-log_format-json_hasfast-true_authuser-0.json",
+      "type": "response",
+      "url": "https://play.google.com/log?format=json&hasfast=true&authuser=0",
+      "method": "POST",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "resourceType": "fetch",
+      "bytes": 131,
+      "sha256": "502e9680cfa78fa8be779cbf4f1947c8eaa3d43bf8c7464800ec772b2ddea358",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/009-play-google-com-log_format-json_hasfast-true_authuser-0.json",
+      "type": "response",
+      "url": "https://play.google.com/log?format=json&hasfast=true&authuser=0",
+      "method": "POST",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "resourceType": "fetch",
+      "bytes": 131,
+      "sha256": "502e9680cfa78fa8be779cbf4f1947c8eaa3d43bf8c7464800ec772b2ddea358",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/011-play-google-com-log_format-json_hasfast-true_authuser-0.json",
+      "type": "response",
+      "url": "https://play.google.com/log?format=json&hasfast=true&authuser=0",
+      "method": "POST",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "resourceType": "fetch",
+      "bytes": 131,
+      "sha256": "502e9680cfa78fa8be779cbf4f1947c8eaa3d43bf8c7464800ec772b2ddea358",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/012-play-google-com-log_format-json_hasfast-true_authuser-0.json",
+      "type": "response",
+      "url": "https://play.google.com/log?format=json&hasfast=true&authuser=0",
+      "method": "POST",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "resourceType": "fetch",
+      "bytes": 131,
+      "sha256": "502e9680cfa78fa8be779cbf4f1947c8eaa3d43bf8c7464800ec772b2ddea358",
+      "savedUnmodified": true
+    },
+    {
+      "path": "screenshots/01-landing-viewport.png",
+      "type": "screenshot",
+      "url": "https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus",
+      "note": "landing view as first rendered (viewport)",
+      "bytes": 357716,
+      "sha256": "8c2b7a8598415ee9c0babb29707816a33786bee770ad019f8592863c56f7d1d5"
+    },
+    {
+      "path": "screenshots/02-category-hot-beverage.png",
+      "type": "screenshot",
+      "url": "https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus",
+      "note": "category \"Hot Beverage نوشیدنی گرم\" scrolled into view (viewport)",
+      "bytes": 478908,
+      "sha256": "4c8d33e82d2e65d52c99065ca9f0d5cae238f679ec80dfbfaf362892e9064cd1"
+    },
+    {
+      "path": "screenshots/03-item-detail.jpg",
+      "type": "screenshot",
+      "url": "https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus",
+      "note": "first item detail dialog open (nothing added to cart)",
+      "bytes": 53547,
+      "sha256": "184dcd1aa8f17e0dfeeec4b0da20602ebaecdce26c6dd03b3b5181d0f6aa7c22"
+    },
+    {
+      "path": "screenshots/04-landing-fullpage-part01.jpg",
+      "type": "screenshot",
+      "url": "https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus",
+      "note": "whole menu, inner scroll container expanded so every category and item is in one page (tiled, 3 parts, page height 20242px)",
+      "bytes": 1099312,
+      "sha256": "fe7aca4118f8563982ab7d61d0acc28d044143f03400c66fde0398dea8a42981"
+    },
+    {
+      "path": "screenshots/04-landing-fullpage-part02.jpg",
+      "type": "screenshot",
+      "url": "https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus",
+      "note": "whole menu, inner scroll container expanded so every category and item is in one page (tiled, 3 parts, page height 20242px)",
+      "bytes": 1455848,
+      "sha256": "7e486c3713d9e35da42171d354065275b02790301f36cd69bd213d3e49d95a5f"
+    },
+    {
+      "path": "screenshots/04-landing-fullpage-part03.jpg",
+      "type": "screenshot",
+      "url": "https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus",
+      "note": "whole menu, inner scroll container expanded so every category and item is in one page (tiled, 3 parts, page height 20242px)",
+      "bytes": 500877,
+      "sha256": "0eb666f7b042734237ae70a6d634a2c5e46712abb67d84c6b566129df32cfacd"
+    },
+    {
+      "path": "html/index.html",
+      "type": "html",
+      "url": "https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus",
+      "note": "rendered DOM after scrolling every category (inner scroll container expanded)",
+      "bytes": 281725,
+      "sha256": "45ea79fd5f028e93dab72925577973adfe081af63050e9babd9a7605f54b0133",
+      "savedUnmodified": false,
+      "redactedQueryValues": 1
+    }
+  ],
+  "skipped": [],
+  "redactions": [
+    {
+      "file": "html/index.html",
+      "note": "1 credential-like query value(s) in embedded URLs replaced with [REDACTED]"
+    },
+    {
+      "file": "responses/002-prod1-api-mymealsy-com-online-ordering-api-v1-businessaccounts_xrefcode-sensocafe_clientnamespace.json",
+      "note": "removed 5 top-level keys (account settings and contact details); kept BusinessAccountId, BusinessLocationId, BusinessAccountName, ClientNamespace, SupportedLanguages, PrimaryLanguageId",
+      "removedKeys": [
+        "AcceptDelivery",
+        "AcceptPickup",
+        "AccountSetting",
+        "EnableRedeemItemPoints",
+        "ApplicationContents"
+      ],
+      "at": "2026-10-07T05:41:39.866Z"
+    }
+  ],
+  "observed": {
+    "loadMs": 5567,
+    "pageTitle": "Senso Cafe | Menu",
+    "scrolledCategories": [
+      "Senso Signature",
+      "Hot Beverage نوشیدنی گرم",
+      "Tea & Herbal Tea چاى و دمنوش",
+      "Cold Beverage نوشیدنی سرد",
+      "Fresh Juice آبمیوه طبیعی",
+      "Dessert دسر",
+      "Ice Cream بستنی",
+      "Milkshake میلک شیک",
+      "Persian Breakfast صبحانه",
+      "Salad سالاد",
+      "Appetizer پیش غذا",
+      "Main Course غذا اصلی",
+      "Senso pizza پیتزا",
+      "Beverage",
+      "Extra"
+    ],
+    "scrollContainer": {
+      "className": "menu-page-container",
+      "scrollHeight": 20242
+    },
+    "categoryNav": [
+      "Senso Signature",
+      "Hot Beverage نوشیدنی گرم",
+      "Tea & Herbal Tea چاى و دمنوش",
+      "Cold Beverage نوشیدنی سرد",
+      "Fresh Juice آبمیوه طبیعی",
+      "Dessert دسر",
+      "Ice Cream بستنی",
+      "Milkshake میلک شیک",
+      "Persian Breakfast صبحانه",
+      "Salad سالاد",
+      "Appetizer پیش غذا",
+      "Main Course غذا اصلی",
+      "Senso pizza پیتزا",
+      "Beverage",
+      "Extra"
+    ],
+    "sections": [
+      {
+        "domId": "menuSectionb93d90e4-a5d4-85ca-d209-d42f5c788e89",
+        "title": "Senso Signature",
+        "description": "",
+        "items": [
+          {
+            "name": "Pumpkin Sundae",
+            "price": "$14.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d25667a3-be20-4384-844b-bc2f3cfc7b45-En.png?9/23/2026 1:59:23 AM"
+          },
+          {
+            "name": "Carrot Juice with Ice cream",
+            "price": "$12.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/df5ed810-3036-430b-9baa-778500f41ae4.jpg?5/14/2024 7:08:39 PM"
+          },
+          {
+            "name": "Banana & Pistachio Milk",
+            "price": "$15.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f07f6b98-d22c-4c26-8ca2-5879f67ba436.jpg?2/6/2024 7:22:57 PM"
+          },
+          {
+            "name": "Pomegranate majoun معجون انار",
+            "price": "$19.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7279b0f5-7771-4119-85b8-fa44f7bd8f6c.jpg?5/14/2024 7:03:06 PM"
+          },
+          {
+            "name": "Majoun",
+            "price": "$21.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8b86e393-ace4-436f-ac27-e3555f84990c-En.png?9/25/2026 2:37:53 AM"
+          },
+          {
+            "name": "Ice cream & Falooda",
+            "price": "$11.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4b64f1dd-f4a0-4bc0-a2c2-b6760731e9a8-En.png?8/17/2026 1:16:56 AM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSectionec7bce15-ad85-9e39-f250-a6a8a0525cf4",
+        "title": "Hot Beverage نوشیدنی گرم",
+        "description": "",
+        "items": [
+          {
+            "name": "Turkish Coffee",
+            "price": "$6.59",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_173_600X400.jpg"
+          },
+          {
+            "name": "Brewing Coffee Large",
+            "price": "$3.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_398_600X400.jpg"
+          },
+          {
+            "name": "Brewing Coffee Medium",
+            "price": "$2.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_1_600X400.jpg"
+          },
+          {
+            "name": "Espresso (Double)",
+            "price": "$5.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_168_600X400.jpg"
+          },
+          {
+            "name": "Espresso (Single)",
+            "price": "$4.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_2_600X400.jpg"
+          },
+          {
+            "name": "Americano",
+            "price": "$5.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_170_600X400.jpg"
+          },
+          {
+            "name": "Latte",
+            "price": "$7.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_3_600X400.jpg"
+          },
+          {
+            "name": "Vanilla Latte",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1b0e9197-e714-4f96-aad7-966de4fb8c24.jpg?2/21/2024 2:33:07 PM"
+          },
+          {
+            "name": "Organic Beet Latte",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_397_600X400.jpg"
+          },
+          {
+            "name": "Hazelnut Latte",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fc06c711-33c8-4b76-85bc-ff64a4a81d12.jpg?2/21/2024 2:34:51 PM"
+          },
+          {
+            "name": "Cappuccino",
+            "price": "$6.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_4_600X400.jpg"
+          },
+          {
+            "name": "Mocha",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/90214aac-3b1f-4fdf-be8e-936a5b1da58e.jpg?3/1/2024 8:21:54 PM"
+          },
+          {
+            "name": "Caramel Machiato",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f961dabb-95d2-4aad-ae9b-5ed98eed5284.jpg?3/1/2024 8:23:09 PM"
+          },
+          {
+            "name": "Affogato",
+            "price": "$9.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f14a2ff3-8671-4d27-8f6d-d93e5326c421.jpg?3/1/2024 8:22:45 PM"
+          },
+          {
+            "name": "Hot chocolate",
+            "price": "$6.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4290c10a-5fd0-4b56-b433-85202e07b82c.jpg?5/14/2024 7:20:18 PM"
+          },
+          {
+            "name": "Matcha Latte",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d66aa63e-251a-48a4-89d5-8524de886dd4.jpg?4/7/2024 12:58:39 AM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSectiond14ffec1-1db0-d3f0-d48b-ccfc6d5c91ac",
+        "title": "Tea & Herbal Tea چاى و دمنوش",
+        "description": "",
+        "items": [
+          {
+            "name": "Tea",
+            "price": "$2.29",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_412_600X400.jpg"
+          },
+          {
+            "name": "Large Tea",
+            "price": "$3.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4dae9272-6fa3-4e45-9c4a-b584fc042d47-En.jpeg?4/22/2026 1:27:59 AM"
+          },
+          {
+            "name": "Borage with lime دمنوش گل گاوزبان و ليمو عمانى",
+            "price": "$7.49",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Allergy Herbal Tea (ضد آلرژی و سرما خوردگی) دمنوش خاتون",
+            "price": "$7.49",
+            "description": "گل گاوزبان-بهارنارنج-آویشن -نعنا-دارچین-سنبل الطیف-به لیمو-زنجبیل-نبات زعفرانی-گلاب",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/0da4e6fd-7d71-4344-8388-99e4a829cfbe.jpg?3/28/2024 4:27:41 PM"
+          },
+          {
+            "name": "Apple & Cinnamon Herbal Tea  دمنوش سيب و دارچين",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Del Roba دمنوش دل ربا",
+            "price": "$7.49",
+            "description": "به ليمو-بهار نارنج-گل محمدی-گل گاوزبان-اسوخودوس-نبات زعفرانی (To lemon-spring orange-mohamady flower-borage flower-assochodos-saffron plant )",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5a0814db-b149-4f46-8322-97adf0f7e419.jpg?3/28/2024 4:27:03 PM"
+          },
+          {
+            "name": "Digestive Herbal Tea دمنوش عشاق",
+            "price": "$7.49",
+            "description": "بهار نارنج-نعنا-غنچه گل محمدی—گل گاوزبان-به لیمو- دارچین-گلاب-ابلیمو تازه (Spring orange-mint-mohamady flower-borage flower-lemon-cinnamon-rose-fresh lemon)",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/ab3be02d-e271-4519-a84b-79458d9e1b12.jpg?3/28/2024 4:27:20 PM"
+          },
+          {
+            "name": "Green tea",
+            "price": "$7.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/26f14837-c633-4b4a-b96d-af7fe05b120e.jpg?3/28/2024 4:25:08 PM"
+          },
+          {
+            "name": "Naz Bano Herbal Tea دمنوش ناز بانو",
+            "price": "$7.49",
+            "description": "گل گاوزبان-گل بابونه-سنبل الطیف-دارچین (Borage flower-chamomile flower-valerine-cinnamon)",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/275ba02b-9b0f-4461-85fd-0d78fe8594a6.jpg?3/28/2024 4:30:57 PM"
+          },
+          {
+            "name": "Power Herbal Tea دمنوش دل خواه",
+            "price": "$7.49",
+            "description": "نعنا-بابونه-گل گاوزبان—چای سیاه -سنبل الطیب-اسوخودوس-زنجبیل-نبات زعفرانی (mint-chamomile-borage flower-black tea-valerine-lavender-ginger-saffron plant)",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5fed0ae6-fd80-44ce-8a6d-3dbf849e0356.jpg?3/28/2024 4:30:16 PM"
+          },
+          {
+            "name": "Relaxing Herbal Tea دمنوش زن",
+            "price": "$7.49",
+            "description": "چای ترش -گل گاوزبان-دارچین (Sour tea - borage flower - cinnamon)",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b6317e6d-df8c-48fc-ab39-b24fed3c5ba9.jpg?3/28/2024 4:26:44 PM"
+          },
+          {
+            "name": "Saffron Herbal Tea دمنوش زعفران",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/6b5a3717-09d9-4cec-8c10-2c574d878d46-En.png?9/23/2026 2:03:10 AM"
+          },
+          {
+            "name": "Stressless Herbal Tea دمنوش افسون",
+            "price": "$7.49",
+            "description": "بابونه-سنبل الطیف-چای سیاه-زنجبیل (Chamomile-Valerine-Black tea-Ginger)",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/870359d3-8384-470c-b5c1-3d0cb9009041.jpg?3/28/2024 4:28:23 PM"
+          },
+          {
+            "name": "Women's Life Herbal Tea",
+            "price": "$7.49",
+            "description": "گل بابونه-به لیمو- گل محمدی-زنجبیل- نعنا-آویشن-هل-عسل (Chamomile-lemon-mohamady flower-ginger-mint-thyme-cardamom-honey)",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/89a9ec57-422c-4370-af7e-c99a592b72c3.jpg?3/28/2024 4:29:44 PM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSectionf9671e34-8ef0-3819-fb79-9fc575c82931",
+        "title": "Cold Beverage نوشیدنی سرد",
+        "description": "",
+        "items": [
+          {
+            "name": "Ice pistachio latte",
+            "price": "$9.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/a3115d60-67e9-408d-b701-d9c40f796b22-En.jpg?7/22/2025 3:46:17 PM"
+          },
+          {
+            "name": "Ice saffron latte",
+            "price": "$9.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9e1f5cdf-f430-4185-b0ca-a95f652780ef-En.jpg?7/22/2025 3:47:30 PM"
+          },
+          {
+            "name": "Iced Americano",
+            "price": "$5.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f170e555-6b54-40d4-8996-b3a3404b19eb.jpg?3/1/2024 8:20:24 PM"
+          },
+          {
+            "name": "Iced Latte",
+            "price": "$7.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b307c5c0-69d1-428a-a5fb-ef0c4ec305e4.jpg?3/1/2024 8:21:37 PM"
+          },
+          {
+            "name": "Iced Vanilla Latte",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Iced Hazelnut Latte",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Iced Caramel Machiato",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Iced Matcha Latte",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/2df88da2-b76d-4989-97d3-d5c8d6d60b8a.jpg?5/15/2024 8:14:09 PM"
+          },
+          {
+            "name": "Pumpkin Latte",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/391aab82-fcb4-4573-a314-70722aef86a6-En.png?9/23/2026 1:55:11 AM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSection01e5430c-7205-6b9f-a936-c52bef50cb9d",
+        "title": "Fresh Juice آبمیوه طبیعی",
+        "description": "",
+        "items": [
+          {
+            "name": "Green Mojito",
+            "price": "$9.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9add2763-c191-41d1-8546-0b7a856f226b-En.jpeg?4/17/2026 10:50:54 PM"
+          },
+          {
+            "name": "Cantaloupe",
+            "price": "$9.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_41_600X400.jpg"
+          },
+          {
+            "name": "Orange",
+            "price": "$10.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_42_600X400.jpg"
+          },
+          {
+            "name": "Mango",
+            "price": "$9.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_414_600X400.jpg"
+          },
+          {
+            "name": "Watermelon اب هندوانه",
+            "price": "$9.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_419_600X400.jpg"
+          },
+          {
+            "name": "Cancer Killer",
+            "price": "$11.99",
+            "description": "Beetroot, celery, ginger, carrot, green apple, lime, pomegranate, kiwi",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/28562fc5-c827-4361-b6f6-80eed92bed4c.jpg?3/28/2024 4:56:55 PM"
+          },
+          {
+            "name": "Carrot Juice",
+            "price": "$9.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/854b5d18-7a7e-419e-a0a1-55aa18dae63c-En.png?9/25/2026 2:43:12 AM"
+          },
+          {
+            "name": "Celery Juice",
+            "price": "$9.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/35bf8550-91d2-445e-9786-7cecbf7eacfb-En.png?9/25/2026 2:47:46 AM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSection50cb5ec8-48a8-0608-bf93-aaeea04608c2",
+        "title": "Dessert دسر",
+        "description": "",
+        "items": [
+          {
+            "name": "Almond Croissant",
+            "price": "$6.49",
+            "description": "Buttery croissant filled with almond cream, topped with toasted almond slices and powdered sugar. کرواسـان کره‌ای با کرم بادام و خلال بادام برشته و پودر قند.",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/062d2e6f-e253-4195-bebe-5f0afccee7f9-En.jpg?12/2/2025 6:28:55 PM"
+          },
+          {
+            "name": "Caramel Tres Leches",
+            "price": "$10.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8bb476ef-f5a7-4bfa-883d-740e653d9d7c.jpg?11/5/2024 6:23:39 PM"
+          },
+          {
+            "name": "Dubai Chocolate Cheesecake",
+            "price": "$12.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/00282169-33d1-4d7b-b554-68b8d7455792.jpg?2/12/2025 11:27:10 PM"
+          },
+          {
+            "name": "Nutella Oreo Cheesecake",
+            "price": "$11.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8724a2ad-429b-4596-8e3d-6e1321ac6f0f.jpg?2/11/2025 7:07:28 PM"
+          },
+          {
+            "name": "Persian Pistachio Croissant",
+            "price": "$6.99",
+            "description": "A buttery, flaky croissant filled with rich pistachio cream and topped with finely crushed pistachios. Lightly sweet, aromatic, and perfectly balanced for pistachio lovers.\n‎کرواسـانی کره‌ای و لایه‌لایه، پر شده با کرم پسته غلیظ و تازه، رویه‌شده با پودر پسته مرغوب. طعمی لطیف، خوش‌عطر و ایده‌آل برای دوست‌داران پسته",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f371c517-56a2-4d33-a829-a5946b3a3f30-En.jpg?12/2/2025 7:13:31 PM"
+          },
+          {
+            "name": "Pistachio Cake",
+            "price": "$10.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1710a58d-8714-466c-a22c-97047b0fd055.jpg?4/17/2025 9:43:52 PM"
+          },
+          {
+            "name": "Pistachio Cheesecake",
+            "price": "$11.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fb257047-3b0a-4226-a2f6-513ec20f829d-En.jpg?12/2/2025 7:59:02 PM"
+          },
+          {
+            "name": "Small Baklava",
+            "price": "$3.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/466ca0f9-2a5c-42f9-b662-ae364f57cc01.jpg?3/28/2024 4:50:38 PM"
+          },
+          {
+            "name": "Large Baklava",
+            "price": "$6.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_184_600X400.jpg"
+          },
+          {
+            "name": "Butter Croissant",
+            "price": "$3.99",
+            "description": "A light, flaky, and golden croissant made with premium butter, baked to a delicate crisp on the outside and soft on the inside. کرواسـانی سبک و لایه‌لایه، طلایی و خوش‌عطر، تهیه‌شده از کره باکیفیت. برشته و ترد در بیرون، نرم و لطیف در داخل.",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4af983f9-4548-40a7-a87f-6a421f1a0aba-En.jpg?12/2/2025 7:17:40 PM"
+          },
+          {
+            "name": "Tiramisu",
+            "price": "$12.99",
+            "description": "Vanilla cake soaked in coffee syrup, topped with mascarpone cheese and sprinkled with cocoa powder کیک اسفنجی وانیل، آغشته به شربت قهوه غلیظ، لایه‌دار شده با کرم ماسکارپونه تازه و در پایان تزئین شده با پودر کاکائوی مرغوب",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/54930dff-51e0-4e17-9482-2aaa1265cceb-En.jpg?12/2/2025 6:31:29 PM"
+          },
+          {
+            "name": "Turkish Knafeh",
+            "price": "$14.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/12ee0cd2-2395-4d08-b418-b534b11aabfa.jpg?3/28/2024 4:51:06 PM"
+          },
+          {
+            "name": "Lotus cheesecake",
+            "price": "$11.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/aec92f12-91c4-4789-bd3c-990af3a2c367.jpg?2/11/2025 7:09:45 PM"
+          },
+          {
+            "name": "Classic Cheese Cake چیز کیک تنوری",
+            "price": "$9.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/270a8b29-247c-4897-b791-c3885430a37a.jpg?5/5/2024 2:32:11 PM"
+          },
+          {
+            "name": "Coffee & walnut cake کیک گردو و قهوه",
+            "price": "$9.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/66b9ef01-d3f4-410a-ae72-a61fd4404ba0-En.jpg?12/2/2025 7:19:33 PM"
+          },
+          {
+            "name": "Napoleon",
+            "price": "$10.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/967d21ce-8338-4749-bcc7-10ee9b29d3cb-En.jpeg?4/17/2026 10:51:24 PM"
+          },
+          {
+            "name": "Chocolate Croissant",
+            "price": "$6.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/27718aa8-b702-4e75-bad6-4dc40f9f030f-En.jpeg?4/17/2026 10:51:57 PM"
+          },
+          {
+            "name": "Baklava Cake",
+            "price": "$12.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b815b423-7130-4cc4-8133-93f71b6f9ed8-En.png?6/7/2026 3:26:15 PM"
+          },
+          {
+            "name": "Chocolate Late Cake",
+            "price": "$12.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f3cf2726-6604-480c-a0c7-a643edd78705-En.png?5/23/2026 5:45:05 PM"
+          },
+          {
+            "name": "Pumpkin Cake",
+            "price": "$12.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/22a1aa42-d86d-45d1-a0de-c834c6958984-En.png?9/23/2026 1:46:31 AM"
+          },
+          {
+            "name": "Pumpkin Cheesecake",
+            "price": "$13.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/122bd376-481d-42fe-87db-d6515aa1a88e-En.png?9/23/2026 1:46:49 AM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSection8bad8d3a-cf2b-52cc-b5a9-4f3cfb1961ec",
+        "title": "Ice Cream بستنی",
+        "description": "",
+        "items": [
+          {
+            "name": "Ice Cream",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5f7a55b9-bae5-40c5-8848-16c9c0f12849.jpg?1/23/2024 6:21:26 PM"
+          },
+          {
+            "name": "Single Scoop Ice Cream",
+            "price": "$4.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_205_600X400.jpg"
+          },
+          {
+            "name": "Ice cream Sandwich",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d5723f40-8d4a-4572-bd24-de88d03e69db-En.jpeg?4/17/2026 11:29:37 PM"
+          },
+          {
+            "name": "Falooda",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/cf91889c-ecc5-4938-b241-186a5899e308-En.png?8/17/2026 1:19:54 AM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSection23a9f4c9-819f-1672-7f76-e4ca482d5dbc",
+        "title": "Milkshake میلک شیک",
+        "description": "",
+        "items": [
+          {
+            "name": "Chocolate Milkshake",
+            "price": "$12.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4550dcb9-3467-4532-9118-ae1f7910c8c3.jpg?3/28/2024 4:50:17 PM"
+          },
+          {
+            "name": "Strawberry Milkshake",
+            "price": "$11.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/ce2ec8b3-4a71-4890-b432-df8c57a2ebb9.jpg?2/6/2024 7:19:28 PM"
+          },
+          {
+            "name": "Mango Milkshake",
+            "price": "$11.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/33a7cf49-6ba5-4b74-ada8-392c591be52b-En.jpeg?4/22/2026 1:42:36 AM"
+          },
+          {
+            "name": "Nutella Milkshake",
+            "price": "$12.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b17fec29-ed9f-499c-9492-433306e5f86a-En.png?8/17/2026 1:05:22 AM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSectiondce54ec9-fed8-6e46-2faf-f9a9a9a5092b",
+        "title": "Persian Breakfast صبحانه",
+        "description": "",
+        "items": [
+          {
+            "name": "Brain &Tongue Omelette املت مغز و زبان",
+            "price": "$27.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/2156e283-95b2-4a4c-a4bf-6d6df630b345.jpg?3/28/2024 4:23:58 PM"
+          },
+          {
+            "name": "Classic Eggs نيمرو",
+            "price": "$18.99",
+            "description": "Two eggs served with bread, fresh herbs, cheese, tomato, cucumber",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d415c142-5c08-4547-9b6e-d0dbc37d030a-En.jpeg?5/23/2026 5:46:50 PM"
+          },
+          {
+            "name": "Tomato Omelette املت گوجه",
+            "price": "$20.99",
+            "description": "Two eggs with fresh crushed tomato served with bread, fresh herbs, cheese, tomato, cucumber. Omelette sauce includes onion",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_12_600X400.jpg"
+          },
+          {
+            "name": "Sausage & Egg سوسيس تخم مرغ",
+            "price": "$21.99",
+            "description": "Slice of beef and two eggs served with bread, fresh herbs, cheese, tomato, cucumber",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5373244b-d678-43d4-841f-b662464e0ac6.jpg?3/28/2024 4:45:06 PM"
+          },
+          {
+            "name": "Pumpkin Omelette",
+            "price": "$19.99",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Sausage, Egg & Tomato سوسيس تخم مرغ گوجه",
+            "price": "$22.99",
+            "description": "Slice of beef and two eggs with fresh crushed tomato, served with bread, fresh herbs, cheese, tomato, cucumber.",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4aa90f21-e9b9-4f15-8ec5-aa64735ac3a1.jpg?3/28/2024 4:46:29 PM"
+          },
+          {
+            "name": "Turkish Omelette  املت سوجوك",
+            "price": "$22.49",
+            "description": "Slice of Sujok with two eggs with bread, fresh herbs, cheese, tomato, cucumber. Omelette sauce includes onion",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_16_600X400.jpg"
+          },
+          {
+            "name": "Bandar Omelette املت جنوبى",
+            "price": "$19.99",
+            "description": "Fresh date, two eggs served with bread, fresh herbs, cheese, tomato, cucumber.",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_18_600X400.jpg"
+          },
+          {
+            "name": "Jungle Omelette املت جنگلى",
+            "price": "$21.99",
+            "description": "Two eggs with fresh crushed tomato served with feta cheese, fresh herbs, mixed peppers, bread, cucumber. Omelette sauce includes onion",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7cf56291-4e2c-4944-b7fd-1ed9a7ba28c7-En.jpeg?5/23/2026 5:47:13 PM"
+          },
+          {
+            "name": "Nargasi Omelette  املت نرگسى",
+            "price": "$21.99",
+            "description": "Two eggs with Spinach, caramelized onion, mushroom",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_197_600X400.jpg"
+          },
+          {
+            "name": "Gheymagh  قيماق",
+            "price": "$24.99",
+            "description": "سرشير خامه عسلClotted Cream, Cream, Honey, Feta cheese and Bread",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_394_600X400.jpg"
+          },
+          {
+            "name": "Mushroom Tomato Omelette املت قارچ و گوجه",
+            "price": "$21.99",
+            "description": "Two eggs with fresh sliced mushroom, omelette sauce includes onion served with bread, fresh herbs, cheese, tomato, cucumber.",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/078e60dd-018c-4075-b489-8b521cca929e.jpg?3/1/2024 8:17:42 PM"
+          },
+          {
+            "name": "Halim  حليم",
+            "price": "$15.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fe99268c-13ae-4d69-8c44-402e349e3012-En.jpg?9/12/2025 5:17:46 PM"
+          },
+          {
+            "name": "Papa Egg (Roast beef)",
+            "price": "$23.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/35e33cdc-4a3e-45de-a7ce-4a86732cdbe5.jpg?2/3/2024 2:29:27 PM"
+          },
+          {
+            "name": "Cheese Platter نان و پنير سبزى",
+            "price": "$15.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/2758a73a-b4c9-4e6c-89eb-3f4c31383020.jpg?2/6/2024 6:58:53 PM"
+          },
+          {
+            "name": "Plain Bagel With Cream Cheese",
+            "price": "$4.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/877ba4a6-68ea-4c12-acdb-4aa8427909c7.jpg?3/1/2024 8:13:46 PM"
+          },
+          {
+            "name": "Everything Bagel With Cream Cheese",
+            "price": "$4.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/a3868daf-5760-4d92-a1a1-24289b860f2a.jpg?3/1/2024 8:13:36 PM"
+          },
+          {
+            "name": "Plain Bagel with Butter",
+            "price": "$4.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/43a3007e-ad1e-4af1-8c75-9b19d99f10bd.jpg?3/1/2024 8:10:01 PM"
+          },
+          {
+            "name": "Everything Bagel With Butter",
+            "price": "$4.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/931f2836-79ee-4040-a219-bbfa50ffef41.jpg?3/1/2024 8:09:15 PM"
+          },
+          {
+            "name": "Classic waffle",
+            "price": "$17.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/624d9087-9b83-421d-8d08-a8a1e1e80b96.jpg?2/29/2024 12:58:05 PM"
+          },
+          {
+            "name": "Senso Waffle",
+            "price": "$20.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/04759d0d-d37d-4f43-acad-315366ccd024.jpg?2/29/2024 12:59:40 PM"
+          },
+          {
+            "name": "Strawberry pancake",
+            "price": "$21.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d30238e1-0387-4b42-91d0-708f723edc1d.jpg?3/1/2024 8:17:09 PM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSection99f4b4c8-d28a-90ca-f614-07d1ffe2e814",
+        "title": "Salad سالاد",
+        "description": "",
+        "items": [
+          {
+            "name": "Mixed Green Salad",
+            "price": "$17.49",
+            "description": "Spring Mix  sunflower seed, Walnuts, strawberries, blackberries, raspberries, feta cheese",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_29_600X400.jpg"
+          },
+          {
+            "name": "Greek Salad",
+            "price": "$17.49",
+            "description": "Mix of Baby Cucumber, Tomato, Red onion, Slice Olives, Fresh Lemon Juice And Olive Oli",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_30_600X400.jpg"
+          },
+          {
+            "name": "Watermelon Salad",
+            "price": "$18.99",
+            "description": "Fresh watermelon, feta cheese, and pomegranate.",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_33_600X400.jpg"
+          },
+          {
+            "name": "Caeser salad",
+            "price": "$18.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/01b76e34-256a-41be-a0b3-dd8060bdf09a.jpg?3/28/2024 4:56:14 PM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSection409c3440-240d-ec89-f74e-72bc18bbe9c5",
+        "title": "Appetizer پیش غذا",
+        "description": "",
+        "items": [
+          {
+            "name": "Creamy Mushroom Barley Soup",
+            "price": "$11.99",
+            "description": "Milk, chicken, mushroom, barley, carrot, parsley,",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/c5d3d745-7cc7-408f-8232-a0ff8f20120b.jpg?2/11/2025 9:40:09 PM"
+          },
+          {
+            "name": "Ashe Sabzi Shiraz آش سبزی شیراز",
+            "price": "$14.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1fd05fc1-0159-4d33-8c1e-9ff440d24f50.jpg?3/28/2024 4:31:34 PM"
+          },
+          {
+            "name": "Ashe Reshteh آش رشته",
+            "price": "$13.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5b5033a3-7cd3-4102-a769-264ae3540e7b.jpg?1/9/2024 5:43:54 PM"
+          },
+          {
+            "name": "Halim حليم",
+            "price": "$15.49",
+            "description": "Wheat, meat",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fe1c7476-6277-4d8a-ac2b-1b8ba1f7ae4b.jpg?1/9/2024 5:41:58 PM"
+          },
+          {
+            "name": "Kumpir (Turkish Style Stuffed Baked Potato)",
+            "price": "$16.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b903d90f-6267-43cc-b515-74bc47168f3b.jpg?2/29/2024 12:56:54 PM"
+          },
+          {
+            "name": "Barley Soup سوپ جو",
+            "price": "$9.99",
+            "description": "Carrot, onion, barley, chicken, tomato paste",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d95695b2-cce8-4287-a80c-30ae2b3afe6e.jpg?1/9/2024 5:34:58 PM"
+          },
+          {
+            "name": "Pumpkin Soup",
+            "price": "$7.99",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "chips o panir چیپس و پنیر",
+            "price": "$17.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f5d946a4-6e8a-410a-a133-40566af3aa73.jpg?12/5/2024 12:37:34 AM"
+          },
+          {
+            "name": "Mexican corn ذرت میکزیکی",
+            "price": "$10.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9d6be463-fd50-4db2-951e-054f4eb87afd-En.jpeg?4/22/2026 1:41:45 AM"
+          },
+          {
+            "name": "خوراک عدسی - Adasi",
+            "price": "$9.99",
+            "description": "Lentil-Potato-Onion",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/04ac64b9-016f-4747-b487-450d48aef210.jpg?1/9/2024 5:41:19 PM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSection7349018c-6f9e-5d92-d1dd-b27ee63998e5",
+        "title": "Main Course غذا اصلی",
+        "description": "",
+        "items": [
+          {
+            "name": "Signature Senso Mix Sandwich",
+            "price": "$19.99",
+            "description": "Turkey and Chicken slices, Mushroom Sauce, Signature Sauce, Tomato, Pickle, Lettuce, Stick Chips",
+            "imgSrc": null
+          },
+          {
+            "name": "Tongue Sandwich",
+            "price": "$20.99",
+            "description": "Tongue meat, Mushroom Sauce, Fried Onion, Stick Chips",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f0c6953f-8e0e-4fb1-85c9-e0b15d046ab8.jpg?11/22/2024 2:42:43 AM"
+          },
+          {
+            "name": "Sosis Bandari Plate",
+            "price": "$18.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/dbe86a99-1b38-4f34-8378-8bba33460af1.jpg?3/28/2024 4:32:27 PM"
+          },
+          {
+            "name": "Sosis Plate",
+            "price": "$18.49",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/e4e27b58-8015-44c9-8778-ba9af5bc3153.jpg?3/28/2024 4:32:46 PM"
+          },
+          {
+            "name": "Smoked Montreal Roast Beef Sandwich",
+            "price": "$19.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/cfc1a944-3823-4135-a9fd-c41426f6aea3.jpg?3/28/2024 4:33:25 PM"
+          },
+          {
+            "name": "Smoked Turkey Breast Sandwich",
+            "price": "$18.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/dbfec41e-63a6-4845-980c-97c68e639edd.jpg?3/28/2024 4:33:55 PM"
+          },
+          {
+            "name": "Smoked Chicken Breast Sandwich",
+            "price": "$18.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9df117f3-8c83-49e1-8848-17331a7e8e56.jpg?3/28/2024 4:34:07 PM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSectionbe273b0e-7218-19f1-ef3d-613c10660368",
+        "title": "Senso pizza پیتزا",
+        "description": "",
+        "items": [
+          {
+            "name": "Cheese Pizza",
+            "price": "$16.99",
+            "description": "Mozzarella Cheese, Cheddar Cheese, Marble Cheese",
+            "imgSrc": null
+          },
+          {
+            "name": "Meat Lovers Pizza",
+            "price": "$24.99",
+            "description": "Mushroom Sauce, Steak, Beef Bacon, Ham, Beef Sausage, Black Olives, Mozzarella Cheese",
+            "imgSrc": null
+          },
+          {
+            "name": "persian pizza",
+            "price": "$22.99",
+            "description": "tomato sauce, mixed mozzarella and cheddar, beef , corn, salami, beef sausage, mushroom, red onion, green peppers and black olives",
+            "imgSrc": null
+          },
+          {
+            "name": "Steak Pizza",
+            "price": "$23.99",
+            "description": "Garlic Butter, Mushroom Sauce, Steak, Mozzarella Cheese, Chilli, Red Onion",
+            "imgSrc": null
+          },
+          {
+            "name": "Vegetarian Pizza",
+            "price": "$19.99",
+            "description": "Tomato Base, Cheese, Mushroom, Red Onion, Corn,Bell Pepper, Green Olives, Black Olives, Crushed Tomato, Feta Cheese",
+            "imgSrc": null
+          },
+          {
+            "name": "Papa pizza (roast beef)",
+            "price": "$24.99",
+            "description": "Flat bread, Mushroom, Mozzerella Cheese, Roast Beef, Black Olives, Corn",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5b644b15-50ce-4a7a-a29d-ac53e0548653.jpg?3/28/2024 4:34:56 PM"
+          },
+          {
+            "name": "Mama pizza (Grilled chicken Salami,beef bacon)",
+            "price": "$22.99",
+            "description": "Flat Bread, Diced Chicken, Diced Beef, Beef Bacon, Mozzerella Cheese, Tomato Sauce, Mushroom, Black Olives",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d170e4bd-b6b9-4f7e-84e3-67ba126d42d6.jpg?3/28/2024 4:35:59 PM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSection0eb157ef-0cab-01a1-9b0a-940298778868",
+        "title": "Beverage",
+        "description": "",
+        "items": [
+          {
+            "name": "Canada Dry Ginger Ale",
+            "price": "$3.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1c3475ed-9744-4ed0-a388-460d186f66c4-En.png?4/17/2026 11:25:25 PM"
+          },
+          {
+            "name": "Coca Cola",
+            "price": "$3.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/62d67106-7fa1-40e7-b891-8fa5df5f6b45-En.jpeg?4/17/2026 11:27:15 PM"
+          },
+          {
+            "name": "Mineral water",
+            "price": "$2.99",
+            "description": "",
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/94dfdcf3-a89f-4de2-ac92-475eb1d4e233-En.jpeg?4/17/2026 11:28:56 PM"
+          }
+        ]
+      },
+      {
+        "domId": "menuSection439daf37-aec3-e556-d6bb-759cb46bf9e8",
+        "title": "Extra",
+        "description": "",
+        "items": [
+          {
+            "name": "Extra Beef Baccon",
+            "price": "$5.99",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Extra Bread (2 Slices)",
+            "price": "$1.49",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Extra Sausage",
+            "price": "$5.99",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Extra Egg",
+            "price": "$2.49",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Extra Sujuk",
+            "price": "$5.49",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Date-خرما",
+            "price": "$1.99",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Extra Honey",
+            "price": "$2.19",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Extra cheese",
+            "price": "$2.19",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Nutella",
+            "price": "$2.99",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Extra Gheymagh",
+            "price": "$16.49",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Extra Mushroom",
+            "price": "$2.19",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Ginger shot",
+            "price": "$3.99",
+            "description": "",
+            "imgSrc": null
+          },
+          {
+            "name": "Nabat",
+            "price": "$1.19",
+            "description": "",
+            "imgSrc": null
+          }
+        ]
+      }
+    ],
+    "restaurant": {
+      "name": "Senso Cafe",
+      "address": "9218 Yonge Street, Richmond Hill, Ontario L4C 7A2"
+    },
+    "itemCountOnScreen": 148,
+    "itemDetail": {
+      "text": "Pumpkin Sundae $14.99 - +",
+      "imgSrc": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d25667a3-be20-4384-844b-bc2f3cfc7b45-En.png?9/23/2026 1:59:23 AM"
+    },
+    "finalUrl": "https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus"
+  },
+  "imageUrls": {
+    "note": "URLs only; no image was downloaded by this tool. Browser rendering of the page is the only image traffic.",
+    "uniqueTotal": 179,
+    "fromDom": [
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/00282169-33d1-4d7b-b554-68b8d7455792.jpg?2/12/2025 11:27:10 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/01b76e34-256a-41be-a0b3-dd8060bdf09a.jpg?3/28/2024 4:56:14 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/04759d0d-d37d-4f43-acad-315366ccd024.jpg?2/29/2024 12:59:40 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/04ac64b9-016f-4747-b487-450d48aef210.jpg?1/9/2024 5:41:19 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/062d2e6f-e253-4195-bebe-5f0afccee7f9-En.jpg?12/2/2025 6:28:55 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/078e60dd-018c-4075-b489-8b521cca929e.jpg?3/1/2024 8:17:42 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/0da4e6fd-7d71-4344-8388-99e4a829cfbe.jpg?3/28/2024 4:27:41 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/122bd376-481d-42fe-87db-d6515aa1a88e-En.png?9/23/2026 1:46:49 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/12ee0cd2-2395-4d08-b418-b534b11aabfa.jpg?3/28/2024 4:51:06 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1710a58d-8714-466c-a22c-97047b0fd055.jpg?4/17/2025 9:43:52 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1b0e9197-e714-4f96-aad7-966de4fb8c24.jpg?2/21/2024 2:33:07 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1c3475ed-9744-4ed0-a388-460d186f66c4-En.png?4/17/2026 11:25:25 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1fd05fc1-0159-4d33-8c1e-9ff440d24f50.jpg?3/28/2024 4:31:34 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/2156e283-95b2-4a4c-a4bf-6d6df630b345.jpg?3/28/2024 4:23:58 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/22a1aa42-d86d-45d1-a0de-c834c6958984-En.png?9/23/2026 1:46:31 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/26f14837-c633-4b4a-b96d-af7fe05b120e.jpg?3/28/2024 4:25:08 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/270a8b29-247c-4897-b791-c3885430a37a.jpg?5/5/2024 2:32:11 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/2758a73a-b4c9-4e6c-89eb-3f4c31383020.jpg?2/6/2024 6:58:53 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/275ba02b-9b0f-4461-85fd-0d78fe8594a6.jpg?3/28/2024 4:30:57 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/27718aa8-b702-4e75-bad6-4dc40f9f030f-En.jpeg?4/17/2026 10:51:57 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/28562fc5-c827-4361-b6f6-80eed92bed4c.jpg?3/28/2024 4:56:55 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/2df88da2-b76d-4989-97d3-d5c8d6d60b8a.jpg?5/15/2024 8:14:09 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/33a7cf49-6ba5-4b74-ada8-392c591be52b-En.jpeg?4/22/2026 1:42:36 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/35bf8550-91d2-445e-9786-7cecbf7eacfb-En.png?9/25/2026 2:47:46 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/35e33cdc-4a3e-45de-a7ce-4a86732cdbe5.jpg?2/3/2024 2:29:27 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/391aab82-fcb4-4573-a314-70722aef86a6-En.png?9/23/2026 1:55:11 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4290c10a-5fd0-4b56-b433-85202e07b82c.jpg?5/14/2024 7:20:18 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/43a3007e-ad1e-4af1-8c75-9b19d99f10bd.jpg?3/1/2024 8:10:01 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4550dcb9-3467-4532-9118-ae1f7910c8c3.jpg?3/28/2024 4:50:17 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/466ca0f9-2a5c-42f9-b662-ae364f57cc01.jpg?3/28/2024 4:50:38 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4aa90f21-e9b9-4f15-8ec5-aa64735ac3a1.jpg?3/28/2024 4:46:29 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4af983f9-4548-40a7-a87f-6a421f1a0aba-En.jpg?12/2/2025 7:17:40 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4b64f1dd-f4a0-4bc0-a2c2-b6760731e9a8-En.png?8/17/2026 1:16:56 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4dae9272-6fa3-4e45-9c4a-b584fc042d47-En.jpeg?4/22/2026 1:27:59 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5373244b-d678-43d4-841f-b662464e0ac6.jpg?3/28/2024 4:45:06 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/54930dff-51e0-4e17-9482-2aaa1265cceb-En.jpg?12/2/2025 6:31:29 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5a0814db-b149-4f46-8322-97adf0f7e419.jpg?3/28/2024 4:27:03 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5b5033a3-7cd3-4102-a769-264ae3540e7b.jpg?1/9/2024 5:43:54 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5b644b15-50ce-4a7a-a29d-ac53e0548653.jpg?3/28/2024 4:34:56 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5f7a55b9-bae5-40c5-8848-16c9c0f12849.jpg?1/23/2024 6:21:26 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5fed0ae6-fd80-44ce-8a6d-3dbf849e0356.jpg?3/28/2024 4:30:16 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/624d9087-9b83-421d-8d08-a8a1e1e80b96.jpg?2/29/2024 12:58:05 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/62d67106-7fa1-40e7-b891-8fa5df5f6b45-En.jpeg?4/17/2026 11:27:15 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/66b9ef01-d3f4-410a-ae72-a61fd4404ba0-En.jpg?12/2/2025 7:19:33 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/6b5a3717-09d9-4cec-8c10-2c574d878d46-En.png?9/23/2026 2:03:10 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7279b0f5-7771-4119-85b8-fa44f7bd8f6c.jpg?5/14/2024 7:03:06 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7cf56291-4e2c-4944-b7fd-1ed9a7ba28c7-En.jpeg?5/23/2026 5:47:13 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/854b5d18-7a7e-419e-a0a1-55aa18dae63c-En.png?9/25/2026 2:43:12 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/870359d3-8384-470c-b5c1-3d0cb9009041.jpg?3/28/2024 4:28:23 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8724a2ad-429b-4596-8e3d-6e1321ac6f0f.jpg?2/11/2025 7:07:28 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/877ba4a6-68ea-4c12-acdb-4aa8427909c7.jpg?3/1/2024 8:13:46 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/89a9ec57-422c-4370-af7e-c99a592b72c3.jpg?3/28/2024 4:29:44 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8b86e393-ace4-436f-ac27-e3555f84990c-En.png?9/25/2026 2:37:53 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8bb476ef-f5a7-4bfa-883d-740e653d9d7c.jpg?11/5/2024 6:23:39 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/90214aac-3b1f-4fdf-be8e-936a5b1da58e.jpg?3/1/2024 8:21:54 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/931f2836-79ee-4040-a219-bbfa50ffef41.jpg?3/1/2024 8:09:15 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/94dfdcf3-a89f-4de2-ac92-475eb1d4e233-En.jpeg?4/17/2026 11:28:56 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/967d21ce-8338-4749-bcc7-10ee9b29d3cb-En.jpeg?4/17/2026 10:51:24 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9add2763-c191-41d1-8546-0b7a856f226b-En.jpeg?4/17/2026 10:50:54 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9d6be463-fd50-4db2-951e-054f4eb87afd-En.jpeg?4/22/2026 1:41:45 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9df117f3-8c83-49e1-8848-17331a7e8e56.jpg?3/28/2024 4:34:07 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9e1f5cdf-f430-4185-b0ca-a95f652780ef-En.jpg?7/22/2025 3:47:30 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/a3115d60-67e9-408d-b701-d9c40f796b22-En.jpg?7/22/2025 3:46:17 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/a3868daf-5760-4d92-a1a1-24289b860f2a.jpg?3/1/2024 8:13:36 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/ab3be02d-e271-4519-a84b-79458d9e1b12.jpg?3/28/2024 4:27:20 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/aec92f12-91c4-4789-bd3c-990af3a2c367.jpg?2/11/2025 7:09:45 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b17fec29-ed9f-499c-9492-433306e5f86a-En.png?8/17/2026 1:05:22 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b307c5c0-69d1-428a-a5fb-ef0c4ec305e4.jpg?3/1/2024 8:21:37 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b6317e6d-df8c-48fc-ab39-b24fed3c5ba9.jpg?3/28/2024 4:26:44 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b815b423-7130-4cc4-8133-93f71b6f9ed8-En.png?6/7/2026 3:26:15 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b903d90f-6267-43cc-b515-74bc47168f3b.jpg?2/29/2024 12:56:54 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/c5d3d745-7cc7-408f-8232-a0ff8f20120b.jpg?2/11/2025 9:40:09 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/ce2ec8b3-4a71-4890-b432-df8c57a2ebb9.jpg?2/6/2024 7:19:28 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/cf91889c-ecc5-4938-b241-186a5899e308-En.png?8/17/2026 1:19:54 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/cfc1a944-3823-4135-a9fd-c41426f6aea3.jpg?3/28/2024 4:33:25 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d170e4bd-b6b9-4f7e-84e3-67ba126d42d6.jpg?3/28/2024 4:35:59 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d25667a3-be20-4384-844b-bc2f3cfc7b45-En.png?9/23/2026 1:59:23 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d30238e1-0387-4b42-91d0-708f723edc1d.jpg?3/1/2024 8:17:09 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d415c142-5c08-4547-9b6e-d0dbc37d030a-En.jpeg?5/23/2026 5:46:50 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d5723f40-8d4a-4572-bd24-de88d03e69db-En.jpeg?4/17/2026 11:29:37 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d66aa63e-251a-48a4-89d5-8524de886dd4.jpg?4/7/2024 12:58:39 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d95695b2-cce8-4287-a80c-30ae2b3afe6e.jpg?1/9/2024 5:34:58 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/dbe86a99-1b38-4f34-8378-8bba33460af1.jpg?3/28/2024 4:32:27 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/dbfec41e-63a6-4845-980c-97c68e639edd.jpg?3/28/2024 4:33:55 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/df5ed810-3036-430b-9baa-778500f41ae4.jpg?5/14/2024 7:08:39 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/e4e27b58-8015-44c9-8778-ba9af5bc3153.jpg?3/28/2024 4:32:46 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f07f6b98-d22c-4c26-8ca2-5879f67ba436.jpg?2/6/2024 7:22:57 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f0c6953f-8e0e-4fb1-85c9-e0b15d046ab8.jpg?11/22/2024 2:42:43 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f14a2ff3-8671-4d27-8f6d-d93e5326c421.jpg?3/1/2024 8:22:45 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f170e555-6b54-40d4-8996-b3a3404b19eb.jpg?3/1/2024 8:20:24 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f371c517-56a2-4d33-a829-a5946b3a3f30-En.jpg?12/2/2025 7:13:31 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f3cf2726-6604-480c-a0c7-a643edd78705-En.png?5/23/2026 5:45:05 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f5d946a4-6e8a-410a-a133-40566af3aa73.jpg?12/5/2024 12:37:34 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f961dabb-95d2-4aad-ae9b-5ed98eed5284.jpg?3/1/2024 8:23:09 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fb257047-3b0a-4226-a2f6-513ec20f829d-En.jpg?12/2/2025 7:59:02 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fc06c711-33c8-4b76-85bc-ff64a4a81d12.jpg?2/21/2024 2:34:51 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fe1c7476-6277-4d8a-ac2b-1b8ba1f7ae4b.jpg?1/9/2024 5:41:58 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fe99268c-13ae-4d69-8c44-402e349e3012-En.jpg?9/12/2025 5:17:46 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_12_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_168_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_16_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_170_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_173_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_184_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_18_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_197_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_1_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_205_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_29_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_2_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_30_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_33_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_394_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_397_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_398_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_3_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_412_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_414_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_419_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_41_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_42_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_4_600X400.jpg"
+    ],
+    "fromResponses": [
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/00282169-33d1-4d7b-b554-68b8d7455792.jpg?2/12/2025 11:27:10 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/01b76e34-256a-41be-a0b3-dd8060bdf09a.jpg?3/28/2024 4:56:14 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/04759d0d-d37d-4f43-acad-315366ccd024.jpg?2/29/2024 12:59:40 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/04ac64b9-016f-4747-b487-450d48aef210.jpg?1/9/2024 5:41:19 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/04fd87d2-1f6c-466c-a1bd-971f654e9e15.jpg?1/27/2025 7:00:29 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/062d2e6f-e253-4195-bebe-5f0afccee7f9-En.jpg?12/2/2025 6:28:55 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/078e60dd-018c-4075-b489-8b521cca929e.jpg?3/1/2024 8:17:42 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/08426c5f-27af-4375-87de-c4cfd24132e7.jpg?1/27/2025 7:19:52 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/0da4e6fd-7d71-4344-8388-99e4a829cfbe.jpg?3/28/2024 4:27:41 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/122bd376-481d-42fe-87db-d6515aa1a88e-En.png?9/23/2026 1:46:49 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/12ee0cd2-2395-4d08-b418-b534b11aabfa.jpg?3/28/2024 4:51:06 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/15198f6b-fd09-457f-b6f6-26f7830b010c.jpg?1/27/2025 7:08:54 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1710a58d-8714-466c-a22c-97047b0fd055.jpg?4/17/2025 9:43:52 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1ae26c12-64bc-4c9c-94e9-4f72d4b1ed83.jpg?1/27/2025 7:20:14 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1b0e9197-e714-4f96-aad7-966de4fb8c24.jpg?2/21/2024 2:33:07 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1b43fa40-3226-4efb-afec-edda9ec05602.jpg?1/27/2025 7:15:24 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1c3475ed-9744-4ed0-a388-460d186f66c4-En.png?4/17/2026 11:25:25 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/1fd05fc1-0159-4d33-8c1e-9ff440d24f50.jpg?3/28/2024 4:31:34 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/2156e283-95b2-4a4c-a4bf-6d6df630b345.jpg?3/28/2024 4:23:58 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/22a1aa42-d86d-45d1-a0de-c834c6958984-En.png?9/23/2026 1:46:31 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/26f14837-c633-4b4a-b96d-af7fe05b120e.jpg?3/28/2024 4:25:08 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/270a8b29-247c-4897-b791-c3885430a37a.jpg?5/5/2024 2:32:11 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/2758a73a-b4c9-4e6c-89eb-3f4c31383020.jpg?2/6/2024 6:58:53 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/275ba02b-9b0f-4461-85fd-0d78fe8594a6.jpg?3/28/2024 4:30:57 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/27718aa8-b702-4e75-bad6-4dc40f9f030f-En.jpeg?4/17/2026 10:51:57 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/27e6e556-5b8e-46be-be31-9a032aa4a4dc.jpg?1/27/2025 7:23:28 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/28562fc5-c827-4361-b6f6-80eed92bed4c.jpg?3/28/2024 4:56:55 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/2df88da2-b76d-4989-97d3-d5c8d6d60b8a.jpg?5/15/2024 8:14:09 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/2f69713a-9a27-4a22-9773-2bc5c624d2cb.jpg?1/27/2025 7:16:10 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/33a7cf49-6ba5-4b74-ada8-392c591be52b-En.jpeg?4/22/2026 1:42:36 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/356fce8d-5ba9-444a-99fc-a645e7fe20ee.jpg?1/27/2025 7:00:59 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/3583e95d-21c2-4b64-925e-e7ba48dc449a.jpg?1/27/2025 7:15:55 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/35bf8550-91d2-445e-9786-7cecbf7eacfb-En.png?9/25/2026 2:47:46 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/35e33cdc-4a3e-45de-a7ce-4a86732cdbe5.jpg?2/3/2024 2:29:27 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/37dec0ae-4788-44ad-ab3c-5073d954bc62.jpg?1/27/2025 7:04:20 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/383ede11-20d2-42d9-ad74-19aeebcc9236.jpg?1/27/2025 7:00:48 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/391aab82-fcb4-4573-a314-70722aef86a6-En.png?9/23/2026 1:55:11 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/3f7a5f1a-f417-477b-9550-f228838e6397.jpg?1/27/2025 7:23:56 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/42900639-cf03-4ead-9265-d99f8f7a5cce.jpg?1/27/2025 7:20:49 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4290c10a-5fd0-4b56-b433-85202e07b82c.jpg?5/14/2024 7:20:18 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/43a3007e-ad1e-4af1-8c75-9b19d99f10bd.jpg?3/1/2024 8:10:01 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4550dcb9-3467-4532-9118-ae1f7910c8c3.jpg?3/28/2024 4:50:17 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/466ca0f9-2a5c-42f9-b662-ae364f57cc01.jpg?3/28/2024 4:50:38 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4aa90f21-e9b9-4f15-8ec5-aa64735ac3a1.jpg?3/28/2024 4:46:29 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4af983f9-4548-40a7-a87f-6a421f1a0aba-En.jpg?12/2/2025 7:17:40 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4b64f1dd-f4a0-4bc0-a2c2-b6760731e9a8-En.png?8/17/2026 1:16:56 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4dae9272-6fa3-4e45-9c4a-b584fc042d47-En.jpeg?4/22/2026 1:27:59 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5373244b-d678-43d4-841f-b662464e0ac6.jpg?3/28/2024 4:45:06 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/54930dff-51e0-4e17-9482-2aaa1265cceb-En.jpg?12/2/2025 6:31:29 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5a0814db-b149-4f46-8322-97adf0f7e419.jpg?3/28/2024 4:27:03 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5b5033a3-7cd3-4102-a769-264ae3540e7b.jpg?1/9/2024 5:43:54 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5b644b15-50ce-4a7a-a29d-ac53e0548653.jpg?3/28/2024 4:34:56 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5f7a55b9-bae5-40c5-8848-16c9c0f12849.jpg?1/23/2024 6:21:26 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5fda21cc-ff53-43a2-93a6-ad4757d5a9ff.jpg?1/27/2025 7:20:29 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/5fed0ae6-fd80-44ce-8a6d-3dbf849e0356.jpg?3/28/2024 4:30:16 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/624d9087-9b83-421d-8d08-a8a1e1e80b96.jpg?2/29/2024 12:58:05 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/62d67106-7fa1-40e7-b891-8fa5df5f6b45-En.jpeg?4/17/2026 11:27:15 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/63ab0543-8a31-4d69-891c-d9dcede8d8b4.jpg?1/27/2025 7:16:24 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/66556c6e-2e6a-4416-8366-cc8f9843a357.jpg?1/27/2025 7:15:34 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/66b9ef01-d3f4-410a-ae72-a61fd4404ba0-En.jpg?12/2/2025 7:19:33 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/6a5a2cf2-01c4-4d4c-8f5a-8dde8c9b8661.jpg?1/27/2025 7:00:10 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/6ace0d45-f004-47b5-ae27-3bc5dd8fb84c.jpg?1/27/2025 7:20:36 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/6b5a3717-09d9-4cec-8c10-2c574d878d46-En.png?9/23/2026 2:03:10 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7279b0f5-7771-4119-85b8-fa44f7bd8f6c.jpg?5/14/2024 7:03:06 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7441ef3d-32de-4516-b863-e1c2c05c1cfd.jpg?1/27/2025 7:08:42 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/755bff38-fe63-452b-be74-cf108f1ad9c6.jpg?1/27/2025 6:59:52 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7674b0f1-cdad-45ce-b773-588ea58484c8.jpg?1/27/2025 7:15:09 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/767dd7f6-f3a5-4cae-a7da-3835ede5eec8.jpg?1/27/2025 7:16:18 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7cf56291-4e2c-4944-b7fd-1ed9a7ba28c7-En.jpeg?5/23/2026 5:47:13 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/854b5d18-7a7e-419e-a0a1-55aa18dae63c-En.png?9/25/2026 2:43:12 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/870359d3-8384-470c-b5c1-3d0cb9009041.jpg?3/28/2024 4:28:23 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8724a2ad-429b-4596-8e3d-6e1321ac6f0f.jpg?2/11/2025 7:07:28 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/877ba4a6-68ea-4c12-acdb-4aa8427909c7.jpg?3/1/2024 8:13:46 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/89a9ec57-422c-4370-af7e-c99a592b72c3.jpg?3/28/2024 4:29:44 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8b86e393-ace4-436f-ac27-e3555f84990c-En.png?9/25/2026 2:37:53 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8bb476ef-f5a7-4bfa-883d-740e653d9d7c.jpg?11/5/2024 6:23:39 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/90214aac-3b1f-4fdf-be8e-936a5b1da58e.jpg?3/1/2024 8:21:54 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/907d3e0a-ac56-4bad-8ef9-e9edbe49c790.jpg?1/27/2025 7:06:12 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/931f2836-79ee-4040-a219-bbfa50ffef41.jpg?3/1/2024 8:09:15 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/94dfdcf3-a89f-4de2-ac92-475eb1d4e233-En.jpeg?4/17/2026 11:28:56 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/967d21ce-8338-4749-bcc7-10ee9b29d3cb-En.jpeg?4/17/2026 10:51:24 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/97d8060a-ec59-47f9-9031-b8b6bd436ef0.jpg?1/27/2025 7:26:47 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9add2763-c191-41d1-8546-0b7a856f226b-En.jpeg?4/17/2026 10:50:54 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9d6be463-fd50-4db2-951e-054f4eb87afd-En.jpeg?4/22/2026 1:41:45 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9df117f3-8c83-49e1-8848-17331a7e8e56.jpg?3/28/2024 4:34:07 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/9e1f5cdf-f430-4185-b0ca-a95f652780ef-En.jpg?7/22/2025 3:47:30 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/a3115d60-67e9-408d-b701-d9c40f796b22-En.jpg?7/22/2025 3:46:17 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/a3868daf-5760-4d92-a1a1-24289b860f2a.jpg?3/1/2024 8:13:36 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/a6cd58fa-928e-4197-b5f4-154accca4de5.jpg?1/27/2025 7:20:24 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/aac32e47-256f-4b7c-b034-32ad758163c2.jpg?1/27/2025 7:15:49 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/ab3be02d-e271-4519-a84b-79458d9e1b12.jpg?3/28/2024 4:27:20 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/ad48b8e9-1a2a-4465-8947-fa13dd4bda7d.jpg?1/27/2025 7:23:41 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/adde7f88-7160-4d42-af51-3835ed7378e2.jpg?1/27/2025 6:59:35 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/aec92f12-91c4-4789-bd3c-990af3a2c367.jpg?2/11/2025 7:09:45 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b17fec29-ed9f-499c-9492-433306e5f86a-En.png?8/17/2026 1:05:22 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b18c698c-d954-436e-a1a2-361248df6935.jpg?1/27/2025 7:04:06 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b307c5c0-69d1-428a-a5fb-ef0c4ec305e4.jpg?3/1/2024 8:21:37 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b34cc755-6b05-47c4-ba75-c64afc43f108.jpg?1/27/2025 6:59:17 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b3aeb946-6703-460a-b59b-ab7d588ccd0c.jpg?1/27/2025 7:24:01 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b51f38ba-b0e4-431f-9be6-3eddf4eeb444.jpg?1/27/2025 7:06:22 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b6317e6d-df8c-48fc-ab39-b24fed3c5ba9.jpg?3/28/2024 4:26:44 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b815b423-7130-4cc4-8133-93f71b6f9ed8-En.png?6/7/2026 3:26:15 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b8d04614-b216-4635-baae-71de3d3cf773.jpg?1/27/2025 7:23:48 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/b903d90f-6267-43cc-b515-74bc47168f3b.jpg?2/29/2024 12:56:54 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/bac0d796-8e8c-41b3-b347-b7b651173bfe.jpg?1/27/2025 7:06:29 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/be0fddb3-688d-4e61-820d-f5e61abdb657.jpg?1/27/2025 6:59:45 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/c4fe5928-b23c-42c2-86e4-6df16dbf54d9.jpg?1/27/2025 7:01:33 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/c5d3d745-7cc7-408f-8232-a0ff8f20120b.jpg?2/11/2025 9:40:09 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/c6472db0-4088-40e4-95e2-51289740fcfd.jpg?1/27/2025 7:00:01 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/cbd590bc-f160-4ed5-af5d-302bb39eb058.jpg?1/27/2025 7:01:14 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/cc6d0fc9-8ae6-4c1d-9b9c-74b374484500.jpg?1/27/2025 7:00:36 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/ccc9ead4-384f-4b39-a12f-15ade10bb80f.jpg?1/27/2025 7:21:43 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/ce2ec8b3-4a71-4890-b432-df8c57a2ebb9.jpg?2/6/2024 7:19:28 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/ce38efde-6957-45f4-8f66-a53e2fa02f90.jpg?1/27/2025 7:16:04 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/ceb6306f-74e6-411d-bb89-788a7ed06fe8.jpg?1/27/2025 7:09:18 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/cf91889c-ecc5-4938-b241-186a5899e308-En.png?8/17/2026 1:19:54 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/cfc1a944-3823-4135-a9fd-c41426f6aea3.jpg?3/28/2024 4:33:25 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d170e4bd-b6b9-4f7e-84e3-67ba126d42d6.jpg?3/28/2024 4:35:59 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d25667a3-be20-4384-844b-bc2f3cfc7b45-En.png?9/23/2026 1:59:23 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d28c0f6a-a6e6-46bd-a740-320ed51094aa.jpg?1/27/2025 7:26:53 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d30238e1-0387-4b42-91d0-708f723edc1d.jpg?3/1/2024 8:17:09 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d32839d3-7ff5-4935-bb51-1dc53c0db864.jpg?1/27/2025 7:08:48 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d415c142-5c08-4547-9b6e-d0dbc37d030a-En.jpeg?5/23/2026 5:46:50 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d5723f40-8d4a-4572-bd24-de88d03e69db-En.jpeg?4/17/2026 11:29:37 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d66aa63e-251a-48a4-89d5-8524de886dd4.jpg?4/7/2024 12:58:39 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d803f3ca-b209-47e9-831d-8137938a86ff.jpg?1/27/2025 7:01:24 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d9170e02-8425-472c-b1be-661513f9e355.jpg?1/27/2025 7:27:09 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d95695b2-cce8-4287-a80c-30ae2b3afe6e.jpg?1/9/2024 5:34:58 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/da83508e-e153-419c-b584-23fda8806c2a.jpg?1/27/2025 7:08:35 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/dbe86a99-1b38-4f34-8378-8bba33460af1.jpg?3/28/2024 4:32:27 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/dbfec41e-63a6-4845-980c-97c68e639edd.jpg?3/28/2024 4:33:55 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/de5acc8e-137d-4efd-b517-a4e62eb66514-En.jpg?12/31/2025 7:50:12 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/df5ed810-3036-430b-9baa-778500f41ae4.jpg?5/14/2024 7:08:39 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/e331b8f7-3bd5-4a73-9b94-9c7476b6cd63.jpg?1/27/2025 7:28:05 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/e4e27b58-8015-44c9-8778-ba9af5bc3153.jpg?3/28/2024 4:32:46 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/e77935b8-dfac-4c9a-b63f-0962561d97b1.jpg?1/27/2025 7:15:15 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/e81190a6-94b0-497e-b515-eadb6b2ada45.jpg?1/27/2025 7:00:18 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/e927c5f2-7a84-4833-a97f-b555e607e673.jpg?1/27/2025 7:27:57 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f07f6b98-d22c-4c26-8ca2-5879f67ba436.jpg?2/6/2024 7:22:57 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f0c6953f-8e0e-4fb1-85c9-e0b15d046ab8.jpg?11/22/2024 2:42:43 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f14a2ff3-8671-4d27-8f6d-d93e5326c421.jpg?3/1/2024 8:22:45 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f170e555-6b54-40d4-8996-b3a3404b19eb.jpg?3/1/2024 8:20:24 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f2385b21-8d8c-4b90-ae79-0d9bc56e606d.jpg?1/27/2025 7:20:02 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f371c517-56a2-4d33-a829-a5946b3a3f30-En.jpg?12/2/2025 7:13:31 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f3cf2726-6604-480c-a0c7-a643edd78705-En.png?5/23/2026 5:45:05 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f5d946a4-6e8a-410a-a133-40566af3aa73.jpg?12/5/2024 12:37:34 AM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f803ffa2-554d-4d56-bbcf-ca9ae3cd81d3.jpg?1/27/2025 7:20:43 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f9112640-efbf-4333-b464-444e4ca6f3fb.jpg?1/27/2025 7:20:07 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f961dabb-95d2-4aad-ae9b-5ed98eed5284.jpg?3/1/2024 8:23:09 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fb257047-3b0a-4226-a2f6-513ec20f829d-En.jpg?12/2/2025 7:59:02 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fc06c711-33c8-4b76-85bc-ff64a4a81d12.jpg?2/21/2024 2:34:51 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fc718769-e283-4e51-8f9f-d1c954439577-En.png?8/19/2026 4:13:43 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fe1c7476-6277-4d8a-ac2b-1b8ba1f7ae4b.jpg?1/9/2024 5:41:58 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/fe99268c-13ae-4d69-8c44-402e349e3012-En.jpg?9/12/2025 5:17:46 PM",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_12_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_168_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_16_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_170_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_173_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_184_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_18_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_197_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_1_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_205_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_29_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_2_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_30_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_33_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_394_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_397_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_398_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_3_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_412_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_414_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_419_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_41_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_42_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/OnlineOrdering/_4_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/SensoCafe/ooapplandingpage.jpg"
+    ]
+  },
+  "errors": [],
+  "counts": {
+    "responses": 10,
+    "decoded": 2,
+    "screenshots": 6,
+    "html": 1,
+    "imageUrls": 179,
+    "skipped": 0,
+    "redactions": 2,
+    "errors": 0,
+    "removed": 3
+  },
+  "removed": [
+    {
+      "path": "responses/004-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-02b88e71-2d3b-11ed-80d2-12f602b54861_datacategory-0_ispreview-false.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=02b88e71-2d3b-11ed-80d2-12f602b54861&dataCategory=0&isPreview=false",
+      "bytes": 3859,
+      "sha256": "2291014414b87df0dec50da68d2ac5e556753ad096fda26d0a7815e474019c04",
+      "reason": "location configuration payload (contact details, hardware addresses, tax, payment and delivery settings): not menu content",
+      "removedAt": "2026-10-07T05:41:39.866Z"
+    },
+    {
+      "path": "decoded/004-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-02b88e71-2d3b-11ed-80d2-12f602b54861_datacategory-0_ispreview-false.decoded.json",
+      "type": "decoded",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=02b88e71-2d3b-11ed-80d2-12f602b54861&dataCategory=0&isPreview=false",
+      "bytes": 13474,
+      "sha256": "7d8b94abee85bbe540b2fd058b4d86c29acca7998e4e8c7658e4f7f533325457",
+      "reason": "location configuration payload (contact details, hardware addresses, tax, payment and delivery settings): not menu content",
+      "removedAt": "2026-10-07T05:41:39.866Z"
+    },
+    {
+      "path": "responses/006-prod1-api-mymealsy-com-online-ordering-api-v1-businessaccounts-02b2d7b9-2d3b-11ed-80d2-12f602b54861_businesslocationid-02b88e71-2d3b-11ed-80d2-12f602b54861_orderchannel-3.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/BusinessAccounts/02b2d7b9-2d3b-11ed-80d2-12f602b54861?businessLocationId=02b88e71-2d3b-11ed-80d2-12f602b54861&orderChannel=3",
+      "bytes": 8150,
+      "sha256": "4bd5a213477a2161cfb1f86c6b613271db1353731403d80742642b7f992dab0a",
+      "reason": "account settings and contact details: not menu content",
+      "removedAt": "2026-10-07T05:41:39.866Z"
+    }
+  ],
+  "purgedAt": "2026-10-07T05:41:39.866Z"
+}

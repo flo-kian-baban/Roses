@@ -1,0 +1,760 @@
+{
+  "source": {
+    "n": 3,
+    "slug": "mealsy-roses-kabab-land",
+    "kind": "mealsy",
+    "url": "https://onlineordering.mealsy.ca/en/#/Roses-Kabab-Land/online/menus",
+    "label": "Mealsy - Roses Kabab Land"
+  },
+  "capturedAt": "2026-10-07T04:58:27.790Z",
+  "tool": {
+    "playwright": "1.63.0",
+    "browser": "153.0.8010.12"
+  },
+  "device": {
+    "name": "iPhone 13 (Chromium)",
+    "viewport": {
+      "width": 390,
+      "height": 664
+    },
+    "deviceScaleFactor": 2,
+    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Mobile/15E148 Safari/604.1",
+    "isMobile": true,
+    "hasTouch": true
+  },
+  "captureLimits": "read-only: no login, no form submission, no add-to-cart, no orders, no personal data entered; request headers, cookies and tokens never saved",
+  "files": [
+    {
+      "path": "responses/001-maps-googleapis-com-maps-api-mapsjs-gen_204_csp_test-true.json",
+      "type": "response",
+      "url": "https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "resourceType": "xhr",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/002-prod1-api-mymealsy-com-online-ordering-api-v1-businessaccounts_xrefcode-roses-kabab-land_clientnamespace.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/BusinessAccounts?xRefCode=Roses-Kabab-Land&clientNamespace=",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "resourceType": "xhr",
+      "bytes": 247,
+      "sha256": "eb79f9e51c1f080a044b108127bba30e2df1c8dc5199f3a938516e99427ebf78",
+      "savedUnmodified": false,
+      "removedKeys": [
+        "AcceptDelivery",
+        "AcceptPickup",
+        "AccountSetting",
+        "EnableRedeemItemPoints",
+        "ApplicationContents"
+      ],
+      "note": "account lookup reduced to BusinessAccountId, BusinessLocationId, BusinessAccountName, ClientNamespace, SupportedLanguages, PrimaryLanguageId; account settings and contact details removed"
+    },
+    {
+      "path": "responses/004-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-d8d86d66-6693-426e-9429-19ff9e6008f0_datacategory-2_ispreview-false.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=d8d86d66-6693-426e-9429-19ff9e6008f0&dataCategory=2&isPreview=false",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "resourceType": "xhr",
+      "bytes": 14895,
+      "sha256": "64c2a407cdfddb81c9b32475cfc7665ee63f23c50042be2f979749307e086543",
+      "savedUnmodified": true
+    },
+    {
+      "path": "decoded/004-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-d8d86d66-6693-426e-9429-19ff9e6008f0_datacategory-2_ispreview-false.decoded.json",
+      "type": "decoded",
+      "derivedFrom": "responses/004-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-d8d86d66-6693-426e-9429-19ff9e6008f0_datacategory-2_ispreview-false.json",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=d8d86d66-6693-426e-9429-19ff9e6008f0&dataCategory=2&isPreview=false",
+      "note": "gunzip(base64(Data)) of the response envelope; derived copy, not raw",
+      "bytes": 50976,
+      "sha256": "b5dd1037b22d7eb1b10295743c798234192dec3aa02d72ad314818a12aea434b"
+    },
+    {
+      "path": "responses/005-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-d8d86d66-6693-426e-9429-19ff9e6008f0_datacategory-1_ispreview-false.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=d8d86d66-6693-426e-9429-19ff9e6008f0&dataCategory=1&isPreview=false",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "resourceType": "xhr",
+      "bytes": 29851,
+      "sha256": "37edbbaf22204413a699be2acffbf403c6e4a1125ea9fc37c3404ce5bbc941b9",
+      "savedUnmodified": true
+    },
+    {
+      "path": "decoded/005-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-d8d86d66-6693-426e-9429-19ff9e6008f0_datacategory-1_ispreview-false.decoded.json",
+      "type": "decoded",
+      "derivedFrom": "responses/005-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-d8d86d66-6693-426e-9429-19ff9e6008f0_datacategory-1_ispreview-false.json",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=d8d86d66-6693-426e-9429-19ff9e6008f0&dataCategory=1&isPreview=false",
+      "note": "gunzip(base64(Data)) of the response envelope; derived copy, not raw",
+      "bytes": 400434,
+      "sha256": "a9ecef99a3401e45e7a39af0bc75e946376670bcb6a0c30e46f42f22e2f4ecfe"
+    },
+    {
+      "path": "responses/007-play-google-com-log_format-json_hasfast-true_authuser-0.json",
+      "type": "response",
+      "url": "https://play.google.com/log?format=json&hasfast=true&authuser=0",
+      "method": "POST",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "resourceType": "fetch",
+      "bytes": 131,
+      "sha256": "502e9680cfa78fa8be779cbf4f1947c8eaa3d43bf8c7464800ec772b2ddea358",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/008-play-google-com-log_format-json_hasfast-true_authuser-0.json",
+      "type": "response",
+      "url": "https://play.google.com/log?format=json&hasfast=true&authuser=0",
+      "method": "POST",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "resourceType": "fetch",
+      "bytes": 131,
+      "sha256": "502e9680cfa78fa8be779cbf4f1947c8eaa3d43bf8c7464800ec772b2ddea358",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/009-play-google-com-log_format-json_hasfast-true_authuser-0.json",
+      "type": "response",
+      "url": "https://play.google.com/log?format=json&hasfast=true&authuser=0",
+      "method": "POST",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "resourceType": "fetch",
+      "bytes": 131,
+      "sha256": "502e9680cfa78fa8be779cbf4f1947c8eaa3d43bf8c7464800ec772b2ddea358",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/010-play-google-com-log_format-json_hasfast-true_authuser-0.json",
+      "type": "response",
+      "url": "https://play.google.com/log?format=json&hasfast=true&authuser=0",
+      "method": "POST",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "resourceType": "fetch",
+      "bytes": 131,
+      "sha256": "502e9680cfa78fa8be779cbf4f1947c8eaa3d43bf8c7464800ec772b2ddea358",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/011-play-google-com-log_format-json_hasfast-true_authuser-0.json",
+      "type": "response",
+      "url": "https://play.google.com/log?format=json&hasfast=true&authuser=0",
+      "method": "POST",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "resourceType": "fetch",
+      "bytes": 131,
+      "sha256": "502e9680cfa78fa8be779cbf4f1947c8eaa3d43bf8c7464800ec772b2ddea358",
+      "savedUnmodified": true
+    },
+    {
+      "path": "responses/013-prod1-api-mymealsy-com-online-ordering-api-v1-applicationcontents-contents_businessaccountid-ad972679-519d-4ae4-9b38-e757c325fecf.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/ApplicationContents/Contents?businessAccountId=ad972679-519d-4ae4-9b38-e757c325fecf",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "resourceType": "xhr",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "savedUnmodified": true
+    },
+    {
+      "path": "screenshots/01-landing-viewport.png",
+      "type": "screenshot",
+      "url": "https://onlineordering.mealsy.ca/en/#/Roses-Kabab-Land/online/menus",
+      "note": "landing view as first rendered (viewport)",
+      "bytes": 219133,
+      "sha256": "1c78cb7624b7e07da765e167e7865c264800c4c49a67a1e95b029d6765e08e14"
+    },
+    {
+      "path": "screenshots/02-category-main-dishes.png",
+      "type": "screenshot",
+      "url": "https://onlineordering.mealsy.ca/en/#/Roses-Kabab-Land/online/menus",
+      "note": "category \"Main Dishes\" scrolled into view (viewport)",
+      "bytes": 405175,
+      "sha256": "51028284c16b29bb2cc160e529f66af534f5332bfe8e26b0fc773404056efdc2"
+    },
+    {
+      "path": "screenshots/03-item-detail.jpg",
+      "type": "screenshot",
+      "url": "https://onlineordering.mealsy.ca/en/#/Roses-Kabab-Land/online/menus",
+      "note": "first item detail dialog open (nothing added to cart)",
+      "bytes": 75797,
+      "sha256": "65ffff741163c70f945dbaad61e57146f2d7765e00ae14b2eb3466973ee71ce9"
+    },
+    {
+      "path": "screenshots/04-landing-fullpage.jpg",
+      "type": "screenshot",
+      "url": "https://onlineordering.mealsy.ca/en/#/Roses-Kabab-Land/online/menus",
+      "note": "whole menu, inner scroll container expanded so every category and item is in one page",
+      "bytes": 644303,
+      "sha256": "1fe225e4ea672f15010c0159a2a63f0da64190943dc2661a521340305d0be201"
+    },
+    {
+      "path": "html/index.html",
+      "type": "html",
+      "url": "https://onlineordering.mealsy.ca/en/#/Roses-Kabab-Land/online/menus",
+      "note": "rendered DOM after scrolling every category (inner scroll container expanded)",
+      "bytes": 163191,
+      "sha256": "7d86eeed1eec44aef8e13fb1daae44c89d22af1e64ece4f2b8cc2d17fb0eeba2",
+      "savedUnmodified": false,
+      "redactedQueryValues": 1
+    }
+  ],
+  "skipped": [],
+  "redactions": [
+    {
+      "file": "html/index.html",
+      "note": "1 credential-like query value(s) in embedded URLs replaced with [REDACTED]"
+    },
+    {
+      "file": "responses/002-prod1-api-mymealsy-com-online-ordering-api-v1-businessaccounts_xrefcode-roses-kabab-land_clientnamespace.json",
+      "note": "removed 5 top-level keys (account settings and contact details); kept BusinessAccountId, BusinessLocationId, BusinessAccountName, ClientNamespace, SupportedLanguages, PrimaryLanguageId",
+      "removedKeys": [
+        "AcceptDelivery",
+        "AcceptPickup",
+        "AccountSetting",
+        "EnableRedeemItemPoints",
+        "ApplicationContents"
+      ],
+      "at": "2026-10-07T05:41:39.866Z"
+    }
+  ],
+  "observed": {
+    "loadMs": 3183,
+    "pageTitle": "Roses Kabab Land | Menu",
+    "scrolledCategories": [
+      "Appetizers",
+      "Main Dishes",
+      "Platters",
+      "Single Kebab",
+      "Beverages"
+    ],
+    "scrollContainer": {
+      "className": "menu-page-container",
+      "scrollHeight": 6141
+    },
+    "categoryNav": [
+      "Appetizers",
+      "Main Dishes",
+      "Platters",
+      "Single Kebab",
+      "Beverages"
+    ],
+    "sections": [
+      {
+        "domId": "menuSection741a0af7-bb58-42ba-90b9-b1df69676053",
+        "title": "Appetizers",
+        "description": "",
+        "items": [
+          {
+            "name": "Maast-o-Mousir",
+            "price": "$6.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_4_600X400.jpg"
+          },
+          {
+            "name": "Garden Salad",
+            "price": "$7.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_2_600X400.jpg"
+          },
+          {
+            "name": "Zeitoon Parvardeh",
+            "price": "$7.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_3_600X400.jpg"
+          }
+        ]
+      },
+      {
+        "domId": "menuSectionfb11a8dd-1c43-46ae-82cd-968522cd9171",
+        "title": "Main Dishes",
+        "description": "",
+        "items": [
+          {
+            "name": "Koobideh Kebab",
+            "price": "$20.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_22_600X400.jpg"
+          },
+          {
+            "name": "Shishlik Kebab",
+            "price": "$36.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_6_600X400.jpg"
+          },
+          {
+            "name": "Soltani Kebab",
+            "price": "$38.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_8_600X400.jpg"
+          },
+          {
+            "name": "Chenjeh Kebab",
+            "price": "$28.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_9_600X400.jpg"
+          },
+          {
+            "name": "Bakhtiari Kebab",
+            "price": "$29.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_10_600X400.jpg"
+          },
+          {
+            "name": "Barg Kebab",
+            "price": "$32.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_11_600X400.jpg"
+          },
+          {
+            "name": "Roses Special Koobideh",
+            "price": "$25.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_21_600X400.jpg"
+          },
+          {
+            "name": "Salari Kebab",
+            "price": "$28.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_13_600X400.jpg"
+          },
+          {
+            "name": "Vaziri Kebab",
+            "price": "$28.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_14_600X400.jpg"
+          },
+          {
+            "name": "Torsh Kebab",
+            "price": "$33.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_15_600X400.jpg"
+          },
+          {
+            "name": "Mozafari Kebab",
+            "price": "$34.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_16_600X400.jpg"
+          },
+          {
+            "name": "Shekari Kebab",
+            "price": "$24.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_17_600X400.jpg"
+          },
+          {
+            "name": "Chicken Breast Kebab",
+            "price": "$23.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_18_600X400.jpg"
+          },
+          {
+            "name": "Chicken Leg Kebab",
+            "price": "$23.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_19_600X400.jpg"
+          },
+          {
+            "name": "Darbari Chicken Kebab",
+            "price": "$27.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_20_600X400.jpg"
+          },
+          {
+            "name": "Akbar Joojeh",
+            "price": "$22.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_25_600X400.jpg"
+          },
+          {
+            "name": "Marinated Fried Fish",
+            "price": "$39.99",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Lamb Shank (Mahicheh)",
+            "price": "$22.99",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Fesenjani Chicken Kebab",
+            "price": "$25.99",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Avocado chicken  Kebab",
+            "price": "$25.99",
+            "description": null,
+            "imgSrc": null
+          }
+        ]
+      },
+      {
+        "domId": "menuSection5a82055a-748d-4458-a769-f268d9024161",
+        "title": "Platters",
+        "description": "",
+        "items": [
+          {
+            "name": "Platter 1",
+            "price": "$61.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_34_600X400.jpg"
+          },
+          {
+            "name": "Platter 2",
+            "price": "$69.99",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_35_600X400.jpg"
+          },
+          {
+            "name": "Platter 3",
+            "price": "$119.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Chicken Platter",
+            "price": "$109.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Meat Platter",
+            "price": "$120.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Special Platter",
+            "price": "$48.99",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Kaseh Kebab",
+            "price": "$59.99",
+            "description": null,
+            "imgSrc": null
+          }
+        ]
+      },
+      {
+        "domId": "menuSection9bac68bb-d3fe-464d-8af3-56e4cb84e794",
+        "title": "Single Kebab",
+        "description": "",
+        "items": [
+          {
+            "name": "Skewer Koobideh",
+            "price": "$9.99",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Chicken Breast",
+            "price": "$22.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Chicken Leg",
+            "price": "$22.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Torsh",
+            "price": "$32.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Barg",
+            "price": "$32.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Shishlik",
+            "price": "$36.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Darbari",
+            "price": "$24.99",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Shekari",
+            "price": "$23.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Roses Koobideh",
+            "price": "$12.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Chenjeh",
+            "price": "$26.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Avocado Chciken Joojeh",
+            "price": "$20.99",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Fesenjani chicken Joojeh",
+            "price": "$19.99",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Bakhtiari",
+            "price": "$22.99",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Skewer Tomato",
+            "price": "$5.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Single Tomato",
+            "price": "$0.60",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Rice",
+            "price": "$3.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Chili Pepper skewer",
+            "price": "$5.00",
+            "description": null,
+            "imgSrc": null
+          }
+        ]
+      },
+      {
+        "domId": "menuSection6389129c-5f73-41d5-940e-e5de36d776df",
+        "title": "Beverages",
+        "description": "",
+        "items": [
+          {
+            "name": "Walnut Doogh",
+            "price": "$9.99",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Mousir Doogh",
+            "price": "$9.99",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Coke",
+            "price": "$2.50",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_39_600X400.jpg"
+          },
+          {
+            "name": "Diet Coke",
+            "price": "$2.50",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_40_600X400.jpg"
+          },
+          {
+            "name": "Canada Dry",
+            "price": "$2.50",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand/OnlineOrdering/_47_600X400.jpg"
+          },
+          {
+            "name": "Sprite",
+            "price": "$2.50",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand/OnlineOrdering/_46_600X400.jpg"
+          },
+          {
+            "name": "Bottled Water",
+            "price": "$2.00",
+            "description": null,
+            "imgSrc": null
+          },
+          {
+            "name": "Istak",
+            "price": "$3.49",
+            "description": null,
+            "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand/OnlineOrdering/_48_600X400.jpg"
+          }
+        ]
+      }
+    ],
+    "restaurant": {
+      "name": "Kabab Land - 9108",
+      "address": "9108 Yonge Street, Richmond Hill, Ontario L4C 6Z9"
+    },
+    "itemCountOnScreen": 55,
+    "itemDetail": {
+      "text": "Maast-o-Mousir $6.99 This item is not available to order at the selected time, please schedule your order for another time. Please enter a scheduled time Back to menu",
+      "imgSrc": "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_4_600X400.jpg"
+    },
+    "finalUrl": "https://onlineordering.mealsy.ca/en/#/Roses-Kabab-Land/online/menus"
+  },
+  "imageUrls": {
+    "note": "URLs only; no image was downloaded by this tool. Browser rendering of the page is the only image traffic.",
+    "uniqueTotal": 55,
+    "fromDom": [
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_10_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_11_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_13_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_14_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_15_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_16_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_17_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_18_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_19_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_20_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_21_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_22_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_25_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_2_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_34_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_35_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_39_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_3_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_40_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_4_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_6_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_8_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand /OnlineOrdering/_9_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/OnlineOrdering/_46_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/OnlineOrdering/_47_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/OnlineOrdering/_48_600X400.jpg"
+    ],
+    "fromResponses": [
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/0d50e572-1d5b-4c29-9961-35f6063e7e99.jpg?1/27/2025 8:27:30 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/0fd5a4da-d7ab-42e6-b9e2-a0b9aa00ce29-En.jpeg?4/16/2026 11:30:31 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/179a474d-e033-4fd6-836b-a85fe5c8616f.jpg?1/27/2025 8:29:32 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/1d8691fb-a3e9-45f4-a032-27c4af7489dc.jpg?1/27/2025 8:30:03 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/1d8ce121-976b-499c-b99c-a2525232bdef.jpg?1/27/2025 8:31:31 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/214fc909-6d1a-4ecd-a096-24f351d7a252.jpg?1/27/2025 8:17:20 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/3133a5aa-4dda-43e8-8a0f-6f8bf75bdd20.jpg?1/27/2025 8:29:47 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/3e1b9ad0-58a1-49bf-af9a-9a884e23275c.jpg?1/27/2025 8:17:13 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/40600101-3a38-477b-8aff-8c570fc1fa13.jpg?1/27/2025 8:31:45 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/6046bff7-be70-4064-8ae8-2b5208e866eb.jpg?1/27/2025 8:28:44 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/71665d91-8638-4e52-b590-846f762a7171.jpg?1/27/2025 8:31:23 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/7683281d-da91-4eb3-9080-c0c8560a4b53-En.png?4/16/2026 11:25:06 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/799d1efb-0223-4fe9-8d62-ce5e81120930.jpg?1/27/2025 8:31:14 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/7da009d8-8859-4ad2-a9a0-f6925c70d851.jpg?1/27/2025 8:17:50 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/7f00ed50-d216-471e-a2b7-afef9ec39756.jpg?1/27/2025 8:30:52 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/82487e3f-f7bf-4354-9737-29ded114dd57.jpg?1/27/2025 8:17:34 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/83d27b0f-e2ca-4c37-ac61-3347aedfd6de.jpg?1/27/2025 8:27:22 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/9e617c46-fc44-45c9-918d-e76ec5f11cda-En.png?4/16/2026 11:23:40 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/a6e67228-f0ed-43f2-a003-75fdbb372bc4.jpg?1/27/2025 7:56:45 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/b66d2606-b8f2-4662-9751-220a837aba2a-En.jpeg?4/16/2026 11:08:40 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/b73f679d-ab4f-4965-a67e-40512b95c464.jpg?1/27/2025 8:31:00 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/c6226343-a290-41e2-ab87-5eceb21cc0d1.jpg?1/27/2025 8:31:52 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/c98f85ab-912e-4540-9608-18f96c7bbcb8.jpg?1/27/2025 8:30:15 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/cabea09b-a3c1-4e5c-b02a-1ed726036b2d-En.jpeg?4/16/2026 11:00:29 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/d07e259f-5f8f-4949-b3dd-1a74aa76afd9.jpg?1/27/2025 8:29:55 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/d91dcae9-119b-4342-97b0-0f8a9da4c98f.jpg?1/27/2025 8:29:05 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/e9a72ac8-896e-465c-9604-2b7db7ffcd37.jpg?1/27/2025 8:28:57 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/MenuPhotos/f60bb8f4-ee26-436c-97ce-faa7c54e7ea8.jpg?1/27/2025 8:29:13 PM",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/OnlineOrdering/_46_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/OnlineOrdering/_47_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/OnlineOrdering/_48_600X400.jpg",
+      "https://mealsymedia.s3.amazonaws.com/RosesKababLand/ooapplandingpage.jpg"
+    ]
+  },
+  "errors": [],
+  "counts": {
+    "responses": 10,
+    "decoded": 2,
+    "screenshots": 4,
+    "html": 1,
+    "imageUrls": 55,
+    "skipped": 0,
+    "redactions": 2,
+    "errors": 0,
+    "removed": 5
+  },
+  "removed": [
+    {
+      "path": "responses/003-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-d8d86d66-6693-426e-9429-19ff9e6008f0_datacategory-0_ispreview-false.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=d8d86d66-6693-426e-9429-19ff9e6008f0&dataCategory=0&isPreview=false",
+      "bytes": 3947,
+      "sha256": "48ba1caeb0105784ef48cb2308e5fe89253c1f6660c82f2c7bec723f349d6945",
+      "reason": "location configuration payload (contact details, hardware addresses, tax, payment and delivery settings): not menu content",
+      "removedAt": "2026-10-07T05:41:39.866Z"
+    },
+    {
+      "path": "decoded/003-prod1-api-mymealsy-com-online-ordering-api-v1-data_businesslocationid-d8d86d66-6693-426e-9429-19ff9e6008f0_datacategory-0_ispreview-false.decoded.json",
+      "type": "decoded",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/Data?businessLocationId=d8d86d66-6693-426e-9429-19ff9e6008f0&dataCategory=0&isPreview=false",
+      "bytes": 14996,
+      "sha256": "f053b2aa48c6358d4b0cc6b9c1ece936da41198e4a43fb94e7f708320bdac6e8",
+      "reason": "location configuration payload (contact details, hardware addresses, tax, payment and delivery settings): not menu content",
+      "removedAt": "2026-10-07T05:41:39.866Z"
+    },
+    {
+      "path": "responses/006-prod1-api-mymealsy-com-online-ordering-api-v1-businessaccounts-ad972679-519d-4ae4-9b38-e757c325fecf_businesslocationid-d8d86d66-6693-426e-9429-19ff9e6008f0_orderchannel-3.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/BusinessAccounts/ad972679-519d-4ae4-9b38-e757c325fecf?businessLocationId=d8d86d66-6693-426e-9429-19ff9e6008f0&orderChannel=3",
+      "bytes": 9119,
+      "sha256": "41ecc8499c6171fcf9b0b237255abcf729bdee4a5fb6ee8ed7c458c8c3e444c1",
+      "reason": "account settings and contact details: not menu content",
+      "removedAt": "2026-10-07T05:41:39.866Z"
+    },
+    {
+      "path": "responses/012-prod1-api-mymealsy-com-online-ordering-api-v1-onlineorderinghours_businessaccountid-ad972679-519d-4ae4-9b38-e757c325fecf_businesslocationid-d8d86d66-6693-426e-9429-19ff9e.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/OnlineOrderingHours?businessAccountId=ad972679-519d-4ae4-9b38-e757c325fecf&businessLocationId=d8d86d66-6693-426e-9429-19ff9e6008f0&&fromCache=true",
+      "bytes": 2290,
+      "sha256": "d61da72cf42bca4c86d80dde4690eb0e6f3f1c85ba33174282d7c1cd64f909d1",
+      "reason": "ordering hours: account setting, not menu content",
+      "removedAt": "2026-10-07T05:41:39.866Z"
+    },
+    {
+      "path": "responses/014-prod1-api-mymealsy-com-online-ordering-api-v1-orders-promisetime_businessaccountid-ad972679-519d-4ae4-9b38-e757c325fecf_businesslocationid-d8d86d66-6693-426e-9429-19ff9e6.json",
+      "type": "response",
+      "url": "https://prod1.api.mymealsy.com/online-ordering/api/v1/orders/PromiseTime?businessAccountId=ad972679-519d-4ae4-9b38-e757c325fecf&businessLocationId=d8d86d66-6693-426e-9429-19ff9e6008f0",
+      "bytes": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "reason": "ordering configuration: not menu content",
+      "removedAt": "2026-10-07T05:41:39.866Z"
+    }
+  ],
+  "purgedAt": "2026-10-07T05:41:39.866Z"
+}

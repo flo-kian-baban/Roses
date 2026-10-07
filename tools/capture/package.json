@@ -1,0 +1,13 @@
+{
+  "name": "roses-capture",
+  "private": true,
+  "type": "module",
+  "description": "Read-only discovery capture of the Roses Kebab Land and Senso Cafe menu sources",
+  "scripts": {
+    "capture": "node capture.mjs",
+    "analyze": "node analyze.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.47.0"
+  }
+}

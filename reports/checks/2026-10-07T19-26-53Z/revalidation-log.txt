@@ -1,0 +1,8 @@
+2026-10-07T19:28:50.942Z +   27ms public page shows Turkish Coffee at $6.59 before the edit (database: $6.59)
+2026-10-07T19:28:51.304Z +  389ms admin signed in on the iPhone viewport
+2026-10-07T19:28:51.366Z +  451ms tapping Save with price $8.09 (was $6.59)
+2026-10-07T19:28:51.478Z +  563ms admin redirected back with saved=1 (112 ms after the tap)
+2026-10-07T19:28:51.484Z +  569ms poll 1: public page shows $8.09
+2026-10-07T19:28:51.484Z +  569ms new price visible on the public page 118 ms after Save → PASS (≤ 10 s)
+2026-10-07T19:28:51.636Z +  721ms restored from history; public page shows $6.59 again 126 ms after the tap (1 polls)
+2026-10-07T19:28:51.639Z +  724ms last two revision rows: [{"action":"restore","before_price":"8.09","after_price":"6.59","by":"Check suite"},{"action":"update","before_price":"6.59","after_price":"8.09","by":"Check suite"}]

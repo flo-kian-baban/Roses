@@ -12,6 +12,8 @@ import { SensoPage } from '@/venues/senso';
 // (`runtime` is listed only because Next 16's type validator rejects a config object without one of its known keys).
 export const config = { unstable_runtimeJS: false, runtime: 'nodejs' };
 
+// Public kit fonts (Kian, 2026-10-07): the system sans on every device; the recorded brand fonts stay in the data.
+const SYSTEM = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 const VENUE = 'senso';
 type Props = { venue: Venue; sections: Section[] };
 
@@ -26,7 +28,7 @@ export default function Senso({ venue, sections }: Props) {
   const c = venue.brand.colors ?? {};
   const f = venue.brand.fonts ?? { heading: 'serif', body: 'system-ui', persian: 'system-ui' };
   // White kit for now (Kian, 2026-10-07): the recorded brand background and text colours stay in the data; accent and fonts come from it.
-  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${c.accent ?? '#042c7c'};--brand-muted:#6e6e73;--font-heading:${f.heading};--font-body:${f.body};--font-persian:${f.persian}}`;
+  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${c.accent ?? '#042c7c'};--brand-muted:#6e6e73;--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:${f.persian}}`;
   return (
     <>
       <Head>
@@ -40,9 +42,7 @@ export default function Senso({ venue, sections }: Props) {
       {/* In the body so it follows the global stylesheet in cascade order and wins over its :root defaults. */}
       <style dangerouslySetInnerHTML={{ __html: vars }} />
       <Intro venueId={venue.id} logo={venue.brand.logo} alt={venue.name.en ?? ''} />
-      <main>
-        <SensoPage venue={venue} sections={sections} />
-      </main>
+      <SensoPage venue={venue} sections={sections} />
     </>
   );
 }

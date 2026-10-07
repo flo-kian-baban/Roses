@@ -70,7 +70,8 @@ If you see a material problem with this stack for these requirements, raise it u
 ## Decisions after the admin rebuild (Kian, 2026-10-07, later the same day)
 
 - The admin was rebuilt as a phone-first, white Apple-style kit (pure white surfaces, neutral greys, hairlines, pill buttons, frosted bars); no client JavaScript, same forms and API.
-- The public pages use the same white kit for now: white background, dark text, neutral greys. Each venue keeps its own template, fonts, accent and logo (Kebab Land's white logo sits on its dark tile). The recorded brand colours stay unchanged in the data; the per-venue redesign after the MVP still stands.
+- The public pages use the same white kit for now: white background, dark text, neutral greys. Each venue keeps its own template, accent and logo (Kebab Land's white logo sits on its dark tile). The recorded brand colours stay unchanged in the data; the per-venue redesign after the MVP still stands.
+- Public pages redesigned Uber Eats-style (Kian, same day, with reference screenshots): sticky category tabs whose underline follows the scroll, full-width item rows with a square photo, and a tap-to-open item sheet with a hero photo, sizes, options and combo parts. Display only (no cart, ratings or "+"). Built as one shared menu kit (`src/components/menu-kit.tsx`: tabs, rows, sheets, one inline script) that both venue templates compose with their own header, accent and footer; the system sans font on both pages. Trade-off noted for the PM: the two pages now share structure and differ by logo, accent and header; the recorded brand fonts are not used for now.
 
 ## Milestone 1 rules (Kian and the PM, 2026-10-07)
 

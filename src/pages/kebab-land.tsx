@@ -10,6 +10,8 @@ import { KebabLandPage } from '@/venues/kebab-land';
 // the language toggle and the intro logic. Pre-rendered at build time, plain HTML, no framework JavaScript.
 export const config = { unstable_runtimeJS: false, runtime: 'nodejs' };
 
+// Public kit fonts (Kian, 2026-10-07): the system sans on every device; the recorded brand fonts stay in the data.
+const SYSTEM = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 const VENUE = 'kebab-land';
 type Props = { venue: Venue; sections: Section[] };
 
@@ -25,7 +27,7 @@ export default function KebabLand({ venue, sections }: Props) {
   const f = venue.brand.fonts ?? { heading: 'serif', body: 'system-ui', persian: 'system-ui' };
   // White kit for now (Kian, 2026-10-07): the recorded colours (dark background, white text, gold prices; sources in the
   // import report) stay in the data; the red accent is used for headings and prices, the dark background only as the logo tile.
-  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${c.accent ?? '#b92e2e'};--brand-price:${c.accent ?? '#b92e2e'};--brand-muted:#6e6e73;--brand-tile:${c.background ?? '#141414'};--font-heading:${f.heading};--font-body:${f.body};--font-persian:${f.persian}}`;
+  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${c.accent ?? '#b92e2e'};--brand-price:${c.accent ?? '#b92e2e'};--brand-muted:#6e6e73;--brand-tile:${c.background ?? '#141414'};--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:${f.persian}}`;
   return (
     <>
       <Head>
@@ -39,9 +41,7 @@ export default function KebabLand({ venue, sections }: Props) {
       </Head>
       <style dangerouslySetInnerHTML={{ __html: vars }} />
       <Intro venueId={venue.id} logo={venue.brand.logo} alt={venue.name.en ?? ''} tile={c.background ?? '#141414'} />
-      <main>
-        <KebabLandPage venue={venue} sections={sections} />
-      </main>
+      <KebabLandPage venue={venue} sections={sections} />
     </>
   );
 }

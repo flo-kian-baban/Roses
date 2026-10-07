@@ -14,7 +14,7 @@ npm run start
 npm run admin:create -- --email <your email> --name "<your name>"
 ```
 
-- `npm run setup` writes `.env.local` with a random session secret, starts Postgres in Docker, applies the migrations, imports both venues from `data/raw` and makes the production build. It is safe to run again.
+- `npm run setup` writes `.env.local` with a random session secret, starts Postgres in Docker, applies the migrations, imports both venues from `data/raw`, applies the committed Persian review records (`data/import/<date>/<venue>/persian-review.json`, so Senso comes up with 0 draft flags) and makes the production build. It is safe to run again.
 - `npm run start` serves http://localhost:3000/senso, http://localhost:3000/kebab-land and http://localhost:3000/admin.
 - `npm run admin:create` asks for a password (10 characters or more) and creates the main admin account; sign in at `/admin` → "Main admin sign-in". Staff PINs are then created in Admin → PINs.
 - Development with live reload: `npm run dev` instead of `npm run start` (pages are rendered on request there, not pre-built).
@@ -54,7 +54,11 @@ npm run admin:create -- --email <your email> --name "<your name>"
 
 ## Re-import
 
-`npm run import -- senso --load` and `npm run import -- kebab-land --load` rebuild the import files from `data/raw/` and upsert rows that no person has edited yet (rows with `updated_by.kind = 'import'`). Edited rows are left alone.
+`npm run import -- senso --load` and `npm run import -- kebab-land --load` rebuild the import files from `data/raw/` and upsert rows that no person has edited yet (rows with `updated_by.kind = 'import'`). Edited rows are left alone. The import is for the first load of a venue only.
+
+## Moving to hosted Postgres (later, on Kian's decision)
+
+The hosted database is filled from the working database by dump and restore (`npm run db:backup`, then `pg_restore` into the hosted database, then equal per-table counts checked), never by re-import. Admin edits, Persian reviews and PINs made during Milestone 1 carry over unchanged.
 
 ## Go-live checklist
 
@@ -69,11 +73,11 @@ Done before anything goes public (nothing is public yet; hosting is Kian's decis
 
 ## Check suite
 
-`npm run check` runs every acceptance check in one go and writes `reports/checks/<date-time>/report.md` with the raw evidence next to it (screenshots, JSON, logs). It builds into `.next-check` so the running server and `.next` are untouched, starts two servers of its own on ports 3100 and 3101 (the second with `TRUST_PROXY=1` for the venue-cap test), creates a temporary admin account for the drills and deletes it at the end. Exit code 1 when any check fails. Run it before reporting a batch of changes done.
+`npm run check` runs every acceptance check in one go and writes `reports/checks/<date-time>/report.md` with the raw evidence next to it (screenshots, JSON, logs). It never touches the working database: it copies it with `pg_dump` into a scratch database, points the build, both servers and every drill at the copy, drops the copy at the end, and compares the working database's per-table counts and newest revision id before and after (a check of its own in the report). It builds into `.next-check` so the running server and `.next` are untouched, starts two servers of its own on ports 3100 and 3101 (the second with `TRUST_PROXY=1` for the venue-cap test), and creates a temporary admin account in the copy. Exit code 1 when any check fails. Run it before reporting a batch of changes done.
 
 Checks: public page checks for both venues (intro, repeat visit, reduced motion, Persian toggle with rtl and headings, all images loaded), brand words, photo links, Lighthouse mobile ×3 per venue on the production build, the admin drill (PIN and admin sign-in, cookie, PINs, the listing rule in the UI, the API and the database, sections, notes permissions, three edits and a restore, delete and restore, venue details), the lockout drill (5 per venue and address, 50 per hour per venue with alert and unlock, revoked PIN), the revalidation drill (save reaches the public page within 10 s) and the backup and restore drill.
 
-Needs once: `npx playwright install chromium`. Lighthouse uses Google Chrome when installed, otherwise that Chromium. Takes about 5 minutes. The drills change data only in ways they reverse themselves; the backup drill deletes one Kebab Land row by SQL and recovers it from the dump it just made (the dump stays in `backups/`).
+Needs once: `npx playwright install chromium`. Lighthouse uses Google Chrome when installed, otherwise that Chromium. Takes about three minutes. Screenshots, full Lighthouse JSON and dumps stay on disk only (gitignored); the report and the small JSON and text evidence are committed.
 
 ## Evidence scripts
 

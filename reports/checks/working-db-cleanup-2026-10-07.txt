@@ -1,0 +1,163 @@
+# Working database cleanup — 2026-10-07
+
+Backup taken first: backups/roses-20261007T163436Z.dump (94,383 bytes, gitignored, on Kian's machine).
+
+## Before
+```
+$ npm run db:backup   (before any cleanup)
+backup written: backups/roses-20261007T163436Z.dump (94383 bytes)
+tables with data in the dump: 10
+
+--- revisions by actor (kind, name): count, first..last id
+  kind  |    name     | count | min | max 
+--------+-------------+-------+-----+-----
+ review | Kian        |   180 |   1 | 180
+ pin    | Drill staff |    86 | 181 | 286
+ admin  | Check suite |    10 | 258 | 290
+ admin  | Drill Admin |     9 | 196 | 242
+ pin    | Drill owner |     5 | 195 | 281
+(5 rows)
+
+ revisions_total | newest_id 
+-----------------+-----------
+             290 |       290
+(1 row)
+
+                  id                  |    name     |          created_at           
+--------------------------------------+-------------+-------------------------------
+ f8cd6ba1-c0cd-44f8-9d5a-33f779cb096b | Drill Admin | 2026-10-07 15:31:31.243129+00
+(1 row)
+
+             name              | role  | revoked | count 
+-------------------------------+-------+---------+-------
+ Drill owner                   | owner | t       |     3
+ Drill staff                   | staff | t       |     3
+ Lockout drill (to be revoked) | staff | t       |     2
+ Lockout drill (valid PIN)     | staff | t       |     2
+(4 rows)
+
+ id |  venue_id  |    kind     | seen 
+----+------------+-------------+------
+  1 | kebab-land | lockout-cap | t
+  2 | kebab-land | lockout-cap | t
+  3 | kebab-land | lockout-cap | t
+  4 | kebab-land | lockout-cap | t
+(4 rows)
+
+ login_failures 
+----------------
+              0
+(1 row)
+
+    t     |  kind  |    name     | count 
+----------+--------+-------------+-------
+ items    | import |             |   262
+ items    | review | Kian        |   120
+ items    | pin    | Drill staff |     4
+ items    | admin  | Check suite |     1
+ sections | import |             |    30
+ sections | review | Kian        |     2
+ sections | pin    | Drill staff |     1
+ venues   | import |             |     1
+ venues   | admin  | Check suite |     1
+(9 rows)
+
+ venue_id |         item          | updated_by  | has_review_revision 
+----------+-----------------------+-------------+---------------------
+ senso    | Aash-e-Reshteh        | Drill staff | f
+ senso    | Canada Dry Ginger Ale | Drill staff | t
+ senso    | Coca Cola             | Drill staff | t
+ senso    | Mineral water         | Drill staff | t
+ senso    | Turkish Coffee        | Check suite | t
+(5 rows)
+
+ venue_id | section |  ?column?   
+----------+---------+-------------
+ senso    | Extra   | Drill staff
+(1 row)
+
+  id   |  ?column?   
+-------+-------------
+ senso | Check suite
+(1 row)
+
+ senso_items_with_draft_flags 
+------------------------------
+                            0
+(1 row)
+
+```
+
+## Cleanup statements and state after
+```
+--- cleanup of test leftovers (backup taken first: backups/roses-20261007T163436Z.dump)
+BEGIN
+UPDATE 4
+UPDATE 1
+UPDATE 1
+UPDATE 0
+UPDATE 1
+DELETE 110
+DELETE 4
+DELETE 0
+DELETE 10
+DELETE 1
+ setval 
+--------
+    180
+(1 row)
+
+COMMIT
+--- after
+  kind  | name | count | min | max 
+--------+------+-------+-----+-----
+ review | Kian |   180 |   1 | 180
+(1 row)
+
+ revisions_total | newest_id | sequence 
+-----------------+-----------+----------
+             180 |       180 |      180
+(1 row)
+
+ admins 
+--------
+      0
+(1 row)
+
+ pins 
+------
+    0
+(1 row)
+
+ admin_alerts 
+--------------
+            0
+(1 row)
+
+ login_failures 
+----------------
+              0
+(1 row)
+
+    t     |  kind  | name | count 
+----------+--------+------+-------
+ items    | import |      |   263
+ items    | review | Kian |   124
+ sections | import |      |    30
+ sections | review | Kian |     3
+ venues   | import |      |     2
+(5 rows)
+
+ senso_items_with_draft_flags 
+------------------------------
+                            0
+(1 row)
+
+      item      | price | listed 
+----------------+-------+--------
+ Aash-e-Reshteh |       | f
+ Soft Drink     |  5.00 | t
+ Turkish Coffee |  6.59 | t
+(3 rows)
+
+```

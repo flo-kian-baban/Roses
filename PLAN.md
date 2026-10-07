@@ -255,7 +255,7 @@ Branding at import: `source` holds the capture slug and the source id; no venue-
 | T6 | Admin (local): admin and PIN sign-in, lockout and alerts, sections and items editing in both languages, listing rules, venue details (name, phone, addresses, hours), photo URL field, notes for owner/admin only, history and restore, regeneration of the public page on save. **Checkpoint B** — done | T5 | `reports/checkpoint-b/admin/`, `lockout-drill.txt`, `revalidation-log.txt` |
 | T7 | Backups: `db:backup` / `db:restore` scripts, restore drill, runbook — done with T6 | T6 | `docs/runbook.md`, `reports/checkpoint-b/backup-drill.txt` |
 | T8 | MVP shown to the owner on Kian's machine (public pages and admin, both local); decisions and change requests recorded | T7 | `docs/mvp-review.md` |
-| T9 | After the MVP (only then): Kian's hosting decision, database hosting (Supabase or other standard Postgres), photos copied to our own storage, revalidation on save, domain, written authorization filed, go-live checklist, QR codes after the domain exists. The deferred owner-preview notes in section 1 apply only if Vercel is chosen | T8, client inputs | live site |
+| T9 | After the MVP (only then): Kian's hosting decision, database hosting (Supabase or other standard Postgres) filled by dump and restore of the working database (never by re-import, so Milestone 1 edits carry over), photos copied to our own storage, domain, written authorization filed, go-live checklist (`docs/runbook.md`), QR codes after the domain exists. The deferred owner-preview notes in section 1 apply only if Vercel is chosen | T8, client inputs | live site |
 
 ## 5. Pass/fail acceptance criteria
 
@@ -284,6 +284,7 @@ Evidence for every criterion is saved under `reports/<task>/` (files, logs, scre
 - `data/import/<date>/` is a versioned baseline of the menus as imported.
 - Item-level undo is the `revisions` table (T6).
 - Supabase backups are decided at the move (T9).
+- **The move to hosted Postgres (Supabase or other) migrates the working database by dump and restore, not by re-import** (PM, 2026-10-07): `pg_dump` of the local database, `pg_restore` into the hosted one, equal per-table counts checked. Admin edits, Persian reviews and PINs made during Milestone 1 carry over; the import scripts are only for the first load of a venue.
 
 ## 7. Risks
 
@@ -321,7 +322,16 @@ Trade-off: argon2id is the newer recommendation but needs a native dependency (`
 
 No material problem was found with Next.js, Node.js and Postgres (local, then Supabase) for these requirements.
 
-## 10. After the MVP: not built, not blocked (Kian, 2026-10-07)
+## 10. Milestone 1 (local look and feel) — rules and approach (Kian and the PM, 2026-10-07)
+
+- Senso and Kebab Land are separate brands under Roses: separate templates, they must not look alike.
+- No new dependencies, architecture changes or data-model changes without asking Kian first and stating the trade-off.
+- Data changes only through the admin or the import scripts.
+- `npm run check` before reporting a batch of changes done. The suite runs against a scratch copy of the working database (pg_dump → scratch → dropped) and proves the working database untouched.
+- Interactions in the Uber Eats style (sticky category tabs that follow the scroll, item detail sheets) are built with small inline scripts and CSS inside the no-runtime-JS public pages. If a requested interaction needs the React runtime on a public page, Kian is asked first with the load-time cost stated.
+- Reproducible state: a fresh clone + `npm run setup` reproduces the reviewed data (imports, then the committed Persian review records in `data/import/<date>/<venue>/persian-review.json`, so Senso has 0 draft flags).
+
+## 11. After the MVP: not built, not blocked (Kian, 2026-10-07)
 
 Coming right after the MVP: (a) seasonal menus and offers on top of the base menu; (b) an offer for repeat customers and a prompt linking to the venue's Google review page. Neither is built now. The current model leaves room for both without changing existing tables: items and sections have stable ids and a `listed` flag, so a seasonal menu or an offer is a new table (`menus` / `offers`: venue, name, starts_at, ends_at, items or prices) read by the venue's own template; venue-level settings (Google review URL, offer text) fit the venue row's `settings` JSONB; each venue template is its own file, so a banner or a prompt is added per venue; the public page already regenerates on save; the admin's revision model covers new tables the same way (`table_name`). Nothing in the schema or the page architecture works against either feature.
 
@@ -345,6 +355,12 @@ Coming right after the MVP: (a) seasonal menus and offers on top of the base men
 - Section 4: T2 without any hosting account; T4 is Checkpoint A, T6 is Checkpoint B; T8 is a local demo.
 - Section 8: logos, colours and fonts come from the venues' own sites and logo files, each listed with its source in the import report; nothing invented. Phone numbers stay masked in data/raw only; the venue seed holds the public numbers.
 - Section 9: Q2 answered; Q1 deferred with the hosting decision.
+
+## Revision notes (revision 5b, 2026-10-07, PM review of the Milestone 1 tooling: passed)
+
+- Section 6 and T9: the hosted database is filled by dump and restore, not re-import.
+- Section 10 added (Milestone 1 rules, interactions approach, reproducible state); the post-MVP section is now 11.
+- Repository history rewritten on 2026-10-07 with Kian's approval to drop 92 MB of check-suite screenshots: commits e206234, a6bad82 and 2c7e9a0 replace 0247e03, bef4150 and 69ffe36.
 
 ## Revision notes (revision 5a, 2026-10-07, PM review of Checkpoint B: passed)
 

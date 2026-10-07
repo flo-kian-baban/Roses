@@ -67,6 +67,15 @@ If you see a material problem with this stack for these requirements, raise it u
 - Kebab Land: website only; logo copied into the app with source URL and sha256; colours and fonts recorded with sources; functional page in its own template, logo and colours. Font-matching work cancelled.
 - Post-MVP features, not built and not blocked: seasonal menus and offers on top of the base menu; an offer for repeat customers and a prompt linking to the venue's Google review page.
 
+## Milestone 1 rules (Kian and the PM, 2026-10-07)
+
+- Separate templates per venue; the pages must not look alike.
+- No new dependencies, architecture changes or data-model changes without asking Kian first and stating the trade-off.
+- Change data only through the admin or the import scripts.
+- Run `npm run check` before telling Kian a batch of changes is done; it runs on a scratch copy of the working database and proves the working database untouched.
+- Uber Eats-style interactions (sticky category tabs that follow the scroll, item detail sheets) are built with small inline scripts and CSS inside the no-runtime-JS public pages; if an interaction needs the React runtime on a public page, ask Kian first with the load-time cost.
+- The hosted database (later) is filled by dump and restore of the working database, never by re-import. A fresh clone + `npm run setup` reproduces the reviewed state (imports, then the committed Persian review records).
+
 ## Sources (use only these, plus any links Kian adds)
 
 1. https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus

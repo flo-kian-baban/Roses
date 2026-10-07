@@ -67,6 +67,11 @@ If you see a material problem with this stack for these requirements, raise it u
 - Kebab Land: website only; logo copied into the app with source URL and sha256; colours and fonts recorded with sources; functional page in its own template, logo and colours. Font-matching work cancelled.
 - Post-MVP features, not built and not blocked: seasonal menus and offers on top of the base menu; an offer for repeat customers and a prompt linking to the venue's Google review page.
 
+## Decisions after the admin rebuild (Kian, 2026-10-07, later the same day)
+
+- The admin was rebuilt as a phone-first, white Apple-style kit (pure white surfaces, neutral greys, hairlines, pill buttons, frosted bars); no client JavaScript, same forms and API.
+- The public pages use the same white kit for now: white background, dark text, neutral greys. Each venue keeps its own template, fonts, accent and logo (Kebab Land's white logo sits on its dark tile). The recorded brand colours stay unchanged in the data; the per-venue redesign after the MVP still stands.
+
 ## Milestone 1 rules (Kian and the PM, 2026-10-07)
 
 - Separate templates per venue; the pages must not look alike.

@@ -3,7 +3,7 @@
 export function LangToggle() {
   return (
     <>
-      <button type="button" id="lang-toggle" className="rounded-full border border-current/30 px-3 py-1 text-sm font-medium" aria-label="Switch language / تغییر زبان">
+      <button type="button" id="lang-toggle" className="rounded-full bg-black/[.05] px-3.5 py-1.5 text-sm font-medium transition hover:bg-black/[.08]" aria-label="Switch language / تغییر زبان">
         <span lang="en">فارسی</span>
         <span lang="fa">English</span>
       </button>

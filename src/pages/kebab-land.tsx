@@ -23,21 +23,22 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 export default function KebabLand({ venue, sections }: Props) {
   const c = venue.brand.colors ?? {};
   const f = venue.brand.fonts ?? { heading: 'serif', body: 'system-ui', persian: 'system-ui' };
-  // The venue's own colours (sources in the import report): dark background, white text, red accent, gold prices.
-  const vars = `:root{--brand-bg:${c.background ?? '#141414'};--brand-fg:${c.text ?? '#fff'};--brand-accent:${c.accent ?? '#b92e2e'};--brand-price:${c.price ?? '#ffc14d'};--brand-muted:${c.muted ?? '#a3a3a3'};--font-heading:${f.heading};--font-body:${f.body};--font-persian:${f.persian}}`;
+  // White kit for now (Kian, 2026-10-07): the recorded colours (dark background, white text, gold prices; sources in the
+  // import report) stay in the data; the red accent is used for headings and prices, the dark background only as the logo tile.
+  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${c.accent ?? '#b92e2e'};--brand-price:${c.accent ?? '#b92e2e'};--brand-muted:#6e6e73;--brand-tile:${c.background ?? '#141414'};--font-heading:${f.heading};--font-body:${f.body};--font-persian:${f.persian}}`;
   return (
     <>
       <Head>
         <title>{`${venue.name.en} — Menu`}</title>
         <meta name="description" content={venue.tagline.en ?? `${venue.name.en} menu`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content={c.background ?? '#141414'} />
+        <meta name="theme-color" content="#ffffff" />
         {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
         {venue.brand.logo && <link rel="preload" as="image" href={venue.brand.logo.url} fetchPriority="high" />}
         <script dangerouslySetInnerHTML={{ __html: headScript(venue.id) }} />
       </Head>
       <style dangerouslySetInnerHTML={{ __html: vars }} />
-      <Intro venueId={venue.id} logo={venue.brand.logo} alt={venue.name.en ?? ''} />
+      <Intro venueId={venue.id} logo={venue.brand.logo} alt={venue.name.en ?? ''} tile={c.background ?? '#141414'} />
       <main>
         <KebabLandPage venue={venue} sections={sections} />
       </main>

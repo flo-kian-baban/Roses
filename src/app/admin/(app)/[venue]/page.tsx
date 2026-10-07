@@ -78,8 +78,8 @@ export default async function VenueAdmin({ params, searchParams }: { params: Pro
             <button type="submit" className="flex items-center rounded-full bg-white px-3.5 text-sm font-semibold shadow-[0_1px_3px_rgba(0,0,0,.12)] hover:bg-fill">Search</button>
           </div>
         </form>
-        <div className="no-scrollbar -mx-4 flex overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
-          <div className="flex gap-1 rounded-full bg-fill p-1">
+        <div className="no-scrollbar flex w-full overflow-x-auto rounded-full bg-fill p-1">
+          <div className="flex min-w-max gap-1">
             {tab(url({ section: '' }), !sectionFilter, 'All')}
             {sections.map((s) => tab(url({ section: s.id }), sectionFilter === s.id, <>{s.name.en}<span className="rounded-full bg-black/5 px-1.5 text-xs tabular-nums">{s.items.length}</span></>, !s.listed))}
             {orphans.length > 0 && tab(url({ section: 'none' }), sectionFilter === 'none', <>No section<span className="rounded-full bg-black/5 px-1.5 text-xs tabular-nums">{orphans.length}</span></>, true)}

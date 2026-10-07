@@ -25,7 +25,8 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 export default function Senso({ venue, sections }: Props) {
   const c = venue.brand.colors ?? {};
   const f = venue.brand.fonts ?? { heading: 'serif', body: 'system-ui', persian: 'system-ui' };
-  const vars = `:root{--brand-bg:${c.background ?? '#fff'};--brand-fg:${c.text ?? '#111'};--brand-accent:${c.accent ?? '#042c7c'};--brand-muted:${c.muted ?? '#6b6b6b'};--font-heading:${f.heading};--font-body:${f.body};--font-persian:${f.persian}}`;
+  // White kit for now (Kian, 2026-10-07): the recorded brand background and text colours stay in the data; accent and fonts come from it.
+  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${c.accent ?? '#042c7c'};--brand-muted:#6e6e73;--font-heading:${f.heading};--font-body:${f.body};--font-persian:${f.persian}}`;
   return (
     <>
       <Head>

@@ -1,0 +1,161 @@
+### fresh-clone run — 2026-10-07T16:20:19Z — macOS 26.3, node v20.19.2, npm 10.8.2, docker 29.1.3
+
+### 0. stop the developer's own server and database container (the data volume stays)
+stopped next start on 3000
+ Container roses-db Stopping 
+ Container roses-db Stopped 
+ Container roses-db Removing 
+ Container roses-db Removed 
+ Network roses_default Removing 
+ Network roses_default Removed 
+local     roses_roses-pgdata
+
+### 1. git clone
+Cloning into 'roses-fresh'...
+$ git log --oneline -1
+6b129a5 Milestone 1 tooling: npm run setup (fresh clone to running app), npm run check (one-command acceptance suite into reports/checks), runbook: run locally, phone on the same Wi-Fi, check suite
+
+### 2. npm install
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+npm install 2>&1  5.07s user 4.77s system 173% cpu 5.672 total
+tail -4  0.00s user 0.00s system 0% cpu 5.671 total
+
+### 3. npm run setup
+
+> roses-menu@0.1.0 setup
+> node scripts/setup.mjs
+
+
+== 1/5 .env.local
+created .env.local from .env.example with a random SESSION_SECRET
+
+== 2/5 Postgres in Docker (docker compose up -d)
+ Network roses-fresh_default Creating 
+ Network roses-fresh_default Created 
+ Volume roses-fresh_roses-pgdata Creating 
+ Volume roses-fresh_roses-pgdata Created 
+ Container roses-db Creating 
+ Container roses-db Created 
+ Container roses-db Starting 
+ Container roses-db Started 
+waiting for the database . ready
+
+== 3/5 migrations
+applied 001_init.sql
+applied 002_import_keys.sql
+2 migration(s) applied, 0 already present
+
+== 4/5 imports (senso, kebab-land) from data/raw
+stats {"sections":15,"items":285,"mealsyItems":147,"listed":147,"unlisted":138,"websiteNames":255,"websiteMatched":117}
+persian: from source 59, drafted 180, missing 0
+venues upserted: 2; sections +15 ~0 =0; items +285 ~0 =0
+report: <tmp>/fresh/roses-fresh/data/import/2026-10-07/senso/import-report.md
+stats {"sections":18,"items":102,"mealsyItems":0,"listed":102,"unlisted":0,"websiteNames":102,"websiteMatched":0,"variants":16,"serves":7,"components":18,"photos":45}
+persian: from source 0, drafted 274, missing 0
+venues upserted: 2; sections +18 ~0 =0; items +102 ~0 =0
+report: <tmp>/fresh/roses-fresh/data/import/2026-10-07/kebab-land/import-report.md
+
+== 5/5 production build
+▲ Next.js 16.4.0 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 1006ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.2s
+  Running TypeScript ...
+  Finished TypeScript in 1766ms ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/6) ...
+  Generating static pages using 9 workers (1/6) 
+  Generating static pages using 9 workers (2/6) 
+  Generating static pages using 9 workers (4/6) 
+✓ Generating static pages using 9 workers (6/6) in 138ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /admin
+├ ƒ /admin/[venue]
+├ ƒ /admin/[venue]/details
+├ ƒ /admin/[venue]/history
+├ ƒ /admin/[venue]/items/[id]
+├ ƒ /admin/[venue]/items/new
+├ ƒ /admin/[venue]/sections/[id]
+├ ƒ /admin/[venue]/sections/new
+├ ƒ /admin/login
+└ ƒ /admin/pins
+
+Route (pages)
+┌   /_app
+├ ƒ /api/admin/alert
+├ ƒ /api/admin/item
+├ ƒ /api/admin/login
+├ ƒ /api/admin/logout
+├ ƒ /api/admin/pin
+├ ƒ /api/admin/restore
+├ ƒ /api/admin/section
+├ ƒ /api/admin/venue
+├ ● /kebab-land
+└ ● /senso
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+
+Done. Next:
+  npm run start                     public pages http://localhost:3000/senso and /kebab-land, admin http://localhost:3000/admin
+                                    (the start command also prints a Network address for phones on the same Wi-Fi)
+  npm run admin:create -- --email <email> --name "<name>"   create the main admin account (asks for a password)
+
+npm run setup 2>&1  16.73s user 2.91s system 203% cpu 9.648 total
+
+### 4. npm run start
+(server answered after 2s)
+
+> roses-menu@0.1.0 start
+> next start
+
+▲ Next.js 16.4.0
+- Local:         http://localhost:3000
+- Network:       http://<laptop-ip>:3000
+✓ Ready in 93ms
+✓ Running next.config.ts took 22ms
+⚠ "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
+GET http://localhost:3000/senso -> 200  GET http://localhost:3000/kebab-land -> 200  GET http://localhost:3000/admin -> 200  <title>Menu admin</title>
+GET http://localhost:3000/admin/senso -> 200  <title>Menu admin</title>
+GET http://localhost:3000/admin/kebab-land -> 200  <title>Menu admin</title>
+
+### 5. npm run admin:create
+$ ADMIN_PASSWORD=******** npm run admin:create -- --email <admin email> --name "Fresh Admin"
+
+> roses-menu@0.1.0 admin:create
+> node scripts/admin-create.mjs --email <admin email> --name Fresh Admin
+
+created admin "Fresh Admin"
+$ curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -X POST -d 'mode=admin&email=…&password=…' http://localhost:3000/api/admin/login
+303 http://localhost:3000/admin
+
+### 6. tear the fresh copy down (its own container and volume) and bring the developer's stack back
+ Container roses-db Stopping 
+ Container roses-db Stopped 
+ Container roses-db Removing 
+ Container roses-db Removed 
+ Network roses-fresh_default Removing 
+ Volume roses-fresh_roses-pgdata Removing 
+ Volume roses-fresh_roses-pgdata Removed 
+ Network roses-fresh_default Removed 
+local     roses_roses-pgdata
+ Network roses_default Creating 
+ Network roses_default Created 
+ Container roses-db Creating 
+ Container roses-db Created 
+ Container roses-db Starting 
+ Container roses-db Started 
+developer database back after 1s
+items 387 sections 33 revisions 242 admins 1 
+developer server back on 3000 after 1s

@@ -1,0 +1,137 @@
+{
+  "stamp": "2026-10-07T16-21-16Z",
+  "commit": "6b129a5",
+  "pass": true,
+  "results": [
+    {
+      "name": "production build (.next-check)",
+      "pass": true,
+      "ms": 5319,
+      "evidence": [
+        "build.log"
+      ],
+      "note": "next build ok"
+    },
+    {
+      "name": "servers on 3100 and 3101 (TRUST_PROXY=1)",
+      "pass": true,
+      "ms": 593,
+      "evidence": [
+        "server-3100.log",
+        "server-3101.log"
+      ],
+      "note": "both answer 200 on /senso"
+    },
+    {
+      "name": "public page checks: senso (intro, repeat visit, reduced motion, Persian toggle, images)",
+      "pass": true,
+      "ms": 18902,
+      "evidence": [
+        "senso/senso-checks.json",
+        "senso/senso-en.png",
+        "senso/senso-fa.png",
+        "senso/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 15; intro gone at 1369 ms; images 124/124"
+    },
+    {
+      "name": "public page checks: kebab-land (intro, repeat visit, reduced motion, Persian toggle, images)",
+      "pass": true,
+      "ms": 10469,
+      "evidence": [
+        "kebab-land/kebab-land-checks.json",
+        "kebab-land/kebab-land-en.png",
+        "kebab-land/kebab-land-fa.png",
+        "kebab-land/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 17; intro gone at 1339 ms; images 47/47"
+    },
+    {
+      "name": "brand words in both built pages",
+      "pass": true,
+      "ms": 30,
+      "evidence": [
+        "brand-words.txt"
+      ],
+      "note": "no \"Mealsy\" or \"Flo\" in visible text or metadata"
+    },
+    {
+      "name": "photo links: senso",
+      "pass": true,
+      "ms": 4246,
+      "evidence": [
+        "senso/photo-links.md",
+        "senso/photo-links.json"
+      ],
+      "note": "135 URLs, 0 not 200/206"
+    },
+    {
+      "name": "photo links: kebab-land",
+      "pass": true,
+      "ms": 3089,
+      "evidence": [
+        "kebab-land/photo-links.md",
+        "kebab-land/photo-links.json"
+      ],
+      "note": "46 URLs, 0 not 200/206"
+    },
+    {
+      "name": "Lighthouse mobile ×3: senso",
+      "pass": true,
+      "ms": 36378,
+      "evidence": [
+        "senso/lighthouse-summary.json",
+        "senso/lighthouse.log"
+      ],
+      "note": "LCP 1353 / 1354 / 1354 ms, performance 100 / 100 / 100 (target ≤ 2500, local estimate)"
+    },
+    {
+      "name": "Lighthouse mobile ×3: kebab-land",
+      "pass": true,
+      "ms": 28840,
+      "evidence": [
+        "kebab-land/lighthouse-summary.json",
+        "kebab-land/lighthouse.log"
+      ],
+      "note": "LCP 1353 / 1352 / 1352 ms, performance 100 / 100 / 100 (target ≤ 2500, local estimate)"
+    },
+    {
+      "name": "admin drill (sign-ins, cookie, PINs, listing rule, sections, notes, edits + restore, delete + restore, venue details)",
+      "pass": true,
+      "ms": 15850,
+      "evidence": [
+        "admin/admin-drill.txt",
+        "admin/admin-drill.json",
+        "admin/*.png"
+      ],
+      "note": "ADMIN DRILL PASS (30/30)"
+    },
+    {
+      "name": "lockout: 5 per venue + address, 50 per hour per venue with alert and unlock, revoked PIN",
+      "pass": true,
+      "ms": 2788,
+      "evidence": [
+        "lockout-drill.txt"
+      ],
+      "note": "LOCKOUT DRILL PASS"
+    },
+    {
+      "name": "revalidation: admin save reaches the public page within 10 s",
+      "pass": true,
+      "ms": 1384,
+      "evidence": [
+        "revalidation-log.txt"
+      ],
+      "note": "111 ms after Save"
+    },
+    {
+      "name": "backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)",
+      "pass": true,
+      "ms": 3594,
+      "evidence": [
+        "backup-drill.txt"
+      ],
+      "note": "12 table comparisons equal, 0 different; item recovered: true"
+    }
+  ]
+}

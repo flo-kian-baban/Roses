@@ -75,9 +75,9 @@ try {
   for (const venue of ['senso', 'kebab-land']) {
     const vout = path.join(out, venue); fs.mkdirSync(vout, { recursive: true });
     await step(`public page checks: ${venue} (intro, repeat visit, reduced motion, Persian toggle, images)`, () => {
-      const r = runSync('node', ['scripts/check-page.mjs', venue, '--base', base, '--out', vout], { logFile: `${venue}/check-page.log` });
+      const r = runSync('node', ['scripts/check-page.mjs', venue, '--base', base, '--out', vout, '--jpeg'], { logFile: `${venue}/check-page.log` });
       const j = JSON.parse(fs.readFileSync(path.join(vout, `${venue}-checks.json`), 'utf8')).checks;
-      return { pass: r.status === 0, evidence: [`${venue}/${venue}-checks.json`, `${venue}/${venue}-en.png`, `${venue}/${venue}-fa.png`, `${venue}/check-page.log`], note: `toggle dir=${j.persianToggle.dir}, Persian headings ${j.persianToggle.visibleFaHeadings}; intro gone at ${j.firstVisit.introDoneAtMs} ms; images ${j.images.loaded}/${j.images.total}` };
+      return { pass: r.status === 0, evidence: [`${venue}/${venue}-checks.json`, `${venue}/${venue}-en.jpg`, `${venue}/${venue}-fa.jpg`, `${venue}/check-page.log`], note: `toggle dir=${j.persianToggle.dir}, Persian headings ${j.persianToggle.visibleFaHeadings}; intro gone at ${j.firstVisit.introDoneAtMs} ms; images ${j.images.loaded}/${j.images.total}` };
     });
   }
   await step('brand words in both built pages', () => {
@@ -104,9 +104,9 @@ try {
     });
   }
   await step('admin drill (sign-ins, cookie, PINs, listing rule, sections, notes, edits + restore, delete + restore, venue details)', () => {
-    const r = runSync('node', ['scripts/admin-drill.mjs', '--base', base, '--out', path.join(out, 'admin')], { env: drillEnv, logFile: 'admin/admin-drill.log' });
+    const r = runSync('node', ['scripts/admin-drill.mjs', '--base', base, '--out', path.join(out, 'admin'), '--jpeg'], { env: drillEnv, logFile: 'admin/admin-drill.log' });
     const m = (r.stdout.match(/ADMIN DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || []);
-    return { pass: r.status === 0, evidence: ['admin/admin-drill.txt', 'admin/admin-drill.json', 'admin/*.png'], note: m[0] || `exit ${r.status}` };
+    return { pass: r.status === 0, evidence: ['admin/admin-drill.txt', 'admin/admin-drill.json', 'admin/*.jpg'], note: m[0] || `exit ${r.status}` };
   });
   await step('lockout: 5 per venue + address, 50 per hour per venue with alert and unlock, revoked PIN', () => {
     const r = runSync('node', ['scripts/lockout-drill.mjs', '--base4', base, '--base6', `http://[::1]:${PORT}`, '--proxyBase', `http://127.0.0.1:${PROXY_PORT}`, '--out', out], { env: drillEnv, logFile: 'lockout-drill.log' });
@@ -140,7 +140,7 @@ const lines = [
   `**${pass ? 'PASS' : 'FAIL'}** — ${results.filter((r) => r.pass).length} of ${results.length} checks passed.`, '',
   '| Check | Result | Time | Evidence | Notes |', '| --- | --- | --- | --- | --- |',
   ...results.map((r) => `| ${r.name} | ${r.pass ? 'PASS' : 'FAIL'} | ${(r.ms / 1000).toFixed(1)} s | ${r.evidence.map((e) => `\`${e}\``).join(', ')} | ${r.note.replace(/\|/g, '\\|')} |`), '',
-  'Every path is relative to this folder. Drill data changes are reversible and reversed by the drills themselves (prices and listings restored from history, counters cleared, drill PINs revoked and removed, the temporary admin account deleted); the backup drill deletes one Kebab Land row by SQL and recovers it from the dump. Lighthouse numbers are local estimates.', '',
+  'Every path is relative to this folder. Screenshots, full Lighthouse JSON and the first HTML responses stay on the machine that ran the suite (gitignored); report.md, summary.json, the check JSON files and the text logs are committed. Drill data changes are reversible and reversed by the drills themselves (prices and listings restored from history, counters cleared, drill PINs revoked and removed, the temporary admin account deleted); the backup drill deletes one Kebab Land row by SQL and recovers it from the dump. Lighthouse numbers are local estimates.', '',
 ];
 fs.writeFileSync(path.join(out, 'report.md'), lines.join('\n'));
 fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, pass, results }, null, 2));

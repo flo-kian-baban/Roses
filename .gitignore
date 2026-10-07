@@ -10,3 +10,8 @@ node_modules/
 backups/
 next-env.d.ts
 *.tsbuildinfo
+# Check-suite runs: keep the report and small evidence in git, heavy raw files on disk only
+reports/checks/**/*.png
+reports/checks/**/*.jpg
+reports/checks/**/lighthouse-run-*.json
+reports/checks/**/*-first-response.html

@@ -8,9 +8,11 @@ import path from 'node:path';
 import { chromium, devices } from 'playwright';
 
 const [venue, ...rest] = process.argv.slice(2);
-const args = Object.fromEntries(rest.map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
+const args = Object.fromEntries(rest.filter((a) => a !== '--jpeg').map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
 const base = args.base || 'http://localhost:3000';
 const out = path.resolve(args.out || 'reports/checkpoint-a');
+const jpeg = process.argv.includes('--jpeg'); // smaller full-page screenshots for routine runs (the check suite)
+const shotOpts = (file) => jpeg ? { path: file.replace(/\.png$/, '.jpg'), fullPage: true, type: 'jpeg', quality: 70 } : { path: file, fullPage: true };
 await fs.mkdir(out, { recursive: true });
 const url = `${base}/${venue}`;
 const log = { url, at: new Date().toISOString(), checks: {} };
@@ -56,7 +58,7 @@ const browser = await chromium.launch();
   log.checks.firstVisit = { introVisibleAtMs: firstVisible?.t ?? null, introDoneAtMs: gone?.t ?? null, goneWithin1500ms: !!gone && gone.t <= 1500, samples };
   await page.waitForLoadState('networkidle').catch(() => {});
   log.checks.images = await loadAllImages(page);
-  await page.screenshot({ path: path.join(out, `${venue}-en.png`), fullPage: true });
+  await page.screenshot(shotOpts(path.join(out, `${venue}-en.png`)));
   const dom = await page.evaluate(() => ({
     lang: document.documentElement.lang, dir: document.documentElement.dir || 'ltr', title: document.title,
     sections: [...document.querySelectorAll('main section')].map((s) => ({ id: s.id, en: s.querySelector('h2 [lang=en]')?.textContent || s.querySelector('h2')?.textContent, fa: s.querySelector('h2 [lang=fa]')?.textContent || null, items: s.querySelectorAll('li').length })),
@@ -71,7 +73,7 @@ const browser = await chromium.launch();
   const fa = await page.evaluate(() => ({ lang: document.documentElement.lang, dir: document.documentElement.dir, dataLang: document.documentElement.dataset.lang, visibleFaHeadings: [...document.querySelectorAll('main h2 [lang=fa]')].filter((e) => e.getClientRects().length).length, visibleEnHeadings: [...document.querySelectorAll('main h2 [lang=en]')].filter((e) => e.getClientRects().length).length }));
   log.checks.persianToggle = fa;
   log.checks.imagesFa = await loadAllImages(page);
-  await page.screenshot({ path: path.join(out, `${venue}-fa.png`), fullPage: true });
+  await page.screenshot(shotOpts(path.join(out, `${venue}-fa.png`)));
   // 3. repeat visit in the same context (localStorage kept): the intro must be skipped before first paint
   await page.goto(url, { waitUntil: 'domcontentloaded' });
   const repeat = await page.evaluate(() => { const el = document.getElementById('intro'); return { intro: document.documentElement.dataset.intro || null, display: el ? getComputedStyle(el).display : 'absent', storage: localStorage.getItem('roses-intro-' + location.pathname.split('/')[1]), lang: document.documentElement.dataset.lang }; });

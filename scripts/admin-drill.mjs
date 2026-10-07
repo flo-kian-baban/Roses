@@ -10,7 +10,8 @@ import { chromium, devices } from 'playwright';
 import { loadEnv } from './load-env.mjs';
 
 loadEnv();
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
+const jpeg = process.argv.includes('--jpeg');
+const args = Object.fromEntries(process.argv.slice(2).filter((a) => a !== '--jpeg').map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
 const base = args.base || 'http://localhost:3000';
 const out = path.resolve(args.out || 'reports/checkpoint-b/admin');
 await fs.mkdir(out, { recursive: true });
@@ -23,7 +24,7 @@ const check = (step, ok, text) => { results.push({ step, ok, text }); log(step, 
 const db = new pg.Client({ connectionString: process.env.DATABASE_URL }); await db.connect();
 const DEVICE = { ...devices['iPhone 13'], defaultBrowserType: 'chromium' };
 const browser = await chromium.launch();
-let shot = 0; const snap = async (page, name) => { const f = `${String(++shot).padStart(2, '0')}-${name}.png`; await page.screenshot({ path: path.join(out, f), fullPage: true }); log('shot', f); };
+let shot = 0; const snap = async (page, name) => { const f = `${String(++shot).padStart(2, '0')}-${name}.${jpeg ? 'jpg' : 'png'}`; await page.screenshot({ path: path.join(out, f), fullPage: true, ...(jpeg ? { type: 'jpeg', quality: 70 } : {}) }); log('shot', f); };
 const form = (o) => new URLSearchParams(o).toString();
 async function post(p, body, cookie) { const r = await fetch(base + p, { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded', ...(cookie ? { cookie } : {}) }, body: form(body) }); return { status: r.status, location: r.headers.get('location'), setCookie: r.headers.get('set-cookie'), text: r.status === 200 ? await r.text() : '' }; }
 const errorOf = (loc) => { try { return new URL(loc, 'http://x').searchParams.get('error'); } catch { return null; } };

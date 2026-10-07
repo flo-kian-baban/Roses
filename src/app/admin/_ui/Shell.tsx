@@ -29,11 +29,7 @@ export function Shell({ session, venues, venue, active, children }: { session: S
     <div className="min-h-screen lg:pl-72">
       {/* Sidebar (laptop) */}
       <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-72 flex-col border-r border-line lg:flex">
-        <div className="flex items-center gap-3 px-5 pt-6 pb-5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_6px_16px_-6px_rgba(238,106,58,.8)]"><Icon name="utensils" strokeWidth={2.2} /></span>
-          <div><p className="text-lg font-semibold leading-tight">Roses</p><p className="text-xs text-ink-muted">Menu admin</p></div>
-        </div>
-        <div className="px-4">
+        <div className="px-4 pt-6">
           <p className="px-2 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">Venue</p>
           <VenueSwitcher venues={venues} venue={venue ?? null} />
         </div>
@@ -59,7 +55,7 @@ export function Shell({ session, venues, venue, active, children }: { session: S
       {/* Top bar (phone) */}
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-line glass px-4 lg:hidden">
         <a href={venue ? `/admin/${v}` : '/admin'} className="flex min-w-0 items-center gap-2.5">
-          {venue ? <><LogoTile venue={venue} className="h-8 w-11" pad="p-1" /><span className="truncate font-semibold">{venue.name.en}</span></> : <><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-white"><Icon name="utensils" className="h-4 w-4" /></span><span className="font-semibold">Roses admin</span></>}
+          {venue ? <><LogoTile venue={venue} className="h-8 w-11" pad="p-1" /><span className="truncate font-semibold">{venue.name.en}</span></> : null}
         </a>
         <details className="relative">
           <summary className="flex items-center gap-1.5 rounded-full border border-line bg-white py-0.5 pl-0.5 pr-2 shadow-[0_1px_2px_rgba(0,0,0,.04)]"><Avatar name={session.name} className="h-8 w-8 text-xs" /><Icon name="down" className="h-4 w-4 text-ink-muted" /></summary>

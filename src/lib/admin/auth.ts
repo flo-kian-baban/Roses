@@ -68,4 +68,6 @@ export function canEditVenue(s: Session | null, venueId: string): boolean {
   return s.venues === 'all' || s.venues.includes(venueId);
 }
 export function canEditNotes(s: Session | null): boolean { return !!s && (s.role === 'admin' || s.role === 'owner'); }
+// Team (PINs and admin accounts), Style and Details: owner or admin (Kian, admin rebuild of 2026-10-07).
+export function canManage(s: Session | null): boolean { return !!s && (s.role === 'admin' || s.role === 'owner'); }
 export function isAdmin(s: Session | null): boolean { return !!s && s.kind === 'admin'; }

@@ -26,27 +26,29 @@ npm run admin:create -- --email <your email> --name "<your name>"
 ## Daily
 
 - Public pages: http://localhost:3000/senso and /kebab-land. They are pre-rendered; an admin save regenerates the page within seconds (`res.revalidate`), no rebuild needed. A full `npm run build` is needed only after code changes.
-- Admin: http://localhost:3000/admin. Everyone signs in with a PIN on the venue's sign-in link (staff and owner PINs are venue-scoped; admin PINs work on any venue); email + password stays available for admin accounts that have one.
+- Admin: http://localhost:3000/admin. Everyone signs in with a PIN on the venue's sign-in link (staff and owner PINs are venue-scoped; admin PINs work on any venue); email + password stays available for admin accounts that have one. Signed in, `/admin` goes straight to the first venue's page editor.
 
-## Admin layout
+## Admin layout (page editor, Kian's rebuild of 2026-10-07)
 
-- Phone first: a top bar (venue, account menu with venue switch and sign-out) and bottom tabs **Menu · Sections · History · Venue details (admins) · All venues**. On a laptop the same links sit in a left sidebar with the venue switcher and the public-page link.
-- **Menu** (`/admin/<venue>`): four counters at the top (Listed, Unlisted, Need a price, Persian missing) that filter the grid when tapped; a search box; one tab per section; photo cards with Edit and List/Unlist. The List button is disabled with a hint while the item has no price.
-- **Sections** (`/admin/<venue>/sections`): the customer order, status (Shown / Hidden: no listed item / Unlisted), item counts, Edit and List/Unlist. A section's place is its Order number on its page.
-- **Item** page: name and description in both languages, price and sizes, add-ons and combo parts (collapsed until needed), "Where it shows" (listed switch and section ticks), photo link; the Save button stays at the bottom of the screen. Notes (owner and admin), History with Restore, and Delete follow below the form.
-- **History**: every change grouped by day with Restore (or Undo create). **All venues** (`/admin`): one card per venue with counters, and the lockout alerts with **Unlock PIN login** for admins. **PINs** (admins): create and revoke.
-- No client JavaScript: plain forms, native dropdowns (`<details>`) and CSS only; it works on any phone browser.
+- One top bar: the venue dropdown (switch venues), **Team** (PINs and admin accounts; owner and admin only) and the account menu (customers' page, sign out). Everything else is **one screen per venue: the page editor** at `/admin/<venue>`. There is no history page, no sections page and no counters.
+- **Laptop**: the editor on the left, the customers' real page in a plain phone frame on the right (EN/FA toggle above it). **Phone**: the editor full screen and a **Preview** button that shows the customers' page full screen. The preview reloads after every save and scrolls to the item or section just edited, outlined for two seconds. The customers' page itself carries no preview code: the admin reaches into the frame after it loads.
+- **Menu tab**: a *Needs attention* bar only when there is something to do (items needing a price, Persian drafts, missing Persian, items without a photo; tap one to filter), search as you type, *Jump to section*. Sections are collapsible groups; each header has the Shown/Hidden switch, the item count, **+ Add item** and a menu (Rename, Move up, Move down, Delete section). Item rows: photo · name with Persian underneath · price (tap it to change it in place) · Shown/Hidden switch. The switch refuses with a one-line reason when the item has no price (or a size has none). Badges only for exceptions: Hidden, Needs price, Persian draft, No photo. Reorder by dragging on a laptop; Move up / Move down in the item editor (and the section menu) on a phone.
+- **+ Add item** on a section asks for name, price and an optional photo address; the item is created shown when it has a price. Tapping a row opens the item editor (side panel on a laptop, full screen on a phone): *Basics* (name in both languages, price, photo, Shown/Hidden), *More* (description, sizes with **+ Add size**, *Also show in…*, order, serves) and *Advanced* (add-ons, combo parts, allergen/dietary/halal notes for owner and admin, delete). Every field saves itself when you leave it; there is no Save button.
+- **Safety net**: after every change a **Saved · Undo** toast stays for 10 seconds; Undo puts the previous value back (also after a delete). Every change is still recorded in the `revisions` table with before/after snapshots, for disaster recovery only; no screen shows it (`select * from revisions where row_id = '<id>' order by id` on the laptop).
+- Deleting a section keeps its items: they move to *In no section* at the bottom of the editor, hidden from customers until moved. Undo brings the section back with its items.
+- **Style** and **Details** tabs (owner and admin) and **+ Add venue**, photo upload and tap-to-edit in the preview come with step 2 of the rebuild. Until then venue details (name, phones, addresses, hours) are changed through the JSON route `/api/admin/venue` (admin) or step 2.
+- Wording for staff: *Shown / Hidden* everywhere (the database column is still `listed`).
 
 ## Sign-in links
 
 - Each venue has its own sign-in link to bookmark on staff phones: `/admin/senso` and `/admin/kebab-land`. The venue is preselected; the person types only the PIN. A wrong PIN counts against that venue and the phone's address, exactly as from the picker.
-- `/admin` shows the venue picker (for people who work at both venues) and the main-admin sign-in link (`?mode=admin`).
+- `/admin` shows the venue picker (for people who work at both venues) and the main-admin sign-in link (`?mode=admin`). The old `/admin/pins` is now `/admin/team`.
 - The old address `/admin/login` redirects to `/admin`.
 
 ## Admin accounts and PINs
 
 - Create or reset an admin account: `npm run admin:create -- --email <email> --name "<name>" --pin <digits>` (4 to 6 digits), and/or `--password` (asks for the password; or set `ADMIN_PASSWORD` for the command). Add `--reset` to change the PIN or password of an existing account. Only scrypt hashes are stored. Admins sign in with their PIN on any venue's sign-in link; the email + password form is behind "Admin with email and password instead".
-- PINs: in the admin, **PINs** → Create. The PIN is shown once on the confirmation page; write it down for the person. Revoke it when the person leaves. Roles: *staff* edits menu content and listing; *owner* also edits allergen, dietary and halal notes. Venue details (name, phones, addresses, hours) are edited by the main admins only.
+- PINs: in the admin, **Team** → Create (owner and admin). The PIN is shown once on the confirmation page; write it down for the person. Revoke it when the person leaves. Roles: *staff* edits menu content and listing; *owner* also edits allergen, dietary and halal notes. Venue details (name, phones, addresses, hours) are edited by the main admins only (Details tab, step 2).
 
 ## Lockout
 
@@ -59,7 +61,7 @@ npm run admin:create -- --email <your email> --name "<your name>"
 - `npm run db:backup` → `backups/roses-<UTC timestamp>.dump` (custom format, from the `pg_dump` inside the container). `backups/` is gitignored. Copy the file somewhere else as well (another disk or a private cloud folder).
 - Restore into a scratch database to inspect or recover a row: `npm run db:restore -- backups/<file> --into roses_restore_test`; the script prints per-table row counts. Recover one item with `copy … to stdout | copy … from stdin` between the two databases (the exact commands are in `scripts/backup-drill.sh`). Drop the scratch database afterwards: `docker exec roses-db psql -U roses -d postgres -c 'drop database roses_restore_test;'`.
 - Replace the live database (last resort): `npm run db:restore -- backups/<file> --replace`, type `REPLACE`, then `npm run build` so the public pages match the data.
-- Item-level undo does not need a backup: every edit is in the admin's History with a Restore button.
+- Item-level undo does not need a backup: every change shows **Saved · Undo** for 10 seconds, and every change stays in the `revisions` table (before/after snapshots) for recovery by hand.
 
 ## Re-import
 
@@ -85,10 +87,10 @@ Done before anything goes public (nothing is public yet; hosting is Kian's decis
 
 `npm run check` runs every acceptance check in one go and writes `reports/checks/<date-time>/report.md` with the raw evidence next to it (screenshots, JSON, logs). It never touches the working database: it copies it with `pg_dump` into a scratch database, points the build, both servers and every drill at the copy, drops the copy at the end, and compares the working database's per-table counts and newest revision id before and after (a check of its own in the report). It builds into `.next-check` so the running server and `.next` are untouched, starts two servers of its own on ports 3100 and 3101 (the second with `TRUST_PROXY=1` for the venue-cap test), and creates a temporary admin account in the copy. Exit code 1 when any check fails. Run it before reporting a batch of changes done.
 
-Checks: public page checks for both venues (intro, repeat visit, reduced motion, Persian toggle with rtl and headings, all images loaded), brand words, photo links, Lighthouse mobile ×3 per venue on the production build, the admin drill (PIN and admin sign-in, cookie, PINs, the listing rule in the UI, the API and the database, sections, notes permissions, three edits and a restore, delete and restore, venue details), the lockout drill (5 per venue and address, 50 per hour per venue with alert and unlock, revoked PIN), the revalidation drill (save reaches the public page within 10 s) and the backup and restore drill.
+Checks: public page checks for both venues (intro, repeat visit, reduced motion, Persian toggle with rtl and headings, all images loaded), brand words, photo links, Lighthouse mobile ×3 per venue on the production build, the admin drill (PIN and admin sign-in, cookie, Team PINs, the listing rule in the UI, the API and the database, sections, notes permissions, revoked PIN), the lockout drill (5 per venue and address, 50 per hour per venue with alert and unlock, revoked PIN), the revalidation drill (a price changed in place reaches the public page within 10 s, then Undo), the page editor drill (task targets on an iPhone viewport with the tap count: add an item, change a price, hide an item; the preview shows a saved change within 1 s; a reorder appears in the same order on the public page; Undo restores a price and a deleted item on the public page; the change record has before/after rows and no screen shows it; the customers' HTML has no preview script) and the backup and restore drill.
 
 Needs once: `npx playwright install chromium`. Lighthouse uses Google Chrome when installed, otherwise that Chromium. Takes about three minutes. Screenshots, full Lighthouse JSON and dumps stay on disk only (gitignored); the report and the small JSON and text evidence are committed.
 
 ## Evidence scripts
 
-`scripts/check-page.mjs`, `check-lighthouse.mjs`, `check-brand-words.mjs`, `check-photo-links.mjs`, `lockout-drill.mjs`, `admin-drill.mjs`, `revalidation-drill.mjs`, `signin-links-check.mjs`, `backup-drill.sh` produce the files under `reports/`; `npm run check` runs them all.
+`scripts/check-page.mjs`, `check-lighthouse.mjs`, `check-brand-words.mjs`, `check-photo-links.mjs`, `lockout-drill.mjs`, `admin-drill.mjs`, `editor-drill.mjs`, `revalidation-drill.mjs`, `signin-links-check.mjs`, `backup-drill.sh` produce the files under `reports/`; `npm run check` runs them all.

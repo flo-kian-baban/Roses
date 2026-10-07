@@ -45,7 +45,7 @@ export function ItemRow({ item, eager }: { item: Item; eager: boolean }) {
   const groups = new Map<string, Item['add_ons']>();
   for (const a of item.add_ons) { const k = a.group.en ?? ''; groups.set(k, [...(groups.get(k) ?? []), a]); }
   return (
-    <li className="item flex items-start justify-between gap-4 border-b border-black/10 py-4" tabIndex={0} role="button" aria-haspopup="dialog" data-photo={item.photo?.url ?? undefined}>
+    <li className="item flex items-start justify-between gap-4 border-b border-black/10 py-4" tabIndex={0} role="button" aria-haspopup="dialog" data-id={item.id} data-photo={item.photo?.url ?? undefined}>
       <div className="min-w-0 flex-1">
         <Bi as="h3" text={item.name} className="text-[17px] font-semibold leading-snug" />
         <PriceLine item={item} />

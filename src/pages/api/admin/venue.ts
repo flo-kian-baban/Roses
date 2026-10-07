@@ -1,29 +1,38 @@
-import { route, redirect, forbidden, revalidateVenue, bi, text, flag, rows } from '@/lib/admin/api';
+// Venue details, JSON: { action:'update', id, patch:{ name, tagline, locations, showPersianDrafts } }, main admin only.
+// The Details tab that uses it comes in step 2 of the admin rebuild; the route is here so the API is complete.
+import { jsonRoute, ApiError, revalidateVenue, biOf, boolOf, idOf, str, type JsonBody } from '@/lib/admin/api';
 import { isAdmin } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
 import { getVenueRow, updateVenue } from '@/lib/admin/venue';
 import type { Location } from '@/lib/types';
+void idOf;
 
-export default route({}, async ({ res, session, body, back }) => {
-  const s = session!;
-  if (!isAdmin(s)) return forbidden(res, 'venue details are edited by the main admin');
-  const venue = await getVenueRow(body.id);
-  if (!venue) return redirect(res, back, { error: 'venue not found' });
-  const name = bi(body, 'name'); if (!name.en) return redirect(res, back, { error: 'the English name is required' });
-  const locations: Location[] = rows(body, 'l', ['label_en', 'label_fa', 'address', 'phone', 'hours_en', 'hours_fa', 'confirmed']).map((r, i) => {
-    const prev = venue.locations[i];
-    const loc: Location = { label: { en: r.label_en || null, fa: r.label_fa || null }, address: r.address || null, phone: r.phone || null, hours: { en: r.hours_en || null, fa: r.hours_fa || null } };
-    // "to confirm" marks: cleared for a field when it is edited, or for the whole location when ticked confirmed.
-    if (prev?.confirm?.length && !(r.confirmed === 'on' || r.confirmed === '1')) {
-      const still = prev.confirm.filter((f) => (f === 'address' && loc.address === prev.address) || (f === 'phone' && loc.phone === prev.phone) || (f === 'hours' && loc.hours.en === prev.hours.en));
-      if (still.length) loc.confirm = still;
-    }
-    return loc;
-  });
-  if (!locations.length) return redirect(res, back, { error: 'at least one location is needed' });
-  if (locations.some((l) => l.phone && !/^[\d\s()+\-.]{7,20}$/.test(l.phone))) return redirect(res, back, { error: 'a phone number can hold digits, spaces, (), + and - only' });
-  const r = await updateVenue(venue.id, { name, tagline: bi(body, 'tagline'), locations, settings: { ...venue.settings, showPersianDrafts: flag(body, 'showPersianDrafts') } }, byOf(s));
-  if (!r.ok) return redirect(res, back, { error: r.error });
+export default jsonRoute(async ({ res, session, body }) => {
+  if (!isAdmin(session)) throw new ApiError(403, 'venue details are edited by the main admin');
+  const venue = await getVenueRow(str(body.id) ?? '');
+  if (!venue) throw new ApiError(404, 'venue not found');
+  if (body.action !== 'update') throw new ApiError(400, 'unknown action');
+  const p = (body.patch && typeof body.patch === 'object' ? body.patch : {}) as JsonBody;
+  const patch: Parameters<typeof updateVenue>[1] = {};
+  if ('name' in p) { patch.name = biOf(p.name); if (!patch.name.en) throw new ApiError(400, 'The English name is required'); }
+  if ('tagline' in p) patch.tagline = biOf(p.tagline);
+  if ('showPersianDrafts' in p) patch.settings = { ...venue.settings, showPersianDrafts: boolOf(p.showPersianDrafts) };
+  if ('locations' in p) {
+    const locs = (Array.isArray(p.locations) ? p.locations : []).map((l, i): Location => {
+      const o = (l && typeof l === 'object' ? l : {}) as JsonBody; const prev = venue.locations[i];
+      const loc: Location = { label: biOf(o.label), address: str(o.address), phone: str(o.phone), hours: biOf(o.hours) };
+      if (prev?.confirm?.length && !boolOf(o.confirmed)) { // "to confirm" marks clear per field when it is edited, or for the location when confirmed
+        const still = prev.confirm.filter((f) => (f === 'address' && loc.address === prev.address) || (f === 'phone' && loc.phone === prev.phone) || (f === 'hours' && loc.hours.en === prev.hours.en));
+        if (still.length) loc.confirm = still;
+      }
+      return loc;
+    });
+    if (!locs.length) throw new ApiError(400, 'at least one location is needed');
+    if (locs.some((l) => l.phone && !/^[\d\s()+\-.]{7,20}$/.test(l.phone))) throw new ApiError(400, 'a phone number can hold digits, spaces, (), + and - only');
+    patch.locations = locs;
+  }
+  const r = await updateVenue(venue.id, patch, byOf(session));
+  if (!r.ok) throw new ApiError(400, r.error);
   await revalidateVenue(res, venue.id);
-  return redirect(res, back, { saved: '1' });
+  return { revisions: r.revision ? [r.revision] : [] };
 });

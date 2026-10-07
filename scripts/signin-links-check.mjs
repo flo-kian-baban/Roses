@@ -38,7 +38,7 @@ for (const venue of ['senso', 'kebab-land']) {
 { const resp = await page.goto(`${base}/admin`); const s = await formState(); await page.screenshot({ path: path.join(out, 'signin-picker.png'), fullPage: true });
   check(resp.status() === 200 && s.hasPinInput && s.hiddenVenue === null && s.radios.length === 2, `GET /admin without a session → ${resp.status()}, venue picker with ${s.radios.length} radios [${s.radios.join(', ')}], no hidden venue`); }
 { const resp = await page.goto(`${base}/admin/login?mode=admin`); check(page.url() === `${base}/admin?mode=admin`, `old /admin/login?mode=admin → ${resp.status()} at ${page.url()}`); }
-{ await page.goto(`${base}/admin/senso/items/new`); check(page.url() === `${base}/admin/senso`, `GET /admin/senso/items/new without a session → redirected to ${page.url()} (the venue's sign-in link)`); }
+{ await page.goto(`${base}/admin/team`); check(page.url() === `${base}/admin`, `GET /admin/team without a session → redirected to ${page.url()} (the sign-in picker)`); }
 // wrong PIN from the bookmarked Kebab Land link
 await page.goto(`${base}/admin/kebab-land`);
 await page.fill('input[name=pin]', '000000'); await page.click('button[type=submit]'); await page.waitForLoadState('domcontentloaded');

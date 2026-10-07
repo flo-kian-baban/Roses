@@ -1,6 +1,5 @@
-// Server-rendered building blocks for the admin (phone first, no client JavaScript). Pages compose these; the
-// form field names, button texts and routes are the contract the API routes and the drills rely on.
-import type { Bi, Venue } from '@/lib/types';
+// Server-rendered building blocks shared by the sign-in, Team and frame. The page editor has its own client-side kit.
+import type { Venue } from '@/lib/types';
 import type { Session } from '@/lib/admin/auth';
 import { Icon, type IconName } from './icons';
 
@@ -8,9 +7,9 @@ export type SP = Record<string, string | string[] | undefined>;
 export const one = (sp: SP, k: string) => (Array.isArray(sp[k]) ? sp[k]?.[0] : sp[k]) as string | undefined;
 
 export function Notice({ sp }: { sp: SP }) {
-  const error = one(sp, 'error'); const saved = one(sp, 'saved'); const restored = one(sp, 'restored'); const deleted = one(sp, 'deleted'); const revoked = one(sp, 'revoked'); const unlocked = one(sp, 'unlocked'); const seen = one(sp, 'seen');
+  const error = one(sp, 'error'); const revoked = one(sp, 'revoked'); const unlocked = one(sp, 'unlocked'); const seen = one(sp, 'seen');
   if (error) return <p role="alert" className="mb-5 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900"><Icon name="alert" className="mt-0.5 h-5 w-5 text-red-600" /><span>{error}</span></p>;
-  const ok = saved ? 'Saved.' : restored ? `Restored from history (revision ${restored}).` : deleted ? 'Deleted. It stays in the history and can be restored.' : revoked ? 'PIN revoked.' : unlocked ? `PIN login unlocked for ${unlocked}.` : seen ? 'Alert marked as seen.' : null;
+  const ok = revoked ? 'PIN revoked.' : unlocked ? `PIN login unlocked for ${unlocked}.` : seen ? 'Alert marked as seen.' : null;
   return ok ? <p role="status" className="mb-5 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[15px] text-emerald-900"><Icon name="check" className="mt-0.5 h-5 w-5 text-emerald-600" /><span>{ok}</span></p> : null;
 }
 
@@ -24,8 +23,6 @@ export const input = 'mt-1 block w-full rounded-xl border border-[#d2d2d7] bg-wh
 export const button = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2 text-base font-semibold whitespace-nowrap transition active:scale-[.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
 export const primary = `${button} bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.28),0_8px_20px_-8px_rgba(238,106,58,.7)] hover:brightness-105`;
 export const secondary = `${button} border border-line bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.04)] hover:bg-fill`;
-export const ghost = `${button} text-ink hover:bg-fill`;
-export const danger = `${button} border border-red-200 bg-white text-red-600 hover:bg-red-50`;
 export const sm = 'min-h-9 px-3.5 py-1.5 text-sm';
 
 export function Card({ id, title, description, actions, children, className = '', tone = 'default', icon }: { id?: string; title?: React.ReactNode; description?: React.ReactNode; actions?: React.ReactNode; children?: React.ReactNode; className?: string; tone?: 'default' | 'danger' | 'warn'; icon?: IconName }) {
@@ -46,68 +43,16 @@ export function Card({ id, title, description, actions, children, className = ''
   );
 }
 
-export function PageHeader({ back, eyebrow, title, subtitle, actions }: { back?: { href: string; label: string }; eyebrow?: React.ReactNode; title: React.ReactNode; subtitle?: React.ReactNode; actions?: React.ReactNode }) {
+export function PageHeader({ eyebrow, title, subtitle, actions }: { eyebrow?: React.ReactNode; title: React.ReactNode; subtitle?: React.ReactNode; actions?: React.ReactNode }) {
   return (
     <div className="mb-5 flex flex-wrap items-end justify-between gap-3 sm:mb-6">
       <div className="min-w-0">
-        {back && <a href={back.href} className="mb-2 inline-flex min-h-8 items-center gap-1 text-sm font-medium text-ink-muted hover:text-ink"><Icon name="back" className="h-4 w-4" />{back.label}</a>}
         {eyebrow && <p className="text-sm font-medium text-accent-strong">{eyebrow}</p>}
         <h1 className="text-[26px] font-semibold leading-tight sm:text-[32px]">{title}</h1>
         {subtitle && <p className="mt-1 max-w-2xl text-[15px] text-ink-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
-  );
-}
-
-export function Stat({ label, value, icon, tone = 'grey', href, active, hint }: { label: string; value: React.ReactNode; icon?: IconName; tone?: 'grey' | 'green' | 'amber' | 'blue' | 'accent'; href?: string; active?: boolean; hint?: string }) {
-  const iconTone = { grey: 'bg-[linear-gradient(180deg,#a1a1aa,#8e8e93)]', green: 'bg-[linear-gradient(180deg,#4cd964,#34c759)]', amber: 'bg-[linear-gradient(180deg,#ffb340,#ff9500)]', blue: 'bg-[linear-gradient(180deg,#5ac8fa,#007aff)]', accent: 'bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))]' }[tone];
-  const cls = `block rounded-[20px] border bg-white p-4 shadow-card transition ${active ? 'border-accent ring-[3px] ring-accent/15' : 'border-line'} ${href ? 'hover:-translate-y-px hover:shadow-pop' : ''}`;
-  const body = (
-    <>
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium leading-tight text-ink-muted">{label}</span>
-        {icon && <span className={`rounded-[9px] p-1.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,.3)] ${iconTone}`}><Icon name={icon} className="h-4 w-4" strokeWidth={2.2} /></span>}
-      </div>
-      <p className="mt-2 text-[30px] font-semibold leading-none tabular-nums tracking-[-0.02em]">{value}</p>
-      {hint && <p className="mt-2 text-xs text-ink-muted">{hint}</p>}
-    </>
-  );
-  return href ? <a href={href} className={cls}>{body}</a> : <div className={cls}>{body}</div>;
-}
-
-export function Field({ label, name, value, type = 'text', hint, dir, required, inputMode, placeholder, prefix }: { label: string; name: string; value?: string | number | null; type?: string; hint?: string; dir?: 'rtl' | 'ltr'; required?: boolean; inputMode?: 'numeric' | 'decimal' | 'text' | 'url'; placeholder?: string; prefix?: string }) {
-  return (
-    <label className="block">
-      <span className="text-sm font-medium">{label}{required && ' *'}</span>
-      {prefix ? (
-        <span className="relative block"><span className="pointer-events-none absolute inset-y-0 left-3.5 top-1 flex items-center text-neutral-500">{prefix}</span><input className={`${input} pl-8`} name={name} type={type} defaultValue={value ?? ''} dir={dir} required={required} inputMode={inputMode} placeholder={placeholder} /></span>
-      ) : (
-        <input className={input} name={name} type={type} defaultValue={value ?? ''} dir={dir} required={required} inputMode={inputMode} placeholder={placeholder} lang={dir === 'rtl' ? 'fa' : undefined} />
-      )}
-      {hint && <span className="mt-1 block text-xs text-ink-muted">{hint}</span>}
-    </label>
-  );
-}
-
-export function BiFields({ label, name, value, long, missing, required }: { label: string; name: string; value: Bi | null | undefined; long?: boolean; missing?: boolean; required?: boolean }) {
-  const Tag = long ? 'textarea' : 'input';
-  const cls = long ? `${input} min-h-28` : input;
-  return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      <label className="block"><span className="text-sm font-medium">{label} <span className="text-ink-muted">(English)</span>{required && ' *'}</span><Tag className={cls} name={`${name}_en`} defaultValue={value?.en ?? ''} required={required} /></label>
-      <label className="block"><span className="flex items-center gap-2 text-sm font-medium"><span>{label} <span className="text-ink-muted">(فارسی)</span></span>{missing && <Badge tone="amber">Persian missing</Badge>}</span><Tag className={cls} name={`${name}_fa`} defaultValue={value?.fa ?? ''} dir="rtl" lang="fa" /></label>
-    </div>
-  );
-}
-
-// A native checkbox drawn as a toggle (see .switch in globals.css).
-export function Switch({ name, label, hint, defaultChecked, disabled, title, value }: { name: string; label: React.ReactNode; hint?: React.ReactNode; defaultChecked?: boolean; disabled?: boolean; title?: string; value?: string }) {
-  return (
-    <label className={`flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-[22px] border border-line bg-white px-4 py-3 ${disabled ? 'cursor-not-allowed' : ''}`} title={title}>
-      <span className="min-w-0"><span className="block font-medium">{label}</span>{hint && <span className="mt-0.5 block text-xs text-ink-muted">{hint}</span>}</span>
-      <input type="checkbox" name={name} value={value} className="switch" defaultChecked={defaultChecked} disabled={disabled} />
-    </label>
   );
 }
 
@@ -119,12 +64,6 @@ export function CheckCard({ type = 'checkbox', name, value, defaultChecked, chil
       <span className="min-w-0 text-[15px]">{children}</span>
     </label>
   );
-}
-
-export function Photo({ url, alt = '', className = '' }: { url?: string | null; alt?: string; className?: string }) {
-  return url
-    ? <img src={url} alt={alt} loading="lazy" decoding="async" className={`object-cover ${className}`} />
-    : <div className={`flex items-center justify-center bg-fill text-neutral-400 ${className}`}><Icon name="image" className="h-6 w-6" /></div>;
 }
 
 // The venue logo on its own brand background (Senso on cream, Kebab Land white-on-dark).
@@ -160,5 +99,3 @@ export function When({ at, style = 'full' }: { at: string | Date; style?: 'full'
   const text = style === 'time' ? d.toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' }) : style === 'date' ? d.toLocaleDateString('en-CA', { dateStyle: 'medium' }) : d.toLocaleString('en-CA', { dateStyle: 'medium', timeStyle: 'short' });
   return <time dateTime={d.toISOString()}>{text}</time>;
 }
-
-export const dayKey = (at: string | Date) => new Date(at).toLocaleDateString('en-CA', { dateStyle: 'full' });

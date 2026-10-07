@@ -356,6 +356,11 @@ Coming right after the MVP: (a) seasonal menus and offers on top of the base men
 - Section 8: logos, colours and fonts come from the venues' own sites and logo files, each listed with its source in the import report; nothing invented. Phone numbers stay masked in data/raw only; the venue seed holds the public numbers.
 - Section 9: Q2 answered; Q1 deferred with the hosting decision.
 
+## Revision notes (revision 6, 2026-10-07, admin rebuild step 1)
+
+- Section 1 Admin: replaced by Kian's page editor (one screen per venue with the customers' page as a phone preview; React client components in the admin only; JSON API routes; "Shown / Hidden" wording). History and restore screens removed; the `revisions` table stays as the silent change record and powers "Saved · Undo". Full decisions in CLAUDE.md ("Admin rebuild").
+- T6 acceptance: the history/restore drill is replaced by the page editor drill (task targets with tap counts, preview ≤ 1 s, reorder and Undo on the public page, change record, no preview script) in `npm run check`. Step 2 (Style, Details, + Add venue, photo upload, tap-to-edit in the preview) is next.
+
 ## Revision notes (revision 5c, 2026-10-07, Kian's first Milestone 1 request)
 
 - Admins sign in with a PIN (migration `003_admin_pin.sql`: `admins.pin_hash`, password optional). Kian's decision replaces the PM's email + password build decision; the email path remains as a fallback. Kian's PIN is 0000 for now; changing it is on the go-live checklist. Trade-off stated to Kian: a 4-digit PIN is weak, the lockout (5 per 15 minutes per venue and address, 50 per hour per venue) limits guessing, and the app is local-only.

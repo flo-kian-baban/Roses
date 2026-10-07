@@ -10,7 +10,7 @@ export async function listPins(): Promise<PinRow[]> {
 }
 
 // Returns the PIN once; only its hash is stored.
-export async function createPin(data: { name: string; role: 'owner' | 'staff'; venueIds: string[]; createdBy: string }): Promise<{ id: string; pin: string }> {
+export async function createPin(data: { name: string; role: 'owner' | 'staff'; venueIds: string[]; createdBy: string | null }): Promise<{ id: string; pin: string }> {
   const pin = String(randomInt(0, 1_000_000)).padStart(6, '0');
   const r = await pool.query<{ id: string }>(`insert into pins (name, role, venue_ids, pin_hash, created_by) values ($1,$2,$3,$4,$5) returning id`, [data.name, data.role, data.venueIds, hashSecret(pin), data.createdBy]);
   return { id: r.rows[0].id, pin };

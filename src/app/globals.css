@@ -60,9 +60,6 @@ html[data-intro="skip"] #intro, html[data-intro="done"] #intro { display: none; 
 .admin .switch:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 .admin .switch:disabled { opacity: .45; cursor: not-allowed; }
 @media (prefers-reduced-motion: reduce) { .admin .switch, .admin .switch::after { transition: none; } }
-/* Sticky Save bar: above the phone tab bar, at the bottom on laptops. */
-.admin .save-bar { bottom: calc(3.5rem + env(safe-area-inset-bottom)); }
-@media (min-width: 64rem) { .admin .save-bar { bottom: 0; } }
 /* Checkboxes and radios drawn in the same style (still native inputs: forms and drills work unchanged). */
 .admin .check { appearance: none; -webkit-appearance: none; flex: none; width: 22px; height: 22px; margin: 0; border: 1.5px solid #c7c7cc; background: #fff; cursor: pointer; transition: background .15s ease, border-color .15s ease; display: grid; place-items: center; }
 .admin .check[type="checkbox"] { border-radius: 7px; }
@@ -97,3 +94,13 @@ body:has(dialog[open]) { overflow: hidden; }
 /* Section change: a soft full-width grey band between categories (Uber Eats-style), no hairline under a section's last row. */
 .section-divider { height: 8px; margin: 0 -16px; background: #f3f3f3; }
 main section li.item:last-child { border-bottom: 0; }
+
+/* ---------- Page editor (admin rebuild, Kian 2026-10-07): phone frame for the preview, drop markers for drag-and-drop. ---------- */
+.admin .phone-frame { width: 390px; max-width: 100%; height: min(760px, calc(100dvh - 9.5rem)); border: 10px solid #1d1d1f; border-radius: 40px; background: #1d1d1f; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .45); }
+.admin .phone-frame iframe { border-radius: 30px; }
+.admin .drop-before { box-shadow: 0 -2px 0 0 var(--color-accent); }
+.admin .drop-after { box-shadow: 0 2px 0 0 var(--color-accent); }
+.admin [draggable="true"] { -webkit-user-drag: element; }
+.admin .toast { animation: toast-in .2s ease-out; }
+@keyframes toast-in { from { opacity: 0; margin-bottom: -8px; } to { opacity: 1; margin-bottom: 0; } }
+@media (prefers-reduced-motion: reduce) { .admin .toast { animation: none; } }

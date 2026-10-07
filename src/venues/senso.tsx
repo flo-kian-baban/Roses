@@ -22,7 +22,7 @@ export function SensoPage({ venue, sections }: { venue: Venue; sections: Section
 
         <div className="mx-auto max-w-2xl px-4 pb-16">
           {sections.map((s, n) => (
-            <section key={s.id} id={slug(s.name.en ?? s.id)} className="scroll-mt-14">
+            <section key={s.id} id={slug(s.name.en ?? s.id)} data-id={s.id} className="scroll-mt-14">
               {n > 0 && <div className="section-divider" aria-hidden="true" />}
               <Bi as="h2" text={s.name} className="pt-6 text-[24px] font-bold leading-tight" />
               <Bi as="p" text={s.note} className="mt-1 text-[14px] text-[#6b6b6b]" />

@@ -1,52 +1,66 @@
-import { route, redirect, forbidden, revalidateVenue, bi, text, money, flag, list, rows, type Body } from '@/lib/admin/api';
+// Items, JSON (the page editor). Every action answers { ok, revisions: [record ids], item? } and regenerates the public page.
+//   create  { action:'create', venue, section_id, name:{en,fa}, price, photo_url }   shown when it has a price
+//   update  { action:'update', id, patch:{ name, description, price, variants, add_ons, components, serves, photo:{url,alt}, listed, section_ids } }
+//   notes   { action:'notes', id, notes }                                            owner or admin only (403)
+//   move    { action:'move', id, section_id, index }                                 order within one section
+//   delete  { action:'delete', id }
+import { jsonRoute, ApiError, revalidateVenue, biOf, moneyOf, boolOf, idOf, str, photoOf, type JsonBody } from '@/lib/admin/api';
 import { canEditNotes, canEditVenue } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
-import { createItem, deleteItem, getItem, updateItem, type ItemPatch, type Notes } from '@/lib/admin/items';
+import { createItem, deleteItem, editorItem, getItem, moveItem, updateItem, type ItemPatch, type Notes } from '@/lib/admin/items';
 import type { AddOn, Component, Variant } from '@/lib/types';
 
-function readForm(b: Body): ItemPatch {
-  const variants: Variant[] = rows(b, 'v', ['en', 'fa', 'price']).map((r) => ({ label: { en: r.en || null, fa: r.fa || null }, price: r.price === '' ? null : money({ p: r.price }, 'p') }));
-  const add_ons: AddOn[] = rows(b, 'a', ['group_en', 'group_fa', 'en', 'fa', 'price', 'required']).map((r) => ({ group: { en: r.group_en || null, fa: r.group_fa || null }, label: { en: r.en || null, fa: r.fa || null }, price: money({ p: r.price }, 'p') ?? 0, required: r.required === 'on' || r.required === '1' }));
-  const components: Component[] = rows(b, 'c', ['en', 'fa', 'qty', 'item_id']).map((r) => ({ item_id: r.item_id || null, label: { en: r.en || null, fa: r.fa || null }, qty: Math.max(1, Number(r.qty || 1) || 1) }));
-  const photoUrl = text(b, 'photo_url');
-  if (photoUrl && !/^https?:\/\/\S+$/i.test(photoUrl) && !photoUrl.startsWith('/')) throw new Error('the photo must be a web address (https://…)');
-  const name = bi(b, 'name');
-  if (!name.en) throw new Error('the English name is required');
-  return {
-    name, description: bi(b, 'description'), price: money(b, 'price'), variants, add_ons, components,
-    serves: text(b, 'serves'), photo: photoUrl ? { url: photoUrl, alt: { en: text(b, 'photo_alt_en') ?? name.en, fa: text(b, 'photo_alt_fa') ?? name.fa } } : null,
-    listed: flag(b, 'listed'), section_ids: list(b, 'section_ids'),
-  };
+const arr = (v: unknown): Record<string, unknown>[] => (Array.isArray(v) ? v.filter((x) => x && typeof x === 'object') : []);
+
+function readPatch(p: JsonBody): ItemPatch {
+  const out: ItemPatch = {};
+  if ('name' in p) { out.name = biOf(p.name); if (!out.name.en) throw new ApiError(400, 'The English name is required'); }
+  if ('description' in p) out.description = biOf(p.description);
+  if ('price' in p) out.price = moneyOf(p.price);
+  if ('serves' in p) out.serves = str(p.serves);
+  if ('listed' in p) out.listed = boolOf(p.listed);
+  if ('variants' in p) out.variants = arr(p.variants).map((r): Variant => ({ label: biOf(r.label), price: moneyOf(r.price) })).filter((v) => v.label.en || v.label.fa);
+  if ('add_ons' in p) out.add_ons = arr(p.add_ons).map((r): AddOn => ({ group: biOf(r.group), label: biOf(r.label), price: moneyOf(r.price) ?? 0, required: boolOf(r.required) })).filter((a) => a.label.en || a.label.fa);
+  if ('components' in p) out.components = arr(p.components).map((r): Component => ({ ...r, item_id: str(r.item_id), label: biOf(r.label), qty: Math.max(1, Math.trunc(Number(r.qty) || 1)) })).filter((c) => c.label.en || c.label.fa);
+  if ('photo' in p) { const ph = (p.photo && typeof p.photo === 'object' ? p.photo : {}) as JsonBody; out.photo = photoOf(ph.url, biOf(ph.alt)); }
+  if ('section_ids' in p) out.section_ids = Array.isArray(p.section_ids) ? p.section_ids.map(idOf) : [];
+  return out;
 }
 
-function readNotes(b: Body): Notes {
-  const halal = b.notes_halal === 'yes' ? true : b.notes_halal === 'no' ? false : null;
-  return { allergens: list(b, 'notes_allergens'), dietary: list(b, 'notes_dietary'), halal, text: bi(b, 'notes_text') };
+function readNotes(v: unknown): Notes {
+  const n = (v && typeof v === 'object' ? v : {}) as JsonBody;
+  const words = (x: unknown) => (Array.isArray(x) ? x.map(String) : String(x ?? '').split(',')).map((s) => s.trim()).filter(Boolean);
+  return { allergens: words(n.allergens), dietary: words(n.dietary), halal: n.halal === true ? true : n.halal === false ? false : null, text: biOf(n.text) };
 }
 
-export default route({}, async ({ res, session, body, back }) => {
-  const s = session!; const by = byOf(s);
-  const action = body._action;
-  if (action === 'create') {
-    const venueId = body.venue;
-    if (!canEditVenue(s, venueId)) return forbidden(res, 'no access to this venue');
-    const r = await createItem(venueId, readForm(body) as ItemPatch & { name: { en: string; fa: string | null } }, by);
-    if (!r.ok) return redirect(res, back, { error: r.error });
+export default jsonRoute(async ({ res, session, body }) => {
+  const by = byOf(session);
+  if (body.action === 'create') {
+    const venueId = str(body.venue) ?? ''; const sectionId = idOf(body.section_id);
+    if (!canEditVenue(session, venueId)) throw new ApiError(403, 'no access to this venue');
+    const name = biOf(body.name); if (!name.en) throw new ApiError(400, 'The name is required');
+    const price = moneyOf(body.price);
+    const r = await createItem(venueId, { name, price, photo: photoOf(body.photo_url, { en: name.en, fa: name.fa }), listed: price != null, section_ids: [sectionId] }, by);
+    if (!r.ok) throw new ApiError(400, r.error);
     await revalidateVenue(res, venueId);
-    return redirect(res, `/admin/${venueId}/items/${r.id}`, { saved: '1' });
+    return { revisions: [r.revision], item: await editorItem(r.id) };
   }
-  const item = await getItem(body.id);
-  if (!item) return redirect(res, back, { error: 'item not found' });
-  if (!canEditVenue(s, item.venue_id)) return forbidden(res, 'no access to this venue');
+  const id = idOf(body.id);
+  const item = await getItem(id);
+  if (!item) throw new ApiError(404, 'item not found');
+  if (!canEditVenue(session, item.venue_id)) throw new ApiError(403, 'no access to this venue');
   let r;
-  if (action === 'save') r = await updateItem(item.id, readForm(body), by);
-  else if (action === 'list') r = await updateItem(item.id, { listed: true }, by);
-  else if (action === 'unlist') r = await updateItem(item.id, { listed: false }, by);
-  else if (action === 'notes') { if (!canEditNotes(s)) return forbidden(res, 'allergen, dietary and halal notes are set by the owner or an admin only'); r = await updateItem(item.id, { notes: readNotes(body) }, by); }
-  else if (action === 'delete') { if (!flag(body, 'confirm')) return redirect(res, back, { error: 'tick "I am sure" to delete' }); r = await deleteItem(item.id, by); }
-  else return redirect(res, back, { error: 'unknown action' });
-  if (!r.ok) return redirect(res, back, { error: r.error });
+  if (body.action === 'update') r = await updateItem(id, readPatch((body.patch && typeof body.patch === 'object' ? body.patch : {}) as JsonBody), by);
+  else if (body.action === 'notes') { if (!canEditNotes(session)) throw new ApiError(403, 'Allergen, dietary and halal notes are set by the owner or an admin only'); r = await updateItem(id, { notes: readNotes(body.notes) }, by); }
+  else if (body.action === 'move') {
+    const m = await moveItem(idOf(body.section_id), id, Number(body.index), by);
+    if (!m.ok) throw new ApiError(400, m.error);
+    await revalidateVenue(res, item.venue_id);
+    return { revisions: m.revision ? [m.revision] : [], order: { section_id: body.section_id, item_ids: m.order } };
+  }
+  else if (body.action === 'delete') r = await deleteItem(id, by);
+  else throw new ApiError(400, 'unknown action');
+  if (!r.ok) throw new ApiError(400, r.error);
   await revalidateVenue(res, item.venue_id);
-  if (action === 'delete') return redirect(res, `/admin/${item.venue_id}`, { deleted: '1' });
-  return redirect(res, back, { saved: '1' });
+  return { revisions: r.revision ? [r.revision] : [], item: body.action === 'delete' ? null : await editorItem(id) };
 });

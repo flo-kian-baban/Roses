@@ -18,7 +18,7 @@ import { loadEnv } from './load-env.mjs';
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
 const out = path.resolve('reports/checks', stamp);
-fs.mkdirSync(out, { recursive: true });
+fs.mkdirSync(path.join(out, 'editor'), { recursive: true });
 const DIST = '.next-check', PORT = 3100, PROXY_PORT = 3101;
 const base = `http://127.0.0.1:${PORT}`;
 const started = Date.now();
@@ -135,7 +135,7 @@ try {
       return { pass: r.status === 0 && s.runs.length === 3 && worst <= 2500, evidence: [`${venue}/lighthouse-summary.json`, `${venue}/lighthouse.log`], note: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms, performance ${s.runs.map((x) => x.performance).join(' / ')} (target ≤ 2500, local estimate)` };
     });
   }
-  await step('admin drill (sign-ins, cookie, PINs, listing rule, sections, notes, edits + restore, delete + restore, venue details)', () => {
+  await step('admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, revoked PIN)', () => {
     const r = runSync('node', ['scripts/admin-drill.mjs', '--base', base, '--out', path.join(out, 'admin'), '--jpeg'], { env: drillEnv, logFile: 'admin/admin-drill.log' });
     const m = (r.stdout.match(/ADMIN DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || []);
     return { pass: r.status === 0, evidence: ['admin/admin-drill.txt', 'admin/admin-drill.json', 'admin/*.jpg'], note: m[0] || `exit ${r.status}` };
@@ -144,10 +144,16 @@ try {
     const r = runSync('node', ['scripts/lockout-drill.mjs', '--base4', base, '--base6', `http://[::1]:${PORT}`, '--proxyBase', `http://127.0.0.1:${PROXY_PORT}`, '--out', out], { env: drillEnv, logFile: 'lockout-drill.log' });
     return { pass: r.status === 0, evidence: ['lockout-drill.txt'], note: (r.stdout.match(/LOCKOUT DRILL (PASS|FAIL)/) || [])[0] || `exit ${r.status}` };
   });
-  await step('revalidation: admin save reaches the public page within 10 s', () => {
+  await step('revalidation: a price changed in the editor reaches the public page within 10 s, then Undo', () => {
     const r = runSync('node', ['scripts/revalidation-drill.mjs', '--base', base, '--venue', 'senso', '--item', 'Turkish Coffee', '--out', out], { env: drillEnv, logFile: 'revalidation-drill.log' });
-    const m = r.stdout.match(/visible on the public page (\d+) ms after Save/);
-    return { pass: r.status === 0, evidence: ['revalidation-log.txt'], note: m ? `${m[1]} ms after Save` : `exit ${r.status}` };
+    const m = r.stdout.match(/visible on the public page (\d+) ms after Save/); const u = r.stdout.match(/shows \$[\d.]+ again (\d+) ms after the tap/);
+    return { pass: r.status === 0, evidence: ['revalidation-log.txt'], note: m ? `${m[1]} ms after Enter${u ? `; Undo back on the page ${u[1]} ms after the tap` : ''}` : `exit ${r.status}` };
+  });
+  await step('page editor drill (task targets with tap counts, preview ≤ 1 s, reorder on the public page, Undo on the public page, change record, no preview script)', () => {
+    const r = runSync('node', ['scripts/editor-drill.mjs', '--base', base, '--out', path.join(out, 'editor'), '--dist', DIST, '--jpeg'], { env: drillEnv, logFile: 'editor/editor-drill.log' });
+    const m = (r.stdout.match(/EDITOR DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
+    return { pass: r.status === 0, evidence: ['editor/editor-drill.txt', 'editor/editor-drill.json', 'editor/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   });
   await step('backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)', () => {
     const r = runSync('bash', ['scripts/backup-drill.sh', path.join(out, 'backup-drill.txt')], { logFile: 'backup-drill.log' }); // drills the scratch copy (ROSES_DB), dump into the run folder

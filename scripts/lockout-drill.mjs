@@ -32,7 +32,7 @@ const cookie = (adminLogin.setCookie || '').split(';')[0];
 if (!cookie.startsWith('roses_session=') || adminLogin.location !== '/admin') { console.error('admin login failed', adminLogin); process.exit(1); }
 log('admin signed in (cookie received); creating drill PINs');
 async function makePin(name, venues) {
-  const res = await fetch(base4 + '/api/admin/pin', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie }, body: new URLSearchParams({ _action: 'create', name, role: 'staff', venue_ids: venues.join(','), _back: '/admin/pins' }).toString() });
+  const res = await fetch(base4 + '/api/admin/pin', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie }, body: new URLSearchParams({ _action: 'create', name, role: 'staff', venue_ids: venues.join(','), _back: '/admin/team' }).toString() });
   const html = await res.text(); const pin = html.match(/class="pin">(\d{6})</)?.[1]; if (!pin) throw new Error('PIN not shown');
   const id = (await db.query('select id from pins where name = $1 order by created_at desc limit 1', [name])).rows[0].id;
   return { pin, id };
@@ -57,7 +57,7 @@ const pass1 = lockedA.status === 303 && /too many wrong PINs|locked/.test(msg(lo
 log(`Part 1 ${pass1 ? 'PASS' : 'FAIL'}`);
 
 // Revoked PIN (T6 b)
-await fetch(base4 + '/api/admin/pin', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie }, body: new URLSearchParams({ _action: 'revoke', id: toRevoke.id, _back: '/admin/pins' }).toString() });
+await fetch(base4 + '/api/admin/pin', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie }, body: new URLSearchParams({ _action: 'revoke', id: toRevoke.id, _back: '/admin/team' }).toString() });
 const beforeRevokeOk = await post(base6, '/api/admin/login', { mode: 'pin', venue: 'senso', pin: good.pin });
 const revoked = await post(base6, '/api/admin/login', { mode: 'pin', venue: 'senso', pin: toRevoke.pin });
 log(`--- revoked PIN from address B: ${revoked.status} → ${msg(revoked.location)} (cookie set: ${!!revoked.setCookie}); the valid PIN from B just before: ${beforeRevokeOk.location}`);
@@ -91,7 +91,7 @@ log(`admin unlock of kebab-land: ${unlock.status} → ${unlock.headers.get('loca
 const afterUnlock = await post(proxyBase, '/api/admin/login', { mode: 'pin', venue: 'kebab-land', pin: good.pin }, { 'x-forwarded-for': '203.0.113.99' });
 log(`correct PIN on kebab-land after unlock: ${afterUnlock.status} → ${afterUnlock.location}`);
 await db.query(`delete from login_failures where key like 'senso:%' or key = 'venue:senso'`);
-await fetch(base4 + '/api/admin/pin', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie }, body: new URLSearchParams({ _action: 'revoke', id: good.id, _back: '/admin/pins' }).toString() });
+await fetch(base4 + '/api/admin/pin', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie }, body: new URLSearchParams({ _action: 'revoke', id: good.id, _back: '/admin/team' }).toString() });
 log('drill PINs revoked; senso lock rows cleared so nobody stays locked out');
 await db.end();
 const pass = pass1 && pass2 && pass3 && afterUnlock.location === '/admin/kebab-land';

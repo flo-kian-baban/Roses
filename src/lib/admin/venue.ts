@@ -25,9 +25,10 @@ export async function updateVenue(id: string, patch: Partial<VenueSnapshot>, by:
     const before: VenueSnapshot = { name: row.name, tagline: row.tagline, locations: row.locations, settings: row.settings };
     const next: VenueSnapshot = { ...before, ...Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined)) } as VenueSnapshot;
     await client.query('update venues set name=$2, tagline=$3, locations=$4, settings=$5, updated_at=now(), updated_by=$6 where id=$1', [id, next.name, next.tagline, JSON.stringify(next.locations), next.settings, by]);
-    await recordRevision(client, { venueId: id, table: 'venues', rowId: id, action: 'update', before, after: next, by });
+    if (JSON.stringify(before) === JSON.stringify(next)) { await client.query('rollback'); return { ok: true, id }; }
+    const revision = await recordRevision(client, { venueId: id, table: 'venues', rowId: id, action: 'update', before, after: next, by });
     await client.query('commit');
-    return { ok: true, id };
+    return { ok: true, id, revision };
   } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
 }
 

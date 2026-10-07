@@ -1,0 +1,197 @@
+{
+  "base": "http://127.0.0.1:3100",
+  "at": "2026-10-07T22:56:43.328Z",
+  "pass": true,
+  "results": [
+    {
+      "step": "t-add",
+      "ok": true,
+      "text": "add an item: 1 tap (+ Add item) + name + price + Enter → created shown at $4.50, last in \"Senso Signature\" (position 1127 of 1127); on the public page 15 ms after Enter"
+    },
+    {
+      "step": "t-price",
+      "ok": true,
+      "text": "change a price: 1 tap (the price) + typing + Enter → $5.25 in the database 56 ms after Enter; row shows $5.25"
+    },
+    {
+      "step": "t-hide",
+      "ok": true,
+      "text": "hide an item: 1 tap (the switch) → hidden in the database 56 ms later, off the public page after 6 ms"
+    },
+    {
+      "step": "t-show",
+      "ok": true,
+      "text": "show it again: 1 tap → shown, back on the public page after 6 ms"
+    },
+    {
+      "step": "switch-reason",
+      "ok": true,
+      "text": "switch on \"Aash-e-Reshteh\" (no price) refused with \"The item needs a price before it can be shown\"; still hidden in the database: true"
+    },
+    {
+      "step": "preview-1s",
+      "ok": true,
+      "text": "preview shows the new price 85 ms after Enter (target ≤ 1000); the row is in the frame's view (top 323 px of 728) and outlined: true"
+    },
+    {
+      "step": "reorder",
+      "ok": true,
+      "text": "\"Drill editor item\" moved up one place in \"Senso Signature\": admin order = database order (14 items), public page shows the same order for the 7 shown items (5 ms); the item is now 13 of 14"
+    },
+    {
+      "step": "undo-price",
+      "ok": true,
+      "text": "price $7 on the public page after 163 ms; Undo → $6.75 back on the public page 218 ms after the tap (5 ms of polling); database 6.75"
+    },
+    {
+      "step": "undo-delete",
+      "ok": true,
+      "text": "deleted (row gone: true, off the public page after 5 ms); Undo → back in \"Senso Signature\" at position 12, shown, $6.75, on the public page after 5 ms, row back in the editor: true"
+    },
+    {
+      "step": "record",
+      "ok": true,
+      "text": "revisions for the item: create, update, unlist, list, update, update, restore, delete, restore (every row carries before/after as its action needs: true); the section's reorder row holds the order before (14 ids) and after; the admin page shows no History or Restore (none found), /admin/senso/history → 404"
+    },
+    {
+      "step": "no-preview-script",
+      "ok": true,
+      "text": "senso: 4 inline script tags (head decision, intro, language toggle, menu), 0 external, \"preview\" 0×, preview markers 0×; kebab-land: 4 inline script tags (head decision, intro, language toggle, menu), 0 external, \"preview\" 0×, preview markers 0×"
+    }
+  ],
+  "measures": [
+    "add an item: 1 tap + name + price + confirm (Enter); on the public page in 15 ms; sheet confirmed at +213 ms",
+    "change a price: 1 tap + typing + confirm (Enter); saved in 56 ms",
+    "hide an item: 1 tap; off the public page in 6 ms",
+    "preview shows a saved change after 85 ms",
+    "Undo of a price change back on the public page after 5 ms"
+  ],
+  "transcript": [
+    {
+      "at": "2026-10-07T22:56:39.974Z",
+      "ms": 619,
+      "step": "shot",
+      "text": "01-editor-phone.jpg"
+    },
+    {
+      "at": "2026-10-07T22:56:40.244Z",
+      "ms": 889,
+      "step": "shot",
+      "text": "02-item-added.jpg"
+    },
+    {
+      "at": "2026-10-07T22:56:40.244Z",
+      "ms": 889,
+      "step": "t-add",
+      "text": "PASS: add an item: 1 tap (+ Add item) + name + price + Enter → created shown at $4.50, last in \"Senso Signature\" (position 1127 of 1127); on the public page 15 ms after Enter"
+    },
+    {
+      "at": "2026-10-07T22:56:40.346Z",
+      "ms": 991,
+      "step": "t-price",
+      "text": "PASS: change a price: 1 tap (the price) + typing + Enter → $5.25 in the database 56 ms after Enter; row shows $5.25"
+    },
+    {
+      "at": "2026-10-07T22:56:40.557Z",
+      "ms": 1202,
+      "step": "shot",
+      "text": "03-item-hidden.jpg"
+    },
+    {
+      "at": "2026-10-07T22:56:40.557Z",
+      "ms": 1202,
+      "step": "t-hide",
+      "text": "PASS: hide an item: 1 tap (the switch) → hidden in the database 56 ms later, off the public page after 6 ms"
+    },
+    {
+      "at": "2026-10-07T22:56:40.658Z",
+      "ms": 1303,
+      "step": "t-show",
+      "text": "PASS: show it again: 1 tap → shown, back on the public page after 6 ms"
+    },
+    {
+      "at": "2026-10-07T22:56:40.860Z",
+      "ms": 1505,
+      "step": "shot",
+      "text": "04-switch-refused.jpg"
+    },
+    {
+      "at": "2026-10-07T22:56:40.860Z",
+      "ms": 1505,
+      "step": "switch-reason",
+      "text": "PASS: switch on \"Aash-e-Reshteh\" (no price) refused with \"The item needs a price before it can be shown\"; still hidden in the database: true"
+    },
+    {
+      "at": "2026-10-07T22:56:41.608Z",
+      "ms": 2253,
+      "step": "shot",
+      "text": "05-editor-laptop.jpg"
+    },
+    {
+      "at": "2026-10-07T22:56:41.831Z",
+      "ms": 2476,
+      "step": "shot",
+      "text": "06-preview-updated.jpg"
+    },
+    {
+      "at": "2026-10-07T22:56:41.831Z",
+      "ms": 2476,
+      "step": "preview-1s",
+      "text": "PASS: preview shows the new price 85 ms after Enter (target ≤ 1000); the row is in the frame's view (top 323 px of 728) and outlined: true"
+    },
+    {
+      "at": "2026-10-07T22:56:42.188Z",
+      "ms": 2833,
+      "step": "shot",
+      "text": "07-reordered.jpg"
+    },
+    {
+      "at": "2026-10-07T22:56:42.188Z",
+      "ms": 2833,
+      "step": "reorder",
+      "text": "PASS: \"Drill editor item\" moved up one place in \"Senso Signature\": admin order = database order (14 items), public page shows the same order for the 7 shown items (5 ms); the item is now 13 of 14"
+    },
+    {
+      "at": "2026-10-07T22:56:42.677Z",
+      "ms": 3322,
+      "step": "shot",
+      "text": "08-undo-price.jpg"
+    },
+    {
+      "at": "2026-10-07T22:56:42.678Z",
+      "ms": 3323,
+      "step": "undo-price",
+      "text": "PASS: price $7 on the public page after 163 ms; Undo → $6.75 back on the public page 218 ms after the tap (5 ms of polling); database 6.75"
+    },
+    {
+      "at": "2026-10-07T22:56:43.177Z",
+      "ms": 3822,
+      "step": "shot",
+      "text": "09-undo-delete.jpg"
+    },
+    {
+      "at": "2026-10-07T22:56:43.177Z",
+      "ms": 3822,
+      "step": "undo-delete",
+      "text": "PASS: deleted (row gone: true, off the public page after 5 ms); Undo → back in \"Senso Signature\" at position 12, shown, $6.75, on the public page after 5 ms, row back in the editor: true"
+    },
+    {
+      "at": "2026-10-07T22:56:43.233Z",
+      "ms": 3878,
+      "step": "record",
+      "text": "PASS: revisions for the item: create, update, unlist, list, update, update, restore, delete, restore (every row carries before/after as its action needs: true); the section's reorder row holds the order before (14 ids) and after; the admin page shows no History or Restore (none found), /admin/senso/history → 404"
+    },
+    {
+      "at": "2026-10-07T22:56:43.235Z",
+      "ms": 3880,
+      "step": "no-preview-script",
+      "text": "PASS: senso: 4 inline script tags (head decision, intro, language toggle, menu), 0 external, \"preview\" 0×, preview markers 0×; kebab-land: 4 inline script tags (head decision, intro, language toggle, menu), 0 external, \"preview\" 0×, preview markers 0×"
+    },
+    {
+      "at": "2026-10-07T22:56:43.307Z",
+      "ms": 3952,
+      "step": "cleanup",
+      "text": "drill item deleted again (stays in the change record)"
+    }
+  ]
+}

@@ -11,10 +11,10 @@ This project is NOT part of Connex. No Connex code, data, contracts or infrastru
 
 ## Stack
 
-Next.js (React, Node.js) with Postgres. MVP: Postgres runs locally; after the owner has seen the MVP it moves to Supabase, using only standard Postgres features so the move is a connection-string change.
-Public menu pages are pre-rendered and regenerated when an admin saves, so they don't query the database on each visit. For the MVP the public pages are built from the local database and the built output is uploaded to Vercel; the admin demo runs locally.
+Next.js (React, Node.js) with Postgres, built and run locally for the MVP: Next.js + Postgres in Docker (`docker compose up -d`, port 5433). No Vercel project, no deploys, no preview link and no Supabase until Kian decides on hosting.
+PM build decision: no Vercel-only or Supabase-only features (no Vercel Blob, Vercel Cron, Edge Config, Supabase Auth or Storage). The app must run on any Node host with standard Postgres.
+Public menu pages are pre-rendered at build time from the database, so they don't query it per visit; after hosting is decided they are regenerated when an admin saves.
 The admin UI and its API live in the same Next.js project.
-Hosting accounts, paid plans and the domain are deferred until after the MVP is shown.
 If you see a material problem with this stack for these requirements, raise it under Open questions with your recommendation. Do not switch stacks on your own.
 
 ## Rulings (Kian's decisions. Do not change them. If the plan needs one changed, raise it under Open questions.)
@@ -94,4 +94,6 @@ Image URLs are recorded only. No photos are downloaded until the owner's written
 - `CLAUDE.md` — this brief.
 - `PLAN.md` — stack, data model, import plan, task sequence, acceptance criteria, risks, open questions.
 - `tools/capture/` — read-only Playwright capture (`npm install && npm run capture`, then `npm run analyze`).
+- `tools/import/` — import per venue (`npm run import -- senso --load`), writes `data/import/<date>/<venue>/import-report.md`; Persian drafts in `persian-drafts.json`; venue seed in `data/import/<date>/venues.json`.
+- `src/` — Next.js app (public pages under `src/app/[venue]`, admin under `src/app/admin`); `db/migrations/` — plain SQL applied by `npm run db:migrate`; `scripts/` — checks and backups; `reports/` — checkpoint evidence.
 - `data/raw/<source-slug>/<YYYY-MM-DD>/` — `responses/` (raw JSON, byte-for-byte), `decoded/` (gunzipped copies of Mealsy payloads, derived), `screenshots/`, `html/`, `manifest.json` (maps every file to its request URL and records what was on screen).

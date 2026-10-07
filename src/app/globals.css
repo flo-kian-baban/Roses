@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+:root {
+  --brand-bg: #ffffff;
+  --brand-fg: #111111;
+  --brand-accent: #b92e2e;
+  --brand-muted: #6b6b6b;
+  --font-heading: system-ui, sans-serif;
+  --font-body: system-ui, sans-serif;
+  --font-persian: "Vazirmatn", system-ui, sans-serif;
+}
+
+html { background: var(--brand-bg); color: var(--brand-fg); }
+body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+h1, h2 { font-family: var(--font-heading); }
+html[data-lang="fa"] h1, html[data-lang="fa"] h2 { font-family: var(--font-persian); }
+
+/* Language switching: both languages are in the HTML; CSS shows one. */
+html[data-lang="en"] [lang="fa"] { display: none; }
+html[data-lang="fa"] [lang="en"] { display: none; }
+html[data-lang="fa"] body { font-family: var(--font-persian); }
+
+/* Logo intro overlay: visible at first paint, removed by script; skipped via html[data-intro="skip"]. */
+#intro { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: var(--brand-bg); animation: intro-fade 300ms ease-out 1200ms both; }
+#intro img { width: min(60vw, 260px); height: auto; animation: intro-logo 900ms cubic-bezier(.2,.8,.2,1) both; }
+html[data-intro="skip"] #intro, html[data-intro="done"] #intro { display: none; }
+@keyframes intro-logo { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+@keyframes intro-fade { to { opacity: 0; visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { #intro { display: none; } }

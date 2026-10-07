@@ -1,0 +1,267 @@
+[
+  {
+    "id": "senso",
+    "name": {
+      "en": "Senso Café & Bites",
+      "fa": "سنسو کافه"
+    },
+    "tagline": {
+      "en": "Experience the Best Breakfast & Drink with Us",
+      "fa": "بهترین صبحانه و نوشیدنی را با ما تجربه کنید"
+    },
+    "locations": [
+      {
+        "label": {
+          "en": "Senso Café & Bites",
+          "fa": "سنسو کافه"
+        },
+        "address": "9218 Yonge St, Richmond Hill, ON L4C 7A2",
+        "phone": "(289) 570-5000",
+        "hours": {
+          "en": "9:00 AM – 11:00 PM, every day",
+          "fa": "هر روز 9:00 صبح تا 11:00 شب"
+        }
+      }
+    ],
+    "brand": {
+      "logo": {
+        "url": "https://sensocafe.ca/wp-content/uploads/2023/01/Asset-12.png",
+        "width": 271,
+        "height": 143
+      },
+      "colors": {
+        "background": "#FFF8EE",
+        "text": "#333333",
+        "accent": "#042C7C",
+        "gold": "#CC9434",
+        "navy": "#042C7C",
+        "grey": "#747474",
+        "siteLink": "#CC3366",
+        "muted": "#6B6B6B"
+      },
+      "fonts": {
+        "heading": "\"DUTCHI\", Georgia, serif",
+        "body": "\"Proxima\", -apple-system, system-ui, sans-serif",
+        "persian": "\"Vazirmatn\", system-ui, sans-serif",
+        "faces": []
+      },
+      "sources": [
+        {
+          "token": "logo",
+          "value": "Asset-12.png (271×143): \"Roses / SENSO / Café & Bites\"",
+          "source": "sensocafe.ca homepage image widget (the full logo). The header image Asset-1-1.png (91×48) is a partly white variant for dark backgrounds; favicon.png (67×101) is the gold S alone"
+        },
+        {
+          "token": "colors.gold",
+          "value": "#CC9434",
+          "source": "Asset-12.png: 33.6% of opaque pixels (plus #C48C24 4.5%, #C4942C 3.6%)"
+        },
+        {
+          "token": "colors.navy (accent)",
+          "value": "#042C7C",
+          "source": "Asset-12.png: 24.6% of opaque pixels (plus #042474 5.3%); used as the accent colour"
+        },
+        {
+          "token": "colors.grey",
+          "value": "#747474",
+          "source": "Asset-12.png: 6% of opaque pixels (the \"Roses\" and \"Café & Bites\" lettering)"
+        },
+        {
+          "token": "colors.background",
+          "value": "#FFF8EE",
+          "source": "sensocafe.ca computed body background, rgb(255, 248, 238)"
+        },
+        {
+          "token": "colors.text",
+          "value": "#333333",
+          "source": "sensocafe.ca computed body colour, rgb(51, 51, 51)"
+        },
+        {
+          "token": "colors.siteLink",
+          "value": "#CC3366",
+          "source": "sensocafe.ca computed link colour, rgb(204, 51, 102); recorded, not used in the MVP layout"
+        },
+        {
+          "token": "fonts.heading",
+          "value": "DUTCHI (fallback Georgia)",
+          "source": "sensocafe.ca @font-face in elementor/css/post-88.css: DUTCH-2.ttf, DUTCHB.ttf; used on h1/h2. The files cannot be loaded from another origin (the site sends no Access-Control-Allow-Origin header), so the page falls back to Georgia until the client supplies the font files and licence; to confirm"
+        },
+        {
+          "token": "fonts.body",
+          "value": "Proxima Nova (fallback system sans-serif)",
+          "source": "sensocafe.ca @font-face in elementor/css/post-88.css: MARK-SIMONSON-PROXIMA-NOVA-{LIGHT,REGULAR,BOLD-1}.ttf; used on paragraphs and buttons. Commercial typeface; same cross-origin block; not copied; to confirm"
+        },
+        {
+          "token": "fonts.persian",
+          "value": "Vazirmatn",
+          "source": "not on the client's site (it has no Persian typeface); open-licence font bundled with the app; to confirm"
+        }
+      ]
+    },
+    "sources": [
+      {
+        "field": "name",
+        "value": "Senso Café & Bites",
+        "source": "sensocafe.ca page title and header: \"Senso Café & Bites\""
+      },
+      {
+        "field": "tagline",
+        "value": "Experience the Best Breakfast & Drink with Us",
+        "source": "sensocafe.ca homepage hero text"
+      },
+      {
+        "field": "address",
+        "value": "9218 Yonge St, Richmond Hill, ON L4C 7A2",
+        "source": "sensocafe.ca/contact-us/: \"Address: 9218 Yonge St, Richmond Hill, ON L4C 7A2, Canada\""
+      },
+      {
+        "field": "phone",
+        "value": "(289) 570-5000",
+        "source": "sensocafe.ca/contact-us/: \"Phone: (289) 570-5000\"; the site's call link dials +12895705000, which matches"
+      },
+      {
+        "field": "hours",
+        "value": "9:00 AM – 11:00 PM, every day",
+        "source": "sensocafe.ca/about-us/: \"Monday: 9:00 AM - 11:00 PM … Sunday: 9:00 AM - 11:00 PM\" (all seven days identical)"
+      }
+    ],
+    "settings": {
+      "showPersianDrafts": true
+    }
+  },
+  {
+    "id": "kebab-land",
+    "name": {
+      "en": "Roses Kebab Land",
+      "fa": "رزز کباب لند"
+    },
+    "tagline": {
+      "en": null,
+      "fa": null
+    },
+    "locations": [
+      {
+        "label": {
+          "en": "Dine-in",
+          "fa": "سالن"
+        },
+        "address": "9218 Yonge St, Richmond Hill, ON",
+        "phone": "905 597 3990",
+        "hours": {
+          "en": "11 AM – 11 PM, every day",
+          "fa": "هر روز 11 صبح تا 11 شب"
+        }
+      },
+      {
+        "label": {
+          "en": "Take-out",
+          "fa": "بیرون‌بر"
+        },
+        "address": "9108 Yonge St, Richmond Hill, ON",
+        "phone": "905 597 3990",
+        "hours": {
+          "en": "11 AM – 11 PM, every day",
+          "fa": "هر روز 11 صبح تا 11 شب"
+        }
+      }
+    ],
+    "brand": {
+      "logo": {
+        "url": "https://roseskebablands.com/wp-content/uploads/2023/07/RosesKababLand_Logo_Heder.png",
+        "width": 172,
+        "height": 128
+      },
+      "colors": {
+        "background": "#141414",
+        "text": "#FFFFFF",
+        "accent": "#B92E2E",
+        "button": "#F8512F",
+        "logoRed": "#E80808",
+        "muted": "#A3A3A3"
+      },
+      "fonts": {
+        "heading": "\"Italiana\", Georgia, serif",
+        "body": "\"Poppins\", \"Inter\", system-ui, sans-serif",
+        "persian": "\"Vazirmatn\", system-ui, sans-serif",
+        "faces": []
+      },
+      "sources": [
+        {
+          "token": "logo",
+          "value": "RosesKababLand_Logo_Heder.png (172×128)",
+          "source": "roseskebablands.com homepage header image. The wide wordmark \"Roses-Kebab-Land Persian-Grill1.png\" (809×152) is referenced on the homepage but its file URL returns 404 (space in the file name); favicon R1.png is the red R alone"
+        },
+        {
+          "token": "colors.background",
+          "value": "#141414",
+          "source": "roseskebablands.com computed body background, rgb(20, 20, 20)"
+        },
+        {
+          "token": "colors.text",
+          "value": "#FFFFFF",
+          "source": "roseskebablands.com computed paragraph and heading colour, rgb(255, 255, 255)"
+        },
+        {
+          "token": "colors.accent",
+          "value": "#B92E2E",
+          "source": "roseskebablands.com computed link colour, rgb(185, 46, 46)"
+        },
+        {
+          "token": "colors.button",
+          "value": "#F8512F",
+          "source": "roseskebablands.com computed button background, rgb(248, 81, 47)"
+        },
+        {
+          "token": "colors.logoRed",
+          "value": "#E80808",
+          "source": "RosesKababLand_Logo_Heder.png: 94% near-white (#F8F8F8) and 6% red (#E80808) of opaque pixels; favicon R1.png is 100% #F84848"
+        },
+        {
+          "token": "fonts.heading",
+          "value": "Italiana",
+          "source": "roseskebablands.com computed h2 font (Elementor-hosted Google font, elementor/google-fonts/css/italiana.css)"
+        },
+        {
+          "token": "fonts.body",
+          "value": "Poppins / Inter",
+          "source": "roseskebablands.com computed body font Poppins 300 and paragraph font Inter 400 (Elementor-hosted Google fonts poppins.css, inter.css)"
+        },
+        {
+          "token": "fonts.persian",
+          "value": "Vazirmatn",
+          "source": "not on the client's site; open-licence font bundled with the app; to confirm"
+        }
+      ]
+    },
+    "sources": [
+      {
+        "field": "name",
+        "value": "Roses Kebab Land",
+        "source": "roseskebablands.com page title \"Roses Kebab Land\"; Mealsy and the site also use \"Kabab\"/\"Kabob\" (ruling: display \"Roses Kebab Land\" until confirmed)"
+      },
+      {
+        "field": "address (dine-in)",
+        "value": "9218 Yonge St, Richmond Hill, ON",
+        "source": "NOT on the website (homepage, contact-us, menu pages checked); value from Kian's brief"
+      },
+      {
+        "field": "address (take-out)",
+        "value": "9108 Yonge St, Richmond Hill, ON",
+        "source": "NOT on the website; value from Kian's brief"
+      },
+      {
+        "field": "phone",
+        "value": "905 597 3990",
+        "source": "roseskebablands.com homepage and contact-us displayed text \"905 597 3990\"; the site's own call links dial a different number, so ours dials exactly the displayed one"
+      },
+      {
+        "field": "hours",
+        "value": "11 AM – 11 PM, every day",
+        "source": "NOT on the website; value from Kian's brief"
+      }
+    ],
+    "settings": {
+      "showPersianDrafts": true
+    }
+  }
+]

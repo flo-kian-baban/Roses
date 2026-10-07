@@ -1,0 +1,40 @@
+{
+  "name": "roses-menu",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Menu showcase and menu management for the Roses venues (Richmond Hill, Ontario)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:up": "docker compose up -d",
+    "db:migrate": "node scripts/db-migrate.mjs",
+    "db:backup": "bash scripts/db-backup.sh",
+    "db:restore": "bash scripts/db-restore.sh",
+    "import": "node tools/import/run.mjs",
+    "check:page": "node scripts/check-page.mjs",
+    "check:lighthouse": "node scripts/check-lighthouse.mjs",
+    "check:brand-words": "node scripts/check-brand-words.mjs"
+  },
+  "dependencies": {
+    "@fontsource/vazirmatn": "^5.3.0",
+    "jose": "^5.9.0",
+    "next": "latest",
+    "pg": "^8.13.0",
+    "react": "latest",
+    "react-dom": "latest",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^20.0.0",
+    "@types/pg": "^8.11.0",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "lighthouse": "^12.0.0",
+    "playwright": "^1.63.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.6.0"
+  }
+}

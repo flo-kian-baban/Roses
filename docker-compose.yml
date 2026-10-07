@@ -1,0 +1,21 @@
+# Local Postgres for the MVP. Bound to localhost only, trust auth, so no password exists anywhere.
+# The machine already runs another Postgres on 5432, so this one listens on 5433.
+services:
+  db:
+    image: postgres:16
+    container_name: roses-db
+    environment:
+      POSTGRES_USER: roses
+      POSTGRES_DB: roses
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - roses-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U roses -d roses"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  roses-pgdata: {}

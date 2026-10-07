@@ -1,0 +1,91 @@
+### fresh-clone run 2 (reproducible state) — 2026-10-07T16:41:53Z
+
+### 0. stop the developer's server and database container (data volume stays)
+ Container roses-db Stopped 
+ Container roses-db Removed 
+ Network roses_default Removed 
+local     roses_roses-pgdata
+
+### 1. git clone (GitHub)
+$ git log --oneline -1
+24f9be6 Check suite runs on a scratch copy of the working database (pg_dump → scratch → dropped) and proves it untouched; setup applies the committed Persian review record; backup scripts take ROSES_DB and BACKUP_DIR; dump-and-restore migration rule and Milestone 1 rules recorded
+
+### 2. npm install
+added 254 packages, and audited 255 packages in 5s
+28 packages are looking for funding
+
+### 3. npm run setup
+> roses-menu@0.1.0 setup
+> node scripts/setup.mjs
+== 1/6 .env.local
+created .env.local from .env.example with a random SESSION_SECRET
+== 2/6 Postgres in Docker (docker compose up -d)
+ Network roses-fresh2_default Creating 
+ Network roses-fresh2_default Created 
+ Volume roses-fresh2_roses-pgdata Creating 
+ Volume roses-fresh2_roses-pgdata Created 
+ Container roses-db Creating 
+ Container roses-db Created 
+ Container roses-db Starting 
+ Container roses-db Started 
+waiting for the database . ready
+== 3/6 migrations
+applied 001_init.sql
+applied 002_import_keys.sql
+2 migration(s) applied, 0 already present
+== 4/6 imports (senso, kebab-land) from data/raw
+stats {"sections":15,"items":285,"mealsyItems":147,"listed":147,"unlisted":138,"websiteNames":255,"websiteMatched":117}
+persian: from source 59, drafted 180, missing 0
+venues upserted: 2; sections +15 ~0 =0; items +285 ~0 =0
+report: <tmp>/fresh/roses-fresh2/data/import/2026-10-07/senso/import-report.md
+stats {"sections":18,"items":102,"mealsyItems":0,"listed":102,"unlisted":0,"websiteNames":102,"websiteMatched":0,"variants":16,"serves":7,"components":18,"photos":45}
+persian: from source 0, drafted 274, missing 0
+venues upserted: 2; sections +18 ~0 =0; items +102 ~0 =0
+report: <tmp>/fresh/roses-fresh2/data/import/2026-10-07/kebab-land/import-report.md
+== 5/6 Persian review records (data/import/*/<venue>/persian-review.json)
+senso: reports/persian-review.csv, reviewed by Kian on 2026-10-07 (accept-drafts)
+{"rows":180,"corrected":0,"confirmed":180,"applied":180,"notFound":0,"unchanged":0,"acceptDrafts":true,"reviewer":"Kian","dry":false}
+rows with Persian drafts per venue: kebab-land 120, senso 0
+== 6/6 production build
+▲ Next.js 16.4.0 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 956ms
+✓ Compiled successfully in 2.1s
+Done. Next:
+  npm run start                     public pages http://localhost:3000/senso and /kebab-land, admin http://localhost:3000/admin
+                                    (the start command also prints a Network address for phones on the same Wi-Fi)
+  npm run admin:create -- --email <email> --name "<name>"   create the main admin account (asks for a password)
+
+### 4. the reviewed state in the fresh database
+$ psql … draft flags
+  venue_id  | items_with_draft_flags | items 
+------------+------------------------+-------
+ kebab-land |                    102 |   102
+ senso      |                      0 |   285
+(2 rows)
+
+  venue_id  | sections_with_draft_flags | sections 
+------------+---------------------------+----------
+ kebab-land |                        18 |       18
+ senso      |                         0 |       15
+(2 rows)
+
+  kind  | name | count | min | max 
+--------+------+-------+-----+-----
+ review | Kian |   180 |   1 | 180
+(1 row)
+
+ admins 
+--------
+      0
+(1 row)
+
+
+### 5. tear the fresh copy down and bring the developer's stack back
+ Container roses-db Removed 
+ Volume roses-fresh2_roses-pgdata Removed 
+ Network roses-fresh2_default Removed 
+local     roses_roses-pgdata
+ Container roses-db Started 
+developer database back after 1s: items 387, revisions 180, admins 0
+developer server back on 3000 after 1s

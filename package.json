@@ -15,7 +15,9 @@
     "check:page": "node scripts/check-page.mjs",
     "check:lighthouse": "node scripts/check-lighthouse.mjs",
     "check:brand-words": "node scripts/check-brand-words.mjs .next/server/pages/senso.html .next/server/pages/kebab-land.html",
-    "admin:create": "node scripts/admin-create.mjs"
+    "admin:create": "node scripts/admin-create.mjs",
+    "setup": "node scripts/setup.mjs",
+    "check": "node scripts/check.mjs"
   },
   "dependencies": {
     "jose": "^5.9.0",

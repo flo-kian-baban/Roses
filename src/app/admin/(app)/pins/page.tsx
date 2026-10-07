@@ -1,0 +1,47 @@
+import { getSession } from '@/lib/admin/session';
+import { isAdmin } from '@/lib/admin/auth';
+import { listPins } from '@/lib/admin/pins';
+import { listVenueRows } from '@/lib/admin/venue';
+import { Badge, Notice, When, input, primary, secondary } from '../../_ui';
+import { Forbidden } from '../_forbidden';
+
+export default async function Pins({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const sp = await searchParams;
+  const session = (await getSession())!;
+  if (!isAdmin(session)) return <Forbidden what="PIN management (main admin only)" />;
+  const [pins, venues] = await Promise.all([listPins(), listVenueRows()]);
+  return (
+    <>
+      <h1 className="text-2xl font-semibold">PINs</h1>
+      <p className="mt-1 text-sm text-neutral-600">One PIN per person. The PIN is shown once when created; only a hash is stored. Revoke a PIN when a person leaves.</p>
+      <div className="mt-4"><Notice sp={sp} /></div>
+      <form method="post" action="/api/admin/pin" className="space-y-4 rounded-xl border border-neutral-200 bg-white p-4">
+        <input type="hidden" name="_action" value="create" /><input type="hidden" name="_back" value="/admin/pins" />
+        <label className="block"><span className="text-sm font-medium">Person</span><input className={input} name="name" required /></label>
+        <fieldset><legend className="text-sm font-medium">Role</legend>
+          <div className="mt-1 flex gap-4 text-sm">
+            <label className="flex min-h-11 items-center gap-2"><input type="radio" name="role" value="staff" className="h-5 w-5" defaultChecked /> Staff (menu, prices, listing)</label>
+            <label className="flex min-h-11 items-center gap-2"><input type="radio" name="role" value="owner" className="h-5 w-5" /> Owner (also allergen, dietary and halal notes)</label>
+          </div>
+        </fieldset>
+        <fieldset><legend className="text-sm font-medium">Venues</legend>
+          <div className="mt-1 flex flex-wrap gap-4 text-sm">{venues.map((v) => <label key={v.id} className="flex min-h-11 items-center gap-2"><input type="checkbox" name="venue_ids" value={v.id} className="h-5 w-5" /> {v.name.en}</label>)}</div>
+        </fieldset>
+        <button className={primary} type="submit">Create PIN</button>
+      </form>
+      <ul className="mt-6 divide-y divide-neutral-200 text-sm">
+        {pins.map((p) => (
+          <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
+            <span>
+              <strong>{p.name}</strong> · {p.role} · {p.venue_ids.join(', ')} · created <When at={p.created_at} />{p.created_by_name && ` by ${p.created_by_name}`}
+              {p.last_used_at && <> · last used <When at={p.last_used_at} /></>}
+              {p.revoked_at ? <> <Badge tone="red">revoked <When at={p.revoked_at} /></Badge></> : <> <Badge tone="green">active</Badge></>}
+            </span>
+            {!p.revoked_at && <form method="post" action="/api/admin/pin"><input type="hidden" name="_action" value="revoke" /><input type="hidden" name="id" value={p.id} /><input type="hidden" name="_back" value="/admin/pins" /><button className={`${secondary} min-h-9 px-3 py-1 text-sm`} type="submit">Revoke</button></form>}
+          </li>
+        ))}
+        {pins.length === 0 && <li className="py-3 text-neutral-600">No PINs yet.</li>}
+      </ul>
+    </>
+  );
+}

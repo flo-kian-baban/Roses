@@ -38,6 +38,13 @@ export async function loadVenueFile(data, { databaseUrl }) {
       await client.query('delete from item_sections where item_id = $1', [id]);
       for (const p of it.placements) await client.query('insert into item_sections (item_id, section_id, position) values ($1,$2,$3) on conflict do nothing', [id, sectionIds.get(p.section), p.position]);
     }
+    // Combos: components carry the import_key of the dish they name; resolve it to the row id now that every item exists.
+    for (const it of data.items) {
+      if (!it.components?.some((c) => c.import_key)) continue;
+      const comps = [];
+      for (const c of it.components) { const k = c.import_key ? await client.query('select id from items where import_key = $1', [c.import_key]) : null; comps.push({ ...c, item_id: k?.rows[0]?.id ?? null }); }
+      await client.query(`update items set components = $2 where import_key = $1 and updated_by->>'kind' = 'import'`, [it.importKey, JSON.stringify(comps)]);
+    }
     await client.query('commit');
   } catch (e) { await client.query('rollback'); throw e; } finally { await client.end(); }
   return counts;

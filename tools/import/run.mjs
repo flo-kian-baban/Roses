@@ -5,6 +5,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { buildSenso } from './senso.mjs';
+import { buildKebabLand } from './kebab-land.mjs';
 import { loadVenueFile, loadVenues } from './load.mjs';
 import { writeReport } from './report.mjs';
 import { reconcileSenso } from './reconcile-senso.mjs';
@@ -22,7 +23,7 @@ const draftsFile = path.join(out, 'persian-drafts.json');
 const drafts = JSON.parse(await fs.readFile(draftsFile, 'utf8').catch(() => '{}'));
 const venues = JSON.parse(await fs.readFile(path.resolve('data/import', date, 'venues.json'), 'utf8').catch(() => '[]'));
 
-const builders = { senso: buildSenso };
+const builders = { senso: buildSenso, 'kebab-land': buildKebabLand };
 if (!builders[venue]) { console.error(`unknown venue ${venue}`); process.exit(1); }
 const data = await builders[venue]({ raw, date, drafts });
 await fs.writeFile(path.join(out, `${venue}.json`), JSON.stringify({ venue: data.venue, generatedAt: data.generatedAt, sections: data.sections, items: data.items }, null, 1));

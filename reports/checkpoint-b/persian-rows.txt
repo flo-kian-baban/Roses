@@ -1,0 +1,15 @@
+# reports/persian-review.csv: 180 rows, counted by field (source: the CSV itself)
+
+section name: 3
+description: 27
+name: 113
+add-on group: 7
+add-on: 30
+total: 180
+
+The Checkpoint A2 reply gave the breakdown 3 + 112 + 25 + 7 + 30 = 177. That breakdown was a counting error in the reply: the true counts are 3 section names + 113 item names + 27 descriptions + 7 add-on groups + 30 add-on labels = 180.
+
+Row-by-row match of the CSV against the drafted table in data/import/2026-10-07/senso/import-report.md section 4 (180 drafted strings: name 116, description 27, addOns 37): unmatched rows = 0.
+Every one of the 180 rows corresponds to one drafted string in the import report; there are no rows outside the breakdown above.
+
+After Kian confirmed the 180 drafts (2026-10-07): persian-review-apply.mjs --accept-drafts cleared every draft flag and wrote 180 revision rows by Kian; see persian-apply.txt.

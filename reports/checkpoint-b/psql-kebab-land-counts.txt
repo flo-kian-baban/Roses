@@ -1,0 +1,68 @@
+$ psql: Kebab Land listed / unlisted per section (items placed in each section)
+ position |       section       | listed | unlisted 
+----------+---------------------+--------+----------
+        0 | Appetizers          |      8 |        0
+        1 | Main Menu           |     15 |        0
+        2 | Chef's Special      |      8 |        0
+        3 | Mixed Kebabs        |      7 |        0
+        4 | Platters            |      6 |        0
+        5 | Drinks              |      4 |        0
+        6 | Dessert             |      5 |        0
+        7 | Summer Sip          |      1 |        0
+        8 | Must Try            |      1 |        0
+        9 | Classics            |      0 |        0
+       10 | Beer                |      1 |        0
+       11 | Sake                |      1 |        0
+       12 | Cocktails           |     21 |        0
+       13 | Vodka               |      3 |        0
+       14 | Whiskey             |      4 |        0
+       15 | Wine Bottles        |      7 |        0
+       16 | Traditional Spirits |      2 |        0
+       17 | Wine                |      8 |        0
+(18 rows)
+
+ listed | unlisted | with_sizes | with_serves | combos | with_photo 
+--------+----------+------------+-------------+--------+------------
+    102 |        0 |         16 |           7 |     18 |         45
+(1 row)
+
+ sizes_all_priced 
+------------------
+               16
+(1 row)
+
+ components_linked | components_unlinked 
+-------------------+---------------------
+                61 |                  27
+(1 row)
+
+ listed_without_price 
+----------------------
+                    0
+(1 row)
+
+ mealsy_sources 
+----------------
+              0
+(1 row)
+
+ name | any_mealsy 
+------+------------
+(0 rows)
+
+     id     |       name       | locations |            logo            |                              sha256                              
+------------+------------------+-----------+----------------------------+------------------------------------------------------------------
+ kebab-land | Roses Kebab Land |         2 | /brand/kebab-land-logo.png | b9b0826782e541da20a41ae2ab7c9ddbdadae0aacff3fac7e4e6c9e628044f3d
+(1 row)
+
+                label                 |             address              |    phone     |          hours           |            confirm            
+--------------------------------------+----------------------------------+--------------+--------------------------+-------------------------------
+ {"en": "Dine-in", "fa": "سالن"}      | 9218 Yonge St, Richmond Hill, ON | 905 597 3990 | 11 AM – 11 PM, every day | ["address", "phone", "hours"]
+ {"en": "Take-out", "fa": "بیرون‌بر"} | 9108 Yonge St, Richmond Hill, ON | 905 597 3990 | 11 AM – 11 PM, every day | ["address", "phone", "hours"]
+(2 rows)
+
+ components_total | linked | unlinked 
+------------------+--------+----------
+               61 |     34 |       27
+(1 row)
+

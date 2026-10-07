@@ -20,7 +20,12 @@
         "hours": {
           "en": "9:00 AM – 11:00 PM, every day",
           "fa": "هر روز 9:00 صبح تا 11:00 شب"
-        }
+        },
+        "confirm": [
+          "address",
+          "phone",
+          "hours"
+        ]
       }
     ],
     "brand": {
@@ -153,7 +158,12 @@
         "hours": {
           "en": "11 AM – 11 PM, every day",
           "fa": "هر روز 11 صبح تا 11 شب"
-        }
+        },
+        "confirm": [
+          "address",
+          "phone",
+          "hours"
+        ]
       },
       {
         "label": {
@@ -165,34 +175,47 @@
         "hours": {
           "en": "11 AM – 11 PM, every day",
           "fa": "هر روز 11 صبح تا 11 شب"
-        }
+        },
+        "confirm": [
+          "address",
+          "phone",
+          "hours"
+        ]
       }
     ],
     "brand": {
       "logo": {
-        "url": "https://roseskebablands.com/wp-content/uploads/2023/07/RosesKababLand_Logo_Heder.png",
+        "url": "/brand/kebab-land-logo.png",
         "width": 172,
-        "height": 128
+        "height": 128,
+        "sourceUrl": "https://roseskebablands.com/wp-content/uploads/2023/07/RosesKababLand_Logo_Heder.png",
+        "sha256": "b9b0826782e541da20a41ae2ab7c9ddbdadae0aacff3fac7e4e6c9e628044f3d",
+        "copiedAt": "2026-10-07"
       },
       "colors": {
         "background": "#141414",
         "text": "#FFFFFF",
         "accent": "#B92E2E",
+        "price": "#FFC14D",
         "button": "#F8512F",
         "logoRed": "#E80808",
         "muted": "#A3A3A3"
       },
       "fonts": {
-        "heading": "\"Italiana\", Georgia, serif",
-        "body": "\"Poppins\", \"Inter\", system-ui, sans-serif",
+        "heading": "Georgia, \"Times New Roman\", serif",
+        "body": "system-ui, -apple-system, \"Segoe UI\", sans-serif",
         "persian": "var(--font-vazirmatn), system-ui, sans-serif",
-        "faces": []
+        "faces": [],
+        "site": {
+          "heading": "Italiana",
+          "body": "Poppins 300 / Inter 400"
+        }
       },
       "sources": [
         {
           "token": "logo",
-          "value": "RosesKababLand_Logo_Heder.png (172×128)",
-          "source": "roseskebablands.com homepage header image. The wide wordmark \"Roses-Kebab-Land Persian-Grill1.png\" (809×152) is referenced on the homepage but its file URL returns 404 (space in the file name); favicon R1.png is the red R alone"
+          "value": "public/brand/kebab-land-logo.png (172×128), sha256 b9b0826782e541da20a41ae2ab7c9ddbdadae0aacff3fac7e4e6c9e628044f3d",
+          "source": "copied on 2026-10-07 from https://roseskebablands.com/wp-content/uploads/2023/07/RosesKababLand_Logo_Heder.png: the homepage header logo and the site's og:image. It is the best-quality logo file the site serves: 172×128 is the original upload (the page uses it at full size, no larger rendition exists); the wide wordmark \"Roses-Kebab-Land Persian-Grill1.png\" (809×152) referenced in the menu pages' header returns 404 under every URL encoding; favicon R1.png (161×141) is the red R alone; the homepage GIF (480×270, 95 frames) is a background animation, not a logo. A vector logo is still a pending client input."
         },
         {
           "token": "colors.background",
@@ -210,6 +233,11 @@
           "source": "roseskebablands.com computed link colour, rgb(185, 46, 46)"
         },
         {
+          "token": "colors.price",
+          "value": "#FFC14D",
+          "source": "menu-land and drinks pages: every price is styled color: #ffc14d (53 occurrences in the captured menu-land HTML)"
+        },
+        {
           "token": "colors.button",
           "value": "#F8512F",
           "source": "roseskebablands.com computed button background, rgb(248, 81, 47)"
@@ -217,22 +245,22 @@
         {
           "token": "colors.logoRed",
           "value": "#E80808",
-          "source": "RosesKababLand_Logo_Heder.png: 94% near-white (#F8F8F8) and 6% red (#E80808) of opaque pixels; favicon R1.png is 100% #F84848"
+          "source": "RosesKababLand_Logo_Heder.png: 93% near-white and 6% red (#E00808–#E80808) of opaque pixels; favicon R1.png is 100% #F84848"
         },
         {
-          "token": "fonts.heading",
+          "token": "fonts.heading (site)",
           "value": "Italiana",
-          "source": "roseskebablands.com computed h2 font (Elementor-hosted Google font, elementor/google-fonts/css/italiana.css)"
+          "source": "roseskebablands.com homepage computed h2 font (Elementor-hosted Google font, elementor/google-fonts/css/italiana.css); the menu pages themselves use Poppins/Inter only. Not bundled in the MVP page (functional page, no design effort: Kian's decision after Checkpoint A2); free font (SIL OFL 1.1) that can be self-hosted at the redesign"
         },
         {
-          "token": "fonts.body",
-          "value": "Poppins / Inter",
-          "source": "roseskebablands.com computed body font Poppins 300 and paragraph font Inter 400 (Elementor-hosted Google fonts poppins.css, inter.css)"
+          "token": "fonts.body (site)",
+          "value": "Poppins 300 / Inter 400",
+          "source": "roseskebablands.com computed body font Poppins 300 and paragraph font Inter 400 (Elementor-hosted Google fonts poppins.css, inter.css); menu pages: Poppins 61 and Inter 47 declarations in the captured CSS. Not bundled in the MVP page (see above); both SIL OFL 1.1"
         },
         {
-          "token": "fonts.persian",
-          "value": "Vazirmatn",
-          "source": "not on the client's site; open-licence font bundled with the app; to confirm"
+          "token": "fonts (MVP page)",
+          "value": "system serif for headings, system sans for body, Vazirmatn for Persian",
+          "source": "build decision for the functional page; Vazirmatn is the open-licence Persian font bundled with the app (not on the client's site; to confirm)"
         }
       ]
     },

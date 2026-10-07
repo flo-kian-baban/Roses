@@ -13,16 +13,18 @@ const out = args.out || 'reports/persian-review.csv';
 const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
 await client.connect();
 const rows = [];
-const sections = (await client.query(`select id, name, fa_draft from sections where venue_id = $1 order by position`, [venue])).rows;
-for (const s of sections) if (s.fa_draft.includes('name')) rows.push([s.name.en, '', 'section name', s.name.en, s.name.fa ?? '']);
+const sections = (await client.query(`select id, name, note, fa_draft from sections where venue_id = $1 order by position`, [venue])).rows;
+for (const s of sections) { if (s.fa_draft.includes('name')) rows.push([s.name.en, '', 'section name', s.name.en, s.name.fa ?? '']); if (s.fa_draft.includes('note')) rows.push([s.name.en, '', 'section note', s.note?.en ?? '', s.note?.fa ?? '']); }
 const items = (await client.query(
-  `select i.id, i.name, i.description, i.add_ons, i.fa_draft,
+  `select i.id, i.name, i.description, i.add_ons, i.variants, i.components, i.fa_draft,
           (select s.name->>'en' from item_sections x join sections s on s.id = x.section_id where x.item_id = i.id order by s.position, x.position limit 1) as section
      from items i where i.venue_id = $1 and cardinality(i.fa_draft) > 0
     order by section, i.name->>'en'`, [venue])).rows;
 for (const i of items) {
   if (i.fa_draft.includes('name')) rows.push([i.section ?? '', i.name.en, 'name', i.name.en, i.name.fa ?? '']);
   if (i.fa_draft.includes('description')) rows.push([i.section ?? '', i.name.en, 'description', i.description.en ?? '', i.description.fa ?? '']);
+  if (i.fa_draft.includes('variants')) for (const v of i.variants) rows.push([i.section ?? '', i.name.en, 'size', v.label.en, v.label.fa ?? '']);
+  if (i.fa_draft.includes('components')) { const seen = new Set(); for (const c of i.components) { if (seen.has(c.label.en)) continue; seen.add(c.label.en); rows.push([i.section ?? '', i.name.en, 'component', c.label.en, c.label.fa ?? '']); } }
   if (i.fa_draft.includes('addOns')) {
     const groups = new Map();
     for (const a of i.add_ons) if (a.group?.en && !groups.has(a.group.en)) groups.set(a.group.en, a.group.fa ?? '');

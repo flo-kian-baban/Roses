@@ -1,9 +1,9 @@
 export type Bi = { en: string | null; fa: string | null };
-export type Location = { label: Bi; address: string | null; phone: string | null; hours: Bi };
+export type Location = { label: Bi; address: string | null; phone: string | null; hours: Bi; confirm?: string[] }; // confirm: fields still "to confirm" with the owner (admin only)
 export type Brand = {
   logo: { url: string; width: number; height: number } | null;
   colors: Record<string, string>;
-  fonts: { heading: string; body: string; persian: string; faces?: { family: string; url: string; weight?: string }[] };
+  fonts: { heading: string; body: string; persian: string; faces?: { family: string; url: string; weight?: string }[]; site?: { heading: string; body: string } };
   sources?: { token: string; value: string; source: string }[];
 };
 export type Venue = { id: string; name: Bi; tagline: Bi; locations: Location[]; brand: Brand; settings: { showPersianDrafts: boolean } };

@@ -44,11 +44,16 @@ export const SPELLING_FIXES = [
   { source: 'mealsy-ro-sensocafe', before: 'Extra Beef Baccon', after: 'Extra Beef Bacon' },
   { source: 'sensocafe-our-menu', before: 'Match Latte', after: 'Matcha Latte' },
   { source: 'mealsy-ro-sensocafe', before: 'Brain &Tongue Omelette', after: 'Brain & Tongue Omelette' },
+  { source: 'roseskebablands-drinks', before: 'Sauvignon Blace', after: 'Sauvignon Blanc' },
+  { source: 'roseskebablands-drinks', before: 'Porseco', after: 'Prosecco' },
+  { source: 'roseskebablands-drinks', before: 'Glenfiddich12', after: 'Glenfiddich 12' },
+  { source: 'roseskebablands-drinks', before: 'Ketel one', after: 'Ketel One', kind: 'capitalisation (brand name)' },
+  { source: 'roseskebablands-menu-land', before: 'Karamel and hazelnut cake', after: 'Caramel and hazelnut cake' },
 ];
 export function applySpelling(s, source, log) {
   let out = clean(s);
   for (const f of SPELLING_FIXES) {
-    if (f.source === source && out === f.before) { if (log) log.push({ source, before: out, after: f.after }); out = f.after; }
+    if (f.source === source && out === f.before) { if (log) log.push({ source, before: out, after: f.after, kind: f.kind || 'spelling' }); out = f.after; }
   }
   return out;
 }
@@ -57,10 +62,16 @@ export function applySpelling(s, source, log) {
 export const DESCRIPTION_FIXES = [
   { before: 'Mozzerella', after: 'Mozzarella' },
   { before: 'Olive Oli', after: 'Olive Oil' },
+  { re: /^odka\b/, before: 'odka, blue curaçao…', after: 'Vodka, blue curaçao…', replacement: 'Vodka' }, // Blue Lagoon: the first letter is missing on the website
 ];
 export function fixDescription(s, source, log) {
   let out = clean(s);
-  for (const f of DESCRIPTION_FIXES) if (out.includes(f.before)) { if (log) log.push({ source, before: f.before, after: f.after, kind: 'spelling (description)' }); out = out.split(f.before).join(f.after); }
+  for (const f of DESCRIPTION_FIXES) {
+    if (f.re) { if (f.re.test(out)) { if (log) log.push({ source, before: f.before, after: f.after, kind: 'spelling (description)' }); out = out.replace(f.re, f.replacement); } continue; }
+    if (out.includes(f.before)) { if (log) log.push({ source, before: f.before, after: f.after, kind: 'spelling (description)' }); out = out.split(f.before).join(f.after); }
+  }
+  // A lone closing quote at the end of a description with no opening quote (website copy-paste artefact).
+  if (/[”"]$/.test(out) && !/[“"].*[”"]$/.test(out)) { if (log) log.push({ source, before: out.slice(-24), after: out.slice(-24, -1), kind: 'punctuation (stray closing quote removed)' }); out = out.slice(0, -1).trim(); }
   return out;
 }
 

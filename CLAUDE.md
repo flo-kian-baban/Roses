@@ -58,6 +58,15 @@ If you see a material problem with this stack for these requirements, raise it u
 - One import report per venue (`import-report.md`): spelling fixes, known factual errors imported as-is, unpriced items, Persian drafts.
 - The repo holds menu content only: no emails, phone numbers, network addresses, account or payment settings, in any file or in git history. `tools/capture/rules.mjs` enforces this on new captures.
 
+## Decisions after Checkpoint A2 (Kian, 2026-10-07)
+
+- Public UI accepted as is for the MVP; no more visual work now. Full redesign after the MVP (food-delivery-app style), distinct per venue.
+- Design principle: Senso and Kebab Land are two separate brands under the Roses parent brand; their pages must not look alike. PM: one page template and styles per venue (`src/pages/<venue>.tsx`, `src/venues/<venue>.tsx`); shared only data access, the language toggle and the intro logic. No shared template driven by colour tokens.
+- Architecture change (Pages Router, no runtime JS) accepted; an admin save must reach the public page within 10 s (proven at Checkpoint B). From now on, raise any architecture change as a question in the report before making it, unless it blocks the current task.
+- Persian: Kian is fluent and confirmed the 180 Senso drafts (flags cleared, revision rows written). Admins edit names and descriptions in both languages at any time. Kebab Land drafts are in `reports/persian-review-kebab-land.csv` for his review.
+- Kebab Land: website only; logo copied into the app with source URL and sha256; colours and fonts recorded with sources; functional page in its own template, logo and colours. Font-matching work cancelled.
+- Post-MVP features, not built and not blocked: seasonal menus and offers on top of the base menu; an offer for repeat customers and a prompt linking to the venue's Google review page.
+
 ## Sources (use only these, plus any links Kian adds)
 
 1. https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus
@@ -95,5 +104,5 @@ Image URLs are recorded only. No photos are downloaded until the owner's written
 - `PLAN.md` — stack, data model, import plan, task sequence, acceptance criteria, risks, open questions.
 - `tools/capture/` — read-only Playwright capture (`npm install && npm run capture`, then `npm run analyze`).
 - `tools/import/` — import per venue (`npm run import -- senso --load`), writes `data/import/<date>/<venue>/import-report.md`; Persian drafts in `persian-drafts.json`; venue seed in `data/import/<date>/venues.json`.
-- `src/` — Next.js app: public venue pages in `src/pages/[venue].tsx` (Pages Router, runtime JavaScript disabled, plain HTML), admin under `src/app/admin` (App Router), fonts in `src/fonts/` (self-hosted look-alikes, see SOURCES.md), logo in `public/brand/`; `db/migrations/` — plain SQL applied by `npm run db:migrate`; `scripts/` — checks and backups; `reports/` — checkpoint evidence.
+- `src/` — Next.js app: public venue pages `src/pages/senso.tsx` and `src/pages/kebab-land.tsx` (Pages Router, runtime JavaScript disabled, plain HTML; templates in `src/venues/`), admin UI under `src/app/admin` (App Router, plain HTML forms) with its API in `src/pages/api/admin/` (POST only; lockout, sessions, revisions, regeneration of the public page), admin logic in `src/lib/admin/`, fonts in `src/fonts/` (self-hosted, see SOURCES.md), logos in `public/brand/`; `db/migrations/` — plain SQL applied by `npm run db:migrate`; `scripts/` — checks, drills, backups (`db:backup`, `db:restore`, `admin:create`); `docs/runbook.md`; `reports/` — checkpoint evidence.
 - `data/raw/<source-slug>/<YYYY-MM-DD>/` — `responses/` (raw JSON, byte-for-byte), `decoded/` (gunzipped copies of Mealsy payloads, derived), `screenshots/`, `html/`, `manifest.json` (maps every file to its request URL and records what was on screen).

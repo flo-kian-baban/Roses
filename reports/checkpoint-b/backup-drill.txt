@@ -1,0 +1,54 @@
+# Backup and restore drill — 2026-10-07T15:41:55Z
+
+## 1. npm run db:backup
+backup written: backups/roses-20261007T154155Z.dump (91755 bytes)
+tables with data in the dump: 10
+newest dump: backups/roses-20261007T154155Z.dump (91755 bytes)
+
+## 2. restore into the scratch database roses_restore_test
+CREATE DATABASE
+restored backups/roses-20261007T154155Z.dump into database 'roses_restore_test'
+       t       | count 
+---------------+-------
+ admins        |     1
+ items         |   387
+ item_sections |   388
+ pins          |     6
+ revisions     |   220
+ sections      |    33
+ venues        |     2
+(7 rows)
+
+
+## 3. per-table row counts, live vs restored
+venues             live=2      restored=2      equal
+sections           live=33     restored=33     equal
+items              live=387    restored=387    equal
+item_sections      live=388    restored=388    equal
+revisions          live=220    restored=220    equal
+admins             live=1      restored=1      equal
+pins               live=6      restored=6      equal
+login_failures     live=0      restored=0      equal
+admin_alerts       live=1      restored=1      equal
+schema_migrations  live=2      restored=2      equal
+
+## 4. delete an item on purpose (SQL, bypassing the admin) and recover it from the dump
+item: Soft Drink (kebab-land) id=4c7a496e-19e8-4635-a605-9b304aa818fd; placements before: 1
+DELETE 1
+after delete: items with that id = 0, placements = 0
+COPY 1
+COPY 1
+after recovery: items with that id = 1, placements = 1, name = Soft Drink, price = 5.00
+
+## 5. counts equal again?
+items              live=387    restored=387    equal
+item_sections      live=388    restored=388    equal
+
+## 6. drop the scratch database
+DROP DATABASE
+
+dumps on disk:
+total 184
+drwxr-xr-x   3 kianbaban  staff     96 Oct  7 11:41 .
+drwxr-xr-x  27 kianbaban  staff    864 Oct  7 11:41 ..
+-rw-r--r--   1 kianbaban  staff  91755 Oct  7 11:41 roses-20261007T154155Z.dump

@@ -1,5 +1,5 @@
 import { query } from './db';
-import type { Venue, Section, Item } from './types';
+import type { Venue, Section, Item, Bi, Variant, AddOn, Component } from './types';
 
 export async function getVenues(): Promise<Venue[]> {
   return query<Venue>('select id, name, tagline, locations, brand, settings from venues order by id');
@@ -23,16 +23,20 @@ export async function getPublicMenu(venueId: string, showDrafts: boolean): Promi
        from item_sections x join items i on i.id = x.item_id
       where i.venue_id = $1 and i.listed
       order by x.position, i.name->>'en'`, [venueId]);
-  for (const s of sections) s.items = items.filter((i) => i.section_id === s.id).map((i) => stripDrafts(i, showDrafts));
-  return sections;
+  return sections.map((s) => { const sec = stripDrafts(s, showDrafts); sec.items = items.filter((i) => i.section_id === s.id).map((i) => stripDrafts(i, showDrafts)); return sec; });
 }
 
-// When drafts are switched off for a venue, drafted Persian falls back to English.
-function stripDrafts<T extends { fa_draft: string[]; name: Item['name']; description: Item['description'] }>(row: T, showDrafts: boolean): T {
-  if (showDrafts || !row.fa_draft?.length) return row;
+// When drafts are switched off for a venue, drafted Persian falls back to English (every field that can carry a draft).
+function stripDrafts<T extends { fa_draft: string[]; name: Bi; description?: Bi; note?: Bi; variants?: Variant[]; add_ons?: AddOn[]; components?: Component[] }>(row: T, showDrafts: boolean): T {
+  if (showDrafts || !row.fa_draft?.length) return { ...row };
   const out = { ...row };
-  if (row.fa_draft.includes('name')) out.name = { ...row.name, fa: null };
-  if (row.fa_draft.includes('description')) out.description = { ...row.description, fa: null };
+  const d = row.fa_draft;
+  if (d.includes('name')) out.name = { ...row.name, fa: null };
+  if (d.includes('description') && row.description) out.description = { ...row.description, fa: null };
+  if (d.includes('note') && row.note) out.note = { ...row.note, fa: null };
+  if (d.includes('variants') && row.variants) out.variants = row.variants.map((v) => ({ ...v, label: { ...v.label, fa: null } }));
+  if (d.includes('addOns') && row.add_ons) out.add_ons = row.add_ons.map((a) => ({ ...a, group: { ...a.group, fa: null }, label: { ...a.label, fa: null } }));
+  if (d.includes('components') && row.components) out.components = row.components.map((c) => ({ ...c, label: { ...c.label, fa: null } }));
   return out;
 }
 

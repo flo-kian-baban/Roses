@@ -1,0 +1,28 @@
+$ node tools/import/persian-review-apply.mjs senso reports/persian-review.csv --accept-drafts --reviewer Kian
+{"rows":180,"corrected":0,"confirmed":180,"applied":180,"notFound":0,"unchanged":0,"acceptDrafts":true,"reviewer":"Kian","dry":false}
+
+$ psql: draft flags left for senso, revision rows written by the review
+    t     | still_draft | rows 
+----------+-------------+------
+ items    |           0 |  285
+ sections |           0 |   15
+(2 rows)
+
+  kind  | name | action | table_name | count 
+--------+------+--------+------------+-------
+ review | Kian | update | items      |   177
+ review | Kian | update | sections   |     3
+(2 rows)
+
+ review_rows |           first_at            |            last_at            
+-------------+-------------------------------+-------------------------------
+         180 | 2026-10-07 15:09:44.238935+00 | 2026-10-07 15:09:44.238935+00
+(1 row)
+
+ items_updated_by_review 
+-------------------------
+                     124
+(1 row)
+
+$ node tools/import/persian-review-export.mjs senso --out /private/tmp/claude-501/-Users-kianbaban-Roses/a57864d4-4758-446d-ba1c-e48fbc81f1bc/scratchpad/senso-review-after.csv
+0 rows written to /private/tmp/claude-501/-Users-kianbaban-Roses/a57864d4-4758-446d-ba1c-e48fbc81f1bc/scratchpad/senso-review-after.csv

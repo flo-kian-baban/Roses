@@ -26,7 +26,7 @@ export function SensoPage({ venue, sections }: { venue: Venue; sections: Section
               {n > 0 && <div className="section-divider" aria-hidden="true" />}
               <Bi as="h2" text={s.name} className="pt-6 text-[24px] font-bold leading-tight" />
               <Bi as="p" text={s.note} className="mt-1 text-[14px] text-[#6b6b6b]" />
-              <ul className="mt-1">{s.items.map((i) => <ItemRow key={i.id} item={i} eager={photoIndex++ < 1} />)}</ul>
+              <ul className="mt-3">{s.items.map((i) => <ItemRow key={i.id} item={i} eager={photoIndex++ < 1} />)}</ul>
             </section>
           ))}
 

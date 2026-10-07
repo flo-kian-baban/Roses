@@ -10,7 +10,7 @@ export function SignIn({ venues, venue, sp, path }: { venues: Venue[]; venue?: V
   return (
     <main className="mx-auto max-w-md px-4 py-8">
       <h1 className="text-2xl font-semibold">{venue ? `${venue.name.en}` : 'Menu admin'}</h1>
-      <p className="mt-1 text-sm text-neutral-600">{venue ? 'Sign in with your PIN for this venue, or as the main admin.' : 'Sign in with your PIN, or as the main admin.'}</p>
+      <p className="mt-1 text-sm text-neutral-600">{venue ? 'Sign in with your PIN for this venue.' : 'Sign in with your PIN.'}</p>
       <div className="mt-6"><Notice sp={sp} /></div>
       {one('signedout') && <p role="status" className="mb-4 rounded-lg border border-neutral-300 bg-white px-4 py-3">Signed out.</p>}
 
@@ -34,8 +34,8 @@ export function SignIn({ venues, venue, sp, path }: { venues: Venue[]; venue?: V
             </fieldset>
           )}
           <label className={`${venue ? '' : 'mt-4 '}block`}>
-            <span className="text-sm font-medium">PIN (6 digits)</span>
-            <input className={`${input} text-center text-2xl tracking-[.4em]`} name="pin" type="password" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" required autoFocus />
+            <span className="text-sm font-medium">PIN</span>
+            <input className={`${input} text-center text-2xl tracking-[.4em]`} name="pin" type="password" inputMode="numeric" pattern="[0-9]{4,6}" maxLength={6} autoComplete="one-time-code" required autoFocus />
           </label>
           <button className={`${primary} mt-4 w-full`} type="submit">Sign in</button>
         </form>
@@ -47,11 +47,11 @@ export function SignIn({ venues, venue, sp, path }: { venues: Venue[]; venue?: V
           <input type="hidden" name="_back" value={path} />
           <label className="block"><span className="text-sm font-medium">Email</span><input className={input} name="email" type="email" autoComplete="username" required autoFocus /></label>
           <label className="mt-3 block"><span className="text-sm font-medium">Password</span><input className={input} name="password" type="password" autoComplete="current-password" required /></label>
-          <button className={`${primary} mt-4 w-full`} type="submit">Sign in as admin</button>
+          <button className={`${primary} mt-4 w-full`} type="submit">Sign in</button>
         </form>
       )}
       <p className="mt-4 text-center text-sm">
-        {adminMode ? <a className="underline" href={path}>Sign in with a PIN instead</a> : <a className="underline" href={`${path}?mode=admin`}>Main admin sign-in</a>}
+        {adminMode ? <a className="underline" href={path}>Sign in with a PIN instead</a> : <a className="underline" href={`${path}?mode=admin`}>Admin with email and password instead</a>}
       </p>
       {venue && !adminMode && <p className="mt-2 text-center text-sm"><a className="underline" href="/admin">Other venue</a></p>}
     </main>

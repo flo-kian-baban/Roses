@@ -18,7 +18,7 @@ export default route({ anonymous: true }, async ({ req, res, body, back }) => {
     const lock = await lockState(venue, address);
     if (lock.locked) return redirect(res, loginUrl, { error: lock.scope === 'venue' ? `PIN login for this venue is locked until ${until(lock.until)}; an admin can unlock it` : `too many wrong PINs; try again at ${until(lock.until)}` });
     const pin = (body.pin ?? '').replace(/\s/g, '');
-    const session = /^\d{6}$/.test(pin) ? await verifyPinLogin(venue, pin) : null;
+    const session = /^\d{4,6}$/.test(pin) ? await verifyPinLogin(venue, pin) : null;
     if (!session) {
       const f = await recordFailure(venue, address);
       const left = Math.max(0, Number(process.env.LOCKOUT_FAILURES || 5) - f.pairFailures);

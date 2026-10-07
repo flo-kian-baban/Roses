@@ -54,6 +54,15 @@ const adminCtx = await browser.newContext(DEVICE);
 }
 const adminCookie = await cookieOf(adminCtx);
 
+// admin PIN sign-in (Kian's decision of 2026-10-07): the admin's PIN alone, on any venue, gives admin rights
+if (process.env.DRILL_ADMIN_PIN) {
+  const r = await post('/api/admin/login', { mode: 'pin', venue: 'kebab-land', pin: process.env.DRILL_ADMIN_PIN });
+  const c = (r.setCookie || '').split(';')[0];
+  const pins = c ? await fetch(`${base}/admin/pins`, { headers: { cookie: c } }) : null;
+  const pinsHtml = pins ? await pins.text() : '';
+  check('admin-pin', r.status === 303 && r.location === '/admin/kebab-land' && !!c && pins?.status === 200 && pinsHtml.includes('Admin accounts'), `admin PIN on the Kebab Land sign-in → ${r.status} to ${r.location}, cookie set: ${!!c}; the PINs page (admin only) answers ${pins?.status} with the admin section: ${pinsHtml.includes('Admin accounts')}`);
+}
+
 // PINs: create staff (senso) and owner (both venues); the PIN pages are not screenshotted
 async function makePin(name, role, venues) { const r = await post('/api/admin/pin', { _action: 'create', name, role, venue_ids: venues.join(','), _back: '/admin/pins' }, adminCookie); const pin = r.text.match(/class="pin">(\d{6})</)?.[1]; const id = (await db.query('select id from pins where name = $1 order by created_at desc limit 1', [name])).rows[0]?.id; check('pin-create', !!pin && !!id, `PIN created for "${name}" (${role}, ${venues.join('+')}): shown once on the response page (6 digits: ${!!pin}), hash stored: ${!!id}`); return { pin, id }; }
 const staff = await makePin('Drill staff', 'staff', ['senso']);

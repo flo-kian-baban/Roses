@@ -85,8 +85,11 @@ if (!process.env.CHROME_PATH) { const mac = '/Applications/Google Chrome.app/Con
 const adminEmail = `check-suite-${randomBytes(4).toString('hex')}@localhost`, adminPassword = randomBytes(18).toString('base64url');
 const salt = randomBytes(16);
 const adminHash = `$scrypt$N=16384,r=8,p=1$${salt.toString('base64')}$${scryptSync(adminPassword.normalize('NFKC'), salt, 32, { N: 16384, r: 8, p: 1 }).toString('base64')}`;
-const adminId = (await db.query('insert into admins (email, password_hash, name) values ($1,$2,$3) returning id', [adminEmail, adminHash, 'Check suite'])).rows[0].id;
-const drillEnv = { DRILL_ADMIN_EMAIL: adminEmail, DRILL_ADMIN_PASSWORD: adminPassword };
+const adminPin = String(100000 + Math.floor(Math.random() * 900000));
+const pinSalt = randomBytes(16);
+const adminPinHash = ['$scrypt$N=16384,r=8,p=1', pinSalt.toString('base64'), scryptSync(adminPin, pinSalt, 32, { N: 16384, r: 8, p: 1 }).toString('base64')].join('$');
+const adminId = (await db.query('insert into admins (email, password_hash, pin_hash, name) values ($1,$2,$3,$4) returning id', [adminEmail, adminHash, adminPinHash, 'Check suite'])).rows[0].id;
+const drillEnv = { DRILL_ADMIN_EMAIL: adminEmail, DRILL_ADMIN_PASSWORD: adminPassword, DRILL_ADMIN_PIN: adminPin };
 scratchEnvRef = scratchEnv;
 const commit = runSync('git', ['rev-parse', '--short', 'HEAD']).stdout.trim();
 

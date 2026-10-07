@@ -75,6 +75,7 @@ If you see a material problem with this stack for these requirements, raise it u
 - Run `npm run check` before telling Kian a batch of changes is done; it runs on a scratch copy of the working database and proves the working database untouched.
 - Uber Eats-style interactions (sticky category tabs that follow the scroll, item detail sheets) are built with small inline scripts and CSS inside the no-runtime-JS public pages; if an interaction needs the React runtime on a public page, ask Kian first with the load-time cost.
 - The hosted database (later) is filled by dump and restore of the working database, never by re-import. A fresh clone + `npm run setup` reproduces the reviewed state (imports, then the committed Persian review records).
+- Admin sign-in (Kian, 2026-10-07, replacing the PM's "email + password" build decision): admins sign in with a PIN only, on any venue; the email stays the account identifier and an email + password sign-in remains available for accounts that have a password. PINs may be 4 to 6 digits (generated staff PINs stay 6). Kian's own PIN is 0000 for now and must be changed before anything is reachable beyond the laptop (go-live checklist).
 
 ## Sources (use only these, plus any links Kian adds)
 

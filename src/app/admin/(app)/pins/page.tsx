@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/admin/session';
 import { isAdmin } from '@/lib/admin/auth';
-import { listPins } from '@/lib/admin/pins';
+import { listAdmins, listPins } from '@/lib/admin/pins';
 import { listVenueRows } from '@/lib/admin/venue';
 import { Badge, Notice, When, input, primary, secondary } from '../../_ui';
 import { Forbidden } from '../_forbidden';
@@ -11,7 +11,7 @@ export default async function Pins({ searchParams }: { searchParams: Promise<Rec
   const session = await getSession();
   if (!session) redirect('/admin');
   if (!isAdmin(session)) return <Forbidden what="PIN management (main admin only)" />;
-  const [pins, venues] = await Promise.all([listPins(), listVenueRows()]);
+  const [pins, venues, admins] = await Promise.all([listPins(), listVenueRows(), listAdmins()]);
   return (
     <>
       <h1 className="text-2xl font-semibold">PINs</h1>
@@ -31,7 +31,16 @@ export default async function Pins({ searchParams }: { searchParams: Promise<Rec
         </fieldset>
         <button className={primary} type="submit">Create PIN</button>
       </form>
-      <ul className="mt-6 divide-y divide-neutral-200 text-sm">
+      <section className="mt-8">
+        <h2 className="font-semibold">Admin accounts</h2>
+        <p className="text-sm text-neutral-600">Admins sign in with their PIN on any venue and see everything. Set or change an admin PIN on the laptop: <code>npm run admin:create -- --email &lt;email&gt; --name "&lt;name&gt;" --pin &lt;digits&gt; --reset</code>.</p>
+        <ul className="mt-2 divide-y divide-neutral-200 text-sm">
+          {admins.map((a) => <li key={a.id} className="py-2"><strong>{a.name}</strong> · {a.email} · {a.has_pin ? <Badge tone="green">PIN set</Badge> : <Badge>no PIN</Badge>} {a.has_password ? <Badge tone="green">password set</Badge> : <Badge>no password</Badge>}</li>)}
+          {admins.length === 0 && <li className="py-2 text-neutral-600">No admin accounts yet.</li>}
+        </ul>
+      </section>
+      <h2 className="mt-8 font-semibold">Staff and owner PINs</h2>
+      <ul className="mt-2 divide-y divide-neutral-200 text-sm">
         {pins.map((p) => (
           <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
             <span>

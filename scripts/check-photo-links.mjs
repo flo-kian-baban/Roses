@@ -35,12 +35,16 @@ async function probe(url) {
 }
 const results = [];
 let idx = 0;
-await Promise.all(Array.from({ length: 6 }, async () => { while (idx < targets.length) { const t = targets[idx++]; results.push({ ...t, ...(await probe(t.url)) }); } }));
+// One retry after a pause for anything that is not 200/206 (a transient network error must not fail the run; a real 404 still does).
+async function probeWithRetry(url) { const first = await probe(url); if ([200, 206].includes(first.status)) return { ...first, attempts: 1 }; await new Promise((r) => setTimeout(r, 1500)); const second = await probe(url); return { ...second, attempts: 2, firstAttempt: first.status || first.error }; }
+await Promise.all(Array.from({ length: 6 }, async () => { while (idx < targets.length) { const t = targets[idx++]; results.push({ ...t, ...(await probeWithRetry(t.url)) }); } }));
 const byStatus = {};
 for (const r of results) { const k = r.status === 206 ? '206 (range GET)' : String(r.status); byStatus[k] = (byStatus[k] || 0) + 1; }
 const bad = results.filter((r) => r.status !== 200 && r.status !== 206);
 const md = [`# Photo link check — ${venue} — ${new Date().toISOString()}`, '', `${results.length} URLs requested (${targets.length - (logo ? 1 : 0)} item photos, ${logo ? 1 : 0} logo source).`, '', '| Status | Count |', '| --- | --- |', ...Object.entries(byStatus).sort().map(([k, v]) => `| ${k} | ${v} |`), ''];
+const retried = results.filter((r) => r.attempts === 2);
 md.push(bad.length ? `Not 200 (${bad.length}):` : 'Every URL returned 200.', '');
+if (retried.length) md.push(`Retried once after a transient result: ${retried.length} (${retried.map((r) => `${r.item}: first ${r.firstAttempt}, then ${r.status}`).join('; ')}).`, '');
 if (bad.length) { md.push('| Item | Listed | Status | URL |', '| --- | --- | --- | --- |'); for (const r of bad) md.push(`| ${r.item} | ${r.listed ? 'yes' : 'no'} | ${r.status || r.error} | ${r.url} |`); }
 await fs.writeFile(path.join(out, 'photo-links.json'), JSON.stringify({ venue, at: new Date().toISOString(), byStatus, results }, null, 2));
 await fs.writeFile(path.join(out, 'photo-links.md'), md.join('\n') + '\n');

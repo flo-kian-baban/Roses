@@ -16,7 +16,7 @@ npm run admin:create -- --email <your email> --name "<your name>"
 
 - `npm run setup` writes `.env.local` with a random session secret, starts Postgres in Docker, applies the migrations, imports both venues from `data/raw`, applies the committed Persian review records (`data/import/<date>/<venue>/persian-review.json`, so Senso comes up with 0 draft flags) and makes the production build. It is safe to run again.
 - `npm run start` serves http://localhost:3000/senso, http://localhost:3000/kebab-land and http://localhost:3000/admin.
-- `npm run admin:create` asks for a password (10 characters or more) and creates the main admin account; sign in at `/admin` → "Main admin sign-in". Staff PINs are then created in Admin → PINs.
+- `npm run admin:create -- --email <email> --name "<name>" --pin <4 to 6 digits>` creates the main admin account; admins sign in with that PIN on any venue (no email typing). Add `--password` to also set an email + password sign-in. Staff PINs are then created in Admin → PINs.
 - Development with live reload: `npm run dev` instead of `npm run start` (pages are rendered on request there, not pre-built).
 
 ### On a phone on the same Wi-Fi
@@ -36,7 +36,7 @@ npm run admin:create -- --email <your email> --name "<your name>"
 
 ## Admin accounts and PINs
 
-- Create or reset an admin account: `npm run admin:create -- --email <email> --name "<name>"` (asks for the password; or set `ADMIN_PASSWORD` for the command). Add `--reset` to change the password of an existing account. Only a scrypt hash is stored.
+- Create or reset an admin account: `npm run admin:create -- --email <email> --name "<name>" --pin <digits>` (4 to 6 digits), and/or `--password` (asks for the password; or set `ADMIN_PASSWORD` for the command). Add `--reset` to change the PIN or password of an existing account. Only scrypt hashes are stored. Admins sign in with their PIN on any venue's sign-in link; the email + password form is behind "Admin with email and password instead".
 - PINs: in the admin, **PINs** → Create. The PIN is shown once on the confirmation page; write it down for the person. Revoke it when the person leaves. Roles: *staff* edits menu content and listing; *owner* also edits allergen, dietary and halal notes. Venue details (name, phones, addresses, hours) are edited by the main admins only.
 
 ## Lockout
@@ -66,6 +66,7 @@ Done before anything goes public (nothing is public yet; hosting is Kian's decis
 
 - [ ] Secure cookie flag on: the app is served over https, or `COOKIE_SECURE=1` is set; verify with `curl -sI -X POST <origin>/api/admin/login …` that `Set-Cookie` carries `Secure`.
 - [ ] `TRUST_PROXY=1` is set only when the app sits behind a reverse proxy that overwrites `X-Forwarded-For` with the real client address; never when the app is reachable directly (otherwise a client could pick its own address and dodge the lockout).
+- [ ] Kian's admin PIN changed from 0000 (`npm run admin:create -- --email <email> --name "Kian" --pin <new digits> --reset`); every admin and owner PIN is 6 digits.
 - [ ] The "Drill Admin" account is deleted (`delete from admins where name = 'Drill Admin';`) and its password file removed from the build agent's scratch folder; the real admin accounts (owner, Kian) exist via `npm run admin:create`.
 - [ ] Vector (SVG) logos for both venues received from the client and applied in `public/brand/` and the venue seed (`data/import/<date>/venues.json`, with source and sha256), replacing the copied PNGs.
 - [ ] Venue details confirmed by the owner: names, addresses, phones (tap-to-call dials what is displayed), hours; the "to confirm" marks cleared in Admin → Venue details for every location.

@@ -1,0 +1,147 @@
+{
+  "stamp": "2026-10-07T16-53-46Z",
+  "commit": "19ea733",
+  "pass": false,
+  "results": [
+    {
+      "name": "production build (.next-check)",
+      "pass": true,
+      "ms": 3305,
+      "evidence": [
+        "build.log"
+      ],
+      "note": "next build ok"
+    },
+    {
+      "name": "servers on 3100 and 3101 (TRUST_PROXY=1)",
+      "pass": true,
+      "ms": 573,
+      "evidence": [
+        "server-3100.log",
+        "server-3101.log"
+      ],
+      "note": "both answer 200 on /senso"
+    },
+    {
+      "name": "public page checks: senso (intro, repeat visit, reduced motion, Persian toggle, images)",
+      "pass": true,
+      "ms": 14046,
+      "evidence": [
+        "senso/senso-checks.json",
+        "senso/senso-en.jpg",
+        "senso/senso-fa.jpg",
+        "senso/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 15; intro gone at 1373 ms; images 124/124"
+    },
+    {
+      "name": "public page checks: kebab-land (intro, repeat visit, reduced motion, Persian toggle, images)",
+      "pass": true,
+      "ms": 8914,
+      "evidence": [
+        "kebab-land/kebab-land-checks.json",
+        "kebab-land/kebab-land-en.jpg",
+        "kebab-land/kebab-land-fa.jpg",
+        "kebab-land/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 17; intro gone at 1331 ms; images 47/47"
+    },
+    {
+      "name": "brand words in both built pages",
+      "pass": true,
+      "ms": 32,
+      "evidence": [
+        "brand-words.txt"
+      ],
+      "note": "no \"Mealsy\" or \"Flo\" in visible text or metadata"
+    },
+    {
+      "name": "photo links: senso",
+      "pass": true,
+      "ms": 4115,
+      "evidence": [
+        "senso/photo-links.md",
+        "senso/photo-links.json"
+      ],
+      "note": "135 URLs, 0 not 200/206"
+    },
+    {
+      "name": "photo links: kebab-land",
+      "pass": true,
+      "ms": 3151,
+      "evidence": [
+        "kebab-land/photo-links.md",
+        "kebab-land/photo-links.json"
+      ],
+      "note": "46 URLs, 0 not 200/206"
+    },
+    {
+      "name": "Lighthouse mobile ×3: senso",
+      "pass": true,
+      "ms": 31540,
+      "evidence": [
+        "senso/lighthouse-summary.json",
+        "senso/lighthouse.log"
+      ],
+      "note": "LCP 1353 / 1354 / 1354 ms, performance 100 / 100 / 100 (target ≤ 2500, local estimate)"
+    },
+    {
+      "name": "Lighthouse mobile ×3: kebab-land",
+      "pass": true,
+      "ms": 30704,
+      "evidence": [
+        "kebab-land/lighthouse-summary.json",
+        "kebab-land/lighthouse.log"
+      ],
+      "note": "LCP 1202 / 1353 / 1357 ms, performance 100 / 100 / 100 (target ≤ 2500, local estimate)"
+    },
+    {
+      "name": "admin drill (sign-ins, cookie, PINs, listing rule, sections, notes, edits + restore, delete + restore, venue details)",
+      "pass": false,
+      "ms": 10216,
+      "evidence": [
+        "admin/admin-drill.txt",
+        "admin/admin-drill.json",
+        "admin/*.jpg"
+      ],
+      "note": "ADMIN DRILL FAIL (30/31)"
+    },
+    {
+      "name": "lockout: 5 per venue + address, 50 per hour per venue with alert and unlock, revoked PIN",
+      "pass": true,
+      "ms": 4677,
+      "evidence": [
+        "lockout-drill.txt"
+      ],
+      "note": "LOCKOUT DRILL PASS"
+    },
+    {
+      "name": "revalidation: admin save reaches the public page within 10 s",
+      "pass": true,
+      "ms": 1390,
+      "evidence": [
+        "revalidation-log.txt"
+      ],
+      "note": "113 ms after Save"
+    },
+    {
+      "name": "backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)",
+      "pass": true,
+      "ms": 3603,
+      "evidence": [
+        "backup-drill.txt"
+      ],
+      "note": "12 table comparisons equal, 0 different; item recovered: true"
+    },
+    {
+      "name": "working database untouched (roses: per-table counts and newest revision id identical before and after)",
+      "pass": true,
+      "ms": 0,
+      "evidence": [
+        "working-db-before-after.json",
+        "working-db-copy.dump (gitignored)"
+      ],
+      "note": "venues 2, sections 33, items 387, item_sections 388, revisions 180, admins 1, pins 0, login_failures 0, admin_alerts 0, schema_migrations 3; newest revision id 180"
+    }
+  ]
+}

@@ -24,7 +24,8 @@ const check = (step, ok, text) => { results.push({ step, ok, text }); log(step, 
 const db = new pg.Client({ connectionString: process.env.DATABASE_URL }); await db.connect();
 const DEVICE = { ...devices['iPhone 13'], defaultBrowserType: 'chromium' };
 const browser = await chromium.launch();
-let shot = 0; const snap = async (page, name) => { const f = `${String(++shot).padStart(2, '0')}-${name}.${jpeg ? 'jpg' : 'png'}`; await page.screenshot({ path: path.join(out, f), fullPage: true, ...(jpeg ? { type: 'jpeg', quality: 70 } : {}) }); log('shot', f); };
+// Full page by default; the venue menu page (hundreds of photo cards) is taller than one JPEG can hold, so those shots are viewport-only.
+let shot = 0; const snap = async (page, name, { viewport = false } = {}) => { const f = `${String(++shot).padStart(2, '0')}-${name}.${jpeg ? 'jpg' : 'png'}`; await page.screenshot({ path: path.join(out, f), fullPage: !viewport, ...(jpeg ? { type: 'jpeg', quality: 70 } : {}) }); log('shot', f); };
 const form = (o) => new URLSearchParams(o).toString();
 async function post(p, body, cookie) { const r = await fetch(base + p, { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded', ...(cookie ? { cookie } : {}) }, body: form(body) }); return { status: r.status, location: r.headers.get('location'), setCookie: r.headers.get('set-cookie'), text: r.status === 200 ? await r.text() : '' }; }
 const errorOf = (loc) => { try { return new URL(loc, 'http://x').searchParams.get('error'); } catch { return null; } };
@@ -81,7 +82,7 @@ const owner = await makePin('Drill owner', 'owner', ['senso', 'kebab-land']);
 const staffCtx = await browser.newContext(DEVICE);
 let page = await loginPage(staffCtx, 'pin', { venue: 'senso', pin: staff.pin });
 check('pin-login', page.url() === `${base}/admin/senso`, `staff PIN sign-in lands on ${page.url()}`);
-await snap(page, 'venue-senso-staff');
+await snap(page, 'venue-senso-staff', { viewport: true });
 const staffCookie = await cookieOf(staffCtx);
 
 // (i) three price edits then a restore to the first version
@@ -126,7 +127,7 @@ check('f-public-restored', w.ok, `restored to unlisted/no price → gone from th
 
 // (g) unlisting a section; a section whose last listed item is unlisted disappears
 const sec = (await db.query(`select id, name->>'en' as name from sections where venue_id='senso' and name->>'en'='Extra'`)).rows[0];
-{ const r = await post('/api/admin/section', { _action: 'unlist', id: sec.id, _back: '/admin/senso' }, staffCookie); w = await waitPublic('senso', (h) => !new RegExp(`<h2[^>]*>(<span lang="en">)?${sec.name}<`).test(h)); check('g-section', r.status === 303 && w.ok, `section "${sec.name}" unlisted → heading gone from the public page after ${w.ms} ms`); await page.goto(`${base}/admin/senso`); await snap(page, 'section-unlisted'); }
+{ const r = await post('/api/admin/section', { _action: 'unlist', id: sec.id, _back: '/admin/senso' }, staffCookie); w = await waitPublic('senso', (h) => !new RegExp(`<h2[^>]*>(<span lang="en">)?${sec.name}<`).test(h)); check('g-section', r.status === 303 && w.ok, `section "${sec.name}" unlisted → heading gone from the public page after ${w.ms} ms`); await page.goto(`${base}/admin/senso?section=${sec.id}`); await snap(page, 'section-unlisted', { viewport: true }); }
 { const r = await post('/api/admin/section', { _action: 'list', id: sec.id, _back: '/admin/senso' }, staffCookie); w = await waitPublic('senso', (h) => new RegExp(`<h2[^>]*>(<span lang="en">)?${sec.name}<`).test(h)); check('g-section-back', r.status === 303 && w.ok, `section "${sec.name}" listed again → heading back after ${w.ms} ms`); }
 const bev = (await db.query(`select s.id, s.name->>'en' as name, array_agg(i.id) as items from sections s join item_sections x on x.section_id=s.id join items i on i.id=x.item_id and i.listed where s.venue_id='senso' and s.name->>'en'='Beverage' group by s.id`)).rows[0];
 for (const id of bev.items) await post('/api/admin/item', { _action: 'unlist', id, _back: '/admin/senso' }, staffCookie);

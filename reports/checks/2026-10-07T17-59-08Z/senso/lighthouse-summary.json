@@ -1,0 +1,42 @@
+{
+  "url": "http://127.0.0.1:3100/senso",
+  "note": "Local production build (next build && next start) on the developer machine. A local estimate, not the hosted result.",
+  "runs": [
+    {
+      "run": 1,
+      "formFactor": "mobile",
+      "emulated": true,
+      "performance": 100,
+      "lcpMs": 1353,
+      "fcpMs": 753,
+      "tbtMs": 0,
+      "cls": 0,
+      "speedIndexMs": 1057,
+      "lcpElement": "<p class=\"mt-1 text-sm opacity-80 whitespace-pre-line\">"
+    },
+    {
+      "run": 2,
+      "formFactor": "mobile",
+      "emulated": true,
+      "performance": 100,
+      "lcpMs": 1355,
+      "fcpMs": 755,
+      "tbtMs": 0,
+      "cls": 0,
+      "speedIndexMs": 1057,
+      "lcpElement": "<p class=\"mt-1 text-sm opacity-80 whitespace-pre-line\">"
+    },
+    {
+      "run": 3,
+      "formFactor": "mobile",
+      "emulated": true,
+      "performance": 100,
+      "lcpMs": 1354,
+      "fcpMs": 754,
+      "tbtMs": 0,
+      "cls": 0,
+      "speedIndexMs": 1053,
+      "lcpElement": "<p class=\"mt-1 text-sm opacity-80 whitespace-pre-line\">"
+    }
+  ]
+}

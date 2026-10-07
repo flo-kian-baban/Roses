@@ -1,0 +1,352 @@
+{
+  "url": "http://127.0.0.1:3100/kebab-land",
+  "at": "2026-10-07T16:26:18.845Z",
+  "checks": {
+    "introInFirstHtml": {
+      "present": true,
+      "headScript": true,
+      "bytes": 78084
+    },
+    "firstVisit": {
+      "introVisibleAtMs": 11,
+      "introDoneAtMs": 1341,
+      "goneWithin1500ms": true,
+      "samples": [
+        {
+          "t": 11,
+          "intro": null,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 65,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 117,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 170,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 223,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 276,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 329,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 382,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 434,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 487,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 542,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 594,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 646,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 699,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 750,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 802,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 857,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 910,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 962,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1013,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1067,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1120,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1176,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1232,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1287,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "0.909653"
+        },
+        {
+          "t": 1341,
+          "intro": "done",
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ]
+    },
+    "images": {
+      "total": 47,
+      "complete": 47,
+      "loaded": 47,
+      "failed": []
+    },
+    "dom": {
+      "lang": "en",
+      "dir": "ltr",
+      "title": "Roses Kebab Land — Menu",
+      "sections": [
+        {
+          "id": "appetizers",
+          "en": "Appetizers",
+          "fa": "پیش‌غذا",
+          "items": 8
+        },
+        {
+          "id": "main-menu",
+          "en": "Main Menu",
+          "fa": "منوی اصلی",
+          "items": 15
+        },
+        {
+          "id": "chef-s-special",
+          "en": "Chef's Special",
+          "fa": "ویژه سرآشپز",
+          "items": 8
+        },
+        {
+          "id": "mixed-kebabs",
+          "en": "Mixed Kebabs",
+          "fa": "کباب‌های ترکیبی",
+          "items": 7
+        },
+        {
+          "id": "platters",
+          "en": "Platters",
+          "fa": "سینی‌ها",
+          "items": 6
+        },
+        {
+          "id": "drinks",
+          "en": "Drinks",
+          "fa": "نوشیدنی‌ها",
+          "items": 4
+        },
+        {
+          "id": "dessert",
+          "en": "Dessert",
+          "fa": "دسر",
+          "items": 5
+        },
+        {
+          "id": "summer-sip",
+          "en": "Summer Sip",
+          "fa": "نوشیدنی تابستانی",
+          "items": 1
+        },
+        {
+          "id": "must-try",
+          "en": "Must Try",
+          "fa": "حتماً امتحان کنید",
+          "items": 1
+        },
+        {
+          "id": "beer",
+          "en": "Beer",
+          "fa": "آبجو",
+          "items": 1
+        },
+        {
+          "id": "sake",
+          "en": "Sake",
+          "fa": "ساکه",
+          "items": 1
+        },
+        {
+          "id": "cocktails",
+          "en": "Cocktails",
+          "fa": "کوکتل‌ها",
+          "items": 23
+        },
+        {
+          "id": "vodka",
+          "en": "Vodka",
+          "fa": "ودکا",
+          "items": 9
+        },
+        {
+          "id": "whiskey",
+          "en": "Whiskey",
+          "fa": "ویسکی",
+          "items": 12
+        },
+        {
+          "id": "wine-bottles",
+          "en": "Wine Bottles",
+          "fa": "بطری شراب",
+          "items": 7
+        },
+        {
+          "id": "traditional-spirits",
+          "en": "Traditional Spirits",
+          "fa": "عرق‌های سنتی",
+          "items": 2
+        },
+        {
+          "id": "wine",
+          "en": "Wine",
+          "fa": "شراب",
+          "items": 23
+        }
+      ],
+      "items": 133,
+      "pricesWithNonWesternDigits": 0,
+      "photos": 46
+    },
+    "fontRequests": {
+      "urls": [
+        "http://127.0.0.1:3100/_next/static/media/tinos_latin_700_normal-s.p.3td2yexc0syzd.woff2",
+        "http://127.0.0.1:3100/_next/static/media/montserrat_latin_400_normal-s.p.2pd8xj29-n0_9.woff2",
+        "http://127.0.0.1:3100/_next/static/media/montserrat_latin_500_normal-s.p.09u00g3252wjk.woff2"
+      ],
+      "thirdParty": []
+    },
+    "persianToggle": {
+      "lang": "fa",
+      "dir": "rtl",
+      "dataLang": "fa",
+      "visibleFaHeadings": 17,
+      "visibleEnHeadings": 0
+    },
+    "imagesFa": {
+      "total": 47,
+      "complete": 47,
+      "loaded": 47,
+      "failed": []
+    },
+    "repeatVisit": {
+      "intro": "skip",
+      "display": "none",
+      "storage": "1",
+      "lang": "fa",
+      "skipped": true
+    },
+    "reducedMotion": {
+      "intro": "skip",
+      "display": "none",
+      "prefersReduced": true,
+      "skipped": true
+    }
+  }
+}

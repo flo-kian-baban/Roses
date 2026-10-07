@@ -96,7 +96,7 @@ export default async function VenueAdmin({ params, searchParams }: { params: Pro
 
       {groups.length === 0 && <div className="mt-6"><Empty icon="search" title="Nothing matches" hint="Try another word or show everything." action={<a className={secondary} href={base}>Show everything</a>} /></div>}
       {groups.map((g) => (
-        <section key={g.s?.id ?? 'none'} id={g.s ? `sec-${g.s.id}` : 'sec-none'} className="mt-7 scroll-mt-36">
+        <section key={g.s?.id ?? 'none'} id={g.s ? `sec-${g.s.id}` : 'sec-none'} className="mt-7 scroll-mt-44 lg:scroll-mt-32">
           <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
             <div className="min-w-0">
               <h2 className="flex flex-wrap items-center gap-x-2 gap-y-1 text-lg font-semibold">

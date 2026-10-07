@@ -16,10 +16,10 @@ export function SignIn({ venues, venue, sp, path }: { venues: Venue[]; venue?: V
           <p className="mt-1 text-[15px] text-ink-muted">{adminMode ? 'Sign in with your email and password.' : venue ? 'Enter your PIN to edit this menu.' : 'Choose your venue and enter your PIN.'}</p>
         </div>
         <Notice sp={sp} />
-        {one(sp, 'signedout') && <p role="status" className="mb-5 rounded-2xl border border-line bg-white px-4 py-3 text-center text-[15px]">You are signed out.</p>}
+        {one(sp, 'signedout') && <p role="status" className="mb-5 rounded-[22px] border border-line bg-white px-4 py-3 text-center text-[15px]">You are signed out.</p>}
 
         {!adminMode && (
-          <form method="post" action="/api/admin/login" className="rounded-3xl border border-line bg-white p-5 shadow-[0_1px_2px_rgba(16,16,16,.04)]">
+          <form method="post" action="/api/admin/login" className="rounded-[28px] border border-line bg-white p-5 shadow-card">
             <input type="hidden" name="mode" value="pin" />
             <input type="hidden" name="_back" value={path} />
             {venue ? (
@@ -45,7 +45,7 @@ export function SignIn({ venues, venue, sp, path }: { venues: Venue[]; venue?: V
         )}
 
         {adminMode && (
-          <form method="post" action="/api/admin/login" className="rounded-3xl border border-line bg-white p-5 shadow-[0_1px_2px_rgba(16,16,16,.04)]">
+          <form method="post" action="/api/admin/login" className="rounded-[28px] border border-line bg-white p-5 shadow-card">
             <input type="hidden" name="mode" value="admin" />
             <input type="hidden" name="_back" value={path} />
             <label className="block"><span className="text-sm font-medium">Email</span><input className={input} name="email" type="email" autoComplete="username" required autoFocus /></label>

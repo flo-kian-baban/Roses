@@ -1,0 +1,42 @@
+{
+  "url": "http://127.0.0.1:3100/kebab-land",
+  "note": "Local production build (next build && next start) on the developer machine. A local estimate, not the hosted result.",
+  "runs": [
+    {
+      "run": 1,
+      "formFactor": "mobile",
+      "emulated": true,
+      "performance": 100,
+      "lcpMs": 1354,
+      "fcpMs": 754,
+      "tbtMs": 0,
+      "cls": 0,
+      "speedIndexMs": 1102,
+      "lcpElement": "<p class=\"mt-1 text-sm text-[var(--brand-muted)] whitespace-pre-line\">"
+    },
+    {
+      "run": 2,
+      "formFactor": "mobile",
+      "emulated": true,
+      "performance": 100,
+      "lcpMs": 1353,
+      "fcpMs": 753,
+      "tbtMs": 0,
+      "cls": 0,
+      "speedIndexMs": 1104,
+      "lcpElement": "<p class=\"mt-1 text-sm text-[var(--brand-muted)] whitespace-pre-line\">"
+    },
+    {
+      "run": 3,
+      "formFactor": "mobile",
+      "emulated": true,
+      "performance": 100,
+      "lcpMs": 1353,
+      "fcpMs": 753,
+      "tbtMs": 0,
+      "cls": 0,
+      "speedIndexMs": 1105,
+      "lcpElement": "<p class=\"mt-1 text-sm text-[var(--brand-muted)] whitespace-pre-line\">"
+    }
+  ]
+}

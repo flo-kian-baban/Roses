@@ -44,7 +44,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<SP>
             const c = counts.find((x) => x.venue_id === v.id);
             const addresses = v.locations.map((l) => l.address).filter(Boolean).join(' · ');
             return (
-              <li key={v.id} className="overflow-hidden rounded-3xl border border-line bg-white shadow-[0_1px_2px_rgba(16,16,16,.04)]">
+              <li key={v.id} className="overflow-hidden rounded-[24px] border border-line bg-white shadow-card">
                 <a href={`/admin/${v.id}`} className="flex items-center gap-4 p-5 hover:bg-neutral-50">
                   <LogoTile venue={v} className="h-16 w-24" pad="p-2" />
                   <div className="min-w-0 flex-1">

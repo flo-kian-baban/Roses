@@ -28,9 +28,9 @@ export function Shell({ session, venues, venue, active, children }: { session: S
   return (
     <div className="min-h-screen lg:pl-72">
       {/* Sidebar (laptop) */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col border-r border-line bg-white lg:flex">
+      <aside className="glass fixed inset-y-0 left-0 z-40 hidden w-72 flex-col border-r border-line lg:flex">
         <div className="flex items-center gap-3 px-5 pt-6 pb-5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-white shadow-sm"><Icon name="utensils" /></span>
+          <span className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_6px_16px_-6px_rgba(238,106,58,.8)]"><Icon name="utensils" strokeWidth={2.2} /></span>
           <div><p className="text-lg font-semibold leading-tight">Roses</p><p className="text-xs text-ink-muted">Menu admin</p></div>
         </div>
         <div className="px-4">
@@ -57,13 +57,13 @@ export function Shell({ session, venues, venue, active, children }: { session: S
       </aside>
 
       {/* Top bar (phone) */}
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-line bg-white/90 px-4 backdrop-blur lg:hidden">
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-line glass px-4 lg:hidden">
         <a href={venue ? `/admin/${v}` : '/admin'} className="flex min-w-0 items-center gap-2.5">
           {venue ? <><LogoTile venue={venue} className="h-8 w-11" pad="p-1" /><span className="truncate font-semibold">{venue.name.en}</span></> : <><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-white"><Icon name="utensils" className="h-4 w-4" /></span><span className="font-semibold">Roses admin</span></>}
         </a>
         <details className="relative">
-          <summary className="flex items-center gap-1.5 rounded-full border border-line bg-white py-0.5 pl-0.5 pr-2"><Avatar name={session.name} className="h-8 w-8 text-xs" /><Icon name="down" className="h-4 w-4 text-ink-muted" /></summary>
-          <div className="absolute right-0 top-full z-40 mt-2 w-64 overflow-hidden rounded-2xl border border-line bg-white shadow-xl">
+          <summary className="flex items-center gap-1.5 rounded-full border border-line bg-white py-0.5 pl-0.5 pr-2 shadow-[0_1px_2px_rgba(0,0,0,.04)]"><Avatar name={session.name} className="h-8 w-8 text-xs" /><Icon name="down" className="h-4 w-4 text-ink-muted" /></summary>
+          <div className="absolute right-0 top-full z-40 mt-2 w-64 overflow-hidden rounded-[20px] border border-black/5 bg-white shadow-pop">
             <div className="border-b border-line px-4 py-3"><p className="truncate font-semibold">{session.name}</p><p className="text-xs text-ink-muted">{roleLabel(session)}</p></div>
             <div className="py-1">
               {venues.length > 1 && <p className="px-4 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">Switch venue</p>}
@@ -82,7 +82,7 @@ export function Shell({ session, venues, venue, active, children }: { session: S
       <main className="mx-auto w-full max-w-6xl px-4 pt-5 pb-28 sm:px-6 lg:px-10 lg:pt-8 lg:pb-12">{children}</main>
 
       {/* Bottom tabs (phone) */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white/95 backdrop-blur lg:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line glass lg:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <ul className="flex">
           {tabs.map((t) => (
             <li key={t.key} className="min-w-0 flex-1">
@@ -104,7 +104,7 @@ function NavGroup({ label, items, isActive }: { label: string; items: Item[]; is
       <ul className="space-y-0.5">
         {items.map((i) => (
           <li key={i.key}>
-            <a href={i.href} aria-current={isActive(i.key) ? 'page' : undefined} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium ${isActive(i.key) ? 'bg-accent text-white shadow-sm' : 'text-ink hover:bg-neutral-100'}`}>
+            <a href={i.href} aria-current={isActive(i.key) ? 'page' : undefined} className={`flex items-center gap-3 rounded-[14px] px-3 py-2.5 text-[15px] font-medium transition ${isActive(i.key) ? 'bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.25),0_8px_20px_-10px_rgba(238,106,58,.9)]' : 'text-ink hover:bg-fill'}`}>
               <Icon name={i.icon} className={`h-5 w-5 ${isActive(i.key) ? 'text-white' : 'text-ink-muted'}`} />{i.label}
             </a>
           </li>
@@ -122,11 +122,11 @@ function VenueSwitcher({ venues, venue }: { venues: Venue[]; venue: Venue | null
       <span className="min-w-0"><span className="block truncate text-[15px] font-semibold leading-tight">{x ? x.name.en : 'Choose a venue'}</span><span className="block text-xs text-ink-muted">{x ? `${x.locations?.length ?? 0} location${(x.locations?.length ?? 0) === 1 ? '' : 's'}` : `${venues.length} venues`}</span></span>
     </span>
   );
-  if (venues.length <= 1 && current) return <div className="mt-2 flex items-center rounded-2xl border border-line px-3 py-2.5">{row(current)}</div>;
+  if (venues.length <= 1 && current) return <div className="mt-2 flex items-center rounded-2xl bg-fill px-3 py-2.5">{row(current)}</div>;
   return (
     <details className="relative mt-2">
-      <summary className="flex items-center gap-2 rounded-2xl border border-line px-3 py-2.5 hover:bg-neutral-50">{row(current)}<Icon name="down" className="h-4 w-4 text-ink-muted" /></summary>
-      <div className="absolute inset-x-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-line bg-white p-1.5 shadow-xl">
+      <summary className="flex items-center gap-2 rounded-2xl bg-fill px-3 py-2.5 transition hover:bg-[#ececf0]">{row(current)}<Icon name="down" className="h-4 w-4 text-ink-muted" /></summary>
+      <div className="absolute inset-x-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-black/5 bg-white p-1.5 shadow-pop">
         {venues.map((x) => (
           <a key={x.id} href={`/admin/${x.id}`} className={`flex items-center gap-2 rounded-xl px-2 py-2 hover:bg-neutral-50 ${x.id === current?.id ? 'bg-accent-soft' : ''}`}>{row(x)}{x.id === current?.id && <Icon name="check" className="h-4 w-4 text-accent" />}</a>
         ))}

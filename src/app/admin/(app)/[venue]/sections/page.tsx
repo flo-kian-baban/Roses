@@ -30,7 +30,7 @@ export default async function Sections({ params, searchParams }: { params: Promi
           {sections.map((s, n) => {
             const listed = s.items.filter((i) => i.listed).length;
             return (
-              <li key={s.id} className="rounded-2xl border border-line bg-white p-3 shadow-[0_1px_2px_rgba(16,16,16,.04)] sm:p-4">
+              <li key={s.id} className="rounded-[22px] border border-line bg-white p-3 shadow-card sm:p-4">
                 <div className="flex items-center gap-3">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-sm font-semibold tabular-nums text-ink-muted">{n + 1}</span>
                   <a href={`${base}/sections/${s.id}`} className="min-w-0 flex-1 font-semibold leading-snug underline-offset-4 hover:underline">{s.name.en}{s.name.fa && <span lang="fa" dir="rtl" className="block text-left text-sm font-normal text-ink-muted sm:ml-2 sm:inline sm:text-base">{s.name.fa}</span>}</a>

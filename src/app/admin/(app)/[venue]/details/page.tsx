@@ -57,7 +57,7 @@ export default async function Details({ params, searchParams }: { params: Promis
           <Card title="Persian" icon="languages">
             <Switch name="showPersianDrafts" label="Show Persian drafts to customers" hint="Off: drafted Persian falls back to English until it is reviewed." defaultChecked={v.settings?.showPersianDrafts !== false} />
           </Card>
-          <div className="save-bar sticky z-20 -mx-4 flex items-center gap-2 border-t border-line bg-white/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0">
+          <div className="save-bar sticky z-20 -mx-4 flex items-center gap-2 border-t border-line glass px-4 py-3 sm:-mx-6 sm:px-6 lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0">
             <button className={`${primary} flex-1 sm:flex-none`} type="submit">Save venue details</button>
             <a className={secondary} href={`/admin/${venueId}`}>Cancel</a>
           </div>

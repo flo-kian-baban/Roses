@@ -51,7 +51,7 @@ export default async function VenueAdmin({ params, searchParams }: { params: Pro
     .filter((g) => !narrowing || g.items.length > 0);
   const shown = groups.reduce((n, g) => n + g.items.length, 0);
   const tab = (href: string, active: boolean, label: React.ReactNode, muted = false) => (
-    <a href={href} className={`inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium whitespace-nowrap ${active ? 'bg-white text-ink shadow-sm' : muted ? 'text-neutral-400 hover:text-ink' : 'text-ink-muted hover:text-ink'}`} aria-current={active ? 'page' : undefined}>{label}</a>
+    <a href={href} className={`inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm whitespace-nowrap transition ${active ? 'bg-white font-semibold text-ink shadow-[0_1px_3px_rgba(0,0,0,.12),0_0_0_0.5px_rgba(0,0,0,.04)]' : muted ? 'font-medium text-neutral-400 hover:text-ink' : 'font-medium text-ink-muted hover:text-ink'}`} aria-current={active ? 'page' : undefined}>{label}</a>
   );
 
   return (
@@ -67,19 +67,19 @@ export default async function VenueAdmin({ params, searchParams }: { params: Pro
         <Stat label="Persian missing" value={c?.persian_missing ?? 0} icon="languages" tone={c?.persian_missing ? 'amber' : 'grey'} href={url({ show: show === 'persian' ? 'all' : 'persian' })} active={show === 'persian'} hint="listed items" />
       </div>
 
-      <div className="sticky top-14 z-20 -mx-4 space-y-2 bg-canvas/95 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6 lg:top-0 lg:-mx-10 lg:px-10 lg:pt-0">
+      <div className="sticky top-14 z-20 -mx-4 space-y-2 glass px-4 py-2 sm:-mx-6 sm:px-6 lg:top-0 lg:-mx-10 lg:px-10 lg:pt-0">
         <form method="get" action={base} className="relative">
           {show !== 'all' && <input type="hidden" name="show" value={show} />}
           {sectionFilter && <input type="hidden" name="section" value={sectionFilter} />}
           <Icon name="search" className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
-          <input type="search" name="q" defaultValue={q} placeholder="Search items" enterKeyHint="search" autoComplete="off" className="h-11 w-full rounded-xl border border-line bg-white pl-11 pr-24 text-base placeholder:text-neutral-400 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+          <input type="search" name="q" defaultValue={q} placeholder="Search items" enterKeyHint="search" autoComplete="off" className="h-11 w-full rounded-full border-0 bg-fill pl-11 pr-28 text-base placeholder:text-neutral-500 transition focus:bg-white focus:outline-none focus:ring-[3px] focus:ring-accent/25" />
           <div className="absolute inset-y-1 right-1 flex gap-1">
-            {q && <a href={url({ q: '' })} className="flex items-center rounded-lg px-2 text-sm font-medium text-ink-muted hover:bg-neutral-100 hover:text-ink">Clear</a>}
-            <button type="submit" className="flex items-center rounded-lg bg-neutral-100 px-3 text-sm font-medium hover:bg-neutral-200">Search</button>
+            {q && <a href={url({ q: '' })} className="flex items-center rounded-full px-2.5 text-sm font-medium text-ink-muted hover:text-ink">Clear</a>}
+            <button type="submit" className="flex items-center rounded-full bg-white px-3.5 text-sm font-semibold shadow-[0_1px_3px_rgba(0,0,0,.12)] hover:bg-fill">Search</button>
           </div>
         </form>
         <div className="no-scrollbar -mx-4 flex overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
-          <div className="flex gap-1 rounded-xl bg-neutral-200/60 p-1">
+          <div className="flex gap-1 rounded-full bg-fill p-1">
             {tab(url({ section: '' }), !sectionFilter, 'All')}
             {sections.map((s) => tab(url({ section: s.id }), sectionFilter === s.id, <>{s.name.en}<span className="rounded-full bg-black/5 px-1.5 text-xs tabular-nums">{s.items.length}</span></>, !s.listed))}
             {orphans.length > 0 && tab(url({ section: 'none' }), sectionFilter === 'none', <>No section<span className="rounded-full bg-black/5 px-1.5 text-xs tabular-nums">{orphans.length}</span></>, true)}
@@ -132,11 +132,11 @@ function ItemCard({ i, back, base }: { i: AdminItem; back: string; base: string 
   const problem = listingProblem(i); const missing = persianMissing(i); const edit = `${base}/items/${i.id}`;
   const priceText = i.price != null ? price(i.price) : i.variants.length ? i.variants.map((v) => `${v.label.en ?? ''} ${v.price != null ? price(v.price) : '—'}`.trim()).join(' · ') : null;
   return (
-    <li className={`flex flex-col overflow-hidden rounded-2xl border bg-white shadow-[0_1px_2px_rgba(16,16,16,.04)] ${i.listed ? 'border-line' : 'border-dashed border-neutral-300'}`}>
+    <li className={`flex flex-col overflow-hidden rounded-[20px] border bg-white shadow-card ${i.listed ? 'border-line' : 'border-dashed border-neutral-300'}`}>
       <a href={edit} className="relative block aspect-[4/3] bg-neutral-100">
         <Photo url={i.photo?.url} className={`h-full w-full ${i.listed ? '' : 'opacity-60'}`} />
         <span className="absolute left-2 top-2 flex flex-wrap gap-1">
-          {i.listed ? <Badge tone="green" className="shadow-sm">Listed</Badge> : <Badge className="bg-white/95 shadow-sm">Unlisted</Badge>}
+          {i.listed ? <Badge tone="green" className="shadow-sm">Listed</Badge> : <Badge className="bg-white shadow-sm">Unlisted</Badge>}
           {problem && <Badge tone="amber" className="shadow-sm">Needs price</Badge>}
         </span>
       </a>

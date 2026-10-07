@@ -20,22 +20,22 @@ export function Badge({ tone = 'grey', children, className = '' }: { tone?: Tone
   return <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap ${PILL[tone]} ${className}`}>{children}</span>;
 }
 
-export const input = 'mt-1 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-base text-ink placeholder:text-neutral-400 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20';
-export const button = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 text-base font-medium whitespace-nowrap transition active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
-export const primary = `${button} bg-accent text-white shadow-sm hover:bg-accent-strong`;
-export const secondary = `${button} border border-line bg-white text-ink hover:bg-neutral-50`;
-export const ghost = `${button} text-ink hover:bg-neutral-100`;
-export const danger = `${button} border border-red-200 bg-white text-red-700 hover:bg-red-50`;
-export const sm = 'min-h-9 rounded-lg px-3 py-1.5 text-sm';
+export const input = 'mt-1 block w-full rounded-xl border border-[#d2d2d7] bg-white px-3.5 py-2.5 text-base text-ink placeholder:text-neutral-400 focus:border-accent focus:outline-none focus:ring-[3px] focus:ring-accent/20';
+export const button = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2 text-base font-semibold whitespace-nowrap transition active:scale-[.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
+export const primary = `${button} bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.28),0_8px_20px_-8px_rgba(238,106,58,.7)] hover:brightness-105`;
+export const secondary = `${button} border border-line bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.04)] hover:bg-fill`;
+export const ghost = `${button} text-ink hover:bg-fill`;
+export const danger = `${button} border border-red-200 bg-white text-red-600 hover:bg-red-50`;
+export const sm = 'min-h-9 px-3.5 py-1.5 text-sm';
 
 export function Card({ id, title, description, actions, children, className = '', tone = 'default', icon }: { id?: string; title?: React.ReactNode; description?: React.ReactNode; actions?: React.ReactNode; children?: React.ReactNode; className?: string; tone?: 'default' | 'danger' | 'warn'; icon?: IconName }) {
   const tones = { default: 'border-line bg-white', danger: 'border-red-200 bg-white', warn: 'border-amber-200 bg-amber-50/70' };
   return (
-    <section id={id} className={`rounded-2xl border p-4 shadow-[0_1px_2px_rgba(16,16,16,.04)] sm:p-5 ${tones[tone]} ${className}`}>
+    <section id={id} className={`rounded-2xl border p-4 shadow-card sm:p-5 ${tones[tone]} ${className}`}>
       {(title || actions) && (
         <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div className="flex min-w-0 items-start gap-3">
-            {icon && <span className={`mt-0.5 rounded-lg p-1.5 ${tone === 'danger' ? 'bg-red-50 text-red-600' : tone === 'warn' ? 'bg-amber-100 text-amber-800' : 'bg-accent-soft text-accent-strong'}`}><Icon name={icon} className="h-4 w-4" /></span>}
+            {icon && <span className={`mt-0.5 rounded-[9px] p-1.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,.3)] ${tone === 'danger' ? 'bg-[linear-gradient(180deg,#ff6b6b,#e5484d)]' : tone === 'warn' ? 'bg-[linear-gradient(180deg,#ffb340,#f59e0b)]' : 'bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))]'}`}><Icon name={icon} className="h-4 w-4" strokeWidth={2.2} /></span>}
             <div className="min-w-0">{title && <h2 className="text-[17px] font-semibold leading-tight">{title}</h2>}{description && <p className="mt-1 text-sm text-ink-muted">{description}</p>}</div>
           </div>
           {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
@@ -52,7 +52,7 @@ export function PageHeader({ back, eyebrow, title, subtitle, actions }: { back?:
       <div className="min-w-0">
         {back && <a href={back.href} className="mb-2 inline-flex min-h-8 items-center gap-1 text-sm font-medium text-ink-muted hover:text-ink"><Icon name="back" className="h-4 w-4" />{back.label}</a>}
         {eyebrow && <p className="text-sm font-medium text-accent-strong">{eyebrow}</p>}
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+        <h1 className="text-[26px] font-semibold leading-tight sm:text-[32px]">{title}</h1>
         {subtitle && <p className="mt-1 max-w-2xl text-[15px] text-ink-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
@@ -61,15 +61,15 @@ export function PageHeader({ back, eyebrow, title, subtitle, actions }: { back?:
 }
 
 export function Stat({ label, value, icon, tone = 'grey', href, active, hint }: { label: string; value: React.ReactNode; icon?: IconName; tone?: 'grey' | 'green' | 'amber' | 'blue' | 'accent'; href?: string; active?: boolean; hint?: string }) {
-  const iconTone = { grey: 'bg-neutral-100 text-neutral-600', green: 'bg-emerald-100 text-emerald-700', amber: 'bg-amber-100 text-amber-800', blue: 'bg-sky-100 text-sky-700', accent: 'bg-accent-soft text-accent-strong' }[tone];
-  const cls = `block rounded-2xl border bg-white p-4 shadow-[0_1px_2px_rgba(16,16,16,.04)] ${active ? 'border-accent ring-2 ring-accent/20' : 'border-line'} ${href ? 'hover:border-neutral-300' : ''}`;
+  const iconTone = { grey: 'bg-[linear-gradient(180deg,#a1a1aa,#8e8e93)]', green: 'bg-[linear-gradient(180deg,#4cd964,#34c759)]', amber: 'bg-[linear-gradient(180deg,#ffb340,#ff9500)]', blue: 'bg-[linear-gradient(180deg,#5ac8fa,#007aff)]', accent: 'bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))]' }[tone];
+  const cls = `block rounded-[20px] border bg-white p-4 shadow-card transition ${active ? 'border-accent ring-[3px] ring-accent/15' : 'border-line'} ${href ? 'hover:-translate-y-px hover:shadow-pop' : ''}`;
   const body = (
     <>
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium leading-tight text-ink-muted">{label}</span>
-        {icon && <span className={`rounded-lg p-1.5 ${iconTone}`}><Icon name={icon} className="h-4 w-4" /></span>}
+        {icon && <span className={`rounded-[9px] p-1.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,.3)] ${iconTone}`}><Icon name={icon} className="h-4 w-4" strokeWidth={2.2} /></span>}
       </div>
-      <p className="mt-2 text-[28px] font-semibold leading-none tabular-nums tracking-tight">{value}</p>
+      <p className="mt-2 text-[30px] font-semibold leading-none tabular-nums tracking-[-0.02em]">{value}</p>
       {hint && <p className="mt-2 text-xs text-ink-muted">{hint}</p>}
     </>
   );
@@ -104,7 +104,7 @@ export function BiFields({ label, name, value, long, missing, required }: { labe
 // A native checkbox drawn as a toggle (see .switch in globals.css).
 export function Switch({ name, label, hint, defaultChecked, disabled, title, value }: { name: string; label: React.ReactNode; hint?: React.ReactNode; defaultChecked?: boolean; disabled?: boolean; title?: string; value?: string }) {
   return (
-    <label className={`flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-xl border border-line bg-white px-4 py-3 ${disabled ? 'cursor-not-allowed' : ''}`} title={title}>
+    <label className={`flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-[22px] border border-line bg-white px-4 py-3 ${disabled ? 'cursor-not-allowed' : ''}`} title={title}>
       <span className="min-w-0"><span className="block font-medium">{label}</span>{hint && <span className="mt-0.5 block text-xs text-ink-muted">{hint}</span>}</span>
       <input type="checkbox" name={name} value={value} className="switch" defaultChecked={defaultChecked} disabled={disabled} />
     </label>
@@ -114,8 +114,8 @@ export function Switch({ name, label, hint, defaultChecked, disabled, title, val
 // A big tappable card around a native checkbox or radio (the input stays visible: forms and drills work unchanged).
 export function CheckCard({ type = 'checkbox', name, value, defaultChecked, children, className = '', dense }: { type?: 'checkbox' | 'radio'; name: string; value?: string; defaultChecked?: boolean; children: React.ReactNode; className?: string; dense?: boolean }) {
   return (
-    <label className={`flex min-h-12 cursor-pointer items-center rounded-xl border border-line bg-white py-2 has-checked:border-accent has-checked:bg-accent-soft ${dense ? 'gap-2 px-2.5' : 'gap-3 px-3'} ${className}`}>
-      <input type={type} name={name} value={value} defaultChecked={defaultChecked} className="h-5 w-5 shrink-0 accent-accent" />
+    <label className={`flex min-h-12 cursor-pointer items-center rounded-[22px] border border-line bg-white py-2 transition has-checked:border-accent has-checked:bg-accent-soft ${dense ? 'gap-2 px-2.5' : 'gap-3 px-3'} ${className}`}>
+      <input type={type} name={name} value={value} defaultChecked={defaultChecked} className="check" />
       <span className="min-w-0 text-[15px]">{children}</span>
     </label>
   );
@@ -124,14 +124,14 @@ export function CheckCard({ type = 'checkbox', name, value, defaultChecked, chil
 export function Photo({ url, alt = '', className = '' }: { url?: string | null; alt?: string; className?: string }) {
   return url
     ? <img src={url} alt={alt} loading="lazy" decoding="async" className={`object-cover ${className}`} />
-    : <div className={`flex items-center justify-center bg-[linear-gradient(135deg,#f4f2ec,#e9e6de)] text-neutral-400 ${className}`}><Icon name="image" className="h-6 w-6" /></div>;
+    : <div className={`flex items-center justify-center bg-fill text-neutral-400 ${className}`}><Icon name="image" className="h-6 w-6" /></div>;
 }
 
 // The venue logo on its own brand background (Senso on cream, Kebab Land white-on-dark).
 export function LogoTile({ venue, className = 'h-10 w-14', pad = 'p-1.5' }: { venue: Venue; className?: string; pad?: string }) {
   const bg = venue.brand?.colors?.background || '#ffffff';
   return (
-    <span className={`flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line ${pad} ${className}`} style={{ background: bg }}>
+    <span className={`flex shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-black/5 ${pad} ${className}`} style={{ background: bg }}>
       {venue.brand?.logo ? <img src={venue.brand.logo.url} alt="" className="max-h-full max-w-full object-contain" /> : <span className="text-sm font-semibold">{(venue.name.en || '?').slice(0, 1)}</span>}
     </span>
   );
@@ -139,15 +139,15 @@ export function LogoTile({ venue, className = 'h-10 w-14', pad = 'p-1.5' }: { ve
 
 export function Avatar({ name, className = 'h-9 w-9 text-sm' }: { name: string; className?: string }) {
   const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join('') || '?';
-  return <span className={`flex shrink-0 items-center justify-center rounded-full bg-accent-soft font-semibold text-accent-strong ${className}`}>{initials}</span>;
+  return <span className={`flex shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--color-accent-bright),var(--color-accent-strong))] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,.3)] ${className}`}>{initials}</span>;
 }
 
 export const roleLabel = (s: Session) => (s.role === 'admin' ? 'Admin' : s.role === 'owner' ? 'Owner' : 'Staff');
 
 export function Empty({ icon = 'sparkle', title, hint, action }: { icon?: IconName; title: string; hint?: string; action?: React.ReactNode }) {
   return (
-    <div className="flex flex-col items-center rounded-2xl border border-dashed border-neutral-300 bg-white/60 px-4 py-10 text-center">
-      <span className="rounded-2xl bg-neutral-100 p-3 text-neutral-500"><Icon name={icon} className="h-6 w-6" /></span>
+    <div className="flex flex-col items-center rounded-[22px] border border-dashed border-[#d2d2d7] bg-fill/60 px-4 py-10 text-center">
+      <span className="rounded-2xl bg-white p-3 text-neutral-500 shadow-card"><Icon name={icon} className="h-6 w-6" /></span>
       <p className="mt-3 font-medium">{title}</p>
       {hint && <p className="mt-1 max-w-sm text-sm text-ink-muted">{hint}</p>}
       {action && <div className="mt-4">{action}</div>}

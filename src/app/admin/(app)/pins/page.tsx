@@ -57,7 +57,7 @@ export default async function Pins({ searchParams }: { searchParams: Promise<SP>
             <p className="mt-4 text-xs text-ink-muted">Set or change an admin PIN on the laptop: <code className="rounded bg-neutral-100 px-1.5 py-0.5">npm run admin:create -- --email &lt;email&gt; --name &quot;&lt;name&gt;&quot; --pin &lt;digits&gt; --reset</code></p>
           </Card>
           {revoked.length > 0 && (
-            <details className="group rounded-2xl border border-line bg-white shadow-[0_1px_2px_rgba(16,16,16,.04)]">
+            <details className="group rounded-[22px] border border-line bg-white shadow-card">
               <summary className="flex items-center justify-between gap-3 p-4 font-medium sm:px-5">Revoked PINs ({revoked.length})<Icon name="down" className="h-5 w-5 text-ink-muted transition group-open:rotate-180" /></summary>
               <ul className="divide-y divide-line border-t border-line px-4 py-2 sm:px-5">{revoked.map((p) => <Pin key={p.id} p={p} venues={all} />)}</ul>
             </details>

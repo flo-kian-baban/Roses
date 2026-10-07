@@ -76,7 +76,7 @@ export function HistoryByDay({ history, back, venueId }: { history: Revision[]; 
       {groups.map((g) => (
         <section key={g.day}>
           <h2 className="mb-2 px-1 text-sm font-semibold text-ink-muted">{g.day === today ? 'Today' : g.day === yesterday ? 'Yesterday' : g.day}</h2>
-          <div className="rounded-2xl border border-line bg-white p-4 shadow-[0_1px_2px_rgba(16,16,16,.04)] sm:px-5">
+          <div className="rounded-[22px] border border-line bg-white p-4 shadow-card sm:px-5">
             <ul className="divide-y divide-line">{g.rows.map((r) => <RevisionRow key={r.id} r={r} back={back} venueId={venueId} showTarget />)}</ul>
           </div>
         </section>

@@ -50,7 +50,7 @@ export function ItemForm({ venueId, item, sections, back }: Props) {
             </fieldset>
           </Card>
 
-          <details className="group rounded-2xl border border-line bg-white shadow-[0_1px_2px_rgba(16,16,16,.04)]" open={a.length > 0}>
+          <details className="group rounded-[22px] border border-line bg-white shadow-card" open={a.length > 0}>
             <summary className="flex items-center justify-between gap-3 p-4 sm:p-5">
               <span className="flex items-start gap-3"><span className="mt-0.5 rounded-lg bg-accent-soft p-1.5 text-accent-strong"><Icon name="sparkle" className="h-4 w-4" /></span><span><span className="block text-[17px] font-semibold leading-tight">Add-ons and choices</span><span className="mt-1 block text-sm text-ink-muted">{a.length ? `${a.length} choice${a.length === 1 ? '' : 's'}` : 'None yet'} · tap to open</span></span></span>
               <Icon name="down" className="h-5 w-5 shrink-0 text-ink-muted transition group-open:rotate-180" />
@@ -65,14 +65,14 @@ export function ItemForm({ venueId, item, sections, back }: Props) {
                     <input className={`${input} mt-0`} name={`a${n}_en`} placeholder="Choice (English)" defaultValue={row.label.en ?? ''} />
                     <input className={`${input} mt-0`} name={`a${n}_fa`} placeholder="گزینه" dir="rtl" lang="fa" defaultValue={row.label.fa ?? ''} />
                     <input className={`${input} mt-0`} name={`a${n}_price`} placeholder="+ price" inputMode="decimal" defaultValue={row.label.en ? row.price : ''} />
-                    <label className="flex min-h-11 items-center gap-2 px-1 text-sm"><input type="checkbox" name={`a${n}_required`} className="h-5 w-5 accent-accent" defaultChecked={row.required} /> required</label>
+                    <label className="flex min-h-11 items-center gap-2 px-1 text-sm"><input type="checkbox" name={`a${n}_required`} className="check" defaultChecked={row.required} /> required</label>
                   </div>
                 ))}
               </div>
             </div>
           </details>
 
-          <details className="group rounded-2xl border border-line bg-white shadow-[0_1px_2px_rgba(16,16,16,.04)]" open={c.length > 0}>
+          <details className="group rounded-[22px] border border-line bg-white shadow-card" open={c.length > 0}>
             <summary className="flex items-center justify-between gap-3 p-4 sm:p-5">
               <span className="flex items-start gap-3"><span className="mt-0.5 rounded-lg bg-accent-soft p-1.5 text-accent-strong"><Icon name="layers" className="h-4 w-4" /></span><span><span className="block text-[17px] font-semibold leading-tight">Combo parts</span><span className="mt-1 block text-sm text-ink-muted">{c.length ? `${c.length} part${c.length === 1 ? '' : 's'}` : 'For platters and mixed kebabs'} · tap to open</span></span></span>
               <Icon name="down" className="h-5 w-5 shrink-0 text-ink-muted transition group-open:rotate-180" />
@@ -118,7 +118,7 @@ export function ItemForm({ venueId, item, sections, back }: Props) {
         </div>
       </div>
 
-      <div className="save-bar sticky z-20 -mx-4 flex items-center gap-2 border-t border-line bg-white/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+      <div className="save-bar sticky z-20 -mx-4 flex items-center gap-2 border-t border-line glass px-4 py-3 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
         <button className={`${primary} flex-1 sm:flex-none sm:min-w-40`} type="submit">{item ? 'Save' : 'Create item'}</button>
         <a className={secondary} href={cancel}>Cancel</a>
         {item && <span className="ml-auto hidden text-xs text-ink-muted sm:block">The public page updates right after Save.</span>}

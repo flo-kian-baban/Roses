@@ -11,14 +11,10 @@ export function SensoPage({ venue, sections }: { venue: Venue; sections: Section
   return (
     <>
       <main>
-        <header className="mx-auto flex max-w-2xl items-start justify-between gap-3 px-4 pt-5 pb-4">
-          <div className="flex min-w-0 items-center gap-3">
-            {logo && <img src={logo.url} width={logo.width} height={logo.height} alt="" className="h-11 w-auto shrink-0" decoding="async" />}
-            <div className="min-w-0">
-              <Bi as="h1" text={venue.name} className="text-[22px] font-bold leading-tight" />
-              <Bi as="p" text={venue.tagline} className="line-clamp-1 text-[13px] text-[#6b6b6b]" />
-            </div>
-          </div>
+        {/* Logo and language toggle only (Kian, 2026-10-07); the venue name stays as a hidden heading for screen readers and search. */}
+        <header className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-4 pt-4 pb-3">
+          {logo && <img src={logo.url} width={logo.width} height={logo.height} alt={venue.name.en ?? ''} className="h-12 w-auto shrink-0" decoding="async" />}
+          <Bi as="h1" text={venue.name} className="sr-only" />
           <LangToggle />
         </header>
 

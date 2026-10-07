@@ -12,14 +12,10 @@ export function KebabLandPage({ venue, sections }: { venue: Venue; sections: Sec
   return (
     <>
       <main>
-        <header className="mx-auto flex max-w-2xl items-start justify-between gap-3 px-4 pt-5 pb-4">
-          <div className="flex min-w-0 items-center gap-3">
-            {logo && <span className="flex h-12 w-16 shrink-0 items-center justify-center rounded-xl p-1.5" style={{ background: 'var(--brand-tile)' }}><img src={logo.url} width={logo.width} height={logo.height} alt="" className="max-h-full w-auto" decoding="async" /></span>}
-            <div className="min-w-0">
-              <Bi as="h1" text={venue.name} className="text-[20px] font-bold uppercase tracking-wide leading-tight" />
-              <Bi as="p" text={venue.tagline} className="line-clamp-1 text-[13px] text-[#6b6b6b]" />
-            </div>
-          </div>
+        {/* Logo and language toggle only (Kian, 2026-10-07); the venue name stays as a hidden heading for screen readers and search. */}
+        <header className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-4 pt-4 pb-3">
+          {logo && <span className="flex h-12 w-16 shrink-0 items-center justify-center rounded-xl p-1.5" style={{ background: 'var(--brand-tile)' }}><img src={logo.url} width={logo.width} height={logo.height} alt={venue.name.en ?? ''} className="max-h-full w-auto" decoding="async" /></span>}
+          <Bi as="h1" text={venue.name} className="sr-only" />
           <LangToggle />
         </header>
 

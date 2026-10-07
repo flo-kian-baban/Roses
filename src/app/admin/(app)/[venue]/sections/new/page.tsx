@@ -1,26 +1,38 @@
-import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/admin/session';
+import { notFound, redirect } from 'next/navigation';
 import { canEditVenue } from '@/lib/admin/auth';
-import { BiFields, Notice, primary } from '../../../../_ui';
+import { getVenueRow } from '@/lib/admin/venue';
+import { BiFields, Card, Notice, PageHeader, primary, secondary, type SP } from '../../../../_ui';
+import { Shell } from '../../../../_ui/Shell';
 import { Forbidden } from '../../../_forbidden';
+import { adminContext } from '../../../../_ui/context';
 
-export default async function NewSection({ params, searchParams }: { params: Promise<{ venue: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export const dynamic = 'force-dynamic';
+
+export default async function NewSection({ params, searchParams }: { params: Promise<{ venue: string }>; searchParams: Promise<SP> }) {
   const { venue: venueId } = await params; const sp = await searchParams;
-  const session = await getSession();
+  const { session, mine } = await adminContext();
   if (!session) redirect(`/admin/${venueId}`);
-  if (!canEditVenue(session, venueId)) return <Forbidden />;
+  const venue = await getVenueRow(venueId);
+  if (!venue) notFound();
+  if (!canEditVenue(session, venueId)) return <Shell session={session} venues={mine} active="section"><Forbidden /></Shell>;
+  const base = `/admin/${venueId}`;
   return (
-    <>
-      <p className="text-sm"><a className="underline" href={`/admin/${venueId}`}>← {venueId}</a></p>
-      <h1 className="mt-2 text-2xl font-semibold">New section</h1>
-      <div className="mt-4"><Notice sp={sp} /></div>
-      <form method="post" action="/api/admin/section" className="space-y-4 rounded-xl border border-neutral-200 bg-white p-4">
-        <input type="hidden" name="_action" value="create" /><input type="hidden" name="venue" value={venueId} /><input type="hidden" name="_back" value={`/admin/${venueId}/sections/new`} />
-        <BiFields label="Section name" name="name" value={null} />
-        <BiFields label="Note under the heading" name="note" value={null} />
-        <p className="text-sm text-neutral-600">The new section goes last and is listed; it shows to customers once it has a listed item.</p>
-        <button className={primary} type="submit">Create section</button>
+    <Shell session={session} venues={mine} venue={venue} active="section">
+      <PageHeader back={{ href: `${base}/sections`, label: 'Sections' }} eyebrow="Section" title="New section" subtitle="It goes last and is listed; customers see it once it has a listed item." />
+      <Notice sp={sp} />
+      <form method="post" action="/api/admin/section" className="max-w-3xl space-y-5">
+        <input type="hidden" name="_action" value="create" /><input type="hidden" name="venue" value={venueId} /><input type="hidden" name="_back" value={`${base}/sections/new`} />
+        <Card title="Name" icon="tag">
+          <div className="space-y-4">
+            <BiFields label="Section name" name="name" value={null} required />
+            <BiFields label="Note under the heading" name="note" value={null} />
+          </div>
+        </Card>
+        <div className="flex items-center gap-2">
+          <button className={`${primary} flex-1 sm:flex-none sm:min-w-40`} type="submit">Create section</button>
+          <a className={secondary} href={`${base}/sections`}>Cancel</a>
+        </div>
       </form>
-    </>
+    </Shell>
   );
 }

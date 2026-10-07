@@ -26,7 +26,16 @@ npm run admin:create -- --email <your email> --name "<your name>"
 ## Daily
 
 - Public pages: http://localhost:3000/senso and /kebab-land. They are pre-rendered; an admin save regenerates the page within seconds (`res.revalidate`), no rebuild needed. A full `npm run build` is needed only after code changes.
-- Admin: http://localhost:3000/admin. Staff and the owner sign in with a venue + 6-digit PIN; the main admins (owner, Kian) with email + password.
+- Admin: http://localhost:3000/admin. Everyone signs in with a PIN on the venue's sign-in link (staff and owner PINs are venue-scoped; admin PINs work on any venue); email + password stays available for admin accounts that have one.
+
+## Admin layout
+
+- Phone first: a top bar (venue, account menu with venue switch and sign-out) and bottom tabs **Menu · Sections · History · Venue details (admins) · All venues**. On a laptop the same links sit in a left sidebar with the venue switcher and the public-page link.
+- **Menu** (`/admin/<venue>`): four counters at the top (Listed, Unlisted, Need a price, Persian missing) that filter the grid when tapped; a search box; one tab per section; photo cards with Edit and List/Unlist. The List button is disabled with a hint while the item has no price.
+- **Sections** (`/admin/<venue>/sections`): the customer order, status (Shown / Hidden: no listed item / Unlisted), item counts, Edit and List/Unlist. A section's place is its Order number on its page.
+- **Item** page: name and description in both languages, price and sizes, add-ons and combo parts (collapsed until needed), "Where it shows" (listed switch and section ticks), photo link; the Save button stays at the bottom of the screen. Notes (owner and admin), History with Restore, and Delete follow below the form.
+- **History**: every change grouped by day with Restore (or Undo create). **All venues** (`/admin`): one card per venue with counters, and the lockout alerts with **Unlock PIN login** for admins. **PINs** (admins): create and revoke.
+- No client JavaScript: plain forms, native dropdowns (`<details>`) and CSS only; it works on any phone browser.
 
 ## Sign-in links
 

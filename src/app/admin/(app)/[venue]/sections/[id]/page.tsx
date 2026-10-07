@@ -1,47 +1,72 @@
 import { notFound, redirect } from 'next/navigation';
-import { getSession } from '@/lib/admin/session';
 import { canEditVenue } from '@/lib/admin/auth';
+import { getVenueRow } from '@/lib/admin/venue';
 import { getSection } from '@/lib/admin/sections';
+import { venueMenuForAdmin } from '@/lib/admin/overview';
 import { listRevisions } from '@/lib/admin/restore';
-import { Badge, BiFields, Field, Notice, When, primary, secondary } from '../../../../_ui';
+import { price } from '@/lib/format';
+import { Badge, BiFields, Card, Field, Notice, PageHeader, Photo, Switch, primary, secondary, type SP } from '../../../../_ui';
+import { Shell } from '../../../../_ui/Shell';
 import { Forbidden } from '../../../_forbidden';
+import { adminContext } from '../../../../_ui/context';
+import { HistoryCard, SectionStatus } from '../../_shared';
 
-export default async function EditSection({ params, searchParams }: { params: Promise<{ venue: string; id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export const dynamic = 'force-dynamic';
+
+export default async function EditSection({ params, searchParams }: { params: Promise<{ venue: string; id: string }>; searchParams: Promise<SP> }) {
   const { venue: venueId, id } = await params; const sp = await searchParams;
-  const session = await getSession();
+  const { session, mine } = await adminContext();
   if (!session) redirect(`/admin/${venueId}`);
-  if (!canEditVenue(session, venueId)) return <Forbidden />;
+  const venue = await getVenueRow(venueId);
+  if (!venue) notFound();
+  if (!canEditVenue(session, venueId)) return <Shell session={session} venues={mine} active="section"><Forbidden /></Shell>;
   const s = await getSection(id);
   if (!s || s.venue_id !== venueId) notFound();
-  const history = await listRevisions(venueId, { table: 'sections', rowId: id, limit: 30 });
-  const back = `/admin/${venueId}/sections/${id}`;
+  const [history, { sections }] = await Promise.all([listRevisions(venueId, { table: 'sections', rowId: id, limit: 30 }), venueMenuForAdmin(venueId)]);
+  const items = sections.find((x) => x.id === id)?.items ?? [];
+  const base = `/admin/${venueId}`; const back = `${base}/sections/${id}`;
   return (
-    <>
-      <p className="text-sm"><a className="underline" href={`/admin/${venueId}`}>← {venueId}</a></p>
-      <h1 className="mt-2 text-2xl font-semibold">{s.name.en} {s.listed ? <Badge tone="green">Listed</Badge> : <Badge>Unlisted</Badge>}</h1>
-      <div className="mt-4"><Notice sp={sp} /></div>
-      <form method="post" action="/api/admin/section" className="space-y-4 rounded-xl border border-neutral-200 bg-white p-4">
-        <input type="hidden" name="_action" value="save" /><input type="hidden" name="id" value={s.id} /><input type="hidden" name="_back" value={back} />
-        <BiFields label="Section name" name="name" value={s.name} missing={!s.name.fa} />
-        <BiFields label="Note under the heading" name="note" value={s.note} />
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Order (lower comes first)" name="position" value={s.position} inputMode="numeric" />
-          <label className="block"><span className="text-sm font-medium">Shown to customers</span><span className="mt-1 flex min-h-11 items-center gap-3 rounded-lg border border-neutral-300 px-3"><input type="checkbox" name="listed" className="h-5 w-5" defaultChecked={s.listed} /><span>Listed</span></span></label>
+    <Shell session={session} venues={mine} venue={venue} active="section">
+      <PageHeader back={{ href: `${base}/sections`, label: 'Sections' }} eyebrow="Section" title={s.name.en} actions={<SectionStatus s={{ listed: s.listed, items }} />} />
+      <Notice sp={sp} />
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+        <form method="post" action="/api/admin/section" className="space-y-5">
+          <input type="hidden" name="_action" value="save" /><input type="hidden" name="id" value={s.id} /><input type="hidden" name="_back" value={back} />
+          <Card title="Name" icon="tag">
+            <div className="space-y-4">
+              <BiFields label="Section name" name="name" value={s.name} missing={!s.name.fa} required />
+              <BiFields label="Note under the heading" name="note" value={s.note} />
+            </div>
+          </Card>
+          <Card title="Where it shows" icon="eye">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Order" name="position" value={s.position} inputMode="numeric" hint="Lower comes first on the public page." />
+              <div><span className="text-sm font-medium">Shown to customers</span><div className="mt-1"><Switch name="listed" label="Listed" hint="Shows once it has a listed item." defaultChecked={s.listed} /></div></div>
+            </div>
+          </Card>
+          <div className="save-bar sticky z-20 -mx-4 flex items-center gap-2 border-t border-line bg-white/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0">
+            <button className={`${primary} flex-1 sm:flex-none sm:min-w-40`} type="submit">Save</button>
+            <a className={secondary} href={`${base}/sections`}>Cancel</a>
+          </div>
+        </form>
+        <div className="space-y-5">
+          <Card title="Items in this section" icon="utensils" description={items.length ? `${items.length} item${items.length === 1 ? '' : 's'}, ${items.filter((i) => i.listed).length} listed` : 'None yet. Open an item and tick this section.'}>
+            {items.length > 0 && (
+              <ul className="divide-y divide-line">
+                {items.map((i) => (
+                  <li key={i.id} className="flex items-center gap-3 py-2 first:pt-0 last:pb-0">
+                    <Photo url={i.photo?.url} className="h-11 w-11 shrink-0 rounded-lg" />
+                    <a href={`${base}/items/${i.id}`} className="min-w-0 flex-1 truncate text-[15px] font-medium underline-offset-4 hover:underline">{i.name.en}</a>
+                    <span className="text-sm tabular-nums text-ink-muted">{i.price != null ? price(i.price) : i.variants.length ? `${i.variants.length} sizes` : ''}</span>
+                    {i.listed ? <Badge tone="green">Listed</Badge> : <Badge>Unlisted</Badge>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+          <HistoryCard history={history} back={back} venueId={venueId} />
         </div>
-        <button className={primary} type="submit">Save</button>
-      </form>
-      <section className="mt-8">
-        <h2 className="font-semibold">History</h2>
-        <ul className="mt-2 divide-y divide-neutral-200 text-sm">
-          {history.map((r) => (
-            <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-              <span><When at={r.at} /> · <strong>{r.action}</strong> by {r.by.name}</span>
-              {r.before != null && <form method="post" action="/api/admin/restore"><input type="hidden" name="revision" value={r.id} /><input type="hidden" name="_back" value={back} /><button className={`${secondary} min-h-9 px-3 py-1 text-sm`} type="submit">Restore to before this</button></form>}
-            </li>
-          ))}
-          {history.length === 0 && <li className="py-2 text-neutral-600">No changes yet.</li>}
-        </ul>
-      </section>
-    </>
+      </div>
+    </Shell>
   );
 }

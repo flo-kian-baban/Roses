@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/admin/session';
 import { isAdmin } from '@/lib/admin/auth';
 import { listPins } from '@/lib/admin/pins';
@@ -7,7 +8,8 @@ import { Forbidden } from '../_forbidden';
 
 export default async function Pins({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
-  const session = (await getSession())!;
+  const session = await getSession();
+  if (!session) redirect('/admin');
   if (!isAdmin(session)) return <Forbidden what="PIN management (main admin only)" />;
   const [pins, venues] = await Promise.all([listPins(), listVenueRows()]);
   return (

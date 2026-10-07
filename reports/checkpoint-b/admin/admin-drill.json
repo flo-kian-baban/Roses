@@ -1,6 +1,6 @@
 {
   "base": "http://localhost:3000",
-  "at": "2026-10-07T15:41:26.292Z",
+  "at": "2026-10-07T15:57:36.924Z",
   "pass": true,
   "results": [
     {
@@ -31,7 +31,7 @@
     {
       "step": "c-logout",
       "ok": true,
-      "text": "logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://localhost:3000/admin/login (a still-valid token is simply no longer sent: 200)"
+      "text": "logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://localhost:3000/admin shows the sign-in form and no admin shell (a still-valid token is simply no longer sent: 200)"
     },
     {
       "step": "pin-login",
@@ -41,7 +41,7 @@
     {
       "step": "i-restore",
       "ok": true,
-      "text": "price after restoring revision 197: 6.59 (original 6.59); last four revision rows: update 6.59→7.59 | update 7.59→8.59 | update 8.59→9.59 | restore 9.59→6.59"
+      "text": "price after restoring revision 221: 6.59 (original 6.59); last four revision rows: update 6.59→7.59 | update 7.59→8.59 | update 8.59→9.59 | restore 9.59→6.59"
     },
     {
       "step": "f-ui",
@@ -91,7 +91,7 @@
     {
       "step": "g-last-item",
       "ok": true,
-      "text": "all 3 items of \"Beverage\" unlisted → the section disappears from the public page after 4 ms"
+      "text": "all 3 items of \"Beverage\" unlisted → the section disappears from the public page after 3 ms"
     },
     {
       "step": "g-last-item-back",
@@ -126,12 +126,12 @@
     {
       "step": "j-delete",
       "ok": true,
-      "text": "deleted → row gone (true), off the public page after 6 ms"
+      "text": "deleted → row gone (true), off the public page after 3 ms"
     },
     {
       "step": "j-restore",
       "ok": true,
-      "text": "restored from history → row back with section \"Extra\" (true), on the public page after 4 ms"
+      "text": "restored from history → row back with section \"Extra\" (true), on the public page after 5 ms"
     },
     {
       "step": "venue-staff-403",
@@ -156,302 +156,302 @@
   ],
   "transcript": [
     {
-      "at": "2026-10-07T15:41:11.581Z",
-      "ms": 234,
+      "at": "2026-10-07T15:57:21.492Z",
+      "ms": 138,
       "step": "e-unauth",
       "text": "PASS: unauthenticated POST /api/admin/item → 401"
     },
     {
-      "at": "2026-10-07T15:41:11.910Z",
-      "ms": 563,
+      "at": "2026-10-07T15:57:21.708Z",
+      "ms": 354,
       "step": "shot",
       "text": "01-login-pin.png"
     },
     {
-      "at": "2026-10-07T15:41:12.006Z",
-      "ms": 659,
+      "at": "2026-10-07T15:57:21.811Z",
+      "ms": 457,
       "step": "shot",
       "text": "02-login-admin.png"
     },
     {
-      "at": "2026-10-07T15:41:12.258Z",
-      "ms": 911,
+      "at": "2026-10-07T15:57:22.059Z",
+      "ms": 705,
       "step": "shot",
       "text": "03-home-admin.png"
     },
     {
-      "at": "2026-10-07T15:41:12.294Z",
-      "ms": 947,
+      "at": "2026-10-07T15:57:22.096Z",
+      "ms": 742,
       "step": "c-cookie",
       "text": "PASS: Set-Cookie attributes: roses_session=<token>; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200 (Secure is added when served over https)"
     },
     {
-      "at": "2026-10-07T15:41:12.336Z",
-      "ms": 989,
+      "at": "2026-10-07T15:57:22.149Z",
+      "ms": 795,
       "step": "pin-create",
       "text": "PASS: PIN created for \"Drill staff\" (staff, senso): shown once on the response page (6 digits: true), hash stored: true"
     },
     {
-      "at": "2026-10-07T15:41:12.372Z",
-      "ms": 1025,
+      "at": "2026-10-07T15:57:22.185Z",
+      "ms": 831,
       "step": "pin-create",
       "text": "PASS: PIN created for \"Drill owner\" (owner, senso+kebab-land): shown once on the response page (6 digits: true), hash stored: true"
     },
     {
-      "at": "2026-10-07T15:41:12.373Z",
-      "ms": 1026,
+      "at": "2026-10-07T15:57:22.185Z",
+      "ms": 831,
       "step": "d-hash",
       "text": "PASS: pins with a hash not starting with $scrypt$: 0; plain PIN column: none exists (schema has pin_hash only)"
     },
     {
-      "at": "2026-10-07T15:41:12.560Z",
-      "ms": 1213,
+      "at": "2026-10-07T15:57:22.437Z",
+      "ms": 1083,
       "step": "shot",
       "text": "04-pins-list.png"
     },
     {
-      "at": "2026-10-07T15:41:12.668Z",
-      "ms": 1321,
+      "at": "2026-10-07T15:57:22.607Z",
+      "ms": 1253,
       "step": "c-logout",
-      "text": "PASS: logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://localhost:3000/admin/login (a still-valid token is simply no longer sent: 200)"
+      "text": "PASS: logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://localhost:3000/admin shows the sign-in form and no admin shell (a still-valid token is simply no longer sent: 200)"
     },
     {
-      "at": "2026-10-07T15:41:13.003Z",
-      "ms": 1656,
+      "at": "2026-10-07T15:57:22.926Z",
+      "ms": 1572,
       "step": "pin-login",
       "text": "PASS: staff PIN sign-in lands on http://localhost:3000/admin/senso"
     },
     {
-      "at": "2026-10-07T15:41:15.738Z",
-      "ms": 4391,
+      "at": "2026-10-07T15:57:25.677Z",
+      "ms": 4323,
       "step": "shot",
       "text": "05-venue-senso-staff.png"
     },
     {
-      "at": "2026-10-07T15:41:16.175Z",
-      "ms": 4828,
+      "at": "2026-10-07T15:57:26.089Z",
+      "ms": 4735,
       "step": "shot",
       "text": "06-item-turkish-coffee.png"
     },
     {
-      "at": "2026-10-07T15:41:16.307Z",
-      "ms": 4960,
+      "at": "2026-10-07T15:57:26.218Z",
+      "ms": 4864,
       "step": "i-edit",
       "text": "saved price 7.59"
     },
     {
-      "at": "2026-10-07T15:41:16.414Z",
-      "ms": 5067,
+      "at": "2026-10-07T15:57:26.337Z",
+      "ms": 4983,
       "step": "i-edit",
       "text": "saved price 8.59"
     },
     {
-      "at": "2026-10-07T15:41:16.526Z",
-      "ms": 5179,
+      "at": "2026-10-07T15:57:26.455Z",
+      "ms": 5101,
       "step": "i-edit",
       "text": "saved price 9.59"
     },
     {
-      "at": "2026-10-07T15:41:16.920Z",
-      "ms": 5573,
+      "at": "2026-10-07T15:57:26.828Z",
+      "ms": 5474,
       "step": "shot",
       "text": "07-item-after-3-edits.png"
     },
     {
-      "at": "2026-10-07T15:41:17.058Z",
-      "ms": 5711,
+      "at": "2026-10-07T15:57:26.983Z",
+      "ms": 5629,
       "step": "i-restore",
-      "text": "PASS: price after restoring revision 197: 6.59 (original 6.59); last four revision rows: update 6.59→7.59 | update 7.59→8.59 | update 8.59→9.59 | restore 9.59→6.59"
+      "text": "PASS: price after restoring revision 221: 6.59 (original 6.59); last four revision rows: update 6.59→7.59 | update 7.59→8.59 | update 8.59→9.59 | restore 9.59→6.59"
     },
     {
-      "at": "2026-10-07T15:41:17.393Z",
-      "ms": 6046,
+      "at": "2026-10-07T15:57:27.377Z",
+      "ms": 6023,
       "step": "shot",
       "text": "08-item-after-restore.png"
     },
     {
-      "at": "2026-10-07T15:41:17.521Z",
-      "ms": 6174,
+      "at": "2026-10-07T15:57:27.522Z",
+      "ms": 6168,
       "step": "f-ui",
       "text": "PASS: venue page: List button for \"Aash-e-Reshteh\" (no price) is disabled with the hint \"the item needs a price before it can be listed\""
     },
     {
-      "at": "2026-10-07T15:41:17.946Z",
-      "ms": 6599,
+      "at": "2026-10-07T15:57:27.960Z",
+      "ms": 6606,
       "step": "shot",
       "text": "09-needs-price-refused.png"
     },
     {
-      "at": "2026-10-07T15:41:17.946Z",
-      "ms": 6599,
+      "at": "2026-10-07T15:57:27.960Z",
+      "ms": 6606,
       "step": "f-form",
       "text": "PASS: saving \"Aash-e-Reshteh\" with Listed ticked and no price → \"the item needs a price before it can be listed\""
     },
     {
-      "at": "2026-10-07T15:41:17.960Z",
-      "ms": 6613,
+      "at": "2026-10-07T15:57:27.971Z",
+      "ms": 6617,
       "step": "f-server",
       "text": "PASS: direct POST _action=list → 303, error=\"the item needs a price before it can be listed\""
     },
     {
-      "at": "2026-10-07T15:41:17.961Z",
-      "ms": 6614,
+      "at": "2026-10-07T15:57:27.972Z",
+      "ms": 6618,
       "step": "f-check",
       "text": "PASS: SQL \"update items set listed = true\" on the priceless item → 23514 listed_requires_price: new row for relation \"items\" violates check constraint \"listed_requires_price\""
     },
     {
-      "at": "2026-10-07T15:41:18.236Z",
-      "ms": 6889,
+      "at": "2026-10-07T15:57:28.286Z",
+      "ms": 6932,
       "step": "f-sizes",
       "text": "PASS: save \"Prosecco\" listed with a second size without price → error=\"every size needs a price before the item can be listed\"; row unchanged: true"
     },
     {
-      "at": "2026-10-07T15:41:18.412Z",
-      "ms": 7065,
+      "at": "2026-10-07T15:57:28.473Z",
+      "ms": 7119,
       "step": "f-public-listed",
       "text": "PASS: \"Aash-e-Reshteh\" priced 7.25 and listed → on the public page after 5 ms"
     },
     {
-      "at": "2026-10-07T15:41:18.528Z",
-      "ms": 7181,
+      "at": "2026-10-07T15:57:28.605Z",
+      "ms": 7251,
       "step": "f-public-restored",
       "text": "PASS: restored to unlisted/no price → gone from the public page after 5 ms"
     },
     {
-      "at": "2026-10-07T15:41:18.555Z",
-      "ms": 7208,
+      "at": "2026-10-07T15:57:28.630Z",
+      "ms": 7276,
       "step": "g-section",
       "text": "PASS: section \"Extra\" unlisted → heading gone from the public page after 5 ms"
     },
     {
-      "at": "2026-10-07T15:41:20.786Z",
-      "ms": 9439,
+      "at": "2026-10-07T15:57:30.958Z",
+      "ms": 9604,
       "step": "shot",
       "text": "10-section-unlisted.png"
     },
     {
-      "at": "2026-10-07T15:41:20.815Z",
-      "ms": 9468,
+      "at": "2026-10-07T15:57:30.994Z",
+      "ms": 9640,
       "step": "g-section-back",
       "text": "PASS: section \"Extra\" listed again → heading back after 4 ms"
     },
     {
-      "at": "2026-10-07T15:41:20.884Z",
-      "ms": 9537,
+      "at": "2026-10-07T15:57:31.062Z",
+      "ms": 9708,
       "step": "g-last-item",
-      "text": "PASS: all 3 items of \"Beverage\" unlisted → the section disappears from the public page after 4 ms"
+      "text": "PASS: all 3 items of \"Beverage\" unlisted → the section disappears from the public page after 3 ms"
     },
     {
-      "at": "2026-10-07T15:41:20.940Z",
-      "ms": 9593,
+      "at": "2026-10-07T15:57:31.124Z",
+      "ms": 9770,
       "step": "g-last-item-back",
       "text": "PASS: items listed again → \"Beverage\" back after 3 ms"
     },
     {
-      "at": "2026-10-07T15:41:21.391Z",
-      "ms": 10044,
+      "at": "2026-10-07T15:57:31.564Z",
+      "ms": 10210,
       "step": "shot",
       "text": "11-staff-no-notes.png"
     },
     {
-      "at": "2026-10-07T15:41:21.391Z",
-      "ms": 10044,
+      "at": "2026-10-07T15:57:31.564Z",
+      "ms": 10210,
       "step": "h-staff-ui",
       "text": "PASS: staff item page: notes inputs present = false; explanatory line shown = true"
     },
     {
-      "at": "2026-10-07T15:41:21.399Z",
-      "ms": 10052,
+      "at": "2026-10-07T15:57:31.569Z",
+      "ms": 10215,
       "step": "h-staff-403",
       "text": "PASS: staff POST _action=notes → 403"
     },
     {
-      "at": "2026-10-07T15:41:22.709Z",
-      "ms": 11362,
+      "at": "2026-10-07T15:57:32.939Z",
+      "ms": 11585,
       "step": "shot",
       "text": "12-owner-notes-saved.png"
     },
     {
-      "at": "2026-10-07T15:41:22.709Z",
-      "ms": 11362,
+      "at": "2026-10-07T15:57:32.939Z",
+      "ms": 11585,
       "step": "h-owner",
       "text": "PASS: owner saved notes: {\"text\":{\"en\":null,\"fa\":null},\"halal\":true,\"dietary\":[],\"allergens\":[\"nuts\"]}"
     },
     {
-      "at": "2026-10-07T15:41:22.979Z",
-      "ms": 11632,
+      "at": "2026-10-07T15:57:33.252Z",
+      "ms": 11898,
       "step": "h-admin",
       "text": "PASS: admin cleared the notes again: {\"text\":{\"en\":null,\"fa\":null},\"halal\":null,\"dietary\":[],\"allergens\":[]}"
     },
     {
-      "at": "2026-10-07T15:41:23.185Z",
-      "ms": 11838,
+      "at": "2026-10-07T15:57:33.464Z",
+      "ms": 12110,
       "step": "j-create",
       "text": "PASS: \"Drill test item\" created in \"Extra\" → on the public page after 4 ms"
     },
     {
-      "at": "2026-10-07T15:41:23.425Z",
-      "ms": 12078,
+      "at": "2026-10-07T15:57:33.714Z",
+      "ms": 12360,
       "step": "shot",
       "text": "13-item-created.png"
     },
     {
-      "at": "2026-10-07T15:41:23.610Z",
-      "ms": 12263,
+      "at": "2026-10-07T15:57:33.886Z",
+      "ms": 12532,
       "step": "j-delete",
-      "text": "PASS: deleted → row gone (true), off the public page after 6 ms"
+      "text": "PASS: deleted → row gone (true), off the public page after 3 ms"
     },
     {
-      "at": "2026-10-07T15:41:25.257Z",
-      "ms": 13910,
+      "at": "2026-10-07T15:57:35.871Z",
+      "ms": 14517,
       "step": "shot",
       "text": "14-history.png"
     },
     {
-      "at": "2026-10-07T15:41:25.408Z",
-      "ms": 14061,
+      "at": "2026-10-07T15:57:36.025Z",
+      "ms": 14671,
       "step": "j-restore",
-      "text": "PASS: restored from history → row back with section \"Extra\" (true), on the public page after 4 ms"
+      "text": "PASS: restored from history → row back with section \"Extra\" (true), on the public page after 5 ms"
     },
     {
-      "at": "2026-10-07T15:41:25.441Z",
-      "ms": 14094,
+      "at": "2026-10-07T15:57:36.058Z",
+      "ms": 14704,
       "step": "j-cleanup",
       "text": "test item deleted again (stays in history)"
     },
     {
-      "at": "2026-10-07T15:41:25.443Z",
-      "ms": 14096,
+      "at": "2026-10-07T15:57:36.060Z",
+      "ms": 14706,
       "step": "venue-staff-403",
       "text": "PASS: staff POST /api/admin/venue → 403"
     },
     {
-      "at": "2026-10-07T15:41:25.868Z",
-      "ms": 14521,
+      "at": "2026-10-07T15:57:36.512Z",
+      "ms": 15158,
       "step": "shot",
       "text": "15-venue-details.png"
     },
     {
-      "at": "2026-10-07T15:41:25.971Z",
-      "ms": 14624,
+      "at": "2026-10-07T15:57:36.609Z",
+      "ms": 15255,
       "step": "venue-edit",
       "text": "PASS: hours changed to \"9:00 AM – 11:00 PM, every day (drill)\" → public footer after 4 ms; \"to confirm\" mark for hours cleared: true"
     },
     {
-      "at": "2026-10-07T15:41:26.148Z",
-      "ms": 14801,
+      "at": "2026-10-07T15:57:36.796Z",
+      "ms": 15442,
       "step": "shot",
       "text": "16-venue-details-saved.png"
     },
     {
-      "at": "2026-10-07T15:41:26.241Z",
-      "ms": 14894,
+      "at": "2026-10-07T15:57:36.875Z",
+      "ms": 15521,
       "step": "venue-restore",
       "text": "PASS: venue details restored from history → public footer back after 4 ms"
     },
     {
-      "at": "2026-10-07T15:41:26.255Z",
-      "ms": 14908,
+      "at": "2026-10-07T15:57:36.890Z",
+      "ms": 15536,
       "step": "b-revoked",
       "text": "PASS: revoked staff PIN → 303, error=\"wrong PIN (4 tries left)\", cookie set: false"
     }

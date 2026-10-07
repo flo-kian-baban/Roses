@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/lib/admin/session';
 import { canEditNotes, canEditVenue } from '@/lib/admin/auth';
 import { getItem } from '@/lib/admin/items';
@@ -11,7 +11,8 @@ import { price } from '@/lib/format';
 
 export default async function EditItem({ params, searchParams }: { params: Promise<{ venue: string; id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { venue: venueId, id } = await params; const sp = await searchParams;
-  const session = (await getSession())!;
+  const session = await getSession();
+  if (!session) redirect(`/admin/${venueId}`);
   if (!canEditVenue(session, venueId)) return <Forbidden />;
   const item = await getItem(id);
   if (!item || item.venue_id !== venueId) notFound();

@@ -7,12 +7,14 @@ import { listingProblem, persianMissing } from '@/lib/admin/items';
 import { price } from '@/lib/format';
 import { Badge, Notice, secondary, primary } from '../../_ui';
 import { Forbidden } from '../_forbidden';
+import { SignIn } from '../../_ui/SignIn';
 
 export default async function VenueAdmin({ params, searchParams }: { params: Promise<{ venue: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { venue: venueId } = await params; const sp = await searchParams;
-  const session = (await getSession())!;
+  const session = await getSession();
   const venue = await getVenueRow(venueId);
   if (!venue) notFound();
+  if (!session) return <SignIn venues={[venue]} venue={venue} sp={sp} path={`/admin/${venueId}`} />;
   if (!canEditVenue(session, venueId)) return <Forbidden />;
   const { sections, orphans } = await venueMenuForAdmin(venueId);
   const back = `/admin/${venueId}`;

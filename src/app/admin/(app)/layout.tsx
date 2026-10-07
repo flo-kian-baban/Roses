@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/admin/session';
 import { listVenueRows } from '@/lib/admin/venue';
 import { canEditVenue, isAdmin } from '@/lib/admin/auth';
@@ -6,9 +5,11 @@ import { secondary } from '../_ui';
 
 export const dynamic = 'force-dynamic';
 
+// With a session: the admin shell. Without one, the page itself renders the sign-in form (/admin, /admin/<venue>)
+// or redirects to the venue's sign-in link, so the shell is simply left out.
 export default async function AdminShell({ children }: { children: React.ReactNode }) {
   const session = await getSession();
-  if (!session) redirect('/admin/login');
+  if (!session) return <>{children}</>;
   const venues = (await listVenueRows()).filter((v) => canEditVenue(session, v.id));
   return (
     <>

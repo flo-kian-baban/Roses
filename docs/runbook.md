@@ -7,6 +7,12 @@ Everything runs on one machine: Next.js (`npm run build && npm run start`) and P
 - Public pages: http://localhost:3000/senso and /kebab-land. They are pre-rendered; an admin save regenerates the page within seconds (`res.revalidate`), no rebuild needed. A full `npm run build` is needed only after code changes.
 - Admin: http://localhost:3000/admin. Staff and the owner sign in with a venue + 6-digit PIN; the main admins (owner, Kian) with email + password.
 
+## Sign-in links
+
+- Each venue has its own sign-in link to bookmark on staff phones: `/admin/senso` and `/admin/kebab-land`. The venue is preselected; the person types only the PIN. A wrong PIN counts against that venue and the phone's address, exactly as from the picker.
+- `/admin` shows the venue picker (for people who work at both venues) and the main-admin sign-in link (`?mode=admin`).
+- The old address `/admin/login` redirects to `/admin`.
+
 ## Admin accounts and PINs
 
 - Create or reset an admin account: `npm run admin:create -- --email <email> --name "<name>"` (asks for the password; or set `ADMIN_PASSWORD` for the command). Add `--reset` to change the password of an existing account. Only a scrypt hash is stored.
@@ -28,6 +34,17 @@ Everything runs on one machine: Next.js (`npm run build && npm run start`) and P
 ## Re-import
 
 `npm run import -- senso --load` and `npm run import -- kebab-land --load` rebuild the import files from `data/raw/` and upsert rows that no person has edited yet (rows with `updated_by.kind = 'import'`). Edited rows are left alone.
+
+## Go-live checklist
+
+Done before anything goes public (nothing is public yet; hosting is Kian's decision). Each line needs a tick and the evidence noted next to it.
+
+- [ ] Secure cookie flag on: the app is served over https, or `COOKIE_SECURE=1` is set; verify with `curl -sI -X POST <origin>/api/admin/login …` that `Set-Cookie` carries `Secure`.
+- [ ] `TRUST_PROXY=1` is set only when the app sits behind a reverse proxy that overwrites `X-Forwarded-For` with the real client address; never when the app is reachable directly (otherwise a client could pick its own address and dodge the lockout).
+- [ ] The "Drill Admin" account is deleted (`delete from admins where name = 'Drill Admin';`) and its password file removed from the build agent's scratch folder; the real admin accounts (owner, Kian) exist via `npm run admin:create`.
+- [ ] Vector (SVG) logos for both venues received from the client and applied in `public/brand/` and the venue seed (`data/import/<date>/venues.json`, with source and sha256), replacing the copied PNGs.
+- [ ] Venue details confirmed by the owner: names, addresses, phones (tap-to-call dials what is displayed), hours; the "to confirm" marks cleared in Admin → Venue details for every location.
+- [ ] Kebab Land Persian reviewed: `reports/persian-review-kebab-land.csv` returned by Kian and applied with `node tools/import/persian-review-apply.mjs kebab-land <csv> [--accept-drafts] --reviewer "Kian"`; `persian-review-export.mjs kebab-land` then writes 0 rows.
 
 ## Evidence scripts
 

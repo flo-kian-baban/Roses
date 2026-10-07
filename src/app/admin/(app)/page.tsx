@@ -3,10 +3,12 @@ import { listVenueRows } from '@/lib/admin/venue';
 import { canEditVenue, isAdmin } from '@/lib/admin/auth';
 import { openAlerts, venueCounts } from '@/lib/admin/overview';
 import { Badge, Notice, When, secondary } from '../_ui';
+import { SignIn } from '../_ui/SignIn';
 
 export default async function Home({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
-  const session = (await getSession())!;
+  const session = await getSession();
+  if (!session) return <SignIn venues={await listVenueRows()} sp={sp} path="/admin" />;
   const [venues, counts, alerts] = await Promise.all([listVenueRows(), venueCounts(), openAlerts()]);
   const mine = venues.filter((v) => canEditVenue(session, v.id));
   return (

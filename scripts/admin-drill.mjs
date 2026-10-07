@@ -64,7 +64,8 @@ const owner = await makePin('Drill owner', 'owner', ['senso', 'kebab-land']);
 { const r = await post('/api/admin/logout', {}, adminCookie); const after = await fetch(`${base}/admin`, { redirect: 'manual', headers: { cookie: adminCookie } });
   // the JWT itself stays valid until expiry; the cookie is cleared in the browser (Max-Age=0). Verify the browser context:
   await adminCtx.clearCookies(); const page = await adminCtx.newPage(); const resp = await page.goto(`${base}/admin`); const url = page.url();
-  check('c-logout', /Max-Age=0/.test(r.setCookie || '') && url.startsWith(`${base}/admin/login`), `logout → Set-Cookie: ${r.setCookie}; GET /admin without the cookie → ${resp.status()} at ${url} (a still-valid token is simply no longer sent: ${after.status})`); await page.close(); }
+  const signInShown = !!(await page.$('form[action="/api/admin/login"] input[name=pin]')) && !(await page.$('nav a[href="/admin/pins"]'));
+  check('c-logout', /Max-Age=0/.test(r.setCookie || '') && signInShown, `logout → Set-Cookie: ${r.setCookie}; GET /admin without the cookie → ${resp.status()} at ${url} shows the sign-in form and no admin shell (a still-valid token is simply no longer sent: ${after.status})`); await page.close(); }
 
 // staff PIN login
 const staffCtx = await browser.newContext(DEVICE);

@@ -1,0 +1,10 @@
+2026-10-07T15:57:20.059Z login_failures cleared for both venues
+2026-10-07T15:57:20.581Z PASS: GET /admin/senso without a session → 200, sign-in form with the venue preselected (hidden venue=senso), picker radios: 0, heading "Senso Café & Bites", admin shell shown: false
+2026-10-07T15:57:20.681Z PASS: GET /admin/kebab-land without a session → 200, sign-in form with the venue preselected (hidden venue=kebab-land), picker radios: 0, heading "Roses Kebab Land", admin shell shown: false
+2026-10-07T15:57:20.780Z PASS: GET /admin without a session → 200, venue picker with 2 radios [kebab-land (checked), senso], no hidden venue
+2026-10-07T15:57:20.810Z PASS: old /admin/login?mode=admin → 200 at http://<addr-A>:3000/admin?mode=admin
+2026-10-07T15:57:20.853Z PASS: GET /admin/senso/items/new without a session → redirected to http://<addr-A>:3000/admin/senso (the venue's sign-in link)
+2026-10-07T15:57:21.057Z PASS: wrong PIN on the bookmarked /admin/kebab-land link → back on /admin/kebab-land?error=wrong+PIN+%284+tries+left%29, venue still preselected (kebab-land), message "wrong PIN (4 tries left)"
+2026-10-07T15:57:21.057Z PASS: login_failures after it: kebab-land:<addr-A>=1, venue:kebab-land=1 (counted against kebab-land + the client address, nothing against senso)
+2026-10-07T15:57:21.059Z login_failures rows from this check removed
+2026-10-07T15:57:21.084Z SIGN-IN LINKS CHECK PASS (7/7)

@@ -271,6 +271,9 @@ await snap(l, 'style-laptop');
   {
     const sec = (await db.query(`select s.id, s.name->>'en' as name, s.layout, (select count(*)::int from item_sections x join items i on i.id = x.item_id and i.listed where x.section_id = s.id) as n from sections s where s.venue_id = 'senso' and s.listed and s.name->>'en' = 'Fresh Juice'`)).rows[0];
     const cardsOf = (html) => { const m = html.match(new RegExp(`<section[^>]*data-id="${sec.id}"[\\s\\S]*?</section>`)); if (!m) return null; const ul = m[0].match(/<ul class="([^"]*)"[^>]*data-layout="([^"]+)"/); return { classes: ul?.[1] || '', layout: ul?.[2] || null, cards: (m[0].match(/<li class="item card /g) || []).length, rows: (m[0].match(/<li class="item flex /g) || []).length, templates: (m[0].match(/<template class="detail"/g) || []).length, placeholders: (m[0].match(/aspect-square w-full rounded-xl bg-\(--c-rows-photo\)" aria-hidden/g) || []).length }; };
+    // start from List (2026-10-08): the scratch copy comes from the working database, where Fresh Juice was set to Grid after this
+    // step was written, and a tap on a radio that is already selected sends nothing (no save, no toast): the step measured nothing
+    if ((await l.getAttribute(`[data-section-layout="${sec.id}"]`, 'data-layout')) !== 'list') { await l.click(`[data-section-layout="${sec.id}"] button[role=radio]:has-text("List")`); await waitDb('select layout from sections where id = $1', [sec.id], (r) => r?.layout === 'list'); await waitPublic('senso', (h) => cardsOf(h)?.layout === 'list'); await l.waitForSelector('[role=status]:has-text("List")'); await sleep(400); }
     const before = cardsOf(await publicHtml('senso'));
     let taps = 0; const tap = async (sel) => { taps++; await l.click(sel); };
     await l.evaluate((id) => document.querySelector(`[data-section-layout="${id}"]`)?.scrollIntoView({ block: 'center' }), sec.id);

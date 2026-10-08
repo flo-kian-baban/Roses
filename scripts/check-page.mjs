@@ -49,17 +49,18 @@ const browser = await chromium.launch();
   const samples = [];
   await page.goto(url, { waitUntil: 'commit' });
   for (let i = 0; i < 40; i++) {
-    const s = await page.evaluate(() => { const el = document.getElementById('intro'); const cs = el ? getComputedStyle(el) : null; const op = (q) => { const e = document.querySelector(q); return e ? Number(getComputedStyle(e).opacity) : null; }; return { t: Math.round(performance.now()), intro: document.documentElement.dataset.intro || null, display: cs ? cs.display : 'absent', visibility: cs ? cs.visibility : 'absent', opacity: cs ? cs.opacity : 'absent', page: { header: op('main > header'), tabs: op('main #tabs'), h2: op('main section:first-of-type h2'), row1: op('main section:first-of-type li.item:nth-child(1)'), row3: op('main section:first-of-type li.item:nth-child(3)') } }; });
+    const s = await page.evaluate(() => { const el = document.getElementById('intro'); const cs = el ? getComputedStyle(el) : null; const op = (q) => { const e = document.querySelector(q); return e ? Number(getComputedStyle(e).opacity) : null; }; const rows = [...document.querySelectorAll('main section:first-of-type li.item')].slice(0, 8); const last = rows[rows.length - 1]; return { t: Math.round(performance.now()), intro: document.documentElement.dataset.intro || null, display: cs ? cs.display : 'absent', visibility: cs ? cs.visibility : 'absent', opacity: cs ? cs.opacity : 'absent', page: { header: op('main > header'), tabs: op('main #tabs'), h2: op('main section:first-of-type h2'), row1: op('main section:first-of-type li.item:nth-child(1)'), lastRow: last ? Number(getComputedStyle(last).opacity) : null, rowsAnimated: rows.length } }; });
     samples.push(s);
-    if (s.intro === 'done' && s.page.row3 === 1 && i > 2) break;
+    if (s.intro === 'done' && s.page.lastRow === 1 && i > 2) break;
     await page.waitForTimeout(50);
   }
   const firstVisible = samples.find((s) => s.display !== 'none' && s.display !== 'absent');
   const gone = samples.find((s) => s.intro === 'done');
   // the page entrance: each part is invisible while the logo settles, then fully visible; the rows arrive after the heading
   const hidden = (k) => samples.some((s) => s.page[k] === 0), shown = (k) => samples.find((s) => s.page[k] === 1)?.t ?? null;
-  const entrance = { headerShownAtMs: shown('header'), tabsShownAtMs: shown('tabs'), h2ShownAtMs: shown('h2'), row1ShownAtMs: shown('row1'), row3ShownAtMs: shown('row3'), wereHidden: ['header', 'tabs', 'h2', 'row1', 'row3'].every(hidden) };
-  entrance.ok = entrance.wereHidden && entrance.headerShownAtMs != null && entrance.row3ShownAtMs != null && entrance.row3ShownAtMs > entrance.h2ShownAtMs && entrance.row3ShownAtMs > entrance.row1ShownAtMs && entrance.row3ShownAtMs <= 2200;
+  const rowsAnimated = samples.at(-1).page.rowsAnimated; // the first section's rows that slide in (up to 8; the last of them is sampled)
+  const entrance = { headerShownAtMs: shown('header'), tabsShownAtMs: shown('tabs'), h2ShownAtMs: shown('h2'), row1ShownAtMs: shown('row1'), lastRowShownAtMs: shown('lastRow'), rowsAnimated, wereHidden: ['header', 'tabs', 'h2', 'row1', 'lastRow'].every(hidden) };
+  entrance.ok = entrance.wereHidden && entrance.headerShownAtMs != null && entrance.lastRowShownAtMs != null && entrance.lastRowShownAtMs > entrance.h2ShownAtMs && (rowsAnimated < 2 || entrance.lastRowShownAtMs > entrance.row1ShownAtMs) && entrance.lastRowShownAtMs <= 2200;
   log.checks.firstVisit = { introVisibleAtMs: firstVisible?.t ?? null, introDoneAtMs: gone?.t ?? null, goneWithin1500ms: !!gone && gone.t <= 1500, entrance, samples };
   await page.waitForLoadState('networkidle').catch(() => {});
   log.checks.images = await loadAllImages(page);
@@ -101,8 +102,8 @@ const browser = await chromium.launch();
   const ctx = await browser.newContext({ ...DEVICE, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   await page.goto(url, { waitUntil: 'domcontentloaded' });
-  const r = await page.evaluate(() => { const el = document.getElementById('intro'); const op = (q) => { const e = document.querySelector(q); return e ? Number(getComputedStyle(e).opacity) : null; }; return { intro: document.documentElement.dataset.intro || null, display: el ? getComputedStyle(el).display : 'absent', prefersReduced: matchMedia('(prefers-reduced-motion: reduce)').matches, page: { header: op('main > header'), h2: op('main section:first-of-type h2'), row1: op('main section:first-of-type li.item:nth-child(1)'), row6: op('main section:first-of-type li.item:nth-child(6)') } }; });
-  log.checks.reducedMotion = { ...r, skipped: r.display === 'none', pageVisibleAtOnce: Object.values(r.page).every((v) => v === 1) };
+  const r = await page.evaluate(() => { const el = document.getElementById('intro'); const op = (q) => { const e = document.querySelector(q); return e ? Number(getComputedStyle(e).opacity) : null; }; const rows = [...document.querySelectorAll('main section:first-of-type li.item')].slice(0, 8); return { intro: document.documentElement.dataset.intro || null, display: el ? getComputedStyle(el).display : 'absent', prefersReduced: matchMedia('(prefers-reduced-motion: reduce)').matches, page: { header: op('main > header'), tabs: op('main #tabs'), h2: op('main section:first-of-type h2'), rows: rows.map((r) => Number(getComputedStyle(r).opacity)) } }; });
+  log.checks.reducedMotion = { ...r, skipped: r.display === 'none', pageVisibleAtOnce: r.page.header === 1 && r.page.tabs === 1 && r.page.h2 === 1 && r.page.rows.length > 0 && r.page.rows.every((v) => v === 1) };
   await ctx.close();
 }
 await browser.close();

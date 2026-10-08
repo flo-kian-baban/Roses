@@ -36,10 +36,10 @@ async function loadAllImages(page) {
 // Category tabs (Kian, 2026-10-08): the active tab names the section under the bar. A tap on every tab (then three long jumps) must
 // end with that tab active, its section's top at the bar's bottom edge (within 1 px; or as far as the page scrolls for a short last
 // section), no other tab lit on the way and the tab visible in the strip; stepping through the page (60 px, down then up) the active
-// tab must always be the section under the bar (the last one at the end of the page). Raw samples go to the checks JSON.
+// tab must always be the section under the bar (the last one at the end of a page that has scrolled). Raw samples go to the checks JSON.
 async function checkTabs(page) {
   await page.evaluate(() => { window.scrollTo(0, 0); window.__lit = []; const mo = new MutationObserver(() => { const a = document.querySelector('#tabs a.active'); const id = a ? a.dataset.tab : null; if (window.__lit.at(-1) !== id) window.__lit.push(id); }); document.querySelectorAll('#tabs a[data-tab]').forEach((a) => mo.observe(a, { attributes: true, attributeFilter: ['class'] })); });
-  const state = () => page.evaluate(() => { const bar = document.getElementById('tabs').getBoundingClientRect(); const secs = [...document.querySelectorAll('main section[id]')].map((s) => ({ id: s.id, top: s.getBoundingClientRect().top })); const maxY = document.documentElement.scrollHeight - innerHeight; const atBottom = scrollY >= maxY - 1; let under = secs[0]?.id ?? null; for (const s of secs) if (s.top <= bar.bottom + 1) under = s.id; if (atBottom && secs.length) under = secs.at(-1).id; const active = document.querySelector('#tabs a.active')?.dataset.tab ?? null; const a = active ? document.querySelector(`#tabs a[data-tab="${active}"]`) : null; const ul = document.querySelector('#tabs ul').getBoundingClientRect(); const ar = a ? a.getBoundingClientRect() : null; return { y: Math.round(scrollY), atBottom, barHeight: Math.round(bar.height * 10) / 10, barBottom: bar.bottom, active, under, tabVisible: ar ? ar.left >= ul.left - 1 && ar.right <= ul.right + 1 : null, secs }; });
+  const state = () => page.evaluate(() => { const bar = document.getElementById('tabs').getBoundingClientRect(); const secs = [...document.querySelectorAll('main section[id]')].map((s) => ({ id: s.id, top: s.getBoundingClientRect().top })); const maxY = document.documentElement.scrollHeight - innerHeight; const atBottom = scrollY > 0 && scrollY >= maxY - 1; let under = secs[0]?.id ?? null; for (const s of secs) if (s.top <= bar.bottom + 1) under = s.id; if (atBottom && secs.length) under = secs.at(-1).id; const active = document.querySelector('#tabs a.active')?.dataset.tab ?? null; const a = active ? document.querySelector(`#tabs a[data-tab="${active}"]`) : null; const ul = document.querySelector('#tabs ul').getBoundingClientRect(); const ar = a ? a.getBoundingClientRect() : null; return { y: Math.round(scrollY), atBottom, barHeight: Math.round(bar.height * 10) / 10, barBottom: bar.bottom, active, under, tabVisible: ar ? ar.left >= ul.left - 1 && ar.right <= ul.right + 1 : null, secs }; });
   const settle = async () => { let last = -1, since = Date.now(); const t0 = Date.now(); while (Date.now() - t0 < 4000) { const y = await page.evaluate(() => scrollY); if (y !== last) { last = y; since = Date.now(); } else if (Date.now() - since > 300) break; await page.waitForTimeout(50); } return Date.now() - t0; };
   const first = await state();
   const ids = first.secs.map((s) => s.id);
@@ -62,7 +62,7 @@ async function checkTabs(page) {
       await page.waitForTimeout(60);
       const s = await state();
       if (s.active !== s.under) mism.push({ y: s.y, active: s.active, under: s.under });
-      if (dir === 'down' ? s.atBottom : s.y === 0) break;
+      if (dir === 'down' ? (s.atBottom || s.y === 0 && n > 0) : s.y === 0) break; // a page too short to scroll ends the pass at once
     }
     scroll[dir] = { samples: n + 1, mismatches: mism.length, first: mism.slice(0, 5) };
     if (dir === 'down') scroll.lastTabActiveAtBottom = (await state()).active === ids.at(-1);
@@ -140,14 +140,15 @@ const browser = await chromium.launch();
   await ctx.close();
 }
 
-// 3b. a link straight to a section (#id, the third one) opens with that tab active, fresh context
+// 3b. a link straight to a section (#id, the third one) opens with that tab active (the same rule as above: the section under the bar,
+//     the last one at the end of a page that has scrolled, as on a short page whose last section cannot reach the bar), fresh context
 {
   const ctx = await browser.newContext(DEVICE);
   const page = await ctx.newPage();
   const target = log.checks.dom.sections[Math.min(2, log.checks.dom.sections.length - 1)]?.id ?? null;
   await page.goto(`${url}#${target}`, { waitUntil: 'load' });
   await page.waitForTimeout(600);
-  const d = await page.evaluate(() => { const bar = document.getElementById('tabs').getBoundingClientRect(); const secs = [...document.querySelectorAll('main section[id]')]; let under = secs[0]?.id ?? null; for (const s of secs) if (s.getBoundingClientRect().top <= bar.bottom + 1) under = s.id; return { active: document.querySelector('#tabs a.active')?.dataset.tab ?? null, under, y: Math.round(scrollY) }; });
+  const d = await page.evaluate(() => { const bar = document.getElementById('tabs').getBoundingClientRect(); const secs = [...document.querySelectorAll('main section[id]')]; let under = secs[0]?.id ?? null; for (const s of secs) if (s.getBoundingClientRect().top <= bar.bottom + 1) under = s.id; const atBottom = scrollY > 0 && scrollY >= document.documentElement.scrollHeight - innerHeight - 1; if (atBottom && secs.length) under = secs.at(-1).id; return { active: document.querySelector('#tabs a.active')?.dataset.tab ?? null, under, atBottom, y: Math.round(scrollY) }; });
   log.checks.tabs.directLink = { target, ...d, ok: !!target && d.active === target && d.under === target };
   log.checks.tabs.ok = log.checks.tabs.ok && log.checks.tabs.directLink.ok;
   await ctx.close();

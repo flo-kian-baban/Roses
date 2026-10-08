@@ -1,0 +1,78 @@
+Editor drill FAIL (21/22 checks)
+
+Measurements:
+- add an item: 1 tap + name + price + confirm (Enter); on the public page in 16 ms; sheet confirmed at +244 ms
+- change a price: 1 tap + typing + confirm (Enter); saved in 54 ms
+- hide an item: 1 tap; off the public page in 7 ms
+- photo upload: 2 taps + choose a photo; uploaded, saved and shown in the editor 94 ms after choosing (0 bytes stored); on the public page in 5 ms
+- preview shows a saved change after 114 ms
+- Undo of a price change back on the public page after 6 ms
+- tap-to-edit: 1 tap on the item in the preview; editor open after 54 ms
+- drag an item (laptop): one drag; database and public page in the new order after 6 ms
+- drag a section (laptop): one drag; database and public page in the new order after 6 ms
+- delete a section, items moved: 3 taps (menu, Delete section, confirm with the default choice); on the public page in 5 ms
+
+PASS t-add: add an item: 1 tap (+ Add item) + name + price + Enter → created shown at $4.50, last in "Senso Signature" (position 13 of 13); on the public page 16 ms after Enter
+PASS t-price: change a price: 1 tap (the price) + typing + Enter → $5.25 in the database 54 ms after Enter; row shows $5.25
+PASS t-hide: hide an item: 1 tap (the switch) → hidden in the database 52 ms later, off the public page after 7 ms
+PASS t-show: show it again: 1 tap → shown, back on the public page after 9 ms
+FAIL upload: photo upload: 2 taps (Edit, Add photo) + choose → stored as /uploads/senso/photo-1a7f5527-6246-4af3-8d76-b3e810d83c5c.jpg (271 × 143 px, key kept: true) 94 ms after choosing; GET it → 404 text/html; charset=utf-8, 0 bytes; on the public page after 5 ms
+PASS switch-reason: switch on "Aash-e-Reshteh" (no price) refused with "The item needs a price before it can be shown"; still hidden in the database: true
+PASS preview-1s: preview shows the new price 114 ms after Enter (target ≤ 1000); the row is in the frame's view (top 387 px of 902) and outlined: true
+PASS preview-no-intro: the fresh frame carries the intro (true) marked done by the admin, display none; no page-entrance animation in the frame (0 running, first row opacity 1); intro keys in the admin's storage: 0
+PASS reorder: "Drill editor item" moved up one place in "Senso Signature": admin order = database order (14 items), public page shows the same order for the 7 shown items (5 ms); the item is now 13 of 14
+PASS undo-price: price $7 on the public page after 163 ms; Undo → $6.75 back on the public page 193 ms after the tap (6 ms of polling); database 6.75
+PASS undo-delete: deleted (row gone: true, off the public page after 5 ms); Undo → back in "Senso Signature" at position 12, shown, $6.75, on the public page after 9 ms, row back in the editor: true
+PASS tap-to-edit: tapped "Drill editor item" in the preview → its editor opened 54 ms later (1 tap); the customers' own item sheet stayed closed: true
+PASS tap-to-edit-section: tapped the "Senso Signature" heading in the preview → Rename section sheet with "Senso Signature"
+PASS drag-item: dragged the first item of "Senso Signature" below its third: database in the expected order 56 ms after the drop (true); admin order = expected: true; = database: true (14 items; the dragged item is now 3); the public page shows its 7 shown items in the same order after 6 ms (true)
+PASS drag-section: dragged the second section above the first: database in the expected order 54 ms after the drop (true); admin order = expected: true; = database: true (15 sections); the public page shows its 15 shown sections in the same order after 6 ms (true)
+PASS section-delete-move: delete "Drill section" with the default choice (Move items to "Senso Signature"): 3 taps (menu, Delete section, confirm); default choice was "move"; section gone: true; both items now in "Senso Signature" at positions 14, 15 in their old order, on the public page there after 5 ms (357 ms after the tap)
+PASS section-delete-move-undo: Undo → "Drill section" back with its 2 items in order; the placements added to "Senso Signature" removed again (0 left), off that section on the public page after 5 ms
+PASS section-delete-items: delete "Drill section" with "Delete the items too": section gone true, items left 0, off the public page after 6 ms
+PASS section-delete-items-undo: Undo → section and both items back (shown, $3 and $4), in order in the editor (true) and on the public page after 5 ms
+PASS orphans-bar: after the item lost its section: no "In no section" pile in the list (true); the Needs-attention bar shows "1 in no section" (database: 1); tapping it lists the item (true)
+PASS record: revisions for the item: create, update, unlist, list, update, update, update, restore, delete, restore, update, update (every row carries before/after as its action needs: true); the section's reorder row holds the order before (14 ids) and after; the admin page shows no History or Restore (none found), /admin/senso/history → 404
+PASS no-preview-script: senso: 4 inline script tags (head decision, intro, language toggle, menu), 0 external, "preview" 0×, preview markers 0×; kebab-land: 4 inline script tags (head decision, intro, language toggle, menu), 0 external, "preview" 0×, preview markers 0×
+
+Transcript:
+2026-10-08T13:19:14.075Z [db] connected to database "roses_check_20261008t131450z" as application "roses-check:editor-drill"
+2026-10-08T13:19:14.713Z [shot] 01-editor-phone.jpg
+2026-10-08T13:19:15.015Z [shot] 02-item-added.jpg
+2026-10-08T13:19:15.015Z [t-add] PASS: add an item: 1 tap (+ Add item) + name + price + Enter → created shown at $4.50, last in "Senso Signature" (position 13 of 13); on the public page 16 ms after Enter
+2026-10-08T13:19:15.143Z [t-price] PASS: change a price: 1 tap (the price) + typing + Enter → $5.25 in the database 54 ms after Enter; row shows $5.25
+2026-10-08T13:19:15.446Z [shot] 03-item-hidden.jpg
+2026-10-08T13:19:15.446Z [t-hide] PASS: hide an item: 1 tap (the switch) → hidden in the database 52 ms later, off the public page after 7 ms
+2026-10-08T13:19:15.547Z [t-show] PASS: show it again: 1 tap → shown, back on the public page after 9 ms
+2026-10-08T13:19:15.863Z [shot] 04-photo-uploaded.jpg
+2026-10-08T13:19:15.863Z [upload] FAIL: photo upload: 2 taps (Edit, Add photo) + choose → stored as /uploads/senso/photo-1a7f5527-6246-4af3-8d76-b3e810d83c5c.jpg (271 × 143 px, key kept: true) 94 ms after choosing; GET it → 404 text/html; charset=utf-8, 0 bytes; on the public page after 5 ms
+2026-10-08T13:19:16.113Z [shot] 05-switch-refused.jpg
+2026-10-08T13:19:16.114Z [switch-reason] PASS: switch on "Aash-e-Reshteh" (no price) refused with "The item needs a price before it can be shown"; still hidden in the database: true
+2026-10-08T13:19:16.867Z [shot] 06-editor-laptop.jpg
+2026-10-08T13:19:17.085Z [shot] 07-preview-updated.jpg
+2026-10-08T13:19:17.086Z [preview-1s] PASS: preview shows the new price 114 ms after Enter (target ≤ 1000); the row is in the frame's view (top 387 px of 902) and outlined: true
+2026-10-08T13:19:17.089Z [preview-no-intro] PASS: the fresh frame carries the intro (true) marked done by the admin, display none; no page-entrance animation in the frame (0 running, first row opacity 1); intro keys in the admin's storage: 0
+2026-10-08T13:19:17.643Z [shot] 08-reordered.jpg
+2026-10-08T13:19:17.644Z [reorder] PASS: "Drill editor item" moved up one place in "Senso Signature": admin order = database order (14 items), public page shows the same order for the 7 shown items (5 ms); the item is now 13 of 14
+2026-10-08T13:19:18.140Z [shot] 09-undo-price.jpg
+2026-10-08T13:19:18.140Z [undo-price] PASS: price $7 on the public page after 163 ms; Undo → $6.75 back on the public page 193 ms after the tap (6 ms of polling); database 6.75
+2026-10-08T13:19:19.253Z [shot] 10-undo-delete.jpg
+2026-10-08T13:19:19.253Z [undo-delete] PASS: deleted (row gone: true, off the public page after 5 ms); Undo → back in "Senso Signature" at position 12, shown, $6.75, on the public page after 9 ms, row back in the editor: true
+2026-10-08T13:19:19.360Z [shot] 11-tap-to-edit.jpg
+2026-10-08T13:19:19.360Z [tap-to-edit] PASS: tapped "Drill editor item" in the preview → its editor opened 54 ms later (1 tap); the customers' own item sheet stayed closed: true
+2026-10-08T13:19:19.662Z [tap-to-edit-section] PASS: tapped the "Senso Signature" heading in the preview → Rename section sheet with "Senso Signature"
+2026-10-08T13:19:20.322Z [shot] 12-drag-item.jpg
+2026-10-08T13:19:20.322Z [drag-item] PASS: dragged the first item of "Senso Signature" below its third: database in the expected order 56 ms after the drop (true); admin order = expected: true; = database: true (14 items; the dragged item is now 3); the public page shows its 7 shown items in the same order after 6 ms (true)
+2026-10-08T13:19:21.353Z [shot] 13-drag-section.jpg
+2026-10-08T13:19:21.353Z [drag-section] PASS: dragged the second section above the first: database in the expected order 54 ms after the drop (true); admin order = expected: true; = database: true (15 sections); the public page shows its 15 shown sections in the same order after 6 ms (true)
+2026-10-08T13:19:21.878Z [shot] 14-delete-section-sheet.jpg
+2026-10-08T13:19:22.235Z [section-delete-move] PASS: delete "Drill section" with the default choice (Move items to "Senso Signature"): 3 taps (menu, Delete section, confirm); default choice was "move"; section gone: true; both items now in "Senso Signature" at positions 14, 15 in their old order, on the public page there after 5 ms (357 ms after the tap)
+2026-10-08T13:19:22.585Z [section-delete-move-undo] PASS: Undo → "Drill section" back with its 2 items in order; the placements added to "Senso Signature" removed again (0 left), off that section on the public page after 5 ms
+2026-10-08T13:19:23.182Z [section-delete-items] PASS: delete "Drill section" with "Delete the items too": section gone true, items left 0, off the public page after 6 ms
+2026-10-08T13:19:23.371Z [shot] 15-delete-section-items-undone.jpg
+2026-10-08T13:19:23.371Z [section-delete-items-undo] PASS: Undo → section and both items back (shown, $3 and $4), in order in the editor (true) and on the public page after 5 ms
+2026-10-08T13:19:23.726Z [shot] 16-no-section-filter.jpg
+2026-10-08T13:19:23.726Z [orphans-bar] PASS: after the item lost its section: no "In no section" pile in the list (true); the Needs-attention bar shows "1 in no section" (database: 1); tapping it lists the item (true)
+2026-10-08T13:19:23.968Z [record] PASS: revisions for the item: create, update, unlist, list, update, update, update, restore, delete, restore, update, update (every row carries before/after as its action needs: true); the section's reorder row holds the order before (14 ids) and after; the admin page shows no History or Restore (none found), /admin/senso/history → 404
+2026-10-08T13:19:23.971Z [no-preview-script] PASS: senso: 4 inline script tags (head decision, intro, language toggle, menu), 0 external, "preview" 0×, preview markers 0×; kebab-land: 4 inline script tags (head decision, intro, language toggle, menu), 0 external, "preview" 0×, preview markers 0×
+2026-10-08T13:19:24.028Z [cleanup] drill item deleted again (stays in the change record)

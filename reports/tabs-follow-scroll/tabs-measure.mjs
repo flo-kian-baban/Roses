@@ -22,7 +22,7 @@ await page.evaluate(() => {
     const bar = document.getElementById('tabs').getBoundingClientRect();
     const secs = [...document.querySelectorAll('main section[id]')].map((s) => { const r = s.getBoundingClientRect(); return { id: s.id, top: Math.round(r.top * 10) / 10, bottom: Math.round(r.bottom * 10) / 10 }; });
     const maxY = document.documentElement.scrollHeight - innerHeight;
-    const atBottom = scrollY >= maxY - 1;
+    const atBottom = scrollY > 0 && scrollY >= maxY - 1;
     let expected = secs[0]?.id ?? null;
     for (const s of secs) if (s.top <= bar.bottom + 1) expected = s.id;
     if (atBottom) expected = secs[secs.length - 1].id;

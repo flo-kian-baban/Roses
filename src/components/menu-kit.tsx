@@ -106,7 +106,8 @@ export function MenuDialogs({ sections }: { sections: Section[] }) {
 
 // Rows open the sheet (native <dialog>); Back closes it (history state). Tabs follow the scroll by position (Kian, 2026-10-08,
 // replacing the IntersectionObserver band): the current section is the last one whose top has reached the bar's bottom edge,
-// so the tie at a section boundary goes to the section that just arrived; at the end of the page it is the last section. A tap
+// so the tie at a section boundary goes to the section that just arrived; at the end of a page that has scrolled it is the last
+// section (a page too short to scroll keeps its first tab). A tap
 // lights its tab at once and locks it while the page scrolls there (the tabs in between never light up); the lock lifts when the
 // scroll settles (160 ms without a scroll event) or the customer takes over (touch, wheel, keys). The strip scrolls itself to
 // centre the active tab; it never scrolls the page.
@@ -120,7 +121,7 @@ var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduc
 var nav=document.getElementById('tabs'),strip=nav&&nav.querySelector('ul'),tabs=[].slice.call(document.querySelectorAll('#tabs a[data-tab]')),byId={};tabs.forEach(function(a){byId[a.getAttribute('data-tab')]=a});
 var secs=[].slice.call(document.querySelectorAll('main section[id]')),current=null,lock=null,lockTimer=null,queued=false;
 var setActive=function(id,instant){if(current===id)return;current=id;tabs.forEach(function(a){a.classList.toggle('active',a.getAttribute('data-tab')===id)});var a=byId[id];if(a&&strip){var r=a.getBoundingClientRect(),s=strip.getBoundingClientRect(),d=r.left+r.width/2-(s.left+s.width/2);if(strip.scrollBy)strip.scrollBy({left:d,behavior:instant||reduced?'auto':'smooth'});else strip.scrollLeft+=d}};
-var sectionAt=function(){var b=(nav?nav.getBoundingClientRect().bottom:0)+1,id=secs[0].id;for(var i=0;i<secs.length;i++)if(secs[i].getBoundingClientRect().top<=b)id=secs[i].id;if(window.scrollY+window.innerHeight>=document.documentElement.scrollHeight-1)id=secs[secs.length-1].id;return id};
+var sectionAt=function(){var b=(nav?nav.getBoundingClientRect().bottom:0)+1,id=secs[0].id;for(var i=0;i<secs.length;i++)if(secs[i].getBoundingClientRect().top<=b)id=secs[i].id;if(window.scrollY>0&&window.scrollY+window.innerHeight>=document.documentElement.scrollHeight-1)id=secs[secs.length-1].id;return id};
 var update=function(instant){if(queued)return;queued=true;requestAnimationFrame(function(){queued=false;if(lock===null&&secs.length)setActive(sectionAt(),instant)})};
 var release=function(){clearTimeout(lockTimer);lockTimer=null;lock=null};var settle=function(){clearTimeout(lockTimer);lockTimer=setTimeout(release,160)};
 window.addEventListener('scroll',function(){if(lock!==null)settle();else update()},{passive:true});window.addEventListener('resize',function(){update()});

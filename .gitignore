@@ -8,8 +8,8 @@ node_modules/
 .DS_Store
 *.log
 backups/
-# Uploaded photos and logos (local storage driver); the check suite's uploads land in its run folder
-uploads/
+# Uploaded photos and logos (local storage driver), the repo-root folder only: src/pages/api/uploads/ is the route that serves them and is committed; the check suite's uploads land in its run folder
+/uploads/
 reports/checks/**/uploads/
 next-env.d.ts
 *.tsbuildinfo

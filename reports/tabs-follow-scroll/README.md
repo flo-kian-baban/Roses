@@ -18,7 +18,8 @@ section in page order touching the band won. Three defects followed:
 ## Fix (this commit)
 
 `src/components/menu-kit.tsx`: the current section is the last one whose top has reached the bar's bottom edge (the tie at a boundary
-goes to the section that just arrived; at the end of the page it is the last section), computed on scroll (passive, one update per
+goes to the section that just arrived; at the end of a page that has scrolled it is the last section, while a page too short to
+scroll keeps its first tab), computed on scroll (passive, one update per
 frame). A tap lights its tab at once and locks it while the page scrolls there; the lock lifts when the scroll settles (160 ms without
 a scroll event) or the customer takes over (touch, wheel, keys). The strip scrolls itself to centre the active tab (never the page).
 The tap's scroll target is the measured bar height, and the templates' anchor offset is now 48 px (`scroll-mt-12`) to match it for

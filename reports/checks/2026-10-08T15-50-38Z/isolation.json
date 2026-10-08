@@ -1,0 +1,159 @@
+{
+  "scratch": "roses_check_20261008t155038z",
+  "working": "roses",
+  "processes": [
+    {
+      "process": "roses-check:server-3100",
+      "source": "server-3100.log",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:server-3101",
+      "source": "server-3101.log",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:new-venue",
+      "source": "new-venue/new-venue-drill.log",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:new-venue (remove)",
+      "source": "new-venue/new-venue-remove.log",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:admin-drill",
+      "source": "admin/admin-drill.log",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:lockout-drill",
+      "source": "lockout-drill.log",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:revalidation-drill",
+      "source": "revalidation-drill.log",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:editor-drill",
+      "source": "editor/editor-drill.log",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:style-drill",
+      "source": "style/style-drill.log",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:photo-links senso",
+      "source": "senso/photo-links.log",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:photo-links kebab-land",
+      "source": "kebab-land/photo-links.log",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "backup-drill.sh",
+      "source": "backup-drill.txt",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-uploads-clean",
+      "source": "uploads-clean.txt",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:migrate",
+      "source": "migrate.log (DATABASE_URL)",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    },
+    {
+      "process": "roses-check:build",
+      "source": "build.log (DATABASE_URL)",
+      "databases": [
+        "roses_check_20261008t155038z"
+      ]
+    }
+  ],
+  "pgStatActivitySamples": [
+    {
+      "connection": "roses-check:admin-drill → roses_check_20261008t155038z",
+      "samples": 26
+    },
+    {
+      "connection": "roses-check:build → roses_check_20261008t155038z",
+      "samples": 1
+    },
+    {
+      "connection": "roses-check:editor-drill → roses_check_20261008t155038z",
+      "samples": 25
+    },
+    {
+      "connection": "roses-check:lockout-drill → roses_check_20261008t155038z",
+      "samples": 15
+    },
+    {
+      "connection": "roses-check:new-venue → roses_check_20261008t155038z",
+      "samples": 1
+    },
+    {
+      "connection": "roses-check:revalidation-drill → roses_check_20261008t155038z",
+      "samples": 2
+    },
+    {
+      "connection": "roses-check:server-3100 → roses_check_20261008t155038z",
+      "samples": 510
+    },
+    {
+      "connection": "roses-check:server-3101 → roses_check_20261008t155038z",
+      "samples": 37
+    },
+    {
+      "connection": "roses-check:style-drill → roses_check_20261008t155038z",
+      "samples": 41
+    },
+    {
+      "connection": "roses-check:suite → roses_check_20261008t155038z",
+      "samples": 752
+    },
+    {
+      "connection": "roses-check:suite-readonly → roses",
+      "samples": 752
+    }
+  ],
+  "otherRunsSeen": [],
+  "pass": true
+}

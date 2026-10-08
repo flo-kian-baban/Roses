@@ -278,6 +278,7 @@ await snap(l, 'style-laptop');
     let taps = 0; const tap = async (sel) => { taps++; await l.click(sel); };
     await l.evaluate((id) => document.querySelector(`[data-section-layout="${id}"]`)?.scrollIntoView({ block: 'center' }), sec.id);
     const t0 = Date.now(); await tap(`[data-section-layout="${sec.id}"] button[role=radio]:has-text("Grid")`);
+    const toast = await l.waitForSelector('[role=status]:has-text("Grid")', { timeout: 5000 }).then(() => true).catch(() => false); // checked at once: the toast lasts 10 s and the customers' page below takes its time to load
     const savedGrid = await waitDb('select layout from sections where id = $1', [sec.id], (r) => r?.layout === 'grid');
     const pubGrid = await waitPublic('senso', (h) => cardsOf(h)?.layout === 'grid');
     const after = cardsOf(pubGrid.html || await publicHtml('senso'));
@@ -287,7 +288,6 @@ await snap(l, 'style-laptop');
     const cust = await laptop.newPage(); await cust.goto(`${base}/senso`, { waitUntil: 'load' }); await cust.waitForFunction(() => document.documentElement.dataset.intro === 'done');
     const sheet = await cust.evaluate((id) => { const card = document.querySelector(`section[data-id="${id}"] li.item.card`); card.click(); const s = document.getElementById('sheet'); const title = s.querySelector('h2 [lang=en]')?.textContent; const open = s.open; s.close(); return { open, title, cardTitle: card.querySelector('h3 [lang=en]')?.textContent }; }, sec.id);
     await cust.close();
-    const toast = await l.waitForSelector('[role=status]:has-text("Grid")').then(() => true).catch(() => false);
     const control = await l.getAttribute(`[data-section-layout="${sec.id}"]`, 'data-layout');
     await snap(l, 'section-grid');
     const ok = before?.layout === 'list' && before.rows === sec.n && before.cards === 0 && savedGrid.ok && pubGrid.ok && after?.layout === 'grid' && after.cards === sec.n && after.rows === 0 && after.templates === sec.n && /grid-cols-2/.test(after.classes)

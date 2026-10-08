@@ -70,17 +70,51 @@ dialog.sheet { width: 100%; max-width: 100%; height: fit-content; max-height: 92
 dialog.sheet [tabindex="-1"]:focus, dialog.list [tabindex="-1"]:focus { outline: none; }
 .sheet-close:focus:not(:focus-visible) { outline: none; }
 /* ::backdrop and the close button's shadow get plain values from the page's own <style> (tokens.ts colorCss): ::backdrop reads no custom property in older browsers. */
-dialog.sheet[open] { animation: sheet-in .28s cubic-bezier(.2, .8, .2, 1); }
-@keyframes sheet-in { from { transform: translateY(48px); opacity: .6; } to { transform: none; opacity: 1; } }
-@media (min-width: 640px) { dialog.sheet { width: min(36rem, 92vw); height: fit-content; max-height: 90dvh; margin: auto; border-radius: 24px; } }
+/* Item sheet motion (Kian, 2026-10-08): it slides up from the bottom edge when an item opens and slides back down when it
+   closes (the script keeps the dialog open under the .closing class until the exit animation ends); the dim behind it fades
+   in and out with it. On a laptop the sheet is centred, so it rises a little and fades instead. Reduced motion: no animation. */
+dialog.sheet[open] { animation: sheet-in .34s cubic-bezier(.2, .8, .2, 1); }
+dialog.sheet.closing { animation: sheet-out .26s cubic-bezier(.4, 0, 1, 1) forwards; }
+dialog.sheet[open]::backdrop { animation: dim-in .34s ease-out; }
+dialog.sheet.closing::backdrop { animation: dim-out .26s ease-in forwards; }
+@keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes sheet-out { to { transform: translateY(100%); } }
+@keyframes sheet-in-centre { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes sheet-out-centre { to { transform: translateY(24px); opacity: 0; } }
+@keyframes dim-in { from { opacity: 0; } }
+@keyframes dim-out { to { opacity: 0; } }
+@media (min-width: 640px) {
+  dialog.sheet { width: min(36rem, 92vw); height: fit-content; max-height: 90dvh; margin: auto; border-radius: 24px; }
+  dialog.sheet[open] { animation-name: sheet-in-centre; }
+  dialog.sheet.closing { animation-name: sheet-out-centre; }
+}
+/* The photo (Kian, 2026-10-08): 4:3, dissolving into the sheet through a gradient to the sheet background over its lower
+   part; the title block starts inside the fully faded strip, so there is no hard crop edge above the text. */
 .sheet-top { position: relative; min-height: 64px; }
-.sheet-hero img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; background: var(--c-sheet-hero); }
+.sheet-hero { position: relative; }
+.sheet-hero[hidden] { display: none; }
+.sheet-hero img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--c-sheet-hero); }
+.sheet-hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(to bottom, transparent, var(--c-sheet-bg) 70%, var(--c-sheet-bg)); pointer-events: none; }
+dialog.sheet.has-photo #sheet-content { position: relative; margin-top: -36px; }
 .sheet-close { position: absolute; top: 12px; left: 12px; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 9999px; background: var(--c-sheet-close-bg); color: var(--c-sheet-close-icon); }
 [dir="rtl"] .sheet-close { left: auto; right: 12px; }
-dialog.list { width: 100%; max-width: 100%; margin: auto 0 0; border-radius: 20px 20px 0 0; padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
-@media (min-width: 640px) { dialog.list { width: min(24rem, 92vw); margin: auto; border-radius: 20px; } }
+/* Section list (Kian, 2026-10-08): the same slide as the item sheet, at most three quarters of the screen (the page and its tab
+   bar stay visible behind it, and there is room to tap out), scrollable inside, with a sticky top row: the caption and a Close
+   button on the language's start side. */
+dialog.list { width: 100%; max-width: 100%; max-height: 75dvh; margin: auto 0 0; border-radius: 20px 20px 0 0; padding-bottom: calc(8px + env(safe-area-inset-bottom)); overflow: auto; overscroll-behavior: contain; }
+dialog.list[open] { animation: sheet-in .34s cubic-bezier(.2, .8, .2, 1); }
+dialog.list.closing { animation: sheet-out .26s cubic-bezier(.4, 0, 1, 1) forwards; }
+dialog.list[open]::backdrop { animation: dim-in .34s ease-out; }
+dialog.list.closing::backdrop { animation: dim-out .26s ease-in forwards; }
+.list-top { position: sticky; top: 0; z-index: 1; display: grid; place-items: center; height: 56px; background: var(--c-sheet-bg); }
+.list-close { top: 6px; }
+@media (min-width: 640px) {
+  dialog.list { width: min(24rem, 92vw); max-height: 70dvh; margin: auto; border-radius: 20px; }
+  dialog.list[open] { animation-name: sheet-in-centre; }
+  dialog.list.closing { animation-name: sheet-out-centre; }
+}
 body:has(dialog[open]) { overflow: hidden; }
-@media (prefers-reduced-motion: reduce) { dialog.sheet[open] { animation: none; } }
+@media (prefers-reduced-motion: reduce) { dialog.sheet[open], dialog.sheet.closing, dialog.sheet[open]::backdrop, dialog.sheet.closing::backdrop, dialog.list[open], dialog.list.closing, dialog.list[open]::backdrop, dialog.list.closing::backdrop { animation: none; } }
 /* Section change: a soft full-width band between categories (Uber Eats-style), no hairline under a section's last row. */
 .section-divider { height: 8px; margin: 0 -16px; background: var(--c-page-band); }
 main section li.item:last-child { border-bottom: 0; }

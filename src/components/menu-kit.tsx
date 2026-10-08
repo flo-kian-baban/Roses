@@ -133,16 +133,24 @@ export function MenuDialogs({ sections }: { sections: Section[] }) {
         <div className="sheet-top"><div id="sheet-hero" className="sheet-hero" /><button type="button" id="sheet-close" className="sheet-close" aria-label="Close"><CloseIcon /></button></div>
         <div id="sheet-content" tabIndex={-1} autoFocus />
       </dialog>
+      {/* The section list (Kian, 2026-10-08): slides up like the item sheet, a Close button on the language's start side (left in
+          English, right in Persian), at most three quarters of the screen so the page and its tab bar stay visible behind it,
+          scrollable inside; a tap on a section closes it while the page scrolls there. */}
       <dialog id="sections-dialog" className="list" aria-label="Sections">
-        <p className="px-5 pt-4 pb-2 text-[13px] font-semibold uppercase tracking-wide text-(--c-sheet-muted)"><span lang="en">Menu</span><span lang="fa" dir="rtl">منو</span></p>
-        <ul tabIndex={-1} autoFocus>{sections.map((s) => <li key={s.id}><a href={`#${sid(s)}`} className="block px-5 py-3 text-[17px] font-semibold"><Bi text={s.name} /></a></li>)}</ul>
+        <div className="list-top">
+          <p className="text-[13px] font-semibold uppercase tracking-wide text-(--c-sheet-muted)"><span lang="en">Menu</span><span lang="fa" dir="rtl">منو</span></p>
+          <button type="button" id="list-close" className="sheet-close list-close" aria-label="Close"><CloseIcon /></button>
+        </div>
+        <ul tabIndex={-1} autoFocus className="pb-2">{sections.map((s) => <li key={s.id}><a href={`#${sid(s)}`} className="block px-5 py-3 text-[17px] font-semibold"><Bi text={s.name} /></a></li>)}</ul>
       </dialog>
       <script dangerouslySetInnerHTML={{ __html: menuScript }} />
     </>
   );
 }
 
-// Rows open the sheet (native <dialog>); Back closes it (history state). Tabs follow the scroll by position (Kian, 2026-10-08,
+// Rows open the sheet (native <dialog>; it slides in, and slides out before it closes: the Close button, a tap on the dim, Escape
+// and Back all go through hide(), which keeps the dialog open under .closing until the exit animation ends); Back closes it (history
+// state). The section list behaves the same way (hideList); a tap on a section starts its exit and the page's smooth scroll together. Tabs follow the scroll by position (Kian, 2026-10-08,
 // replacing the IntersectionObserver band): the current section is the last one whose top has reached the bar's bottom edge,
 // so the tie at a section boundary goes to the section that just arrived; at the end of a page that has scrolled it is the last
 // section (a page too short to scroll keeps its first tab). A tap
@@ -151,12 +159,18 @@ export function MenuDialogs({ sections }: { sections: Section[] }) {
 // centre the active tab; it never scrolls the page. A tap writes no #hash into the URL (Kian, 2026-10-08: a reload used to jump
 // to the tapped section, hiding the header); a link straight to a section still opens on it.
 const menuScript = `(function(){var sheet=document.getElementById('sheet'),hero=document.getElementById('sheet-hero'),content=document.getElementById('sheet-content');
-if(sheet&&sheet.showModal){var open=function(li){var tpl=li.querySelector('template.detail');if(!tpl)return;content.replaceChildren(tpl.content.cloneNode(true));hero.replaceChildren();var p=li.getAttribute('data-photo');if(p){var img=document.createElement('img');img.src=p;img.alt='';img.decoding='async';hero.appendChild(img);hero.hidden=false}else{hero.hidden=true}sheet.showModal();sheet.scrollTop=0;history.pushState({sheet:1},'')};
-document.querySelectorAll('li.item').forEach(function(li){li.addEventListener('click',function(){open(li)});li.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open(li)}})});
-document.getElementById('sheet-close').addEventListener('click',function(){sheet.close()});sheet.addEventListener('click',function(e){if(e.target===sheet)sheet.close()});
-sheet.addEventListener('close',function(){if(history.state&&history.state.sheet)history.back()});window.addEventListener('popstate',function(){if(sheet.open)sheet.close()});
-var list=document.getElementById('sections-dialog'),btn=document.getElementById('tabs-list');if(list&&btn&&list.showModal){btn.addEventListener('click',function(){list.showModal()});list.addEventListener('click',function(e){if(e.target===list||e.target.closest('a'))list.close()})}}
 var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(sheet&&sheet.showModal){var closing=false;
+var hide=function(){if(!sheet.open||closing)return;if(reduced){sheet.close();return}closing=true;sheet.classList.add('closing');var done=function(){if(!closing)return;closing=false;sheet.classList.remove('closing');sheet.close()};sheet.addEventListener('animationend',done,{once:true});setTimeout(done,400)};
+var open=function(li){var tpl=li.querySelector('template.detail');if(!tpl)return;content.replaceChildren(tpl.content.cloneNode(true));hero.replaceChildren();var p=li.getAttribute('data-photo');if(p){var img=document.createElement('img');img.src=p;img.alt='';img.decoding='async';hero.appendChild(img);hero.hidden=false}else{hero.hidden=true}sheet.classList.toggle('has-photo',!!p);if(closing){closing=false;sheet.classList.remove('closing')}if(!sheet.open){sheet.showModal();history.pushState({sheet:1},'')}sheet.scrollTop=0};
+document.querySelectorAll('li.item').forEach(function(li){li.addEventListener('click',function(){open(li)});li.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open(li)}})});
+document.getElementById('sheet-close').addEventListener('click',function(){hide()});sheet.addEventListener('click',function(e){if(e.target===sheet)hide()});sheet.addEventListener('cancel',function(e){e.preventDefault();hide()});
+sheet.addEventListener('close',function(){if(history.state&&history.state.sheet)history.back()});window.addEventListener('popstate',function(){if(sheet.open)hide()});
+var list=document.getElementById('sections-dialog'),btn=document.getElementById('tabs-list');if(list&&btn&&list.showModal){var listClosing=false;
+var hideList=function(){if(!list.open||listClosing)return;if(reduced){list.close();return}listClosing=true;list.classList.add('closing');var done=function(){if(!listClosing)return;listClosing=false;list.classList.remove('closing');list.close()};list.addEventListener('animationend',done,{once:true});setTimeout(done,400)};
+btn.addEventListener('click',function(){if(listClosing){listClosing=false;list.classList.remove('closing')}if(!list.open){list.showModal();history.pushState({list:1},'')}list.scrollTop=0});
+list.addEventListener('click',function(e){if(e.target===list||e.target.closest('a')||e.target.closest('#list-close'))hideList()});list.addEventListener('cancel',function(e){e.preventDefault();hideList()});
+list.addEventListener('close',function(){if(history.state&&history.state.list)history.back()});window.addEventListener('popstate',function(){if(list.open)hideList()})}}
 var nav=document.getElementById('tabs'),strip=nav&&nav.querySelector('ul'),tabs=[].slice.call(document.querySelectorAll('#tabs a[data-tab]')),byId={};tabs.forEach(function(a){byId[a.getAttribute('data-tab')]=a});
 var secs=[].slice.call(document.querySelectorAll('main section[id]')),current=null,lock=null,lockTimer=null,queued=false;
 var setActive=function(id,instant){if(current===id)return;current=id;tabs.forEach(function(a){a.classList.toggle('active',a.getAttribute('data-tab')===id)});var a=byId[id];if(a&&strip){var r=a.getBoundingClientRect(),s=strip.getBoundingClientRect(),d=r.left+r.width/2-(s.left+s.width/2);if(strip.scrollBy)strip.scrollBy({left:d,behavior:instant||reduced?'auto':'smooth'});else strip.scrollLeft+=d}};

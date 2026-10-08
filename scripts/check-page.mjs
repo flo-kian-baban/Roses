@@ -90,11 +90,12 @@ const browser = await chromium.launch();
   page.on('request', (r) => { if (r.resourceType() === 'font') fontRequests.push(r.url()); });
   const samples = [];
   await page.goto(url, { waitUntil: 'commit' });
-  for (let i = 0; i < 40; i++) {
+  // sampled every 20 ms (2026-10-08: at 50 ms two rows staggered by 60 ms could first show in the same sample, so "the rows arrive one after another" failed by chance on the two-row temporary venue)
+  for (let i = 0; i < 120; i++) {
     const s = await page.evaluate(() => { const el = document.getElementById('intro'); const cs = el ? getComputedStyle(el) : null; const op = (q) => { const e = document.querySelector(q); return e ? Number(getComputedStyle(e).opacity) : null; }; const rows = [...document.querySelectorAll('main section:first-of-type li.item')].slice(0, 8); const last = rows[rows.length - 1]; return { t: Math.round(performance.now()), intro: document.documentElement.dataset.intro || null, display: cs ? cs.display : 'absent', visibility: cs ? cs.visibility : 'absent', opacity: cs ? cs.opacity : 'absent', page: { header: op('main > header'), tabs: op('main #tabs'), h2: op('main section:first-of-type h2'), row1: op('main section:first-of-type li.item:nth-child(1)'), lastRow: last ? Number(getComputedStyle(last).opacity) : null, rowsAnimated: rows.length } }; });
     samples.push(s);
     if (s.intro === 'done' && s.page.lastRow === 1 && i > 2) break;
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(20);
   }
   const firstVisible = samples.find((s) => s.display !== 'none' && s.display !== 'absent');
   const gone = samples.find((s) => s.intro === 'done');

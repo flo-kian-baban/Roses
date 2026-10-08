@@ -37,7 +37,7 @@ If you see a material problem with this stack for these requirements, raise it u
 - PINs are 6 digits. 5 failed attempts trigger a 15-minute lockout per venue. Each PIN belongs to one person and their venue(s), and can be revoked. The main admin signs in with email + password, not a PIN.
 - The admin is designed for phones first and must be usable by staff with low tech skills.
 - Every edit is kept in a history with one-click restore. This is an undo, not an approval step.
-- The logo animation plays only while the menu loads and never adds delay. Kian, 2026-10-07: it plays on every page load and refresh, not only the first visit (replacing the PM's "skipped on repeat visits"); it is skipped only when the device has reduced motion turned on. Nothing about it is stored on the device.
+- The logo animation plays only while the menu loads and never adds delay. Kian, 2026-10-07: it plays on every page load and refresh, not only the first visit (replacing the PM's "skipped on repeat visits"); it is skipped only when the device has reduced motion turned on. Nothing about it is stored on the device. Kian, same day: the hand-over is smooth: the logo dissolves while the page slides in behind it (header, tabs, first heading, then the first rows one after another), CSS only, finished by about 2 s; the preview and reduced motion show the page at once.
 - Public menu pages must reach Largest Contentful Paint ≤ 2.5 s in a Lighthouse mobile run.
 - Missing Persian text falls back to English. Prices use Western digits in both languages. Persian text is drafted at import and editable in the admin.
 - Allergen and dietary fields start empty. They are never filled from scraped data or by AI.

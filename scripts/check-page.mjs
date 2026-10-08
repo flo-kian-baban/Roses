@@ -39,7 +39,8 @@ log.checks.introInFirstHtml = { present: /id="intro"/.test(html), headScript: /p
 
 const browser = await chromium.launch();
 
-// 2. first visit: intro visible early, gone within 1.5 s; English and Persian screenshots
+// 2. first visit: intro visible early, gone within 1.5 s, the page sliding in behind it (header, tabs, first heading, first rows
+//    from opacity 0 to 1 while the overlay fades; Kian, 2026-10-07); English and Persian screenshots
 {
   const ctx = await browser.newContext(DEVICE);
   const page = await ctx.newPage();
@@ -48,14 +49,18 @@ const browser = await chromium.launch();
   const samples = [];
   await page.goto(url, { waitUntil: 'commit' });
   for (let i = 0; i < 40; i++) {
-    const s = await page.evaluate(() => { const el = document.getElementById('intro'); const cs = el ? getComputedStyle(el) : null; return { t: Math.round(performance.now()), intro: document.documentElement.dataset.intro || null, display: cs ? cs.display : 'absent', visibility: cs ? cs.visibility : 'absent', opacity: cs ? cs.opacity : 'absent' }; });
+    const s = await page.evaluate(() => { const el = document.getElementById('intro'); const cs = el ? getComputedStyle(el) : null; const op = (q) => { const e = document.querySelector(q); return e ? Number(getComputedStyle(e).opacity) : null; }; return { t: Math.round(performance.now()), intro: document.documentElement.dataset.intro || null, display: cs ? cs.display : 'absent', visibility: cs ? cs.visibility : 'absent', opacity: cs ? cs.opacity : 'absent', page: { header: op('main > header'), tabs: op('main #tabs'), h2: op('main section:first-of-type h2'), row1: op('main section:first-of-type li.item:nth-child(1)'), row3: op('main section:first-of-type li.item:nth-child(3)') } }; });
     samples.push(s);
-    if (s.intro === 'done' && i > 2) break;
+    if (s.intro === 'done' && s.page.row3 === 1 && i > 2) break;
     await page.waitForTimeout(50);
   }
   const firstVisible = samples.find((s) => s.display !== 'none' && s.display !== 'absent');
   const gone = samples.find((s) => s.intro === 'done');
-  log.checks.firstVisit = { introVisibleAtMs: firstVisible?.t ?? null, introDoneAtMs: gone?.t ?? null, goneWithin1500ms: !!gone && gone.t <= 1500, samples };
+  // the page entrance: each part is invisible while the logo settles, then fully visible; the rows arrive after the heading
+  const hidden = (k) => samples.some((s) => s.page[k] === 0), shown = (k) => samples.find((s) => s.page[k] === 1)?.t ?? null;
+  const entrance = { headerShownAtMs: shown('header'), tabsShownAtMs: shown('tabs'), h2ShownAtMs: shown('h2'), row1ShownAtMs: shown('row1'), row3ShownAtMs: shown('row3'), wereHidden: ['header', 'tabs', 'h2', 'row1', 'row3'].every(hidden) };
+  entrance.ok = entrance.wereHidden && entrance.headerShownAtMs != null && entrance.row3ShownAtMs != null && entrance.row3ShownAtMs > entrance.h2ShownAtMs && entrance.row3ShownAtMs > entrance.row1ShownAtMs && entrance.row3ShownAtMs <= 2200;
+  log.checks.firstVisit = { introVisibleAtMs: firstVisible?.t ?? null, introDoneAtMs: gone?.t ?? null, goneWithin1500ms: !!gone && gone.t <= 1500, entrance, samples };
   await page.waitForLoadState('networkidle').catch(() => {});
   log.checks.images = await loadAllImages(page);
   await page.screenshot(shotOpts(path.join(out, `${venue}-en.png`)));
@@ -96,15 +101,15 @@ const browser = await chromium.launch();
   const ctx = await browser.newContext({ ...DEVICE, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   await page.goto(url, { waitUntil: 'domcontentloaded' });
-  const r = await page.evaluate(() => { const el = document.getElementById('intro'); return { intro: document.documentElement.dataset.intro || null, display: el ? getComputedStyle(el).display : 'absent', prefersReduced: matchMedia('(prefers-reduced-motion: reduce)').matches }; });
-  log.checks.reducedMotion = { ...r, skipped: r.display === 'none' };
+  const r = await page.evaluate(() => { const el = document.getElementById('intro'); const op = (q) => { const e = document.querySelector(q); return e ? Number(getComputedStyle(e).opacity) : null; }; return { intro: document.documentElement.dataset.intro || null, display: el ? getComputedStyle(el).display : 'absent', prefersReduced: matchMedia('(prefers-reduced-motion: reduce)').matches, page: { header: op('main > header'), h2: op('main section:first-of-type h2'), row1: op('main section:first-of-type li.item:nth-child(1)'), row6: op('main section:first-of-type li.item:nth-child(6)') } }; });
+  log.checks.reducedMotion = { ...r, skipped: r.display === 'none', pageVisibleAtOnce: Object.values(r.page).every((v) => v === 1) };
   await ctx.close();
 }
 await browser.close();
 await fs.writeFile(path.join(out, `${venue}-checks.json`), JSON.stringify(log, null, 2));
 const c = log.checks;
-console.log(JSON.stringify({ introInFirstHtml: c.introInFirstHtml, firstVisit: { introVisibleAtMs: c.firstVisit.introVisibleAtMs, introDoneAtMs: c.firstVisit.introDoneAtMs, goneWithin1500ms: c.firstVisit.goneWithin1500ms }, repeatVisit: { ...c.repeatVisit, samples: undefined }, reducedMotion: c.reducedMotion, persianToggle: c.persianToggle, dom: { ...c.dom, sections: c.dom.sections.length } }, null, 2));
-const pass = c.introInFirstHtml.present && c.introInFirstHtml.noStoredSkip && c.firstVisit.goneWithin1500ms && c.repeatVisit.playsAgain && c.reducedMotion.skipped && c.persianToggle.dir === 'rtl' && c.fontRequests.thirdParty.length === 0 && c.images.loaded === c.images.total && c.imagesFa.loaded === c.imagesFa.total;
+console.log(JSON.stringify({ introInFirstHtml: c.introInFirstHtml, firstVisit: { introVisibleAtMs: c.firstVisit.introVisibleAtMs, introDoneAtMs: c.firstVisit.introDoneAtMs, goneWithin1500ms: c.firstVisit.goneWithin1500ms, entrance: c.firstVisit.entrance }, repeatVisit: { ...c.repeatVisit, samples: undefined }, reducedMotion: c.reducedMotion, persianToggle: c.persianToggle, dom: { ...c.dom, sections: c.dom.sections.length } }, null, 2));
+const pass = c.introInFirstHtml.present && c.introInFirstHtml.noStoredSkip && c.firstVisit.goneWithin1500ms && c.firstVisit.entrance.ok && c.repeatVisit.playsAgain && c.reducedMotion.skipped && c.reducedMotion.pageVisibleAtOnce && c.persianToggle.dir === 'rtl' && c.fontRequests.thirdParty.length === 0 && c.images.loaded === c.images.total && c.imagesFa.loaded === c.imagesFa.total;
 console.log('fonts requested:', JSON.stringify(c.fontRequests), '\nimages EN:', JSON.stringify(c.images), '\nimages FA:', JSON.stringify(c.imagesFa));
 console.log(pass ? 'PASS' : 'FAIL');
 process.exit(pass ? 0 : 1);

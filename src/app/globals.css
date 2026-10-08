@@ -20,14 +20,37 @@ html[data-lang="en"] [lang="fa"] { display: none; }
 html[data-lang="fa"] [lang="en"] { display: none; }
 html[data-lang="fa"] body { font-family: var(--font-persian); }
 
-/* Logo intro overlay: visible at first paint, removed by script; skipped via html[data-intro="skip"]. */
-#intro { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: var(--brand-bg); animation: intro-fade 300ms ease-out 1200ms both; }
+/* Logo intro overlay: visible at first paint, removed by script; skipped via html[data-intro="skip"].
+   Timeline (Kian, 2026-10-07: a smooth hand-over from the logo to the page): the logo settles over 900 ms; from 1000 ms the
+   overlay fades and the logo grows and dissolves (350 ms) while the page underneath slides in: header, tabs, the first
+   heading, then the first eight rows 60 ms apart (each 420 ms). The script hides the overlay at 1350 ms, when the fade has ended. */
+#intro { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: var(--brand-bg); animation: intro-fade 350ms ease-in-out 1000ms both; }
 #intro img { width: min(60vw, 260px); height: auto; animation: intro-logo 900ms cubic-bezier(.2,.8,.2,1) both; }
+#intro > * { animation: intro-out 350ms ease-in 1000ms both; } /* the logo itself, or its tile (Kebab Land) */
+#intro > img { animation: intro-logo 900ms cubic-bezier(.2,.8,.2,1) both, intro-out 350ms ease-in 1000ms both; }
 #intro .intro-tile { display: grid; place-items: center; padding: 20px 28px; border-radius: 28px; }
 html[data-intro="skip"] #intro, html[data-intro="done"] #intro { display: none; }
 @keyframes intro-logo { from { opacity: .35; transform: scale(.94); } to { opacity: 1; transform: scale(1); } } /* starts visible: the logo is then the largest contentful paint at first paint, not a late photo */
+@keyframes intro-out { to { opacity: 0; transform: scale(1.08); } }
 @keyframes intro-fade { to { opacity: 0; visibility: hidden; } }
-@media (prefers-reduced-motion: reduce) { #intro { display: none; } }
+/* Page entrance behind the dissolving logo. Only when the page has the intro (#intro precedes <main>) and it is not skipped
+   (the selectors stop matching under html[data-intro="skip"], set before first paint for reduced motion); the admin preview
+   switches these off in the frame (Preview.tsx). The elements are all smaller than the intro logo, so the largest contentful
+   paint stays the logo at first paint. */
+html:not([data-intro="skip"]) #intro ~ main > header, html:not([data-intro="skip"]) #intro ~ main #tabs, html:not([data-intro="skip"]) #intro ~ main section:first-of-type h2, html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(-n+8) { animation: page-in 420ms cubic-bezier(.2,.8,.2,1) both; }
+html:not([data-intro="skip"]) #intro ~ main > header { animation-delay: 1000ms; }
+html:not([data-intro="skip"]) #intro ~ main #tabs { animation-delay: 1050ms; }
+html:not([data-intro="skip"]) #intro ~ main section:first-of-type h2 { animation-delay: 1100ms; }
+html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(1) { animation-delay: 1150ms; }
+html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(2) { animation-delay: 1210ms; }
+html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(3) { animation-delay: 1270ms; }
+html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(4) { animation-delay: 1330ms; }
+html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(5) { animation-delay: 1390ms; }
+html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(6) { animation-delay: 1450ms; }
+html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(7) { animation-delay: 1510ms; }
+html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(8) { animation-delay: 1570ms; }
+@keyframes page-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { #intro { display: none; } html:not([data-intro="skip"]) #intro ~ main > header, html:not([data-intro="skip"]) #intro ~ main #tabs, html:not([data-intro="skip"]) #intro ~ main section:first-of-type h2, html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(-n+8) { animation: none; } }
 
 /* ---------- Admin (phone first, no client JavaScript). Tokens are Tailwind theme colours: bg-accent, text-ink, border-line, bg-fill… ---------- */
 @theme {

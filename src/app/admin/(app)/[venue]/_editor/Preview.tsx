@@ -39,7 +39,7 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
     if (slot !== loadingSlot.current) return;
     const d = frames[slot].current?.contentDocument;
     if (!isOurs(d)) return;
-    d.documentElement.dataset.intro = 'done'; // the logo intro plays on every load for customers; the preview hides it before the frame is shown
+    d.documentElement.dataset.intro = 'done'; // the logo intro and the page entrance play on every load for customers; the preview hides both before the frame is shown (see previewStyle)
     applyLang(d, langRef.current);
     if (pickRef.current) attachPick(d, (p) => pickRef.current?.(p));
     if (!showFocus(d, focusRef.current)) d.defaultView?.scrollTo({ top: scrollRef.current, behavior: 'auto' });
@@ -127,7 +127,8 @@ function applyLang(d: Document, lang: 'en' | 'fa') {
 function previewStyle(d: Document) {
   if (d.getElementById('roses-preview-style')) return;
   const st = d.createElement('style'); st.id = 'roses-preview-style';
-  st.textContent = 'html{scrollbar-width:none}html::-webkit-scrollbar{display:none}.roses-preview-focus{box-shadow:inset 0 0 0 2px #ee6a3a;border-radius:12px;animation:roses-pf 2.6s ease-out forwards}@keyframes roses-pf{75%{box-shadow:inset 0 0 0 2px #ee6a3a}100%{box-shadow:inset 0 0 0 2px transparent}}'
+  // No logo intro and no page entrance inside the preview: the frame is shown only once loaded, as the customers see the page after the intro.
+  st.textContent = '#intro{display:none!important}main>header,#tabs,main section h2,li.item{animation:none!important}html{scrollbar-width:none}html::-webkit-scrollbar{display:none}.roses-preview-focus{box-shadow:inset 0 0 0 2px #ee6a3a;border-radius:12px;animation:roses-pf 2.6s ease-out forwards}@keyframes roses-pf{75%{box-shadow:inset 0 0 0 2px #ee6a3a}100%{box-shadow:inset 0 0 0 2px transparent}}'
     + '.roses-pick li.item:hover,.roses-pick main section h2:hover,.roses-pick main>header:hover{outline:2px dashed rgba(238,106,58,.55);outline-offset:3px;border-radius:10px;cursor:pointer}';
   d.head.appendChild(st);
 }

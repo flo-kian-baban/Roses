@@ -1,0 +1,9 @@
+2026-10-08T18:29:04.776Z +   12ms connected to database "roses_check_20261008t182433z" as application "roses-check:revalidation-drill"
+2026-10-08T18:29:04.793Z +   29ms public page shows Turkish Coffee at $6.59 before the edit (database: $6.59)
+2026-10-08T18:29:05.308Z +  544ms admin signed in with the PIN on the iPhone viewport; page editor open
+2026-10-08T18:29:05.359Z +  595ms Enter on the price field with $8.09 (was $6.59)
+2026-10-08T18:29:05.439Z +  675ms "Saved · Undo" shown 80 ms after Enter
+2026-10-08T18:29:05.444Z +  680ms poll 1: public page shows $8.09
+2026-10-08T18:29:05.444Z +  680ms new price visible on the public page 85 ms after Enter → PASS (≤ 10 s)
+2026-10-08T18:29:05.771Z + 1007ms Undo tapped; public page shows $6.59 again 326 ms after the tap (1 polls)
+2026-10-08T18:29:05.775Z + 1011ms last two change records: [{"action":"restore","before_price":"8.09","after_price":"6.59","by":"Check suite"},{"action":"update","before_price":"6.59","after_price":"8.09","by":"Check suite"}]

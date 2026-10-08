@@ -97,7 +97,10 @@ dialog.sheet.closing::backdrop { animation: dim-out .26s ease-in forwards; }
 .sheet-hero img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--c-sheet-hero); }
 .sheet-hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 12%; background: linear-gradient(to bottom, transparent, var(--c-sheet-bg)); pointer-events: none; }
 dialog.sheet.has-photo #sheet-content { position: relative; margin-top: -8px; }
-.sheet-close { position: absolute; top: 12px; left: 12px; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 9999px; background: var(--c-sheet-close-bg); color: var(--c-sheet-close-icon); }
+/* Close button (Kian, 2026-10-08, later: the 44 px circle was too big): a 36 px circle with an 18 px glyph, 12 px in from the
+   popup's top and start edges; a transparent 4 px ring around it keeps the tap target at 44 px. */
+.sheet-close { position: absolute; top: 12px; left: 12px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 9999px; background: var(--c-sheet-close-bg); color: var(--c-sheet-close-icon); }
+.sheet-close::after { content: ""; position: absolute; inset: -4px; border-radius: inherit; }
 [dir="rtl"] .sheet-close { left: auto; right: 12px; }
 /* Item popup layout (Kian, 2026-10-08, after the Uber Eats reference): the title block (the name 24 px bold, the price line
    17 px with "Serves" in grey, the description 15 px reading text), then one group per kind (Sizes, each option group,
@@ -134,7 +137,7 @@ dialog.list.closing { animation: sheet-out .26s cubic-bezier(.4, 0, 1, 1) forwar
 dialog.list[open]::backdrop { animation: dim-in .34s ease-out; }
 dialog.list.closing::backdrop { animation: dim-out .26s ease-in forwards; }
 .list-top { position: sticky; top: 0; z-index: 1; display: grid; place-items: center; height: 56px; background: var(--c-sheet-bg); }
-.list-close { top: 6px; }
+.list-close { top: 10px; } /* centred in the 56 px top row */
 @media (min-width: 640px) {
   dialog.list { width: min(24rem, 92vw); max-height: 70dvh; margin: auto; border-radius: 20px; }
   dialog.list[open] { animation-name: sheet-in-centre; }

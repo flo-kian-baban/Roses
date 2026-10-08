@@ -73,6 +73,26 @@ const run = async (ctx, c, lang, tag) => {
   for (const c of CASES.filter((x) => ['majoun', 'coffee'].includes(x.slug))) { const l = await run(ctx, c, 'en', '-laptop'); ev.laptop.push({ slug: c.slug, sheetWidth: l.groups?.[0]?.sheetWidth ?? null, sheetHeight: l.sheetHeight, share: l.share, scrollable: l.scrollable, groups: l.groups?.map((g) => g.heading) }); }
   await ctx.close();
 }
+{ // the Close button (Kian, 2026-10-08, later: "too big and not properly sized"): the circle, its glyph, its offsets and its tap
+  // target on the item popup and on the section list, English and Persian
+  const ctx = await browser.newContext({ ...devices['iPhone 13'], defaultBrowserType: 'chromium' }); ev.close = {};
+  const look = (sel) => `(() => { const b = document.querySelector('${sel}'), d = b.closest('dialog'); const bb = b.getBoundingClientRect(), db = d.getBoundingClientRect(), svg = b.querySelector('svg').getBoundingClientRect(); const ring = getComputedStyle(b, '::after'); const rtl = document.documentElement.dir === 'rtl'; const row = b.closest('.list-top'); const rb = row && row.getBoundingClientRect(); const hit = (x, y) => document.elementFromPoint(x, y)?.closest('button') === b; return { circle: Math.round(bb.width) + '×' + Math.round(bb.height), glyph: Math.round(svg.width) + '×' + Math.round(svg.height), top: Math.round(bb.top - db.top), start: Math.round(rtl ? db.right - bb.right : bb.left - db.left), ringInset: ring.inset, tapTarget: (Math.round(bb.width) - 2 * parseFloat(ring.inset)) + ' px', tapsOutsideCircle: hit(bb.left - 3, bb.top + bb.height / 2) && hit(bb.right + 3, bb.top + bb.height / 2) && hit(bb.left + bb.width / 2, bb.top - 3) && hit(bb.left + bb.width / 2, bb.bottom + 3), centredInRow: rb ? Math.round((bb.top + bb.height / 2) - (rb.top + rb.height / 2)) : null, rowHeight: rb ? Math.round(rb.height) : null, dir: rtl ? 'rtl' : 'ltr' }; })()`;
+  for (const lang of ['en', 'fa']) {
+    const p = await ctx.newPage(); await p.goto(`${base}/senso`, { waitUntil: 'load' }); await p.waitForFunction(() => document.documentElement.dataset.intro === 'done').catch(() => {});
+    if (await p.evaluate(() => document.documentElement.getAttribute('data-lang')) !== lang) { await p.click('#lang-toggle'); await sleep(300); }
+    await p.evaluate(() => document.querySelector('main section li.item').click()); await sleep(500);
+    ev.close[`sheet-${lang}`] = await p.evaluate(look('#sheet-close'));
+    const sb = await p.evaluate(() => { const r = document.getElementById('sheet').getBoundingClientRect(); return { x: 0, y: Math.max(0, Math.round(r.top)), width: 390, height: 120 }; });
+    await p.screenshot({ path: path.join(out, `close-sheet-${lang}.jpg`), type: 'jpeg', quality: 80, clip: sb });
+    await p.evaluate(() => document.getElementById('sheet').close()); await sleep(300);
+    await p.click('#tabs-list'); await sleep(500);
+    ev.close[`list-${lang}`] = await p.evaluate(look('#list-close'));
+    const lb = await p.evaluate(() => { const r = document.getElementById('sections-dialog').getBoundingClientRect(); return { x: 0, y: Math.max(0, Math.round(r.top)), width: 390, height: 120 }; });
+    await p.screenshot({ path: path.join(out, `close-list-${lang}.jpg`), type: 'jpeg', quality: 80, clip: lb });
+    await p.close();
+  }
+  await ctx.close();
+}
 await browser.close();
 await fs.writeFile(path.join(out, 'measure.json'), JSON.stringify(ev, null, 2));
 console.log(JSON.stringify(ev, null, 2));

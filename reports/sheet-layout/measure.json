@@ -1,6 +1,6 @@
 {
   "base": "http://127.0.0.1:3002",
-  "at": "2026-10-08T18:32:49.071Z",
+  "at": "2026-10-08T18:58:37.405Z",
   "cases": [
     {
       "venue": "senso",
@@ -18,7 +18,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": 12,
-          "topVsCloseBottom": 249
+          "topVsCloseBottom": 257
         },
         "priceSpan": {
           "text": "$21.99",
@@ -83,7 +83,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": 12,
-          "topVsCloseBottom": 249
+          "topVsCloseBottom": 257
         },
         "priceSpan": {
           "text": "$21.99",
@@ -154,7 +154,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": 12,
-          "topVsCloseBottom": 249
+          "topVsCloseBottom": 257
         },
         "priceSpan": {
           "text": "$2.99",
@@ -215,7 +215,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": 12,
-          "topVsCloseBottom": 249
+          "topVsCloseBottom": 257
         },
         "priceSpan": {
           "text": "$2.99",
@@ -282,7 +282,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": 12,
-          "topVsCloseBottom": 249
+          "topVsCloseBottom": 257
         },
         "priceSpan": {
           "text": "$7.99",
@@ -335,7 +335,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": 12,
-          "topVsCloseBottom": 249
+          "topVsCloseBottom": 257
         },
         "priceSpan": {
           "text": "$7.99",
@@ -394,7 +394,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": null,
-          "topVsCloseBottom": 16
+          "topVsCloseBottom": 24
         },
         "priceSpan": {
           "text": "$7 – $120",
@@ -460,7 +460,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": null,
-          "topVsCloseBottom": 16
+          "topVsCloseBottom": 24
         },
         "priceSpan": {
           "text": "$7 – $120",
@@ -532,7 +532,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": 12,
-          "topVsCloseBottom": 249
+          "topVsCloseBottom": 257
         },
         "priceSpan": {
           "text": "$84.99",
@@ -594,7 +594,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": 12,
-          "topVsCloseBottom": 249
+          "topVsCloseBottom": 257
         },
         "priceSpan": {
           "text": "$84.99",
@@ -662,7 +662,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": null,
-          "topVsCloseBottom": 16
+          "topVsCloseBottom": 24
         },
         "priceSpan": {
           "text": "$29.99",
@@ -720,7 +720,7 @@
           "lineHeight": "28.8px",
           "startInset": 16,
           "topVsPhotoBottom": null,
-          "topVsCloseBottom": 16
+          "topVsCloseBottom": 24
         },
         "priceSpan": {
           "text": "$29.99",
@@ -790,5 +790,55 @@
         "Choose Your Side"
       ]
     }
-  ]
+  ],
+  "close": {
+    "sheet-en": {
+      "circle": "36×36",
+      "glyph": "18×18",
+      "top": 12,
+      "start": 12,
+      "ringInset": "-4px",
+      "tapTarget": "44 px",
+      "tapsOutsideCircle": true,
+      "centredInRow": null,
+      "rowHeight": null,
+      "dir": "ltr"
+    },
+    "list-en": {
+      "circle": "36×36",
+      "glyph": "18×18",
+      "top": 10,
+      "start": 12,
+      "ringInset": "-4px",
+      "tapTarget": "44 px",
+      "tapsOutsideCircle": true,
+      "centredInRow": 0,
+      "rowHeight": 56,
+      "dir": "ltr"
+    },
+    "sheet-fa": {
+      "circle": "36×36",
+      "glyph": "18×18",
+      "top": 12,
+      "start": 12,
+      "ringInset": "-4px",
+      "tapTarget": "44 px",
+      "tapsOutsideCircle": true,
+      "centredInRow": null,
+      "rowHeight": null,
+      "dir": "rtl"
+    },
+    "list-fa": {
+      "circle": "36×36",
+      "glyph": "18×18",
+      "top": 10,
+      "start": 12,
+      "ringInset": "-4px",
+      "tapTarget": "44 px",
+      "tapsOutsideCircle": true,
+      "centredInRow": 0,
+      "rowHeight": 56,
+      "dir": "rtl"
+    }
+  }
 }

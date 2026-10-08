@@ -16,7 +16,7 @@ them and the amount on the end side. When an item has no price of its own but si
 literals, no new token (the group bands use the Item popup group's "Photo placeholder" token, relabelled "Photo placeholder
 and group bands" in the Style tab).
 
-## Measured on commit 4851e1a (`measure.mjs` → `measure.json`; Chromium, iPhone 13 viewport 390 × 664 and a 1280 × 800 laptop; scratch copy of the working database with Kian's live Style choices)
+## Measured on commit 4851e1a, re-measured with the Close button change (`measure.mjs` → `measure.json`; Chromium, iPhone 13 viewport 390 × 664 and a 1280 × 800 laptop; scratch copy of the working database with Kian's live Style choices)
 
 Six items that between them carry every kind of content the popup can show, each in English and Persian:
 
@@ -37,3 +37,19 @@ Laptop (1280 × 800): the centred card is 576 px wide and 720 px tall (90 % of t
 (`majoun-en-laptop.jpg`, `coffee-en-laptop.jpg`).
 
 Screenshots: `<item>-<lang>.jpg` at the top of the popup and `<item>-<lang>-end.jpg` scrolled to its end when it scrolls.
+
+## Close button (Kian, 2026-10-08, later: "too big and not properly sized")
+
+Before: a 44 px circle with a 22 px glyph, which nearly filled the section list's 56 px top row. Now a **36 px circle with an
+18 px glyph**, 12 px in from the popup's top and start edges (left in English, right in Persian) and centred in the list's top
+row; a transparent 4 px ring around the circle keeps the tap target at 44 px (a tap 3 px outside the circle still lands on the
+button). Same on the item popup and the section list, both languages.
+
+| measured (`measure.json` → `close`) | item popup en / fa | section list en / fa |
+|---|---|---|
+| circle · glyph | 36 × 36 · 18 × 18 | 36 × 36 · 18 × 18 |
+| from the top · from the start edge | 12 · 12 | 10 · 12 (row 56 px, offset from its centre 0) |
+| tap target (ring inset −4 px) · taps 3 px outside the circle land | 44 px · true | 44 px · true |
+
+Screenshots: `close-sheet-en.jpg`, `close-sheet-fa.jpg`, `close-list-en.jpg`, `close-list-fa.jpg` (the top 120 px of each dialog).
+The six layout cases above were re-measured on the same run with the same figures.

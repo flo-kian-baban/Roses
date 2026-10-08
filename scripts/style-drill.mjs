@@ -280,8 +280,10 @@ await snap(l, 'style-laptop');
     const after = cardsOf(pubGrid.html || await publicHtml('senso'));
     let shownAt = null; const tp = Date.now(); while (Date.now() - tp < 6000) { if (await frameEval((d, id) => !!d.querySelector(`section[data-id="${id}"] ul[data-layout="grid"]`), sec.id)) { shownAt = Date.now() - t0; break; } await sleep(40); }
     const frameGrid = await frameEval((d, id) => { const ul = d.querySelector(`section[data-id="${id}"] ul[data-layout="grid"]`); if (!ul) return null; const cs = getComputedStyle(ul); const cards = [...ul.querySelectorAll('li.item')]; const r = cards.slice(0, 2).map((c) => c.getBoundingClientRect()); return { display: cs.display, columns: cs.gridTemplateColumns.split(' ').length, cards: cards.length, sideBySide: r.length === 2 && Math.abs(r[0].top - r[1].top) < 2 && r[1].left > r[0].right, photoW: Math.round(cards[0].querySelector('img, div[aria-hidden]')?.getBoundingClientRect().width || 0) }; }, sec.id);
-    // the popup opens from a card like from a row
-    const sheet = await frameEval((d, id) => { const card = d.querySelector(`section[data-id="${id}"] li.item.card`); card.click(); const s = d.getElementById('sheet'); const title = s.querySelector('h2 [lang=en]')?.textContent; const open = s.open; s.close(); return { open, title, cardTitle: card.querySelector('h3 [lang=en]')?.textContent }; }, sec.id);
+    // the popup opens from a card like from a row: on the customers' page (in the Style tab's preview every tap is intercepted by design: it picks a region)
+    const cust = await laptop.newPage(); await cust.goto(`${base}/senso`, { waitUntil: 'load' }); await cust.waitForFunction(() => document.documentElement.dataset.intro === 'done');
+    const sheet = await cust.evaluate((id) => { const card = document.querySelector(`section[data-id="${id}"] li.item.card`); card.click(); const s = document.getElementById('sheet'); const title = s.querySelector('h2 [lang=en]')?.textContent; const open = s.open; s.close(); return { open, title, cardTitle: card.querySelector('h3 [lang=en]')?.textContent }; }, sec.id);
+    await cust.close();
     const toast = await l.waitForSelector('[role=status]:has-text("Grid")').then(() => true).catch(() => false);
     const control = await l.getAttribute(`[data-section-layout="${sec.id}"]`, 'data-layout');
     await snap(l, 'section-grid');

@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 // Admin acceptance drill on an iPhone viewport: sign-ins, cookie attributes, PIN creation and revocation (Team), the
 // listing rule (UI switch, JSON API, database constraint, sizes), section shown/hidden and the public page, notes
-// permissions (staff 403, owner and admin edit), venue details API for staff (403), the Style tab for staff.
+// permissions (staff 403, owner and admin edit), venue details API for staff (403) and the owner (Details tab, Undo),
+// the Style route (403 for staff; the owner changes a colour in the Style tab, it reaches the public page, Undo),
+// "+ Add venue" on the default template (tap count, the new page answers), revoked PIN.
 // Editing tasks, Undo and the change record are in scripts/editor-drill.mjs. Screenshots and a timestamped transcript
 // go to --out. Needs the production server at --base and DRILL_ADMIN_EMAIL / DRILL_ADMIN_PASSWORD (+ DRILL_ADMIN_PIN).
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import pg from 'pg';
 import { chromium, devices } from 'playwright';
-import { loadEnv } from './load-env.mjs';
+import { connectDb, loadEnv } from './load-env.mjs';
 
 loadEnv();
 const jpeg = process.argv.includes('--jpeg');
@@ -22,8 +23,10 @@ const transcript = []; const results = [];
 const t0 = Date.now();
 const log = (step, text) => { const l = { at: new Date().toISOString(), ms: Date.now() - t0, step, text: String(text).replaceAll(email, '<admin email>') }; transcript.push(l); console.log(`${l.at} [${step}] ${l.text}`); };
 const check = (step, ok, text) => { results.push({ step, ok, text }); log(step, `${ok ? 'PASS' : 'FAIL'}: ${text}`); };
+const measures = []; const measure = (text) => { measures.push(text); console.log(`MEASURE: ${text}`); };
+const escHtml = (t) => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const db = new pg.Client({ connectionString: process.env.DATABASE_URL }); await db.connect();
+const db = await connectDb('admin-drill', (t) => log('db', t));
 const DEVICE = { ...devices['iPhone 13'], defaultBrowserType: 'chromium' };
 const browser = await chromium.launch();
 let shot = 0; const snap = async (page, name) => { const f = `${String(++shot).padStart(2, '0')}-${name}.${jpeg ? 'jpg' : 'png'}`; await page.screenshot({ path: path.join(out, f), ...(jpeg ? { type: 'jpeg', quality: 70 } : {}) }); log('shot', f); };
@@ -138,7 +141,12 @@ const staffNotesField = await page.$('[role=dialog] input[aria-label="Allergens"
 await snap(page, 'staff-no-notes');
 check('h-staff-ui', !staffNotesField && /set by the owner or an admin/.test(staffText || ''), `staff item panel (Advanced): notes inputs present = ${!!staffNotesField}; explanatory line shown = ${/set by the owner or an admin/.test(staffText || '')}`);
 { const r = await api('/api/admin/item', { action: 'notes', id: item.id, notes: { allergens: 'nuts' } }, staffCookie); check('h-staff-403', r.status === 403, `staff POST action=notes → ${r.status} "${r.json?.error}"`); }
-{ const r = await fetch(`${base}/admin/senso?tab=style`, { headers: { cookie: staffCookie } }); const html = await r.text(); check('h-staff-style', /owner and admin only/.test(html) && !/Built in step 2/.test(html), `staff GET /admin/senso?tab=style → HTTP ${r.status}, refusal page shown: ${/owner and admin only/.test(html)} (the Style tab and its HTTP 403 come with step 2)`); }
+{ const r = await fetch(`${base}/admin/senso?tab=style`, { headers: { cookie: staffCookie } }); const html = await r.text(); check('h-staff-style', /owner and admin only/.test(html) && !/data-style-tab/.test(html), `staff GET /admin/senso?tab=style → HTTP ${r.status}, refusal page shown: ${/owner and admin only/.test(html)}, no Style tab rendered`); }
+// Style route (step 2): staff get 403 on both methods
+{ const r = await fetch(`${base}/api/admin/style?venue=senso`, { headers: { cookie: staffCookie } }); const j = await r.json().catch(() => null);
+  const r2 = await api('/api/admin/style', { action: 'update', venue: 'senso', patch: { accent: '#112233' } }, staffCookie);
+  check('style-staff-403', r.status === 403 && r2.status === 403, `staff GET /api/admin/style?venue=senso → ${r.status} "${j?.error}"; staff POST update → ${r2.status} "${r2.json?.error}"`); }
+{ const r = await fetch(`${base}/admin/new`, { headers: { cookie: staffCookie } }); const html = await r.text(); check('staff-add-venue', /owner and admin only/.test(html) && !/Create venue/.test(html), `staff GET /admin/new → refusal shown: ${/owner and admin only/.test(html)}, no form`); }
 const ownerCtx = await browser.newContext(DEVICE);
 const opage = await loginPage(ownerCtx, 'pin', { venue: 'senso', pin: owner.pin }); await opage.waitForSelector('[data-item]');
 await opage.fill('input[aria-label="Search items"]', 'Turkish Coffee');
@@ -151,8 +159,62 @@ await snap(opage, 'owner-notes-saved');
 check('h-owner', wn.ok && wn.row.notes.allergens.includes('nuts'), `owner saved notes in the panel (each field on its own): ${JSON.stringify(wn.row?.notes)}`);
 { const adminCtx2 = await browser.newContext(DEVICE); const ap = await loginPage(adminCtx2, 'admin', { email, password }); const ac = await cookieOf(adminCtx2); const r = await api('/api/admin/item', { action: 'notes', id: item.id, notes: { allergens: '', halal: null } }, ac); const n2 = (await db.query('select notes from items where id=$1', [item.id])).rows[0].notes; check('h-admin', r.status === 200 && n2.allergens.length === 0 && n2.halal === null, `admin cleared the notes again: ${JSON.stringify(n2)}`); await ap.close(); await adminCtx2.close(); }
 
-// venue details API: staff gets 403 (the Details tab comes with step 2)
+// venue details API: staff gets 403; the owner reads and edits (Details tab), Undo puts it back
 { const r = await api('/api/admin/venue', { action: 'update', id: 'senso', patch: { name: { en: 'Senso Café & Bites', fa: null } } }, staffCookie); check('venue-staff-403', r.status === 403, `staff POST /api/admin/venue → ${r.status} "${r.json?.error}"`); }
+const ownerCookie = await cookieOf(ownerCtx);
+{ const g = await fetch(`${base}/api/admin/venue?id=senso`, { headers: { cookie: ownerCookie } }); const gj = await g.json().catch(() => null);
+  check('details-owner-get', g.status === 200 && gj?.venue?.id === 'senso' && Array.isArray(gj.venue.locations), `owner GET /api/admin/venue?id=senso → ${g.status}; ${gj?.venue?.locations?.length} location(s), logo ${gj?.venue?.logo?.url}, template ${gj?.venue?.template}`);
+  const before = gj.venue.tagline.en;
+  await opage.goto(`${base}/admin/senso?tab=details`); await opage.waitForSelector('[data-details-tab]');
+  let taps = 1; // the Details tab
+  await opage.click('[data-details-tab] input[aria-label="Tagline"]'); taps++;
+  await opage.fill('[data-details-tab] input[aria-label="Tagline"]', 'Drill tagline'); await opage.press('[data-details-tab] input[aria-label="Tagline"]', 'Enter');
+  const w = await waitPublic('senso', (h) => h.includes('content="Drill tagline"'));
+  await snap(opage, 'details-tagline');
+  check('details-owner-save', w.ok, `owner changed the tagline in the Details tab (${taps} taps + typing + Enter) → the public page's description reads "Drill tagline" after ${w.ms} ms`);
+  measure(`Details: change the tagline: ${taps} taps (Details tab, field) + typing + Enter; on the public page in ${w.ms} ms`);
+  await opage.click('[role=status] button:has-text("Undo")'); await opage.waitForSelector('[role=status]:has-text("Undone")');
+  const back = await waitPublic('senso', (h) => h.includes(`content="${escHtml(before)}"`));
+  const row = (await db.query(`select tagline->>'en' as t from venues where id='senso'`)).rows[0].t;
+  check('details-undo', back.ok && row === before, `Undo → tagline "${row}" again, back on the public page after ${back.ms} ms`); }
+// Style tab (step 2): the owner loads the template's options, taps a swatch, the colour reaches the public page, Undo puts it back
+{ const r = await fetch(`${base}/api/admin/style?venue=senso`, { headers: { cookie: ownerCookie } }); const j = await r.json().catch(() => null);
+  const keys = (j?.options || []).map((o) => o.key);
+  check('style-owner-options', r.status === 200 && j?.template?.id === 'senso' && keys.includes('accent') && keys.includes('intro') && keys.includes('photos'), `owner GET /api/admin/style?venue=senso → ${r.status}; template ${j?.template?.id}, options ${keys.join(', ')}; current accent ${j?.values?.accent}`);
+  await opage.goto(`${base}/admin/senso?tab=style`); await opage.waitForSelector('[data-style-option="accent"]');
+  const swatches = opage.locator('[data-style-option="accent"] button[aria-label^="Accent colour: #"]');
+  let pick = null; for (let i = 0; i < await swatches.count(); i++) { const lab = await swatches.nth(i).getAttribute('aria-label'); const c = lab.match(/#[0-9a-f]{6}/i)[0].toLowerCase(); if (c !== j.values.accent) { pick = { i, c }; break; } }
+  const t0 = Date.now(); await swatches.nth(pick.i).click();
+  const w = await waitPublic('senso', (h) => h.includes(`--brand-accent:${pick.c}`));
+  const chosen = (await db.query(`select style from venues where id='senso'`)).rows[0].style;
+  await snap(opage, 'style-accent');
+  check('style-owner-save', w.ok && chosen.accent === pick.c, `owner tapped the swatch ${pick.c} (2 taps: Style tab, swatch) → venues.style ${JSON.stringify(chosen)}; the public page's CSS carries --brand-accent:${pick.c} after ${w.ms} ms (${Date.now() - t0} ms after the tap)`);
+  measure(`Style: change the accent colour: 2 taps (Style tab, swatch); on the public page in ${w.ms} ms`);
+  await opage.click('[role=status] button:has-text("Undo")'); await opage.waitForSelector('[role=status]:has-text("Undone")');
+  const back = await waitPublic('senso', (h) => h.includes(`--brand-accent:${j.values.accent}`));
+  const after = (await db.query(`select style from venues where id='senso'`)).rows[0].style;
+  check('style-undo', back.ok && (after.accent ?? j.values.accent) === j.values.accent, `Undo → --brand-accent:${j.values.accent} back on the public page after ${back.ms} ms; venues.style now ${JSON.stringify(after)}`);
+  // the switch options save too: intro off removes the intro from the page; Undo brings it back
+  await opage.click('[data-style-option="intro"] input[role=switch]');
+  const off = await waitPublic('senso', (h) => !/id="intro"/.test(h));
+  await opage.click('[role=status] button:has-text("Undo")'); await opage.waitForSelector('[role=status]:has-text("Undone")');
+  const on = await waitPublic('senso', (h) => /id="intro"/.test(h));
+  check('style-intro-switch', off.ok && on.ok, `intro switch off → no intro in the public HTML after ${off.ms} ms; Undo → intro back after ${on.ms} ms`); }
+// "+ Add venue" (step 2): admin, from the venue dropdown, on the phone
+{ const actx = await browser.newContext(DEVICE); const ap = await loginPage(actx, 'admin', { email, password }); await ap.waitForSelector('[data-item]');
+  let taps = 0; const tap = async (sel) => { taps++; await ap.click(sel); };
+  await tap('summary[aria-label="Switch venue"]'); await tap('a[href="/admin/new"]'); await ap.waitForSelector('input[aria-label="Venue name"]');
+  await ap.fill('input[aria-label="Venue name"]', 'Drill venue'); const t0 = Date.now(); await tap('button:has-text("Create venue")');
+  await ap.waitForURL((u) => /^\/admin\/drill-venue(-\d+)?$/.test(u.pathname)); const id = new URL(ap.url()).pathname.split('/')[2];
+  await ap.waitForSelector('[data-details-tab]'); const landed = Date.now() - t0;
+  const row = (await db.query(`select template, name->>'en' as name from venues where id=$1`, [id])).rows[0];
+  const secs = (await db.query('select count(*)::int as n from sections where venue_id=$1', [id])).rows[0].n;
+  const tPub = Date.now(); const pub = await fetch(`${base}/${id}`); const html = await pub.text(); const pubMs = Date.now() - tPub;
+  await snap(ap, 'venue-added');
+  const dd = await ap.$$eval('header details a[href^="/admin/"]', (els) => els.map((e) => e.getAttribute('href')));
+  check('add-venue', taps === 3 && row?.template === 'default' && secs === 1 && pub.status === 200 && html.includes('Drill venue') && html.includes('--brand-accent:') && dd.includes(`/admin/${id}`), `+ Add venue: ${taps} taps (venue menu, Add venue, Create) + the name → /admin/${id} (Details tab) ${landed} ms after Create; venues row template=${row?.template}, ${secs} starting section; GET /${id} → ${pub.status} in ${pubMs} ms (default template, name on the page: ${html.includes('Drill venue')}); in the venue dropdown: ${dd.includes(`/admin/${id}`)}`);
+  measure(`+ Add venue: ${taps} taps + the name; Details tab open ${landed} ms after Create; the new page answers ${pub.status} (${pubMs} ms)`);
+  await ap.close(); await actx.close(); }
 
 // revoke drill PINs; revoked staff PIN refused
 { const actx = await browser.newContext(DEVICE); const ap = await loginPage(actx, 'admin', { email, password }); const ac = await cookieOf(actx);
@@ -163,7 +225,7 @@ check('h-owner', wn.ok && wn.row.notes.allergens.includes('nuts'), `owner saved 
 await db.query(`delete from login_failures where key like 'senso:%'`);
 await browser.close(); await db.end();
 const pass = results.every((r) => r.ok);
-await fs.writeFile(path.join(out, 'admin-drill.json'), JSON.stringify({ base, at: new Date().toISOString(), pass, results, transcript }, null, 2));
-await fs.writeFile(path.join(out, 'admin-drill.txt'), [`Admin drill ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length} checks)`, '', ...results.map((r) => `${r.ok ? 'PASS' : 'FAIL'} ${r.step}: ${r.text}`), '', 'Transcript:', ...transcript.map((l) => `${l.at} [${l.step}] ${l.text}`)].join('\n') + '\n');
+await fs.writeFile(path.join(out, 'admin-drill.json'), JSON.stringify({ base, at: new Date().toISOString(), pass, results, measures, transcript }, null, 2));
+await fs.writeFile(path.join(out, 'admin-drill.txt'), [`Admin drill ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length} checks)`, '', 'Measurements:', ...measures.map((m) => `- ${m}`), '', ...results.map((r) => `${r.ok ? 'PASS' : 'FAIL'} ${r.step}: ${r.text}`), '', 'Transcript:', ...transcript.map((l) => `${l.at} [${l.step}] ${l.text}`)].join('\n') + '\n');
 console.log(`ADMIN DRILL ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length})`);
 process.exit(pass ? 0 : 1);

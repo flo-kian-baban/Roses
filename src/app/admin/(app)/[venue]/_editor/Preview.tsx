@@ -6,11 +6,13 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Icon } from '../../../_ui/icons';
 
 export type Focus = { id: string; alt?: string | null } | null;
+// What was tapped inside the preview (step 2, tap-to-edit): an item row, a section heading or the page header.
+export type Pick = { kind: 'item' | 'section' | 'header'; id?: string };
 // iPhone 17 Pro Max (Kian, 2026-10-07): 6.9-inch class screen of 440 × 956 points, aluminium rail, black bezel, Dynamic Island,
 // status bar with the live time, home indicator. The page itself is laid out at 440 points wide, as on the real phone.
 const W = 440, H = 956, RAIL = 5, BEZEL = 13, STATUS = 54, EDGE = RAIL + BEZEL, BTN = 4;
 
-export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClose }: { venueId: string; reloadKey: number; focus: Focus; lang: 'en' | 'fa'; onLang: (l: 'en' | 'fa') => void; frame: boolean; onClose?: () => void }) {
+export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClose, onPick }: { venueId: string; reloadKey: number; focus: Focus; lang: 'en' | 'fa'; onLang: (l: 'en' | 'fa') => void; frame: boolean; onClose?: () => void; onPick?: (p: Pick) => void }) {
   const refA = useRef<HTMLIFrameElement>(null), refB = useRef<HTMLIFrameElement>(null);
   const frames = [refA, refB];
   const [active, setActive] = useState<0 | 1 | null>(null);
@@ -19,6 +21,7 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
   const [loading, setLoading] = useState(true);
   const focusRef = useRef(focus); focusRef.current = focus;
   const langRef = useRef(lang); langRef.current = lang;
+  const pickRef = useRef(onPick); pickRef.current = onPick;
   const scrollRef = useRef(0);
   const isOurs = (d: Document | null | undefined): d is Document => !!d && d.location.pathname === `/${venueId}`;
 
@@ -38,6 +41,7 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
     const d = frames[slot].current?.contentDocument;
     if (!isOurs(d)) return;
     applyLang(d, langRef.current);
+    if (pickRef.current) attachPick(d, (p) => pickRef.current?.(p));
     if (!showFocus(d, focusRef.current)) d.defaultView?.scrollTo({ top: scrollRef.current, behavior: 'auto' });
     activeRef.current = slot; setActive(slot); setLoading(false);
   };
@@ -70,7 +74,7 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
       {(['en', 'fa'] as const).map((l) => <button key={l} type="button" onClick={() => onLang(l)} aria-pressed={lang === l} className={`rounded-full px-3 py-1 text-[13px] font-semibold transition ${lang === l ? 'bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,.12)]' : 'text-ink-muted hover:text-ink'}`}>{l === 'en' ? 'EN' : 'FA'}</button>)}
     </div>
   );
-  const status = <span className="text-[13px] font-medium text-ink-muted" aria-live="polite">Customers see{loading && <span className="text-neutral-400"> · updating…</span>}</span>;
+  const status = <span className="text-[13px] font-medium text-ink-muted" aria-live="polite">{onPick ? 'Tap anything to edit it' : 'Customers see'}{loading && <span className="text-neutral-400"> · updating…</span>}</span>;
 
   if (!frame) {
     return (
@@ -123,8 +127,23 @@ function applyLang(d: Document, lang: 'en' | 'fa') {
 function previewStyle(d: Document) {
   if (d.getElementById('roses-preview-style')) return;
   const st = d.createElement('style'); st.id = 'roses-preview-style';
-  st.textContent = 'html{scrollbar-width:none}html::-webkit-scrollbar{display:none}.roses-preview-focus{box-shadow:inset 0 0 0 2px #ee6a3a;border-radius:12px;animation:roses-pf 2.6s ease-out forwards}@keyframes roses-pf{75%{box-shadow:inset 0 0 0 2px #ee6a3a}100%{box-shadow:inset 0 0 0 2px transparent}}';
+  st.textContent = 'html{scrollbar-width:none}html::-webkit-scrollbar{display:none}.roses-preview-focus{box-shadow:inset 0 0 0 2px #ee6a3a;border-radius:12px;animation:roses-pf 2.6s ease-out forwards}@keyframes roses-pf{75%{box-shadow:inset 0 0 0 2px #ee6a3a}100%{box-shadow:inset 0 0 0 2px transparent}}'
+    + '.roses-pick li.item:hover,.roses-pick main section h2:hover,.roses-pick main>header:hover{outline:2px dashed rgba(238,106,58,.55);outline-offset:3px;border-radius:10px;cursor:pointer}';
   d.head.appendChild(st);
+}
+// Tap-to-edit: one capture-phase click listener on the loaded document. An item row, a section heading or the header
+// is reported to the editor and the page's own handler (the item sheet) does not run. The language toggle keeps working.
+function attachPick(d: Document, onPick: (p: Pick) => void) {
+  if (d.documentElement.classList.contains('roses-pick')) return;
+  d.documentElement.classList.add('roses-pick');
+  d.addEventListener('click', (e) => {
+    const t = e.target as Element | null; if (!t || typeof t.closest !== 'function') return;
+    if (t.closest('#lang-toggle, #tabs, dialog')) return;
+    const li = t.closest('li.item[data-id]'); const h2 = t.closest('main section[data-id] h2'); const header = t.closest('main > header');
+    const pick: Pick | null = li ? { kind: 'item', id: li.getAttribute('data-id') ?? undefined } : h2 ? { kind: 'section', id: h2.closest('section')?.getAttribute('data-id') ?? undefined } : header ? { kind: 'header' } : null;
+    if (!pick) return;
+    e.preventDefault(); e.stopPropagation(); onPick(pick);
+  }, true);
 }
 function showFocus(d: Document, f: Focus): boolean {
   previewStyle(d);

@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 // One-command acceptance suite. Never touches the working database: it copies it (pg_dump → scratch database),
-// points the build, the servers and every drill at the copy, and drops the copy at the end; per-table counts and the
-// newest revision id of the working database are compared before and after. Builds into .next-check (the running
-// server and .next are untouched), starts two servers (3100; 3101 with TRUST_PROXY=1 for the venue-cap test),
-// creates a temporary admin account in the copy, runs every check, and writes reports/checks/<date-time>/report.md
-// next to the raw evidence. Exit code 1 when any check fails.
+// applies pending migrations to the copy, points the build, the servers and every drill at the copy (and their uploads
+// at the run folder), and drops the copy at the end. Isolation is proven, not counted (PM, 2026-10-08): (a) every server
+// and drill process names itself to Postgres and logs the database it connected to, and pg_stat_activity is sampled
+// throughout the run: any suite process on the working database fails the run; (b) the working database holds no row
+// written by a suite account (the temporary check admin, the drill PINs, drill items or sections). Kian using the app
+// during a run cannot break either check. Builds into .next-check (the running server and .next are untouched),
+// starts two servers (3100; 3101 with TRUST_PROXY=1 for the venue-cap test), creates a temporary admin account in the
+// copy, runs every check, and writes reports/checks/<date-time>/report.md next to the raw evidence. Exit code 1 when
+// any check fails; a failed run's folder is kept (its report carries a one-line cause), never deleted.
 //   npm run check
 import fs from 'node:fs';
 import path from 'node:path';
@@ -24,15 +28,22 @@ const base = `http://127.0.0.1:${PORT}`;
 const started = Date.now();
 const results = [];
 const servers = [];
+const SERVER_APPS = { [3100]: 'roses-check:server-3100', [3101]: 'roses-check:server-3101' };
 const log = (s) => console.log(`${new Date().toISOString()} ${s}`);
 const rel = (p) => path.relative(out, p) || '.';
 
 let scratchEnvRef = {};
-function runSync(cmd, args, { env = {}, logFile } = {}) {
-  const r = spawnSync(cmd, args, { env: { ...process.env, ...scratchEnvRef, ...env }, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
-  const text = `$ ${cmd} ${args.join(' ')}\n${r.stdout || ''}${r.stderr || ''}`;
-  if (logFile) fs.writeFileSync(path.join(out, logFile), text);
-  return { status: r.status, stdout: r.stdout || '', stderr: r.stderr || '' };
+// Child processes run asynchronously so the pg_stat_activity sampler below keeps observing while a drill runs.
+function run(cmd, args, { env = {}, logFile } = {}) {
+  return new Promise((resolve) => {
+    const p = spawn(cmd, args, { env: { ...process.env, ...scratchEnvRef, ...env } });
+    let stdout = '', stderr = '';
+    p.stdout.on('data', (d) => { stdout += d; }); p.stderr.on('data', (d) => { stderr += d; });
+    p.on('close', (status) => {
+      if (logFile) fs.writeFileSync(path.join(out, logFile), `$ ${cmd} ${args.join(' ')}\n${stdout}${stderr}`);
+      resolve({ status, stdout, stderr });
+    });
+  });
 }
 async function step(name, fn) {
   const t0 = Date.now(); log(`-- ${name}`);
@@ -44,7 +55,7 @@ const portFree = (port) => new Promise((res) => { const s = net.createServer(); 
 async function waitHttp(url, ms = 90000) { const t = Date.now(); while (Date.now() - t < ms) { try { const r = await fetch(url); if (r.status === 200) return true; } catch { /* not yet */ } await new Promise((r) => setTimeout(r, 500)); } return false; }
 function startServer(port, env, logFile) {
   const fd = fs.openSync(path.join(out, logFile), 'w');
-  const p = spawn('npx', ['next', 'start', '-p', String(port)], { env: { ...process.env, ...scratchEnvRef, NEXT_DIST_DIR: DIST, ...env }, stdio: ['ignore', fd, fd] });
+  const p = spawn('npx', ['next', 'start', '-p', String(port)], { env: { ...process.env, ...scratchEnvRef, NEXT_DIST_DIR: DIST, ROSES_APP_NAME: SERVER_APPS[port], ...env }, stdio: ['ignore', fd, fd] });
   servers.push(p); return p;
 }
 // preconditions
@@ -55,17 +66,9 @@ const scratchName = `${workName}_check_${stamp.toLowerCase().replace(/[^a-z0-9]/
 const scratchUrl = (() => { const u = new URL(WORK_URL); u.pathname = `/${scratchName}`; return u.toString(); })();
 const adminUrl = (() => { const u = new URL(WORK_URL); u.pathname = '/postgres'; return u.toString(); })();
 const CONTAINER = process.env.ROSES_DB_CONTAINER || 'roses-db';
-const work = new pg.Client({ connectionString: WORK_URL });
+const work = new pg.Client({ connectionString: WORK_URL, application_name: 'roses-check:suite-readonly' }); // reads only: the dump and check (b)
 try { await work.connect(); } catch (e) { console.error(`database not reachable: ${e.message} (npm run db:up)`); process.exit(2); }
-const TABLES = ['venues', 'sections', 'items', 'item_sections', 'revisions', 'admins', 'pins', 'login_failures', 'admin_alerts', 'schema_migrations'];
-async function snapshot(client) {
-  const counts = {};
-  for (const t of TABLES) counts[t] = Number((await client.query(`select count(*) from ${t}`)).rows[0].count);
-  const rev = (await client.query('select max(id) as id, max(at) as at from revisions')).rows[0];
-  return { counts, newestRevisionId: rev.id == null ? null : Number(rev.id), newestRevisionAt: rev.at };
-}
-const before = await snapshot(work);
-log(`working database ${workName}: ${TABLES.map((t) => `${t} ${before.counts[t]}`).join(', ')}; newest revision id ${before.newestRevisionId}`);
+log(`working database ${workName} (read only from here: copied, then checked for suite-account rows at the end)`);
 // scratch copy: pg_dump of the working database restored into a new database
 const dumpFile = path.join(out, 'working-db-copy.dump');
 {
@@ -75,8 +78,13 @@ const dumpFile = path.join(out, 'working-db-copy.dump');
   if (d.status !== 0) { console.error(`scratch copy failed: ${d.stderr}`); process.exit(2); }
   log(`scratch database ${scratchName} created from a pg_dump of ${workName} (${fs.statSync(dumpFile).size} bytes)`);
 }
-const db = new pg.Client({ connectionString: scratchUrl }); await db.connect();
-const scratchEnv = { DATABASE_URL: scratchUrl, ROSES_DB: scratchName, BACKUP_DIR: out };
+const db = new pg.Client({ connectionString: scratchUrl, application_name: 'roses-check:suite' }); await db.connect();
+const scratchEnv = { DATABASE_URL: scratchUrl, ROSES_DB: scratchName, BACKUP_DIR: out, UPLOAD_DIR: path.join(out, 'uploads') };
+// Isolation (a), database side: who is connected where, sampled through the whole run (every suite process names itself roses-check:*).
+const seen = new Map(); // "application → database" → count of samples
+const sampler = setInterval(async () => {
+  try { for (const r of (await db.query(`select application_name as app, datname as db from pg_stat_activity where application_name like 'roses-check:%'`)).rows) seen.set(`${r.app} → ${r.db}`, (seen.get(`${r.app} → ${r.db}`) || 0) + 1); } catch { /* between queries */ }
+}, 400);
 if (!fs.existsSync(chromium.executablePath())) { console.error('Playwright Chromium missing: npx playwright install chromium'); process.exit(2); }
 for (const p of [PORT, PROXY_PORT]) if (!(await portFree(p))) { console.error(`port ${p} is in use; stop whatever listens there`); process.exit(2); }
 if (!process.env.CHROME_PATH) { const mac = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'; if (!fs.existsSync(mac) && !spawnSync('which', ['google-chrome']).stdout?.length) process.env.CHROME_PATH = chromium.executablePath(); }
@@ -88,13 +96,18 @@ const adminHash = `$scrypt$N=16384,r=8,p=1$${salt.toString('base64')}$${scryptSy
 const adminPin = String(100000 + Math.floor(Math.random() * 900000));
 const pinSalt = randomBytes(16);
 const adminPinHash = ['$scrypt$N=16384,r=8,p=1', pinSalt.toString('base64'), scryptSync(adminPin, pinSalt, 32, { N: 16384, r: 8, p: 1 }).toString('base64')].join('$');
-const adminId = (await db.query('insert into admins (email, password_hash, pin_hash, name) values ($1,$2,$3,$4) returning id', [adminEmail, adminHash, adminPinHash, 'Check suite'])).rows[0].id;
-const drillEnv = { DRILL_ADMIN_EMAIL: adminEmail, DRILL_ADMIN_PASSWORD: adminPassword, DRILL_ADMIN_PIN: adminPin };
+const SUITE_ADMIN_NAME = 'Check suite', DRILL_PIN_NAMES = ['Drill staff', 'Drill owner', 'Lockout drill (valid PIN)', 'Lockout drill (to be revoked)'];
+const DRILL_ROW_NAMES = ['Drill editor item', 'Drill section', 'Drill section item 1', 'Drill section item 2', 'Drill venue'];
 scratchEnvRef = scratchEnv;
-const commit = runSync('git', ['rev-parse', '--short', 'HEAD']).stdout.trim();
+const commit = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim();
+let adminId = null;
+const drillEnv = { DRILL_ADMIN_EMAIL: adminEmail, DRILL_ADMIN_PASSWORD: adminPassword, DRILL_ADMIN_PIN: adminPin };
 
 try {
-  await step('production build (.next-check)', () => { const r = runSync('npx', ['next', 'build'], { env: { NEXT_DIST_DIR: DIST }, logFile: 'build.log' }); return { pass: r.status === 0, evidence: ['build.log'], note: r.status === 0 ? 'next build ok' : `exit ${r.status}` }; });
+  await step(`migrations on the scratch copy (${scratchName})`, async () => { const r = await run('node', ['scripts/db-migrate.mjs'], { env: { ROSES_APP_NAME: 'roses-check:migrate' }, logFile: 'migrate.log' }); return { pass: r.status === 0, evidence: ['migrate.log'], note: (r.stdout.match(/\d+ migration\(s\) applied, \d+ already present/) || [`exit ${r.status}`])[0] }; });
+  if (!results.at(-1).pass) throw new Error('migrations failed; stopping');
+  adminId = (await db.query('insert into admins (email, password_hash, pin_hash, name) values ($1,$2,$3,$4) returning id', [adminEmail, adminHash, adminPinHash, SUITE_ADMIN_NAME])).rows[0].id;
+  await step('production build (.next-check)', async () => { const r = await run('npx', ['next', 'build'], { env: { NEXT_DIST_DIR: DIST, ROSES_APP_NAME: 'roses-check:build' }, logFile: 'build.log' }); return { pass: r.status === 0, evidence: ['build.log'], note: r.status === 0 ? 'next build ok' : `exit ${r.status}` }; });
   if (!results.at(-1).pass) throw new Error('build failed; stopping');
 
   await step(`servers on ${PORT} and ${PROXY_PORT} (TRUST_PROXY=1)`, async () => {
@@ -106,20 +119,20 @@ try {
 
   for (const venue of ['senso', 'kebab-land']) {
     const vout = path.join(out, venue); fs.mkdirSync(vout, { recursive: true });
-    await step(`public page checks: ${venue} (intro, repeat visit, reduced motion, Persian toggle, images)`, () => {
-      const r = runSync('node', ['scripts/check-page.mjs', venue, '--base', base, '--out', vout, '--jpeg'], { logFile: `${venue}/check-page.log` });
+    await step(`public page checks: ${venue} (intro, repeat visit, reduced motion, Persian toggle, images)`, async () => {
+      const r = await run('node', ['scripts/check-page.mjs', venue, '--base', base, '--out', vout, '--jpeg'], { logFile: `${venue}/check-page.log` });
       const j = JSON.parse(fs.readFileSync(path.join(vout, `${venue}-checks.json`), 'utf8')).checks;
       return { pass: r.status === 0, evidence: [`${venue}/${venue}-checks.json`, `${venue}/${venue}-en.jpg`, `${venue}/${venue}-fa.jpg`, `${venue}/check-page.log`], note: `toggle dir=${j.persianToggle.dir}, Persian headings ${j.persianToggle.visibleFaHeadings}; intro gone at ${j.firstVisit.introDoneAtMs} ms; images ${j.images.loaded}/${j.images.total}` };
     });
   }
-  await step('brand words in both built pages', () => {
-    const r = runSync('node', ['scripts/check-brand-words.mjs', `${DIST}/server/pages/senso.html`, `${DIST}/server/pages/kebab-land.html`], { logFile: 'brand-words.txt' });
+  await step('brand words in both built pages', async () => {
+    const r = await run('node', ['scripts/check-brand-words.mjs', `${DIST}/server/pages/senso.html`, `${DIST}/server/pages/kebab-land.html`], { logFile: 'brand-words.txt' });
     return { pass: r.status === 0, evidence: ['brand-words.txt'], note: r.status === 0 ? 'no "Mealsy" or "Flo" in visible text or metadata' : 'see brand-words.txt' };
   });
   for (const venue of ['senso', 'kebab-land']) {
-    await step(`photo links: ${venue}`, () => {
+    await step(`photo links: ${venue}`, async () => {
       const vout = path.join(out, venue);
-      const r = runSync('node', ['scripts/check-photo-links.mjs', venue, '--out', vout], { logFile: `${venue}/photo-links.log` });
+      const r = await run('node', ['scripts/check-photo-links.mjs', venue, '--out', vout, '--base', base], { logFile: `${venue}/photo-links.log` });
       const j = JSON.parse(fs.readFileSync(path.join(vout, 'photo-links.json'), 'utf8'));
       const rows = j.results || j.targets || j;
       const bad = (Array.isArray(rows) ? rows : []).filter((x) => ![200, 206].includes(x.status));
@@ -127,36 +140,37 @@ try {
     });
   }
   for (const venue of ['senso', 'kebab-land']) {
-    await step(`Lighthouse mobile ×3: ${venue}`, () => {
+    await step(`Lighthouse mobile ×3: ${venue}`, async () => {
       const vout = path.join(out, venue);
-      const r = runSync('node', ['scripts/check-lighthouse.mjs', `${base}/${venue}`, '--runs', '3', '--out', vout], { logFile: `${venue}/lighthouse.log` });
+      const r = await run('node', ['scripts/check-lighthouse.mjs', `${base}/${venue}`, '--runs', '3', '--out', vout], { logFile: `${venue}/lighthouse.log` });
       const s = JSON.parse(fs.readFileSync(path.join(vout, 'lighthouse-summary.json'), 'utf8'));
       const worst = Math.max(...s.runs.map((x) => x.lcpMs));
       return { pass: r.status === 0 && s.runs.length === 3 && worst <= 2500, evidence: [`${venue}/lighthouse-summary.json`, `${venue}/lighthouse.log`], note: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms, performance ${s.runs.map((x) => x.performance).join(' / ')} (target ≤ 2500, local estimate)` };
     });
   }
-  await step('admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, revoked PIN)', () => {
-    const r = runSync('node', ['scripts/admin-drill.mjs', '--base', base, '--out', path.join(out, 'admin'), '--jpeg'], { env: drillEnv, logFile: 'admin/admin-drill.log' });
+  await step('admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)', async () => {
+    const r = await run('node', ['scripts/admin-drill.mjs', '--base', base, '--out', path.join(out, 'admin'), '--jpeg'], { env: drillEnv, logFile: 'admin/admin-drill.log' });
     const m = (r.stdout.match(/ADMIN DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || []);
-    return { pass: r.status === 0, evidence: ['admin/admin-drill.txt', 'admin/admin-drill.json', 'admin/*.jpg'], note: m[0] || `exit ${r.status}` };
+    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
+    return { pass: r.status === 0, evidence: ['admin/admin-drill.txt', 'admin/admin-drill.json', 'admin/*.jpg'], note: `${m[0] || `exit ${r.status}`}; ${measures.join('; ')}` };
   });
-  await step('lockout: 5 per venue + address, 50 per hour per venue with alert and unlock, revoked PIN', () => {
-    const r = runSync('node', ['scripts/lockout-drill.mjs', '--base4', base, '--base6', `http://[::1]:${PORT}`, '--proxyBase', `http://127.0.0.1:${PROXY_PORT}`, '--out', out], { env: drillEnv, logFile: 'lockout-drill.log' });
+  await step('lockout: 5 per venue + address, 50 per hour per venue with alert and unlock, revoked PIN', async () => {
+    const r = await run('node', ['scripts/lockout-drill.mjs', '--base4', base, '--base6', `http://[::1]:${PORT}`, '--proxyBase', `http://127.0.0.1:${PROXY_PORT}`, '--out', out], { env: drillEnv, logFile: 'lockout-drill.log' });
     return { pass: r.status === 0, evidence: ['lockout-drill.txt'], note: (r.stdout.match(/LOCKOUT DRILL (PASS|FAIL)/) || [])[0] || `exit ${r.status}` };
   });
-  await step('revalidation: a price changed in the editor reaches the public page within 10 s, then Undo', () => {
-    const r = runSync('node', ['scripts/revalidation-drill.mjs', '--base', base, '--venue', 'senso', '--item', 'Turkish Coffee', '--out', out], { env: drillEnv, logFile: 'revalidation-drill.log' });
+  await step('revalidation: a price changed in the editor reaches the public page within 10 s, then Undo', async () => {
+    const r = await run('node', ['scripts/revalidation-drill.mjs', '--base', base, '--venue', 'senso', '--item', 'Turkish Coffee', '--out', out], { env: drillEnv, logFile: 'revalidation-drill.log' });
     const m = r.stdout.match(/visible on the public page (\d+) ms after Save/); const u = r.stdout.match(/shows \$[\d.]+ again (\d+) ms after the tap/);
     return { pass: r.status === 0, evidence: ['revalidation-log.txt'], note: m ? `${m[1]} ms after Enter${u ? `; Undo back on the page ${u[1]} ms after the tap` : ''}` : `exit ${r.status}` };
   });
-  await step('page editor drill (task targets with tap counts, preview ≤ 1 s, reorder on the public page, Undo on the public page, change record, no preview script)', () => {
-    const r = runSync('node', ['scripts/editor-drill.mjs', '--base', base, '--out', path.join(out, 'editor'), '--dist', DIST, '--jpeg'], { env: drillEnv, logFile: 'editor/editor-drill.log' });
+  await step('page editor drill (task targets with tap counts, preview ≤ 1 s, reorder on the public page, Undo on the public page, change record, no preview script, drag-and-drop of items and sections, tap-to-edit in the preview, photo upload, section delete with move or delete and Undo, items in no section in the Needs-attention bar)', async () => {
+    const r = await run('node', ['scripts/editor-drill.mjs', '--base', base, '--out', path.join(out, 'editor'), '--dist', DIST, '--jpeg'], { env: drillEnv, logFile: 'editor/editor-drill.log' });
     const m = (r.stdout.match(/EDITOR DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, evidence: ['editor/editor-drill.txt', 'editor/editor-drill.json', 'editor/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   });
-  await step('backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)', () => {
-    const r = runSync('bash', ['scripts/backup-drill.sh', path.join(out, 'backup-drill.txt')], { logFile: 'backup-drill.log' }); // drills the scratch copy (ROSES_DB), dump into the run folder
+  await step('backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)', async () => {
+    const r = await run('bash', ['scripts/backup-drill.sh', path.join(out, 'backup-drill.txt')], { logFile: 'backup-drill.log' }); // drills the scratch copy (ROSES_DB), dump into the run folder
     const t = fs.existsSync(path.join(out, 'backup-drill.txt')) ? fs.readFileSync(path.join(out, 'backup-drill.txt'), 'utf8') : '';
     const equal = (t.match(/ equal$/gm) || []).length, different = (t.match(/DIFFERENT/g) || []).length, recovered = /after recovery: items with that id = 1, placements = 1/.test(t);
     return { pass: r.status === 0 && different === 0 && recovered, evidence: ['backup-drill.txt'], note: `${equal} table comparisons equal, ${different} different; item recovered: ${recovered}` };
@@ -164,8 +178,49 @@ try {
 } catch (e) {
   log(`suite stopped: ${e.message}`);
 } finally {
+  clearInterval(sampler);
   for (const p of servers) { try { p.kill('SIGTERM'); } catch { /* gone */ } }
+  await new Promise((r) => setTimeout(r, 600));
+  // (a) which database did every process use? From each process's own log line and from pg_stat_activity samples.
+  const processes = [];
+  const read = (f) => (fs.existsSync(path.join(out, f)) ? fs.readFileSync(path.join(out, f), 'utf8') : '');
+  for (const [port, app] of Object.entries(SERVER_APPS)) {
+    const names = [...read(`server-${port}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]);
+    processes.push({ process: app, source: `server-${port}.log`, databases: [...new Set(names)] });
+  }
+  for (const [name, file] of [['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
+    if (!fs.existsSync(path.join(out, file))) continue;
+    processes.push({ process: `roses-check:${name}`, source: file, databases: [...new Set([...read(file).matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))] });
+  }
+  if (fs.existsSync(path.join(out, 'backup-drill.txt'))) processes.push({ process: 'backup-drill.sh', source: 'backup-drill.txt', databases: [...new Set([...read('backup-drill.txt').matchAll(/— database (\S+)/g)].map((m) => m[1]))] });
+  processes.push({ process: 'roses-check:migrate', source: 'migrate.log (DATABASE_URL)', databases: [scratchName] }, { process: 'roses-check:build', source: 'build.log (DATABASE_URL)', databases: [scratchName] });
+  const samples = [...seen.entries()].map(([k, n]) => ({ connection: k, samples: n })).sort((a, b) => a.connection.localeCompare(b.connection));
+  const wrongProcess = processes.filter((p) => p.databases.length === 0 || p.databases.some((d) => d !== scratchName));
+  const wrongSample = samples.filter((x) => !x.connection.endsWith(`→ ${scratchName}`) && !x.connection.startsWith('roses-check:suite-readonly →'));
+  const mustSee = ['roses-check:server-3100', 'roses-check:server-3101', 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
+  const unseen = mustSee.filter((a) => !samples.some((x) => x.connection.startsWith(`${a} →`)));
+  const passA = wrongProcess.length === 0 && wrongSample.length === 0 && processes.length >= 8 && unseen.length === 0;
+  fs.writeFileSync(path.join(out, 'isolation.json'), JSON.stringify({ scratch: scratchName, working: workName, processes, pgStatActivitySamples: samples, pass: passA }, null, 2));
+  results.push({ name: `isolation (a): every server and drill process connected to the scratch database ${scratchName} (own log line per process + pg_stat_activity sampled every 400 ms)`, pass: passA, ms: 0, evidence: ['isolation.json', 'server-3100.log', 'server-3101.log', '*/…-drill.log'], note: passA ? `${processes.length} processes, every one on the scratch copy by its own log; pg_stat_activity: ${samples.length} distinct connections seen over ${samples.reduce((n, x) => n + x.samples, 0)} samples (servers and drills included), none on ${workName}` : `WRONG: ${wrongProcess.map((p) => `${p.process} → ${p.databases.join(',') || 'no log line'}`).join('; ')} ${wrongSample.map((x) => x.connection).join('; ')} ${unseen.length ? `never sampled: ${unseen.join(', ')}` : ''}` });
+  log(`   ${passA ? 'PASS' : 'FAIL'} isolation (a)`);
+  // (b) the working database holds no row written by a suite account.
+  let b = null;
+  try {
+    const q = async (sql, params) => Number((await work.query(sql, params)).rows[0].n);
+    b = {
+      admins: await q(`select count(*) as n from admins where name = $1 or email like 'check-suite-%@localhost' or id = $2`, [SUITE_ADMIN_NAME, adminId]),
+      pins: await q(`select count(*) as n from pins where name = any($1)`, [DRILL_PIN_NAMES]),
+      revisionsBySuiteAccounts: await q(`select count(*) as n from revisions where by->>'name' = any($1) or by->>'id' = $2`, [[SUITE_ADMIN_NAME, ...DRILL_PIN_NAMES], adminId]),
+      drillItemsOrSections: await q(`select (select count(*) from items where name->>'en' = any($1)) + (select count(*) from sections where name->>'en' = any($1)) + (select count(*) from venues where name->>'en' = any($1)) as n`, [DRILL_ROW_NAMES]),
+      lockoutDrillFailureRows: await q(`select count(*) as n from login_failures where key like '%:203.0.113.%'`, []),
+    };
+  } catch (e) { b = { error: e.message }; }
   await db.end().catch(() => {});
+  await work.end().catch(() => {});
+  const passB = !!b && !b.error && Object.values(b).every((n) => n === 0);
+  fs.writeFileSync(path.join(out, 'working-db-suite-rows.json'), JSON.stringify({ database: workName, checkedAt: new Date().toISOString(), suiteAccounts: { admin: SUITE_ADMIN_NAME, pins: DRILL_PIN_NAMES, rows: DRILL_ROW_NAMES }, counts: b, pass: passB }, null, 2));
+  results.push({ name: `isolation (b): the working database ${workName} holds no row written by a suite account (admins, PINs, revisions, drill items/sections/venues, lockout-drill failure rows)`, pass: passB, ms: 0, evidence: ['working-db-suite-rows.json'], note: b?.error ? `error: ${b.error}` : Object.entries(b).map(([k, v]) => `${k} ${v}`).join(', ') });
+  log(`   ${passB ? 'PASS' : 'FAIL'} isolation (b)`);
   // drop the scratch copy (and the backup drill's scratch, if a failure left it behind)
   try {
     const pgAdmin = new pg.Client({ connectionString: adminUrl }); await pgAdmin.connect();
@@ -176,12 +231,6 @@ try {
     await pgAdmin.end();
     log(`scratch database ${scratchName} dropped`);
   } catch (e) { log(`could not drop the scratch database: ${e.message}`); }
-  const after = await snapshot(work).catch((e) => ({ error: e.message }));
-  await work.end().catch(() => {});
-  const same = !after.error && JSON.stringify(after) === JSON.stringify(before);
-  fs.writeFileSync(path.join(out, 'working-db-before-after.json'), JSON.stringify({ database: workName, before, after, identical: same }, null, 2));
-  results.push({ name: `working database untouched (${workName}: per-table counts and newest revision id identical before and after)`, pass: same, ms: 0, evidence: ['working-db-before-after.json', 'working-db-copy.dump (gitignored)'], note: same ? `${TABLES.map((t) => `${t} ${before.counts[t]}`).join(', ')}; newest revision id ${before.newestRevisionId}` : `before ${JSON.stringify(before)} after ${JSON.stringify(after)}` });
-  log(`   ${same ? 'PASS' : 'FAIL'} working database untouched`);
 }
 
 const pass = results.length > 0 && results.every((r) => r.pass);
@@ -189,9 +238,10 @@ const lines = [
   `# Check suite — ${stamp.replace('T', ' ').replace(/-(\d\d)-(\d\d)Z$/, ':$1:$2Z')}`, '',
   `Commit ${commit} · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · servers ${PORT} and ${PROXY_PORT} · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
   `**${pass ? 'PASS' : 'FAIL'}** — ${results.filter((r) => r.pass).length} of ${results.length} checks passed.`, '',
+  ...(pass ? [] : [`Cause: ${(() => { const f = results.find((r) => !r.pass); return `${f.name} — ${(f.note || '').replace(/\s+/g, ' ').slice(0, 300)}`; })()}`, '', 'This failed run is kept on purpose (PM, 2026-10-08): the folder is never deleted, even when a re-run passes.', '']),
   '| Check | Result | Time | Evidence | Notes |', '| --- | --- | --- | --- | --- |',
   ...results.map((r) => `| ${r.name} | ${r.pass ? 'PASS' : 'FAIL'} | ${(r.ms / 1000).toFixed(1)} s | ${r.evidence.map((e) => `\`${e}\``).join(', ')} | ${r.note.replace(/\|/g, '\\|')} |`), '',
-  'Every path is relative to this folder. Screenshots, full Lighthouse JSON, the first HTML responses and the dumps stay on the machine that ran the suite (gitignored); report.md, summary.json, the check JSON files and the text logs are committed. Every drill ran against the scratch copy of the working database, which was dropped afterwards; the working database itself was only read (counts before and after, last row). Lighthouse numbers are local estimates.', '',
+  'Every path is relative to this folder. Screenshots, full Lighthouse JSON, the first HTML responses, uploads and the dumps stay on the machine that ran the suite (gitignored); report.md, summary.json, the check JSON files and the text logs are committed. Every server and drill ran against the scratch copy of the working database (isolation.json lists the database each process connected to, from its own log and from pg_stat_activity), which was dropped afterwards; the working database itself was only read (the dump, then the search for suite-account rows in working-db-suite-rows.json). Lighthouse numbers are local estimates.', '',
 ];
 fs.writeFileSync(path.join(out, 'report.md'), lines.join('\n'));
 fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, pass, results }, null, 2));

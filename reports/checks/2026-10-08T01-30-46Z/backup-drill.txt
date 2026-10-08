@@ -1,0 +1,52 @@
+# Backup and restore drill — 2026-10-08T01:32:58Z — database roses_check_20261008t013046z
+
+## 1. db-backup.sh
+backup written: /Users/kianbaban/Roses/reports/checks/2026-10-08T01-30-46Z/roses_check_20261008t013046z-20261008T013258Z.dump (96462 bytes)
+tables with data in the dump: 10
+dump: /Users/kianbaban/Roses/reports/checks/2026-10-08T01-30-46Z/roses_check_20261008t013046z-20261008T013258Z.dump (96462 bytes)
+
+## 2. restore into the scratch database roses_check_20261008t013046z_restore_test
+CREATE DATABASE
+restored /Users/kianbaban/Roses/reports/checks/2026-10-08T01-30-46Z/roses_check_20261008t013046z-20261008T013258Z.dump into database 'roses_check_20261008t013046z_restore_test'
+       t       | count 
+---------------+-------
+ admins        |     2
+ items         |   387
+ item_sections |   388
+ pins          |     4
+ revisions     |   243
+ sections      |    34
+ venues        |     3
+(7 rows)
+
+
+## 3. per-table row counts, roses_check_20261008t013046z vs restored
+venues             live=3      restored=3      equal
+sections           live=34     restored=34     equal
+items              live=387    restored=387    equal
+item_sections      live=388    restored=388    equal
+revisions          live=243    restored=243    equal
+admins             live=2      restored=2      equal
+pins               live=4      restored=4      equal
+login_failures     live=0      restored=0      equal
+admin_alerts       live=1      restored=1      equal
+schema_migrations  live=4      restored=4      equal
+
+## 4. delete an item on purpose (SQL, bypassing the admin) and recover it from the dump
+item: Soft Drink (kebab-land) id=4c7a496e-19e8-4635-a605-9b304aa818fd; placements before: 1
+DELETE 1
+after delete: items with that id = 0, placements = 0
+COPY 1
+COPY 1
+after recovery: items with that id = 1, placements = 1, name = Soft Drink, price = 5.00
+
+## 5. counts equal again?
+items              live=387    restored=387    equal
+item_sections      live=388    restored=388    equal
+
+## 6. drop the scratch database
+DROP DATABASE
+
+dumps in /Users/kianbaban/Roses/reports/checks/2026-10-08T01-30-46Z:
+-rw-r--r--  1 kianbaban  staff  96462 Oct  7 21:32 /Users/kianbaban/Roses/reports/checks/2026-10-08T01-30-46Z/roses_check_20261008t013046z-20261008T013258Z.dump
+-rw-r--r--  1 kianbaban  staff  89242 Oct  7 21:30 /Users/kianbaban/Roses/reports/checks/2026-10-08T01-30-46Z/working-db-copy.dump

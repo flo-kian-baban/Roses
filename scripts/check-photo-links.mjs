@@ -1,23 +1,22 @@
 #!/usr/bin/env node
 // Requests every photo URL stored in the database (listed and unlisted items) plus the venue logo source,
 // with HEAD (GET fallback on non-200), 6 at a time. Writes reports/<dir>/photo-links.{json,md}.
-//   node scripts/check-photo-links.mjs senso [--out reports/checkpoint-a2]
+//   node scripts/check-photo-links.mjs senso [--out reports/checkpoint-a2] [--base http://127.0.0.1:3100]   (--base: where uploaded photos, /uploads/…, are fetched)
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import pg from 'pg';
-import { loadEnv } from './load-env.mjs';
+import { connectDb, loadEnv } from './load-env.mjs';
 
 loadEnv();
 const [venue, ...rest] = process.argv.slice(2);
 const args = Object.fromEntries(rest.map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
 const out = path.resolve(args.out || 'reports/checkpoint-a2');
 await fs.mkdir(out, { recursive: true });
-const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
-await client.connect();
+const client = await connectDb('photo-links');
 const items = (await client.query(`select i.name->>'en' as item, i.listed, i.photo->>'url' as url from items i where i.venue_id = $1 and i.photo is not null order by i.listed desc, 1`, [venue])).rows;
 const venueRow = (await client.query('select brand from venues where id = $1', [venue])).rows[0];
 await client.end();
-const targets = items.map((r) => ({ item: r.item, listed: r.listed, url: r.url }));
+const base = (args.base || '').replace(/\/$/, '');
+const targets = items.map((r) => ({ item: r.item, listed: r.listed, url: r.url.startsWith('/') ? (base ? base + r.url : r.url) : r.url, uploaded: r.url.startsWith('/uploads/') }));
 const logo = venueRow?.brand?.logo;
 if (logo?.sourceUrl) targets.push({ item: '(venue logo source)', listed: true, url: logo.sourceUrl });
 else if (logo?.url && /^https?:/.test(logo.url)) targets.push({ item: '(venue logo)', listed: true, url: logo.url });

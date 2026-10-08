@@ -1,5 +1,5 @@
 // Items, JSON (the page editor). Every action answers { ok, revisions: [record ids], item? } and regenerates the public page.
-//   create  { action:'create', venue, section_id, name:{en,fa}, price, photo_url }   shown when it has a price
+//   create  { action:'create', venue, section_id, name:{en,fa}, price, photo:{url,key,width,height} | photo_url }   shown when it has a price
 //   update  { action:'update', id, patch:{ name, description, price, variants, add_ons, components, serves, photo:{url,alt}, listed, section_ids } }
 //   notes   { action:'notes', id, notes }                                            owner or admin only (403)
 //   move    { action:'move', id, section_id, index }                                 order within one section
@@ -22,7 +22,7 @@ function readPatch(p: JsonBody): ItemPatch {
   if ('variants' in p) out.variants = arr(p.variants).map((r): Variant => ({ label: biOf(r.label), price: moneyOf(r.price) })).filter((v) => v.label.en || v.label.fa);
   if ('add_ons' in p) out.add_ons = arr(p.add_ons).map((r): AddOn => ({ group: biOf(r.group), label: biOf(r.label), price: moneyOf(r.price) ?? 0, required: boolOf(r.required) })).filter((a) => a.label.en || a.label.fa);
   if ('components' in p) out.components = arr(p.components).map((r): Component => ({ ...r, item_id: str(r.item_id), label: biOf(r.label), qty: Math.max(1, Math.trunc(Number(r.qty) || 1)) })).filter((c) => c.label.en || c.label.fa);
-  if ('photo' in p) { const ph = (p.photo && typeof p.photo === 'object' ? p.photo : {}) as JsonBody; out.photo = photoOf(ph.url, biOf(ph.alt)); }
+  if ('photo' in p) out.photo = photoOf(p.photo, { en: null, fa: null });
   if ('section_ids' in p) out.section_ids = Array.isArray(p.section_ids) ? p.section_ids.map(idOf) : [];
   return out;
 }
@@ -40,7 +40,7 @@ export default jsonRoute(async ({ res, session, body }) => {
     if (!canEditVenue(session, venueId)) throw new ApiError(403, 'no access to this venue');
     const name = biOf(body.name); if (!name.en) throw new ApiError(400, 'The name is required');
     const price = moneyOf(body.price);
-    const r = await createItem(venueId, { name, price, photo: photoOf(body.photo_url, { en: name.en, fa: name.fa }), listed: price != null, section_ids: [sectionId] }, by);
+    const r = await createItem(venueId, { name, price, photo: photoOf(body.photo ?? body.photo_url, { en: name.en, fa: name.fa }), listed: price != null, section_ids: [sectionId] }, by);
     if (!r.ok) throw new ApiError(400, r.error);
     await revalidateVenue(res, venueId);
     return { revisions: [r.revision], item: await editorItem(r.id) };

@@ -64,11 +64,16 @@ async function undoOne(client: PoolClient, r: Revision, by: By): Promise<Result>
     const cur = (await client.query<SectionSnapshot>('select name, note, position, listed, fa_draft from sections where id = $1', [r.row_id])).rows[0] ?? null;
     if (cur) cur.items = await sectionOrder(client, r.row_id);
     if (!target) { if (cur) await client.query('delete from sections where id = $1', [r.row_id]); }
-    else await applySectionSnapshot(client, r.venue_id, r.row_id, target as SectionSnapshot, by);
+    else {
+      const snap = target as SectionSnapshot;
+      await applySectionSnapshot(client, r.venue_id, r.row_id, snap, by);
+      // a delete that moved the items elsewhere: take those placements back (only the ones the delete added)
+      if (r.action === 'delete' && snap.moved_to?.item_ids?.length) await client.query('delete from item_sections where section_id = $1 and item_id = any($2)', [snap.moved_to.section_id, snap.moved_to.item_ids]);
+    }
     return { ok: true, id: r.row_id, revision: await rec(cur, target) };
   }
-  const cur = (await client.query('select name, tagline, locations, settings from venues where id = $1', [r.row_id])).rows[0] ?? null;
-  if (!target) return { ok: false, error: 'nothing to undo' };
+  const cur = (await client.query('select name, tagline, locations, settings, brand, style from venues where id = $1', [r.row_id])).rows[0] ?? null;
+  if (!target) return { ok: false, error: 'Adding a venue cannot be undone from here' };
   await applyVenueSnapshot(client, r.row_id, target as VenueSnapshot, by);
   return { ok: true, id: r.row_id, revision: await rec(cur, target) };
 }

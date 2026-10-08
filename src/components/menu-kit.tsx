@@ -41,7 +41,7 @@ function PriceLine({ item, big }: { item: Item; big?: boolean }) {
 
 // One row of the list. The whole row opens the sheet; the sheet's content travels in an inert <template> next to it,
 // so the page carries each item once and images in the template never load until the sheet opens.
-export function ItemRow({ item, eager }: { item: Item; eager: boolean }) {
+export function ItemRow({ item, eager, photos = true }: { item: Item; eager: boolean; photos?: boolean }) {
   const groups = new Map<string, Item['add_ons']>();
   for (const a of item.add_ons) { const k = a.group.en ?? ''; groups.set(k, [...(groups.get(k) ?? []), a]); }
   return (
@@ -52,7 +52,7 @@ export function ItemRow({ item, eager }: { item: Item; eager: boolean }) {
         <Bi as="p" text={item.description} className="mt-1 line-clamp-2 text-[14px] leading-snug text-[#6b6b6b]" />
         {item.serves && <p className="mt-2"><Serves item={item} /></p>}
       </div>
-      {item.photo && (
+      {photos && item.photo && (
         <img src={item.photo.url} alt={item.photo.alt?.en ?? ''} width={96} height={96} loading={eager ? 'eager' : 'lazy'} fetchPriority={eager ? 'high' : undefined} decoding="async" className="h-24 w-24 shrink-0 rounded-lg bg-[#f3f3f3] object-cover" style={{ aspectRatio: '1 / 1' }} />
       )}
       <template className="detail">

@@ -3,14 +3,14 @@
 // shown only if it has a price, or every size has a price.
 import type { Pool, PoolClient } from 'pg';
 import { pool } from '@/lib/db';
-import type { Bi, Variant, AddOn, Component, Notes, Placement, EditorItem } from '@/lib/types';
+import type { Bi, Variant, AddOn, Component, Notes, Placement, EditorItem, Photo } from '@/lib/types';
 type Q = Pool | PoolClient;
 import { recordRevision, type By } from './revisions';
 
 export type { Notes, Placement };
 export type ItemRow = {
   id: string; venue_id: string; name: Bi; description: Bi; price: string | null; variants: Variant[]; add_ons: AddOn[]; components: Component[];
-  serves: string | null; photo: { url: string; alt: Bi } | null; notes: Notes; listed: boolean; fa_draft: string[]; updated_at: string; updated_by: By | null; import_key: string | null;
+  serves: string | null; photo: Photo | null; notes: Notes; listed: boolean; fa_draft: string[]; updated_at: string; updated_by: By | null; import_key: string | null;
 };
 export type ItemSnapshot = Omit<ItemRow, 'id' | 'venue_id' | 'updated_at' | 'updated_by' | 'import_key' | 'price'> & { price: string | number | null; placements: Placement[] };
 export type ItemPatch = Partial<Pick<ItemRow, 'name' | 'description' | 'variants' | 'add_ons' | 'components' | 'serves' | 'photo' | 'notes' | 'listed'>> & { price?: string | number | null; section_ids?: string[] };
@@ -47,7 +47,7 @@ export function toEditorItem(row: ItemRow & { placements: Placement[] }): Editor
 }
 export async function editorItem(id: string): Promise<EditorItem | null> { const r = await getItem(id); return r ? toEditorItem(r) : null; }
 
-async function snapshot(client: Q, id: string): Promise<ItemSnapshot | null> {
+export async function itemSnapshot(client: Q, id: string): Promise<ItemSnapshot | null> {
   const r = await client.query<ItemRow>(`select ${COLS} from items where id = $1`, [id]);
   if (!r.rows[0]) return null;
   const { id: _i, venue_id: _v, updated_at: _a, updated_by: _b, import_key: _k, ...rest } = r.rows[0];
@@ -77,7 +77,7 @@ export async function updateItem(id: string, patch: ItemPatch, by: By): Promise<
     await client.query('begin');
     const row = (await client.query<ItemRow>(`select ${COLS} from items where id = $1 for update`, [id])).rows[0];
     if (!row) { await client.query('rollback'); return { ok: false, error: 'item not found' }; }
-    const before = (await snapshot(client, id))!;
+    const before = (await itemSnapshot(client, id))!;
     const { section_ids: _s, ...fields } = patch; void _s;
     const next: ItemSnapshot = { ...before, ...stripUndefined(fields) } as ItemSnapshot;
     if (patch.section_ids) {
@@ -141,7 +141,7 @@ export async function deleteItem(id: string, by: By): Promise<Result> {
     await client.query('begin');
     const row = (await client.query<ItemRow>(`select venue_id from items where id = $1 for update`, [id])).rows[0];
     if (!row) { await client.query('rollback'); return { ok: false, error: 'item not found' }; }
-    const before = (await snapshot(client, id))!;
+    const before = (await itemSnapshot(client, id))!;
     await client.query('delete from items where id = $1', [id]); // item_sections rows go with it (on delete cascade)
     const revision = await recordRevision(client, { venueId: row.venue_id, table: 'items', rowId: id, action: 'delete', before, after: null, by });
     await client.query('commit');

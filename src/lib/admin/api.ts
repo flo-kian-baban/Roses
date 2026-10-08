@@ -4,7 +4,7 @@
 //   jsonRoute() the page editor (JSON in, JSON out): { ok: true, ... } or { ok: false, error } with 400/401/403.
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { sessionFromRequest, type Session } from './auth';
-import type { Bi } from '@/lib/types';
+import type { Bi, Photo } from '@/lib/types';
 
 export type Body = Record<string, string>;
 export type Ctx = { req: NextApiRequest; res: NextApiResponse; session: Session | null; body: Body; back: string };
@@ -45,13 +45,15 @@ export class ApiError extends Error { status: number; constructor(status: number
 export type JsonBody = Record<string, unknown>;
 export type JsonCtx = { req: NextApiRequest; res: NextApiResponse; session: Session; body: JsonBody };
 
-export function jsonRoute(fn: (ctx: JsonCtx) => Promise<Record<string, unknown> | void>) {
+// POST by default; `get: true` also answers GET with the query string as the body (the Style tab loads its options that way).
+export function jsonRoute(fn: (ctx: JsonCtx) => Promise<Record<string, unknown> | void>, opts: { get?: boolean } = {}) {
+  const allow = opts.get ? 'GET, POST' : 'POST';
   return async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.setHeader('Cache-Control', 'no-store');
-    if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); res.status(405).json({ ok: false, error: 'POST only' }); return; }
+    if (req.method !== 'POST' && !(opts.get && req.method === 'GET')) { res.setHeader('Allow', allow); res.status(405).json({ ok: false, error: `${allow} only` }); return; }
     const session = await sessionFromRequest(req);
     if (!session) { res.status(401).json({ ok: false, error: 'not signed in' }); return; }
-    const body = (req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {}) as JsonBody;
+    const body = (req.method === 'GET' ? { ...req.query } : req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {}) as JsonBody;
     try { const out = await fn({ req, res, session, body }); res.status(200).json({ ok: true, ...(out ?? {}) }); }
     catch (e) {
       const status = e instanceof ApiError ? e.status : 400;
@@ -72,8 +74,15 @@ export const moneyOf = (v: unknown): number | null => {
   return Math.round(n * 100) / 100;
 };
 export const boolOf = (v: unknown): boolean => v === true || v === 1 || v === '1' || v === 'on' || v === 'true';
-export const photoOf = (url: unknown, alt: Bi): { url: string; alt: Bi } | null => {
-  const u = str(url); if (!u) return null;
-  if (!/^https?:\/\/\S+$/i.test(u) && !u.startsWith('/')) throw new ApiError(400, 'the photo must be a web address (https://…)');
-  return { url: u, alt };
+// A photo: a linked web address (imported data) or an uploaded file (/uploads/<key>, with its storage key and size).
+export const photoOf = (v: unknown, alt: Bi): Photo | null => {
+  const o = (v && typeof v === 'object' ? v : { url: v }) as Record<string, unknown>;
+  const u = str(o.url); if (!u) return null;
+  if (!/^https?:\/\/\S+$/i.test(u) && !u.startsWith('/')) throw new ApiError(400, 'the photo must be a web address (https://…) or an uploaded file');
+  const dim = (x: unknown) => (typeof x === 'number' && Number.isFinite(x) && x > 0 ? Math.round(x) : null);
+  const out: Photo = { url: u, alt: o.alt && typeof o.alt === 'object' ? biOf(o.alt) : alt };
+  if (str(o.key)) out.key = str(o.key);
+  if (dim(o.width)) out.width = dim(o.width);
+  if (dim(o.height)) out.height = dim(o.height);
+  return out;
 };

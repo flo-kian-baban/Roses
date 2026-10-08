@@ -4,6 +4,7 @@ import { getPublicMenu, getVenue } from '@/lib/menu';
 import type { Section, Venue } from '@/lib/types';
 import { Intro, headScript } from '@/components/Intro';
 import { SensoPage } from '@/venues/senso';
+import { styleOf } from '@/venues/styles';
 
 // Senso Café & Bites: its own page template and styles (src/venues/senso.tsx). Shared with the other venue:
 // data access (src/lib/menu.ts), the language toggle and the intro logic (src/components). PM build decision of
@@ -25,10 +26,11 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 };
 
 export default function Senso({ venue, sections }: Props) {
-  const c = venue.brand.colors ?? {};
   const f = venue.brand.fonts ?? { heading: 'serif', body: 'system-ui', persian: 'system-ui' };
-  // White kit for now (Kian, 2026-10-07): the recorded brand background and text colours stay in the data; accent and fonts come from it.
-  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${c.accent ?? '#042c7c'};--brand-muted:#6e6e73;--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:${f.persian}}`;
+  // White kit for now (Kian, 2026-10-07): the recorded brand background and text colours stay in the data. The accent, the
+  // intro and the list photos follow the Style tab (template-declared options, src/venues/styles.ts; defaults = the brand record).
+  const style = styleOf(venue);
+  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${style.accent};--brand-muted:#6e6e73;--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:${f.persian}}`;
   return (
     <>
       <Head>
@@ -41,8 +43,8 @@ export default function Senso({ venue, sections }: Props) {
       </Head>
       {/* In the body so it follows the global stylesheet in cascade order and wins over its :root defaults. */}
       <style dangerouslySetInnerHTML={{ __html: vars }} />
-      <Intro venueId={venue.id} logo={venue.brand.logo} alt={venue.name.en ?? ''} />
-      <SensoPage venue={venue} sections={sections} />
+      {style.intro !== false && <Intro venueId={venue.id} logo={venue.brand.logo} alt={venue.name.en ?? ''} />}
+      <SensoPage venue={venue} sections={sections} photos={style.photos !== false} />
     </>
   );
 }

@@ -2,11 +2,12 @@
 //   create  { action:'create', venue, name:{en,fa} }
 //   update  { action:'update', id, patch:{ name, note, listed } }
 //   move    { action:'move', id, direction:'up'|'down' }       or   reorder { action:'reorder', venue, section_ids }
-//   delete  { action:'delete', id }                             its items stay, in no section
+//   delete  { action:'delete', id, items:'move'|'delete'|'keep', target_section_id }   move its items to another section (default in the UI) or delete them too
 import { jsonRoute, ApiError, revalidateVenue, biOf, boolOf, idOf, str, type JsonBody } from '@/lib/admin/api';
 import { canEditVenue } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
-import { createSection, deleteSection, getSection, listSections, reorderSections, updateSection, type SectionPatch } from '@/lib/admin/sections';
+import { createSection, deleteSection, getSection, listSections, reorderSections, updateSection, type DeleteItems, type SectionPatch } from '@/lib/admin/sections';
+import { editorMenu } from '@/lib/admin/overview';
 import { pool } from '@/lib/db';
 import { sectionOrder } from '@/lib/admin/items';
 
@@ -54,10 +55,11 @@ export default jsonRoute(async ({ res, session, body }) => {
     return { revisions: r.revision ? [r.revision] : [], section_order: r.order };
   }
   if (body.action === 'delete') {
-    const r = await deleteSection(id, by);
+    const mode: DeleteItems = body.items === 'move' ? { items: 'move', target: idOf(body.target_section_id) } : body.items === 'delete' ? { items: 'delete' } : { items: 'keep' };
+    const r = await deleteSection(id, by, mode);
     if (!r.ok) throw new ApiError(400, r.error);
     await revalidateVenue(res, sec.venue_id);
-    return { revisions: [r.revision], orphaned: r.orphaned };
+    return { revisions: r.revisions, orphaned: r.orphaned, menu: await editorMenu(sec.venue_id) };
   }
   throw new ApiError(400, 'unknown action');
 });

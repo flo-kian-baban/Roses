@@ -3,18 +3,19 @@
 // tap: description, sizes, other sections, order) and Advanced (collapsed: add-ons, combo parts, notes for owner and
 // admin, delete). Every field saves itself on change; there is no Save button.
 import { useEffect, useState } from 'react';
-import type { AddOn, Component, EditorItem, EditorSection, Notes, Variant } from '@/lib/types';
+import type { AddOn, Bi, Component, EditorItem, EditorSection, Notes, Photo as PhotoData, Variant } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
 import { listingProblem } from './state';
+import { uploadImage } from './upload';
 import { Badge, MoneyField, Photo, Switch, TextField, btnDanger, btnGhost, btnSecondary, fieldCls } from './ui';
 
 export type ItemPanelProps = {
-  item: EditorItem; sections: EditorSection[]; sectionId: string | null; canNotes: boolean; column?: boolean;
+  item: EditorItem; venueId: string; sections: EditorSection[]; sectionId: string | null; canNotes: boolean; column?: boolean;
   onPatch: (patch: Record<string, unknown>) => Promise<void>; onNotes: (notes: Notes) => Promise<void>; onDelete: () => void;
   onMove: (sectionId: string, id: string, index: number) => Promise<void>; onClose: () => void;
 };
 
-export function ItemPanel({ item, sections, sectionId, canNotes, column, onPatch, onNotes, onDelete, onMove, onClose }: ItemPanelProps) {
+export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column, onPatch, onNotes, onDelete, onMove, onClose }: ItemPanelProps) {
   const [more, setMore] = useState(false);
   const [advanced, setAdvanced] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -45,13 +46,7 @@ export function ItemPanel({ item, sections, sectionId, canNotes, column, onPatch
             : <div><span className="mb-1 block text-sm font-medium">Price</span><p className="rounded-xl bg-fill px-3.5 py-2.5 text-[15px]">Set by the sizes below ({item.variants.length}).</p></div>}
           <div>
             <span className="mb-1 block text-sm font-medium">Photo</span>
-            <div className="flex items-start gap-3">
-              <Photo url={item.photo?.url} className="h-20 w-20 shrink-0 rounded-xl" />
-              <div className="min-w-0 flex-1">
-                <TextField value={item.photo?.url ?? null} inputMode="url" placeholder="https://… (web address)" label="Photo web address" compact onCommit={(v) => patch({ photo: v ? { url: v, alt: item.photo?.alt ?? { en: item.name.en, fa: item.name.fa } } : null })} />
-                <p className="mt-1 text-xs text-ink-muted">Upload from the phone comes in step 2.</p>
-              </div>
-            </div>
+            <PhotoField venueId={venueId} photo={item.photo} alt={{ en: item.name.en, fa: item.name.fa }} onChange={(p) => patch({ photo: p })} />
           </div>
           <label className="flex min-h-14 items-center justify-between gap-4 rounded-2xl border border-line px-4 py-3">
             <span><span className="block font-medium">{item.listed ? 'Shown to customers' : 'Hidden from customers'}</span>{reason ? <span className="block text-xs text-red-600">{reason}</span> : problem && !item.listed ? <span className="block text-xs text-ink-muted">{problem}</span> : null}</span>
@@ -112,6 +107,30 @@ export function ItemPanel({ item, sections, sectionId, canNotes, column, onPatch
 }
 
 const sameJson = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+
+// The photo (step 2): uploaded from the phone's camera or photos, shrunk on the device first (see upload.ts); one tap
+// opens the chooser. A linked photo from the import keeps working and can be replaced or removed the same way.
+export function PhotoField({ venueId, photo, alt, onChange }: { venueId: string; photo: PhotoData | null; alt: Bi; onChange: (p: PhotoData | null) => Promise<void> }) {
+  const [busy, setBusy] = useState(false); const [err, setErr] = useState<string | null>(null); const [ms, setMs] = useState<number | null>(null);
+  const pick = async (f: File) => {
+    setBusy(true); setErr(null); const t0 = Date.now();
+    try { const u = await uploadImage(venueId, 'photo', f); await onChange({ url: u.url, key: u.key, width: u.width, height: u.height, alt: photo?.alt ?? alt }); setMs(Date.now() - t0); }
+    catch (e) { setErr((e as Error).message); } finally { setBusy(false); }
+  };
+  return (
+    <div className="flex items-start gap-3" data-photo-field={busy ? 'uploading' : photo ? 'set' : 'empty'}>
+      <Photo url={photo?.url} className="h-20 w-20 shrink-0 rounded-xl" />
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap gap-2">
+          <label className={`${btnSecondary} cursor-pointer`} aria-busy={busy}><Icon name="image" className="h-4 w-4" />{busy ? 'Uploading…' : photo ? 'Replace photo' : 'Add photo'}<input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" aria-label="Choose a photo" disabled={busy} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) void pick(f); }} /></label>
+          {photo && <button type="button" className={btnDanger} disabled={busy} onClick={() => { setErr(null); void onChange(null).catch((e) => setErr(e.message)); }}>Remove</button>}
+        </div>
+        {err && <p role="alert" className="mt-1 text-sm text-red-600">{err}</p>}
+        <p className="mt-1 text-xs text-ink-muted">{photo?.key ? `Uploaded${photo.width && photo.height ? `, ${photo.width} × ${photo.height} px` : ''}${ms != null ? ` in ${(ms / 1000).toFixed(1)} s` : ''}.` : photo ? 'Linked from the venue\u2019s website.' : 'From the phone\u2019s camera or photos; large photos are shrunk before upload.'}</p>
+      </div>
+    </div>
+  );
+}
 
 // Sizes: a row saves once it has a name and a price. "+ Add size" turns the one price into sizes.
 function Sizes({ item, onPatch }: { item: EditorItem; onPatch: (p: Record<string, unknown>) => Promise<void> }) {

@@ -46,7 +46,7 @@ export default async function VenueEditor({ params, searchParams }: { params: Pr
         </div>
       )}
       <Editor
-        venue={{ id: venue.id, name: venue.name, logo: venue.brand?.logo ?? null }}
+        venue={{ id: venue.id, name: venue.name, tagline: venue.tagline, locations: venue.locations, logo: venue.brand?.logo ?? null, settings: venue.settings, template: venue.template, style: venue.style ?? {}, brandColors: venue.brand?.colors ?? {} }}
         me={{ name: session.name, role: session.role, canNotes: canEditNotes(session), canManage: canManage(session) }}
         initial={menu} tab={tab} />
     </TopBar>

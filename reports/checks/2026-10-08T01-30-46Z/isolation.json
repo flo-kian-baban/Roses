@@ -1,0 +1,94 @@
+{
+  "scratch": "roses_check_20261008t013046z",
+  "working": "roses",
+  "processes": [
+    {
+      "process": "roses-check:server-3100",
+      "source": "server-3100.log",
+      "databases": [
+        "roses_check_20261008t013046z"
+      ]
+    },
+    {
+      "process": "roses-check:server-3101",
+      "source": "server-3101.log",
+      "databases": [
+        "roses_check_20261008t013046z"
+      ]
+    },
+    {
+      "process": "roses-check:admin-drill",
+      "source": "admin/admin-drill.log",
+      "databases": [
+        "roses_check_20261008t013046z"
+      ]
+    },
+    {
+      "process": "roses-check:lockout-drill",
+      "source": "lockout-drill.log",
+      "databases": [
+        "roses_check_20261008t013046z"
+      ]
+    },
+    {
+      "process": "roses-check:revalidation-drill",
+      "source": "revalidation-drill.log",
+      "databases": [
+        "roses_check_20261008t013046z"
+      ]
+    },
+    {
+      "process": "roses-check:editor-drill",
+      "source": "editor/editor-drill.log",
+      "databases": [
+        "roses_check_20261008t013046z"
+      ]
+    },
+    {
+      "process": "roses-check:photo-links senso",
+      "source": "senso/photo-links.log",
+      "databases": [
+        "roses_check_20261008t013046z"
+      ]
+    },
+    {
+      "process": "roses-check:photo-links kebab-land",
+      "source": "kebab-land/photo-links.log",
+      "databases": [
+        "roses_check_20261008t013046z"
+      ]
+    },
+    {
+      "process": "backup-drill.sh",
+      "source": "backup-drill.txt",
+      "databases": [
+        "roses_check_20261008t013046z"
+      ]
+    },
+    {
+      "process": "roses-check:migrate",
+      "source": "migrate.log (DATABASE_URL)",
+      "databases": [
+        "roses_check_20261008t013046z"
+      ]
+    },
+    {
+      "process": "roses-check:build",
+      "source": "build.log (DATABASE_URL)",
+      "databases": [
+        "roses_check_20261008t013046z"
+      ]
+    }
+  ],
+  "pgStatActivitySamples": [
+    {
+      "connection": "roses-check:suite → roses_check_20261008t013046z",
+      "samples": 2
+    },
+    {
+      "connection": "roses-check:suite-readonly → roses",
+      "samples": 2
+    }
+  ],
+  "pass": true
+}

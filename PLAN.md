@@ -356,6 +356,14 @@ Coming right after the MVP: (a) seasonal menus and offers on top of the base men
 - Section 8: logos, colours and fonts come from the venues' own sites and logo files, each listed with its source in the import report; nothing invented. Phone numbers stay masked in data/raw only; the venue seed holds the public numbers.
 - Section 9: Q2 answered; Q1 deferred with the hosting decision.
 
+## Revision notes (revision 7, 2026-10-08, admin rebuild step 2 and the PM's review of step 1)
+
+- Section 1 Admin: Style tab (options declared per page template in `src/venues/styles.ts`, saved in `venues.style`; owner and admin; the route answers 403 to staff), Details tab (name, tagline, logo upload, locations with the "to confirm" marks, Persian-drafts switch; owner and admin, replacing "main admin only"), + Add venue (default template `src/venues/default.tsx` served by the dynamic page `src/pages/[venue].tsx` with `fallback: 'blocking'`; the two brand venues keep their own files, so the design principle holds), photo upload (shrunk on the phone with a canvas, posted as the request body, stored on local disk behind `src/lib/storage.ts`, served at `/uploads/<key>`; Supabase Storage later behind `STORAGE_DRIVER`), tap-to-edit in the preview. Architecture note: the dynamic public route was needed for "+ Add venue" and is stated in the report; no new dependency.
+- Section 2 Data model (authorized step-2 changes): `venues.template text` and `venues.style jsonb` (migration `004_template_style.sql`); photo and logo JSON gain `key`, `width`, `height` for uploaded files. No new table.
+- Sections and items: deleting a section with items asks once ("Move items to [section]", the default, or "Delete the items too"); the section's delete record carries `moved_to` or `deleted_items` so Undo restores either; items in no section count in the Needs-attention bar instead of a pile in the list.
+- T6 acceptance: the page editor drill adds drag-and-drop of an item and of a section (laptop viewport; admin order = database = public page), tap-to-edit, photo upload with its tap count, the two section-delete outcomes with Undo and the no-section count; the admin drill adds the Style route 403, the owner's Style and Details saves reaching the public page and undone, and + Add venue. The suite proves isolation by process (own log line + `pg_stat_activity` samples) and by the absence of suite-account rows in the working database, replacing the before/after row counts; failed runs are kept with a one-line cause.
+- Credentials: no PIN is recorded in the repo, in notes or in scripts (the earlier mention of Kian's temporary PIN was removed from the documents; it remains in older commits' history).
+
 ## Revision notes (revision 6, 2026-10-07, admin rebuild step 1)
 
 - Section 1 Admin: replaced by Kian's page editor (one screen per venue with the customers' page as a phone preview; React client components in the admin only; JSON API routes; "Shown / Hidden" wording). History and restore screens removed; the `revisions` table stays as the silent change record and powers "Saved · Undo". Full decisions in CLAUDE.md ("Admin rebuild").
@@ -363,7 +371,7 @@ Coming right after the MVP: (a) seasonal menus and offers on top of the base men
 
 ## Revision notes (revision 5c, 2026-10-07, Kian's first Milestone 1 request)
 
-- Admins sign in with a PIN (migration `003_admin_pin.sql`: `admins.pin_hash`, password optional). Kian's decision replaces the PM's email + password build decision; the email path remains as a fallback. Kian's PIN is 0000 for now; changing it is on the go-live checklist. Trade-off stated to Kian: a 4-digit PIN is weak, the lockout (5 per 15 minutes per venue and address, 50 per hour per venue) limits guessing, and the app is local-only.
+- Admins sign in with a PIN (migration `003_admin_pin.sql`: `admins.pin_hash`, password optional). Kian's decision replaces the PM's email + password build decision; the email path remains as a fallback. Kian's PIN is a temporary placeholder for now (not recorded in the repo); changing it is on the go-live checklist. Trade-off stated to Kian: a 4-digit PIN is weak, the lockout (5 per 15 minutes per venue and address, 50 per hour per venue) limits guessing, and the app is local-only.
 
 ## Revision notes (revision 5b, 2026-10-07, PM review of the Milestone 1 tooling: passed)
 

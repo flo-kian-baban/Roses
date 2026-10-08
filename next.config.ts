@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // pg is loaded by Node at build/run time, never bundled (its optional Cloudflare socket module cannot be resolved by a bundler).
   serverExternalPackages: ['pg'],
+  // Uploaded photos and logos (local disk behind src/lib/storage.ts) are served by an API route under their public address.
+  async rewrites() { return [{ source: '/uploads/:path*', destination: '/api/uploads/:path*' }]; },
 };
 
 export default nextConfig;

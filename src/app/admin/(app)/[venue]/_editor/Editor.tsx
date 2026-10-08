@@ -1,22 +1,26 @@
 'use client';
-// The page editor (Kian's admin rebuild, 2026-10-07): the Menu tab on the left, the customers' page as a phone preview
-// on the right (a Preview button on phones). Every change is saved at once through the JSON API, answered with
-// "Saved · Undo" for 10 seconds, and the preview reloads and scrolls to what was edited.
+// The page editor (Kian's admin rebuild, 2026-10-07; step 2 on 2026-10-08): the Menu, Style and Details tabs on the
+// left, the customers' page as a phone preview on the right (a Preview button on phones). Every change is saved at
+// once through the JSON API, answered with "Saved · Undo" for 10 seconds, and the preview reloads and scrolls to what
+// was edited. Tapping an item, a section heading or the header inside the preview opens the matching editor.
 import { useCallback, useEffect, useReducer, useState } from 'react';
-import type { Bi, EditorItem, Notes } from '@/lib/types';
+import type { Bi, EditorItem, EditorVenue, Notes, Photo } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
 import { call, type Resp } from './api';
 import { reduce, type Filter, type Menu } from './state';
 import { MenuTab } from './MenuTab';
-import { ItemPanel } from './ItemPanel';
-import { Preview, type Focus } from './Preview';
-import { ConfirmSheet, MoneyField, Sheet, TextField, btnPrimary, btnSecondary, fieldCls } from './ui';
+import { ItemPanel, PhotoField } from './ItemPanel';
+import { Preview, type Focus, type Pick } from './Preview';
+import { StyleTab } from './StyleTab';
+import { DetailsTab } from './DetailsTab';
+import { ConfirmSheet, MoneyField, Sheet, TextField, btnDanger, btnPrimary, btnSecondary, fieldCls } from './ui';
 
 export type Me = { name: string; role: 'admin' | 'owner' | 'staff'; canNotes: boolean; canManage: boolean };
-export type VenueInfo = { id: string; name: Bi; logo: { url: string; width: number; height: number } | null };
+export type VenueInfo = EditorVenue;
 type Tab = 'menu' | 'style' | 'details';
 type Toast = { text: string; revisions: number[]; key: number; error?: boolean };
 type Confirm = { title: string; body: React.ReactNode; label: string; action: () => Promise<void> };
+export type DeleteMode = { items: 'move'; target: string } | { items: 'delete' };
 
 export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; initial: Menu; tab: Tab }) {
   const [menu, dispatch] = useReducer(reduce, initial);
@@ -24,6 +28,7 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
   const [adding, setAdding] = useState<string | null>(null);
   const [addingSection, setAddingSection] = useState(false);
   const [renaming, setRenaming] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<Confirm | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
   const [focus, setFocus] = useState<Focus>(null);
@@ -65,8 +70,8 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
     catch (e) { if (before) dispatch({ type: 'item', item: before }); throw e; }
   };
   const itemNotes = async (id: string, notes: Notes) => { const r = await call('/api/admin/item', { action: 'notes', id, notes }); apply(r); done(r, 'Saved', { id, alt: sectionOf(id) }); };
-  const itemCreate = async (sectionId: string, data: { name: string; price: number | null; photo_url: string | null }) => {
-    const r = await call('/api/admin/item', { action: 'create', venue: venue.id, section_id: sectionId, name: { en: data.name, fa: null }, price: data.price, photo_url: data.photo_url });
+  const itemCreate = async (sectionId: string, data: { name: string; price: number | null; photo: Photo | null }) => {
+    const r = await call('/api/admin/item', { action: 'create', venue: venue.id, section_id: sectionId, name: { en: data.name, fa: null }, price: data.price, photo: data.photo });
     apply(r); const item = r.item as EditorItem; done(r, 'Added', { id: item.id, alt: sectionId }); setHighlight(item.id);
   };
   const itemDelete = (id: string) => {
@@ -88,10 +93,17 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
   const sectionCreate = async (name: string) => { const r = await call('/api/admin/section', { action: 'create', venue: venue.id, name: { en: name, fa: null } }); apply(r); const s = r.section as Menu['sections'][number]; done(r, 'Added', { id: s.id }); setAddingSection(false); requestAnimationFrame(() => document.getElementById(`sec-${s.id}`)?.scrollIntoView({ block: 'center' })); };
   const sectionMove = async (id: string, direction: 'up' | 'down') => { const r = await call('/api/admin/section', { action: 'move', id, direction }); apply(r); done(r, 'Moved', { id }); };
   const sectionReorder = async (ids: string[]) => { const r = await call('/api/admin/section', { action: 'reorder', venue: venue.id, section_ids: ids }); apply(r); done(r, 'Moved', null); };
+  // Deleting a section with items asks once: move them to another section (the default) or delete them too (Kian, 2026-10-08). Undo restores either.
   const sectionDelete = (id: string) => {
-    const s = menu.sections.find((x) => x.id === id); if (!s) return; const n = s.item_ids.length;
-    setConfirm({ title: 'Delete this section?', label: 'Delete section', body: n ? <>“{s.name.en}” will be removed. Its {n} item{n === 1 ? '' : 's'} stay in the menu, in no section, hidden from customers until you move them. You can undo for 10 seconds.</> : <>“{s.name.en}” will be removed. You can undo for 10 seconds.</>,
-      action: async () => { const r = await call('/api/admin/section', { action: 'delete', id }); dispatch({ type: 'section-removed', id, orphaned: (r.orphaned as string[]) ?? [] }); setConfirm(null); done(r, 'Deleted', null); } });
+    const s = menu.sections.find((x) => x.id === id); if (!s) return;
+    if (s.item_ids.length) { setDeleting(id); return; }
+    setConfirm({ title: 'Delete this section?', label: 'Delete section', body: <>“{s.name.en}” will be removed. You can undo for 10 seconds.</>,
+      action: async () => { const r = await call('/api/admin/section', { action: 'delete', id, items: 'keep' }); apply(r); setConfirm(null); done(r, 'Deleted', null); } });
+  };
+  const sectionDeleteWith = async (id: string, mode: DeleteMode) => {
+    const r = await call('/api/admin/section', { action: 'delete', id, items: mode.items, ...(mode.items === 'move' ? { target_section_id: mode.target } : {}) });
+    apply(r); setDeleting(null); if (open && menu.items[open.id]?.placements.some((p) => p.section_id === id)) setOpen(null);
+    done(r, mode.items === 'move' ? 'Deleted · items moved' : 'Deleted', mode.items === 'move' ? { id: mode.target } : null);
   };
 
   const undo = async () => {
@@ -100,11 +112,21 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
     try { const r = await call('/api/admin/undo', { venue: venue.id, revisions }); apply(r); setToast({ text: 'Undone', revisions: [], key: Date.now() }); setReloadKey((k) => k + 1); }
     catch (e) { setToast({ text: (e as Error).message, revisions: [], key: Date.now(), error: true }); }
   };
+  // Style and Details tabs report their saves here (the toast, the Undo and the preview reload are shared).
+  const savedElsewhere = (r: Resp, text = 'Saved') => done(r, text, null);
+
+  // Tap-to-edit in the preview: an item opens its editor, a section heading its rename sheet, the header the Details tab.
+  const onPick = (pk: Pick) => {
+    setPreviewOpen(false);
+    if (pk.kind === 'item' && pk.id && menu.items[pk.id]) { setOpen({ id: pk.id, section: menu.items[pk.id].placements[0]?.section_id ?? null }); setHighlight(pk.id); if (tab !== 'menu') return; requestAnimationFrame(() => document.querySelector(`[data-item="${pk.id}"]`)?.scrollIntoView({ block: 'center' })); }
+    else if (pk.kind === 'section' && pk.id && menu.sections.some((s) => s.id === pk.id)) setRenaming(pk.id);
+    else if (pk.kind === 'header' && me.canManage && tab !== 'details') window.location.href = `/admin/${venue.id}?tab=details`;
+  };
 
   const openItem = open ? menu.items[open.id] : null;
   const tabLink = (t: Tab, label: string) => <a href={`/admin/${venue.id}${t === 'menu' ? '' : `?tab=${t}`}`} aria-current={tab === t ? 'page' : undefined} className={`flex h-9 items-center rounded-full px-3.5 text-[15px] font-semibold ${tab === t ? 'bg-ink text-white' : 'text-ink-muted hover:bg-fill hover:text-ink'}`}>{label}</a>;
 
-  const panel = openItem && <ItemPanel item={openItem} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} column={wide} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
+  const panel = openItem && <ItemPanel item={openItem} venueId={venue.id} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} column={wide} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (
     <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
       <div className="relative min-w-0">
@@ -115,27 +137,28 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
           <span className="flex-1" />
           <button type="button" onClick={() => setPreviewOpen(true)} className="flex h-9 items-center gap-1.5 rounded-full border border-line bg-white px-3 text-[14px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,.04)] lg:hidden"><Icon name="smartphone" className="h-4 w-4" />Preview</button>
         </div>
-        {tab === 'menu'
-          ? <MenuTab menu={menu} filter={filter} setFilter={setFilter} query={query} setQuery={setQuery} highlightId={highlight}
+        {tab === 'menu' && <MenuTab menu={menu} filter={filter} setFilter={setFilter} query={query} setQuery={setQuery} highlightId={highlight}
               onOpen={(id, section) => setOpen({ id, section })} onAdd={(sid) => setAdding(sid)} onAddSection={() => setAddingSection(true)}
               onToggleItem={(id, listed) => itemUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onPrice={(id, price) => itemUpdate(id, { price })}
               onToggleSection={(id, listed) => sectionUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onRename={(id) => setRenaming(id)} onMoveSection={sectionMove}
-              onDeleteSection={sectionDelete} onReorderSections={sectionReorder} onMoveItem={itemMove} />
-          : <div className="mx-auto max-w-3xl px-5 py-10 text-center text-ink-muted"><p className="font-medium text-ink">{tab === 'style' ? 'Style' : 'Details'}</p><p className="mt-1 text-sm">Built in step 2 of the admin rebuild.</p></div>}
+              onDeleteSection={sectionDelete} onReorderSections={sectionReorder} onMoveItem={itemMove} />}
+        {tab === 'style' && me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} />}
+        {tab === 'details' && me.canManage && <DetailsTab venue={venue} version={reloadKey} onSaved={savedElsewhere} />}
       </div>
       {openItem && wide ? <div className="hidden lg:block">{panel}</div> : null}
       <aside className="hidden border-l border-line bg-fill lg:block">
-        <div className="sticky top-14 h-[calc(100dvh-3.5rem)]"><Preview venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame /></div>
+        <div className="sticky top-14 h-[calc(100dvh-3.5rem)]"><Preview venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame onPick={onPick} /></div>
       </aside>
 
       {openItem && !wide && <>
         <button type="button" aria-label="Close the item" onClick={() => setOpen(null)} className="fixed inset-0 z-40 hidden bg-black/10 lg:block" />
         {panel}
       </>}
-      {previewOpen && <div className="fixed inset-0 z-[60] lg:hidden"><Preview venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame={false} onClose={() => setPreviewOpen(false)} /></div>}
-      {adding && <AddItemSheet sectionName={menu.sections.find((s) => s.id === adding)?.name.en ?? ''} onClose={() => setAdding(null)} onAdd={async (d) => { await itemCreate(adding, d); setAdding(null); }} />}
+      {previewOpen && <div className="fixed inset-0 z-[60] lg:hidden"><Preview venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame={false} onClose={() => setPreviewOpen(false)} onPick={onPick} /></div>}
+      {adding && <AddItemSheet venueId={venue.id} sectionName={menu.sections.find((s) => s.id === adding)?.name.en ?? ''} onClose={() => setAdding(null)} onAdd={async (d) => { await itemCreate(adding, d); setAdding(null); }} />}
       {addingSection && <AddSectionSheet onClose={() => setAddingSection(false)} onAdd={sectionCreate} />}
       {renaming && menu.sections.some((s) => s.id === renaming) && <RenameSheet section={menu.sections.find((s) => s.id === renaming)!} onClose={() => setRenaming(null)} onPatch={(p) => sectionUpdate(renaming, p)} />}
+      {deleting && menu.sections.some((s) => s.id === deleting) && <DeleteSectionSheet section={menu.sections.find((s) => s.id === deleting)!} others={menu.sections.filter((s) => s.id !== deleting)} items={menu.items} onClose={() => setDeleting(null)} onDelete={(mode) => sectionDeleteWith(deleting, mode)} />}
       {confirm && <ConfirmSheet title={confirm.title} body={confirm.body} label={confirm.label} onConfirm={confirm.action} onClose={() => setConfirm(null)} />}
       {toast && (
         <div className={`toast fixed bottom-5 left-1/2 z-[80] flex -translate-x-1/2 items-center gap-1 rounded-full py-1.5 pl-4 pr-1.5 text-[15px] font-medium text-white shadow-pop ${toast.error ? 'bg-red-600' : 'bg-ink'}`} role="status" style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}>
@@ -147,9 +170,9 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
   );
 }
 
-// "+ Add item": three fields, the section preset. Created shown when it has a price.
-function AddItemSheet({ sectionName, onClose, onAdd }: { sectionName: string; onClose: () => void; onAdd: (d: { name: string; price: number | null; photo_url: string | null }) => Promise<void> }) {
-  const [name, setName] = useState(''); const [price, setPrice] = useState(''); const [photo, setPhoto] = useState('');
+// "+ Add item": name, price and an optional photo from the phone (uploaded when the item is added). Created shown when it has a price.
+function AddItemSheet({ venueId, sectionName, onClose, onAdd }: { venueId: string; sectionName: string; onClose: () => void; onAdd: (d: { name: string; price: number | null; photo: Photo | null }) => Promise<void> }) {
+  const [name, setName] = useState(''); const [price, setPrice] = useState(''); const [photo, setPhoto] = useState<Photo | null>(null);
   const [busy, setBusy] = useState(false); const [err, setErr] = useState<string | null>(null);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,14 +180,14 @@ function AddItemSheet({ sectionName, onClose, onAdd }: { sectionName: string; on
     if (!name.trim()) { setErr('The name is required'); return; }
     if (n !== null && (!Number.isFinite(n) || n < 0)) { setErr('Not a price'); return; }
     setBusy(true); setErr(null);
-    try { await onAdd({ name: name.trim(), price: n, photo_url: photo.trim() || null }); } catch (x) { setErr((x as Error).message); setBusy(false); }
+    try { await onAdd({ name: name.trim(), price: n, photo: photo ? { ...photo, alt: { en: name.trim(), fa: null } } : null }); } catch (x) { setErr((x as Error).message); setBusy(false); }
   };
   return (
     <Sheet title={`Add item to ${sectionName}`} onClose={onClose}>
       <form onSubmit={submit} className="space-y-4">
         <label className="block"><span className="mb-1 block text-sm font-medium">Name</span><input className={fieldCls} name="name" value={name} onChange={(e) => setName(e.target.value)} autoFocus required aria-label="Name" /></label>
         <label className="block"><span className="mb-1 block text-sm font-medium">Price</span><span className="relative block"><span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-neutral-500">$</span><input className={`${fieldCls} pl-8 tabular-nums`} name="price" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0.00" aria-label="Price" /></span><span className="mt-1 block text-xs text-ink-muted">With a price the item is shown to customers at once; without one it stays hidden.</span></label>
-        <label className="block"><span className="mb-1 block text-sm font-medium">Photo <span className="font-normal text-ink-muted">(optional, web address)</span></span><input className={fieldCls} name="photo_url" inputMode="url" value={photo} onChange={(e) => setPhoto(e.target.value)} placeholder="https://…" aria-label="Photo web address" /></label>
+        <div><span className="mb-1 block text-sm font-medium">Photo <span className="font-normal text-ink-muted">(optional)</span></span><PhotoField venueId={venueId} photo={photo} alt={{ en: name, fa: null }} onChange={async (p) => setPhoto(p)} /></div>
         {err && <p role="alert" className="text-sm text-red-600">{err}</p>}
         <button type="submit" className={`${btnPrimary} w-full`} disabled={busy}>Add item</button>
       </form>
@@ -200,4 +223,40 @@ function RenameSheet({ section: s, onClose, onPatch }: { section: Menu['sections
     </Sheet>
   );
 }
+
+// One confirmation with two choices (Kian, 2026-10-08): "Move items to [section]" (the default) or "Delete the items too".
+function DeleteSectionSheet({ section: s, others, items, onClose, onDelete }: { section: Menu['sections'][number]; others: Menu['sections']; items: Menu['items']; onClose: () => void; onDelete: (mode: DeleteMode) => Promise<void> }) {
+  const n = s.item_ids.length;
+  const elsewhere = s.item_ids.filter((id) => (items[id]?.placements.length ?? 0) > 1).length;
+  const [mode, setMode] = useState<'move' | 'delete'>(others.length ? 'move' : 'delete');
+  const [target, setTarget] = useState(others[0]?.id ?? '');
+  const [busy, setBusy] = useState(false); const [err, setErr] = useState<string | null>(null);
+  return (
+    <Sheet title="Delete this section?" onClose={onClose}>
+      <p className="text-[15px] text-ink-muted">“{s.name.en}” will be removed. It has {n} item{n === 1 ? '' : 's'}. What happens to {n === 1 ? 'it' : 'them'}?</p>
+      <div className="mt-4 grid gap-2" role="radiogroup" aria-label="Items of the section">
+        <label className={`flex min-h-12 items-center gap-3 rounded-2xl border px-3 py-2 ${mode === 'move' ? 'border-accent bg-accent-soft' : 'border-line'} ${others.length ? '' : 'opacity-50'}`}>
+          <input type="radio" className="check" name="section-items" value="move" checked={mode === 'move'} disabled={!others.length} onChange={() => setMode('move')} />
+          <span className="flex min-w-0 flex-1 flex-wrap items-center gap-2 text-[15px]"><span className="font-medium">Move {n === 1 ? 'it' : 'them'} to</span>
+            <select value={target} onChange={(e) => { setTarget(e.target.value); setMode('move'); }} disabled={!others.length} aria-label="Section to move the items to" className="h-9 min-w-0 max-w-full appearance-none rounded-full bg-white px-3 pr-8 text-[15px] font-medium shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:outline-none focus:ring-[3px] focus:ring-accent/25" style={{ backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%236e6e73%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27><path d=%27m6 9 6 6 6-6%27/></svg>")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center', backgroundSize: '14px' }}>
+              {others.map((o) => <option key={o.id} value={o.id}>{o.name.en}</option>)}
+            </select>
+          </span>
+        </label>
+        <label className={`flex min-h-12 items-center gap-3 rounded-2xl border px-3 py-2 ${mode === 'delete' ? 'border-red-300 bg-red-50' : 'border-line'}`}>
+          <input type="radio" className="check" name="section-items" value="delete" checked={mode === 'delete'} onChange={() => setMode('delete')} />
+          <span className="text-[15px]"><span className="font-medium">Delete the item{n === 1 ? '' : 's'} too</span>{elsewhere > 0 && <span className="block text-xs text-ink-muted">{elsewhere} of them {elsewhere === 1 ? 'is' : 'are'} also in another section and stay{elsewhere === 1 ? 's' : ''} there.</span>}</span>
+        </label>
+      </div>
+      {!others.length && <p className="mt-2 text-xs text-ink-muted">There is no other section to move the items to.</p>}
+      <p className="mt-3 text-xs text-ink-muted">You can undo for 10 seconds.</p>
+      {err && <p role="alert" className="mt-3 text-sm text-red-600">{err}</p>}
+      <div className="mt-5 flex gap-2">
+        <button type="button" className={`${btnDanger} flex-1`} disabled={busy || (mode === 'move' && !target)} onClick={async () => { setBusy(true); setErr(null); try { await onDelete(mode === 'move' ? { items: 'move', target } : { items: 'delete' }); } catch (e) { setErr((e as Error).message); setBusy(false); } }}>Delete section</button>
+        <button type="button" className={`${btnSecondary} flex-1`} onClick={onClose}>Cancel</button>
+      </div>
+    </Sheet>
+  );
+}
 void MoneyField;
+export type { Bi };

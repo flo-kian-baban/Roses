@@ -6,8 +6,7 @@
 //   node scripts/lockout-drill.mjs --base4 http://127.0.0.1:3000 --base6 http://[::1]:3000 --proxyBase http://127.0.0.1:3001 --out reports/checkpoint-b
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import pg from 'pg';
-import { loadEnv } from './load-env.mjs';
+import { connectDb, loadEnv } from './load-env.mjs';
 
 loadEnv();
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
@@ -18,7 +17,7 @@ if (!email || !password) { console.error('DRILL_ADMIN_EMAIL / DRILL_ADMIN_PASSWO
 const lines = [];
 const mask = (s) => String(s).replaceAll('127.0.0.1', '<addr-A>').replaceAll('::1', '<addr-B>').replaceAll(email, '<admin email>');
 const log = (...a) => { const l = `${new Date().toISOString()} ${a.join(' ')}`; lines.push(mask(l)); console.log(mask(l)); };
-const db = new pg.Client({ connectionString: process.env.DATABASE_URL }); await db.connect();
+const db = await connectDb('lockout-drill', (t) => log(t));
 
 async function post(base, p, body, headers = {}) {
   const res = await fetch(base + p, { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded', ...headers }, body: new URLSearchParams(body).toString() });

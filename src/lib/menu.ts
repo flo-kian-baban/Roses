@@ -2,11 +2,11 @@ import { query } from './db';
 import type { Venue, Section, Item, Bi, Variant, AddOn, Component } from './types';
 
 export async function getVenues(): Promise<Venue[]> {
-  return query<Venue>('select id, name, tagline, locations, brand, settings from venues order by id');
+  return query<Venue>('select id, name, tagline, locations, brand, settings, template, style from venues order by id');
 }
 
 export async function getVenue(id: string): Promise<Venue | null> {
-  const rows = await query<Venue>('select id, name, tagline, locations, brand, settings from venues where id = $1', [id]);
+  const rows = await query<Venue>('select id, name, tagline, locations, brand, settings, template, style from venues where id = $1', [id]);
   return rows[0] ?? null;
 }
 

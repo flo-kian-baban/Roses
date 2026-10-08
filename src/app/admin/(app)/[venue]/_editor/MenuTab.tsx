@@ -2,10 +2,12 @@
 // The Menu tab: "Needs attention" (only when there is something to do), search as you type, Jump to section,
 // collapsible sections with their switch, count, "+ Add item" and menu, and item rows (photo · name with Persian
 // underneath · price edited in place · Shown/Hidden switch). Drag to reorder on a laptop; Move up / Move down on a phone.
+// Items in no section are not a pile in the normal flow (Kian, 2026-10-08): they count in the Needs-attention bar and
+// are listed only when that count is tapped (or a search finds them).
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { EditorItem, EditorSection } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
-import { attention, listingProblem, money, needs, priceSummary, type Filter, type Menu as MenuData } from './state';
+import { attention, listingProblem, money, needs, priceSummary, type Filter, type Need, type Menu as MenuData } from './state';
 import { Badge, Menu, Photo, Switch, btnSecondary } from './ui';
 
 export type MenuTabProps = {
@@ -17,7 +19,7 @@ export type MenuTabProps = {
 };
 type Drag = { kind: 'item'; id: string; section: string } | { kind: 'section'; id: string };
 type Over = { id: string; after: boolean } | null;
-const LABEL: Record<Exclude<Filter, 'all'>, (n: number) => string> = { price: (n) => `${n} need${n === 1 ? 's' : ''} a price`, draft: (n) => `${n} Persian draft${n === 1 ? '' : 's'}`, fa: (n) => `${n} missing Persian`, photo: (n) => `${n} without a photo` };
+const LABEL: Record<Exclude<Filter, 'all'>, (n: number) => string> = { none: (n) => `${n} in no section`, price: (n) => `${n} need${n === 1 ? 's' : ''} a price`, draft: (n) => `${n} Persian draft${n === 1 ? '' : 's'}`, fa: (n) => `${n} missing Persian`, photo: (n) => `${n} without a photo` };
 
 export function MenuTab(p: MenuTabProps) {
   const { menu, filter, setFilter, query, setQuery } = p;
@@ -29,11 +31,12 @@ export function MenuTab(p: MenuTabProps) {
   const counts = useMemo(() => attention(menu), [menu]);
   const anyAttention = Object.values(counts).some((n) => n > 0);
   const q = query.trim().toLowerCase();
-  const keep = (i: EditorItem) => (filter === 'all' || needs(i)[filter]) && (!q || (i.name.en ?? '').toLowerCase().includes(q) || (i.name.fa ?? '').includes(query.trim()));
+  const matches = (i: EditorItem) => !q || (i.name.en ?? '').toLowerCase().includes(q) || (i.name.fa ?? '').includes(query.trim());
+  const keep = (i: EditorItem, orphan: boolean) => (filter === 'all' || (filter === 'none' ? orphan : needs(i)[filter as Need])) && matches(i);
   const narrowing = filter !== 'all' || !!q;
   const groups = useMemo(() => {
-    const g = menu.sections.map((s) => ({ s, ids: s.item_ids.filter((id) => menu.items[id] && keep(menu.items[id])) }));
-    const o = menu.orphans.filter((id) => menu.items[id] && keep(menu.items[id]));
+    const g = menu.sections.map((s) => ({ s, ids: s.item_ids.filter((id) => menu.items[id] && keep(menu.items[id], false)) }));
+    const o = narrowing ? menu.orphans.filter((id) => menu.items[id] && keep(menu.items[id], true)) : []; // in no section: only when asked for
     return { sections: narrowing ? g.filter((x) => x.ids.length > 0) : g, orphans: o };
   }, [menu, filter, q]); // eslint-disable-line react-hooks/exhaustive-deps
   const shown = groups.sections.reduce((n, g) => n + g.ids.length, 0) + groups.orphans.length;
@@ -48,15 +51,16 @@ export function MenuTab(p: MenuTabProps) {
       e.preventDefault(); const r = (e.currentTarget as HTMLElement).getBoundingClientRect(); setOver({ id, after: e.clientY > r.top + r.height / 2 });
     },
     drop: (kind: Drag['kind'], id: string, section?: string) => async (e: React.DragEvent) => {
-      e.preventDefault(); const d = drag.current; const o = over; drag.current = null; setOver(null);
-      if (!d || d.kind !== kind || !o || o.id !== id) return;
+      e.preventDefault(); const d = drag.current; drag.current = null; setOver(null);
+      if (!d || d.kind !== kind || d.id === id || (d.kind === 'item' && d.section !== section)) return;
+      const r = (e.currentTarget as HTMLElement).getBoundingClientRect(); const after = e.clientY > r.top + r.height / 2; // read at the drop itself, not from state
       if (d.kind === 'item' && section) {
         const ids = menu.sections.find((s) => s.id === section)!.item_ids.filter((x) => x !== d.id);
-        const idx = ids.indexOf(id) + (o.after ? 1 : 0);
+        const idx = ids.indexOf(id) + (after ? 1 : 0);
         await p.onMoveItem(section, d.id, idx).catch(() => undefined);
       } else if (d.kind === 'section') {
         const ids = menu.sections.map((s) => s.id).filter((x) => x !== d.id);
-        ids.splice(ids.indexOf(id) + (o.after ? 1 : 0), 0, d.id);
+        ids.splice(ids.indexOf(id) + (after ? 1 : 0), 0, d.id);
         await p.onReorderSections(ids).catch(() => undefined);
       }
     },
@@ -128,7 +132,7 @@ export function MenuTab(p: MenuTabProps) {
 
       {groups.orphans.length > 0 && (
         <section id="sec-none" className="mt-3 scroll-mt-40 rounded-2xl border border-amber-200 bg-white shadow-card">
-          <header className="flex items-center gap-2 px-4 py-3"><span className="text-[17px] font-semibold">In no section</span><span className="text-sm tabular-nums text-ink-muted">{groups.orphans.length}</span><Badge tone="amber">Not shown to customers</Badge></header>
+          <header className="flex flex-wrap items-center gap-2 px-4 py-3"><span className="text-[17px] font-semibold">In no section</span><span className="text-sm tabular-nums text-ink-muted">{groups.orphans.length}</span><Badge tone="amber">Not shown to customers</Badge><span className="basis-full text-xs text-ink-muted">Open an item and tick a section under “Also show in…” to put it back on the menu.</span></header>
           <ul className="border-t border-line px-1 pb-1">{groups.orphans.map((id) => <Row key={id} item={menu.items[id]} sectionId={null} fine={false} dropCls="" highlighted={p.highlightId === id} onOpen={p.onOpen} onToggle={p.onToggleItem} onPrice={p.onPrice} dragProps={{}} />)}</ul>
         </section>
       )}

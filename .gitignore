@@ -8,6 +8,9 @@ node_modules/
 .DS_Store
 *.log
 backups/
+# Uploaded photos and logos (local storage driver); the check suite's uploads land in its run folder
+uploads/
+reports/checks/**/uploads/
 next-env.d.ts
 *.tsbuildinfo
 # Check-suite runs: keep the report and small evidence in git, heavy raw files on disk only

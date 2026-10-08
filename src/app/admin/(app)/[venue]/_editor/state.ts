@@ -46,7 +46,8 @@ export function reduce(m: Menu, a: Action): Menu {
   }
 }
 
-export type Filter = 'all' | 'price' | 'draft' | 'fa' | 'photo';
+export type Filter = 'all' | 'price' | 'draft' | 'fa' | 'photo' | 'none';
+export type Need = Exclude<Filter, 'all' | 'none'>;
 
 export function listingProblem(i: { price: number | null; variants: Variant[] }): string | null {
   if (i.price != null) return null;
@@ -58,8 +59,9 @@ export function persianMissing(i: { name: Bi; description: Bi; variants?: Varian
 }
 export const needs = (i: EditorItem) => ({ price: !!listingProblem(i), draft: i.fa_draft.length > 0, fa: persianMissing(i), photo: !i.photo });
 
+// Counts for the Needs-attention bar; "none" = items in no section (hidden from customers until moved; Kian, 2026-10-08).
 export function attention(m: Menu): Record<Exclude<Filter, 'all'>, number> {
-  const c = { price: 0, draft: 0, fa: 0, photo: 0 };
+  const c = { price: 0, draft: 0, fa: 0, photo: 0, none: m.orphans.filter((id) => m.items[id]).length };
   for (const i of Object.values(m.items)) { const n = needs(i); if (n.price) c.price++; if (n.draft) c.draft++; if (n.fa) c.fa++; if (n.photo) c.photo++; }
   return c;
 }

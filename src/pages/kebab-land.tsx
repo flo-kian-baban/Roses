@@ -4,6 +4,7 @@ import { getPublicMenu, getVenue } from '@/lib/menu';
 import type { Section, Venue } from '@/lib/types';
 import { Intro, headScript } from '@/components/Intro';
 import { KebabLandPage } from '@/venues/kebab-land';
+import { styleOf } from '@/venues/styles';
 
 // Roses Kebab Land: its own page template and styles (src/venues/kebab-land.tsx), functional only for the MVP
 // (Kian's decision after Checkpoint A2; the design comes with the post-MVP redesign). Shared with Senso: data access,
@@ -23,11 +24,12 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 };
 
 export default function KebabLand({ venue, sections }: Props) {
-  const c = venue.brand.colors ?? {};
   const f = venue.brand.fonts ?? { heading: 'serif', body: 'system-ui', persian: 'system-ui' };
   // White kit for now (Kian, 2026-10-07): the recorded colours (dark background, white text, gold prices; sources in the
-  // import report) stay in the data; the red accent is used for headings and prices, the dark background only as the logo tile.
-  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${c.accent ?? '#b92e2e'};--brand-price:${c.accent ?? '#b92e2e'};--brand-muted:#6e6e73;--brand-tile:${c.background ?? '#141414'};--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:${f.persian}}`;
+  // import report) stay in the data. The accent, the logo tile colour, the intro and the list photos follow the Style tab
+  // (template-declared options, src/venues/styles.ts; defaults = the brand record).
+  const style = styleOf(venue); const tile = String(style.tile);
+  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${style.accent};--brand-price:${style.accent};--brand-muted:#6e6e73;--brand-tile:${tile};--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:${f.persian}}`;
   return (
     <>
       <Head>
@@ -40,8 +42,8 @@ export default function KebabLand({ venue, sections }: Props) {
         <script dangerouslySetInnerHTML={{ __html: headScript(venue.id) }} />
       </Head>
       <style dangerouslySetInnerHTML={{ __html: vars }} />
-      <Intro venueId={venue.id} logo={venue.brand.logo} alt={venue.name.en ?? ''} tile={c.background ?? '#141414'} />
-      <KebabLandPage venue={venue} sections={sections} />
+      {style.intro !== false && <Intro venueId={venue.id} logo={venue.brand.logo} alt={venue.name.en ?? ''} tile={tile} />}
+      <KebabLandPage venue={venue} sections={sections} photos={style.photos !== false} />
     </>
   );
 }

@@ -263,12 +263,17 @@ try {
   processes.push({ process: 'roses-check:migrate', source: 'migrate.log (DATABASE_URL)', databases: [scratchName] }, { process: 'roses-check:build', source: 'build.log (DATABASE_URL)', databases: [scratchName] });
   const samples = [...seen.entries()].map(([k, n]) => ({ connection: k, samples: n })).sort((a, b) => a.connection.localeCompare(b.connection));
   const wrongProcess = processes.filter((p) => p.databases.length === 0 || p.databases.some((d) => d !== scratchName));
-  const wrongSample = samples.filter((x) => !x.connection.endsWith(`→ ${scratchName}`) && !x.connection.startsWith('roses-check:suite-readonly →'));
+  // Only a connection to the working database is a leak (PM, 2026-10-08). Connections of another session's run on its own
+  // scratch copy (<work>_check_<stamp>) or of a hand-run drill on some other copy are listed for the record and do not fail
+  // this run: on 2026-10-08 two sessions ran suites at once and the stricter rule failed a run whose every process was on its copy.
+  const onWorking = (c) => c.endsWith(`→ ${workName}`);
+  const wrongSample = samples.filter((x) => onWorking(x.connection) && !x.connection.startsWith('roses-check:suite-readonly →'));
+  const otherRuns = samples.filter((x) => !onWorking(x.connection) && !x.connection.endsWith(`→ ${scratchName}`));
   const mustSee = ['roses-check:server-3100', 'roses-check:server-3101', 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:style-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
   const unseen = mustSee.filter((a) => !samples.some((x) => x.connection.startsWith(`${a} →`)));
   const passA = wrongProcess.length === 0 && wrongSample.length === 0 && processes.length >= 8 && unseen.length === 0;
-  fs.writeFileSync(path.join(out, 'isolation.json'), JSON.stringify({ scratch: scratchName, working: workName, processes, pgStatActivitySamples: samples, pass: passA }, null, 2));
-  results.push({ name: `isolation (a): every server and drill process connected to the scratch database ${scratchName} (own log line per process + pg_stat_activity sampled every 400 ms)`, pass: passA, ms: 0, evidence: ['isolation.json', 'server-3100.log', 'server-3101.log', '*/…-drill.log'], note: passA ? `${processes.length} processes, every one on the scratch copy by its own log; pg_stat_activity: ${samples.length} distinct connections seen over ${samples.reduce((n, x) => n + x.samples, 0)} samples (servers and drills included), none on ${workName}` : `WRONG: ${wrongProcess.map((p) => `${p.process} → ${p.databases.join(',') || 'no log line'}`).join('; ')} ${wrongSample.map((x) => x.connection).join('; ')} ${unseen.length ? `never sampled: ${unseen.join(', ')}` : ''}` });
+  fs.writeFileSync(path.join(out, 'isolation.json'), JSON.stringify({ scratch: scratchName, working: workName, processes, pgStatActivitySamples: samples, otherRunsSeen: otherRuns, pass: passA }, null, 2));
+  results.push({ name: `isolation (a): every server and drill process connected to the scratch database ${scratchName} (own log line per process + pg_stat_activity sampled every 400 ms)`, pass: passA, ms: 0, evidence: ['isolation.json', 'server-3100.log', 'server-3101.log', '*/…-drill.log'], note: passA ? `${processes.length} processes, every one on the scratch copy by its own log; pg_stat_activity: ${samples.length} distinct connections seen over ${samples.reduce((n, x) => n + x.samples, 0)} samples (servers and drills included), none on ${workName}${otherRuns.length ? `; ${otherRuns.length} connection(s) of other sessions' runs on their own copies seen and listed in isolation.json` : ''}` : `WRONG: ${wrongProcess.map((p) => `${p.process} → ${p.databases.join(',') || 'no log line'}`).join('; ')} ${wrongSample.map((x) => x.connection).join('; ')} ${unseen.length ? `never sampled: ${unseen.join(', ')}` : ''}` });
   log(`   ${passA ? 'PASS' : 'FAIL'} isolation (a)`);
   // (b) the working database holds no row written by a suite account.
   let b = null;

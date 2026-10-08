@@ -1,0 +1,93 @@
+Admin drill PASS (35/35 checks)
+
+Measurements:
+- Details: change the tagline: 2 taps (Details tab, field) + typing + Enter; on the public page in 322 ms
+- Style: change the accent colour: 2 taps (Style tab, swatch); on the public page in 322 ms
+- + Add venue: 3 taps + the name; Details tab open 92 ms after Create; the new page answers 200 (2 ms)
+
+PASS e-unauth: unauthenticated POST /api/admin/item → 401 {"ok":false,"error":"not signed in"}
+PASS c-cookie: Set-Cookie attributes: roses_session=<token>; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200 (Secure is added when served over https); signed in lands on /admin/drill-default-venue (the first venue's page editor)
+PASS admin-pin: admin PIN on the Kebab Land sign-in → 303 to /admin/kebab-land, cookie set: true; Team (owner and admin) answers 200 with the admin accounts: true
+PASS pin-create: PIN created for "Drill staff" (staff, senso): shown once on the response page (6 digits: true), hash stored: true
+PASS pin-create: PIN created for "Drill owner" (owner, senso+kebab-land): shown once on the response page (6 digits: true), hash stored: true
+PASS d-hash: pins with a hash not starting with $scrypt$: 0; plain PIN column: none exists (schema has pin_hash only)
+PASS c-logout: logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://127.0.0.1:3100/admin shows the sign-in form and no admin frame (a still-valid token is simply no longer sent: 307)
+PASS pin-login: staff PIN sign-in lands on http://127.0.0.1:3100/admin/senso (page editor); tabs visible to staff: Menu (no Style or Details)
+PASS f-ui: editor: the Shown switch on "Aash-e-Reshteh" (no price) refuses with "The item needs a price before it can be shown"; still hidden in the database
+PASS f-server: direct POST action=update listed=true → 400, error="The item needs a price before it can be shown"
+PASS f-check: SQL "update items set listed = true" on the priceless item → 23514 listed_requires_price: new row for relation "items" violates check constraint "listed_requires_price"
+PASS f-sizes: save "Prosecco" shown with a second size without price → 400 "Every size needs a price before the item can be shown"; row unchanged: true
+PASS f-public-listed: "Aash-e-Reshteh" priced $7.25 in place and switched on → on the public page after 319 ms
+PASS f-public-hidden: hidden and price cleared again → gone from the public page after 7 ms
+PASS g-section: section "Extra" switched off in the editor → gone from the public page after 313 ms
+PASS g-section-back: section "Extra" switched on again → back after 312 ms
+PASS g-last-item: all 3 items of "Beverage" hidden → the section disappears from the public page after 4 ms
+PASS g-last-item-back: items shown again → "Beverage" back after 5 ms
+PASS h-staff-ui: staff item panel (Advanced): notes inputs present = false; explanatory line shown = true
+PASS h-staff-403: staff POST action=notes → 403 "Allergen, dietary and halal notes are set by the owner or an admin only"
+PASS h-staff-style: staff GET /admin/senso?tab=style → HTTP 200, refusal page shown: true, no Style tab rendered
+PASS style-staff-403: staff GET /api/admin/style?venue=senso → 403 "the Style tab is for the owner and admins"; staff POST update → 403 "the Style tab is for the owner and admins"
+PASS staff-add-venue: staff GET /admin/new → refusal shown: true, no form
+PASS h-owner: owner saved notes in the panel (each field on its own): {"text":{"en":null,"fa":null},"halal":true,"dietary":[],"allergens":["nuts"]}
+PASS h-admin: admin cleared the notes again: {"text":{"en":null,"fa":null},"halal":null,"dietary":[],"allergens":[]}
+PASS venue-staff-403: staff POST /api/admin/venue → 403 "venue details are edited by the owner or an admin"
+PASS details-owner-get: owner GET /api/admin/venue?id=senso → 200; 1 location(s), logo /brand/senso-logo.png, template senso
+PASS details-owner-save: owner changed the tagline in the Details tab (2 taps + typing + Enter) → the public page's description reads "Drill tagline" after 322 ms
+PASS details-undo: Undo → tagline "Experience the Best Breakfast & Drink with Us" again, back on the public page after 5 ms
+PASS style-owner-options: owner GET /api/admin/style?venue=senso → 200; template senso, options accent, intro, photos; current accent #042c7c
+PASS style-owner-save: owner tapped the swatch #cc9434 (2 taps: Style tab, swatch) → venues.style {"intro":true,"accent":"#cc9434","photos":true}; the public page's CSS carries --brand-accent:#cc9434 after 322 ms (448 ms after the tap)
+PASS style-undo: Undo → --brand-accent:#042c7c back on the public page after 6 ms; venues.style now {"intro":true,"accent":"#042c7c","photos":true}
+PASS style-intro-switch: intro switch off → no intro in the public HTML after 319 ms; Undo → intro back after 4 ms
+PASS add-venue: + Add venue: 3 taps (venue menu, Add venue, Create) + the name → /admin/drill-venue (Details tab) 92 ms after Create; venues row template=default, 1 starting section; GET /drill-venue → 200 in 2 ms (default template, name on the page: true); in the venue dropdown: true
+PASS b-revoked: revoked staff PIN → 303, error="wrong PIN (4 tries left)", cookie set: false
+
+Transcript:
+2026-10-08T03:04:06.390Z [db] connected to database "roses_check_20261008t030150z" as application "roses-check:admin-drill"
+2026-10-08T03:04:06.579Z [e-unauth] PASS: unauthenticated POST /api/admin/item → 401 {"ok":false,"error":"not signed in"}
+2026-10-08T03:04:06.905Z [shot] 01-login-pin.jpg
+2026-10-08T03:04:06.979Z [shot] 02-login-admin.jpg
+2026-10-08T03:04:08.066Z [shot] 03-editor-admin.jpg
+2026-10-08T03:04:08.105Z [c-cookie] PASS: Set-Cookie attributes: roses_session=<token>; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200 (Secure is added when served over https); signed in lands on /admin/drill-default-venue (the first venue's page editor)
+2026-10-08T03:04:08.190Z [admin-pin] PASS: admin PIN on the Kebab Land sign-in → 303 to /admin/kebab-land, cookie set: true; Team (owner and admin) answers 200 with the admin accounts: true
+2026-10-08T03:04:08.227Z [pin-create] PASS: PIN created for "Drill staff" (staff, senso): shown once on the response page (6 digits: true), hash stored: true
+2026-10-08T03:04:08.262Z [pin-create] PASS: PIN created for "Drill owner" (owner, senso+kebab-land): shown once on the response page (6 digits: true), hash stored: true
+2026-10-08T03:04:08.263Z [d-hash] PASS: pins with a hash not starting with $scrypt$: 0; plain PIN column: none exists (schema has pin_hash only)
+2026-10-08T03:04:08.440Z [shot] 04-team.jpg
+2026-10-08T03:04:08.597Z [c-logout] PASS: logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://127.0.0.1:3100/admin shows the sign-in form and no admin frame (a still-valid token is simply no longer sent: 307)
+2026-10-08T03:04:09.031Z [pin-login] PASS: staff PIN sign-in lands on http://127.0.0.1:3100/admin/senso (page editor); tabs visible to staff: Menu (no Style or Details)
+2026-10-08T03:04:09.148Z [shot] 05-editor-staff.jpg
+2026-10-08T03:04:09.217Z [f-ui] PASS: editor: the Shown switch on "Aash-e-Reshteh" (no price) refuses with "The item needs a price before it can be shown"; still hidden in the database
+2026-10-08T03:04:09.320Z [shot] 06-needs-price-refused.jpg
+2026-10-08T03:04:09.330Z [f-server] PASS: direct POST action=update listed=true → 400, error="The item needs a price before it can be shown"
+2026-10-08T03:04:09.331Z [f-check] PASS: SQL "update items set listed = true" on the priceless item → 23514 listed_requires_price: new row for relation "items" violates check constraint "listed_requires_price"
+2026-10-08T03:04:09.675Z [f-sizes] PASS: save "Prosecco" shown with a second size without price → 400 "Every size needs a price before the item can be shown"; row unchanged: true
+2026-10-08T03:04:10.093Z [f-public-listed] PASS: "Aash-e-Reshteh" priced $7.25 in place and switched on → on the public page after 319 ms
+2026-10-08T03:04:10.223Z [shot] 07-priced-and-shown.jpg
+2026-10-08T03:04:10.267Z [f-public-hidden] PASS: hidden and price cleared again → gone from the public page after 7 ms
+2026-10-08T03:04:10.679Z [g-section] PASS: section "Extra" switched off in the editor → gone from the public page after 313 ms
+2026-10-08T03:04:10.825Z [shot] 08-section-hidden.jpg
+2026-10-08T03:04:11.174Z [g-section-back] PASS: section "Extra" switched on again → back after 312 ms
+2026-10-08T03:04:11.270Z [g-last-item] PASS: all 3 items of "Beverage" hidden → the section disappears from the public page after 4 ms
+2026-10-08T03:04:11.355Z [g-last-item-back] PASS: items shown again → "Beverage" back after 5 ms
+2026-10-08T03:04:13.009Z [shot] 09-staff-no-notes.jpg
+2026-10-08T03:04:13.009Z [h-staff-ui] PASS: staff item panel (Advanced): notes inputs present = false; explanatory line shown = true
+2026-10-08T03:04:13.013Z [h-staff-403] PASS: staff POST action=notes → 403 "Allergen, dietary and halal notes are set by the owner or an admin only"
+2026-10-08T03:04:13.021Z [h-staff-style] PASS: staff GET /admin/senso?tab=style → HTTP 200, refusal page shown: true, no Style tab rendered
+2026-10-08T03:04:13.024Z [style-staff-403] PASS: staff GET /api/admin/style?venue=senso → 403 "the Style tab is for the owner and admins"; staff POST update → 403 "the Style tab is for the owner and admins"
+2026-10-08T03:04:13.032Z [staff-add-venue] PASS: staff GET /admin/new → refusal shown: true, no form
+2026-10-08T03:04:14.071Z [shot] 10-owner-notes-saved.jpg
+2026-10-08T03:04:14.072Z [h-owner] PASS: owner saved notes in the panel (each field on its own): {"text":{"en":null,"fa":null},"halal":true,"dietary":[],"allergens":["nuts"]}
+2026-10-08T03:04:14.365Z [h-admin] PASS: admin cleared the notes again: {"text":{"en":null,"fa":null},"halal":null,"dietary":[],"allergens":[]}
+2026-10-08T03:04:14.369Z [venue-staff-403] PASS: staff POST /api/admin/venue → 403 "venue details are edited by the owner or an admin"
+2026-10-08T03:04:14.374Z [details-owner-get] PASS: owner GET /api/admin/venue?id=senso → 200; 1 location(s), logo /brand/senso-logo.png, template senso
+2026-10-08T03:04:14.924Z [shot] 11-details-tagline.jpg
+2026-10-08T03:04:14.924Z [details-owner-save] PASS: owner changed the tagline in the Details tab (2 taps + typing + Enter) → the public page's description reads "Drill tagline" after 322 ms
+2026-10-08T03:04:15.037Z [details-undo] PASS: Undo → tagline "Experience the Best Breakfast & Drink with Us" again, back on the public page after 5 ms
+2026-10-08T03:04:15.041Z [style-owner-options] PASS: owner GET /api/admin/style?venue=senso → 200; template senso, options accent, intro, photos; current accent #042c7c
+2026-10-08T03:04:15.566Z [shot] 12-style-accent.jpg
+2026-10-08T03:04:15.566Z [style-owner-save] PASS: owner tapped the swatch #cc9434 (2 taps: Style tab, swatch) → venues.style {"intro":true,"accent":"#cc9434","photos":true}; the public page's CSS carries --brand-accent:#cc9434 after 322 ms (448 ms after the tap)
+2026-10-08T03:04:15.690Z [style-undo] PASS: Undo → --brand-accent:#042c7c back on the public page after 6 ms; venues.style now {"intro":true,"accent":"#042c7c","photos":true}
+2026-10-08T03:04:16.146Z [style-intro-switch] PASS: intro switch off → no intro in the public HTML after 319 ms; Undo → intro back after 4 ms
+2026-10-08T03:04:16.781Z [shot] 13-venue-added.jpg
+2026-10-08T03:04:16.784Z [add-venue] PASS: + Add venue: 3 taps (venue menu, Add venue, Create) + the name → /admin/drill-venue (Details tab) 92 ms after Create; venues row template=default, 1 starting section; GET /drill-venue → 200 in 2 ms (default template, name on the page: true); in the venue dropdown: true
+2026-10-08T03:04:17.129Z [b-revoked] PASS: revoked staff PIN → 303, error="wrong PIN (4 tries left)", cookie set: false

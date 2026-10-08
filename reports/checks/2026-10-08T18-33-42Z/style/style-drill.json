@@ -1,0 +1,350 @@
+{
+  "base": "http://127.0.0.1:3100",
+  "at": "2026-10-08T18:38:46.346Z",
+  "pass": true,
+  "results": [
+    {
+      "step": "day-one-senso",
+      "ok": true,
+      "text": "senso: 32 of 38 served colours equal the pre-token look; known differences (pure black → ink) 6: tabs.active #000000→#1d1d1f, tabs.indicator #000000→#1d1d1f, tabs.list #000000→#1d1d1f, sheet.title #000000→#1d1d1f, sheet.price #000000→#1d1d1f, sheet.closeIcon #000000→#1d1d1f; unexpected 0; missing 0; extra variables 0; API: 8 groups, 38 tokens with plain-words labels (0 not), palette of 7 venue colours, layout options intro+photos"
+    },
+    {
+      "step": "day-one-kebab-land",
+      "ok": true,
+      "text": "kebab-land: 33 of 39 served colours equal the pre-token look; known differences (pure black → ink) 6: tabs.active #000000→#1d1d1f, tabs.indicator #000000→#1d1d1f, tabs.list #000000→#1d1d1f, sheet.title #000000→#1d1d1f, sheet.price #000000→#1d1d1f, sheet.closeIcon #000000→#1d1d1f; unexpected 0; missing 0; extra variables 0; API: 8 groups, 39 tokens with plain-words labels (0 not), palette of 7 venue colours, layout options intro+photos"
+    },
+    {
+      "step": "t-bar-bg",
+      "ok": true,
+      "text": "change the category bar background: 3 taps (Style tab, group, swatch \"Bar background: Gold #cc9434\"); the group opened with its first token ready (true); saved 61 ms after the tap, on the public page after 5 ms (553 ms after the tap); \"Saved · Undo\" shown: true"
+    },
+    {
+      "step": "t-bar-bg-undo",
+      "ok": true,
+      "text": "Undo → the bar background is Auto again (venues.style.colors has no tabs.bg: true), #ffffff back on the public page after 6 ms"
+    },
+    {
+      "step": "t-bar-bg-custom",
+      "ok": true,
+      "text": "custom colour: 3 taps (Style tab, group, Custom) + choosing in the picker → #fff8ee saved 54 ms after choosing"
+    },
+    {
+      "step": "preview-1s",
+      "ok": true,
+      "text": "row background #fff8ee shows in the preview 86 ms after Enter (target ≤ 1000); \"Saved · Undo\" shown: true; on the public page after 5 ms; the item rows stay outlined in the preview: true"
+    },
+    {
+      "step": "preview-undo",
+      "ok": true,
+      "text": "Undo → #ffffff back on the public page after 5 ms; the token reads \"Auto · same as the page background\" (auto, #ffffff)"
+    },
+    {
+      "step": "linked-auto",
+      "ok": true,
+      "text": "row background → #141414: item name #ffffff (auto: \"Auto · light text for the row background\"), description #a1a1a6 (auto), price #ffffff (auto), line between rows #353535 (a light shade of the dark background); on the public page after 132 ms"
+    },
+    {
+      "step": "linked-custom",
+      "ok": true,
+      "text": "price set to #ffc14d (custom; on the public page after 130 ms); row background → #2a2a2a: price stays #ffc14d (custom), item name re-derived #ffffff (auto), line #484848; on the public page after 129 ms"
+    },
+    {
+      "step": "reset-group",
+      "ok": true,
+      "text": "Reset group to venue default: 2 custom colours of the rows → 0, the public page back to the defaults after 5 ms; Undo → both custom colours back ({\"rows.bg\":\"#2a2a2a\",\"rows.price\":\"#ffc14d\"}), on the public page after 5 ms"
+    },
+    {
+      "step": "guard-gold",
+      "ok": true,
+      "text": "gold #cc9434 as the price on cream #fff8ee: refused with \"2.5:1 — Price on the row background needs 4.5:1. Use #936b25 instead.Use #936b25\" (measured 2.5:1); nothing saved (database: null, public page still #1d1d1f); one-tap fix offered: #936b25"
+    },
+    {
+      "step": "guard-fix",
+      "ok": true,
+      "text": "one tap on \"Use #936b25\" → saved 51 ms later, on the public page after 5 ms (84 ms after the tap); #936b25 on cream measures 4.6:1"
+    },
+    {
+      "step": "guard-navy",
+      "ok": true,
+      "text": "navy #042c7c as the section title on cream: allowed (measured 12:1, needs 3:1 for a heading), saved 52 ms after Enter"
+    },
+    {
+      "step": "reset-all",
+      "ok": true,
+      "text": "Reset all colours (confirmed in the sheet): 3 custom colours → 0 (2 ms), the public page back to the defaults after 5 ms; Undo → all 3 back, on the public page after 5 ms"
+    },
+    {
+      "step": "guard-route",
+      "ok": true,
+      "text": "route: Kebab Land page → #141414 200 (the brand-red location labels fall back to Auto: footer label now #ffffff); red #b92e2e as the price on it → 400 \"3.1:1 — Price on the row background needs 4.5:1. Use #c85c5c instead.\" (ratio 3.1, needs 4.5); the same red as a section title → 200 (large text, needs 3); Senso page → cream 200; gold #cc9434 as the price → 400 (ratio 2.5, needs 4.5, suggested #936b25); gold as a section title → 400 (needs 3); navy #042c7c as the price → 200 (12:1)"
+    },
+    {
+      "step": "region-tap",
+      "ok": true,
+      "text": "tapped the footer in the preview → the Footer group opened 6 ms later (1 tap), scrolled into view: true; the footer is outlined in the preview: true"
+    },
+    {
+      "step": "region-outline",
+      "ok": true,
+      "text": "opening a group outlines its region: Category tabs → #tabs outlined (true); Item popup → the first item's sheet opened and outlined (true); Intro → the logo overlay shown frozen (display grid, sheet closed again: true); a tap on an item row → Item rows open and its lists outlined (true)"
+    },
+    {
+      "step": "no-jump",
+      "ok": true,
+      "text": "footer tapped in the preview, then Category tabs opened on the left and Tab text saved as #4a4a4a (on the public page after 132 ms): 1545 ms later the open group is still [tabs] with Tab text open (true), the preview outlines the tabs (true) and not the footer (true), the group is in view (true); a tap on the tab bar in the preview keeps Tab text open (true) and the group [tabs]"
+    },
+    {
+      "step": "section-grid",
+      "ok": true,
+      "text": "\"Fresh Juice\" (8 shown items) switched to Grid: 1 tap in the Layout group; saved 3 ms after the tap, the public page renders 8 cards in a two-column grid (0 rows left, 8 popups, 0 photo placeholders) after 4 ms; the preview shows the grid 117 ms after the tap (display grid, 2 columns, first two cards side by side: true, photo 198 px wide); a tap on a card opens the popup \"Green Mojito\" (true); \"Grid · Undo\" shown: true; the control reads grid"
+    },
+    {
+      "step": "section-grid-undo",
+      "ok": true,
+      "text": "Undo → \"Fresh Juice\" is a list again (database list, control list), 8 rows back on the public page after 4 ms; change records: restore grid→list, update list→grid; an unknown layout on the route → 400 \"layout: list or grid\""
+    },
+    {
+      "step": "persian-same",
+      "ok": true,
+      "text": "Persian view: dir=rtl, page background #ffffff (English #ffffff)"
+    }
+  ],
+  "measures": [
+    "change the category bar background: 3 taps (Style tab, group, swatch) + 0 extra; on the public page in 5 ms",
+    "change the category bar background with the custom picker: 3 taps + choosing; saved in 54 ms",
+    "preview shows a saved colour after 86 ms",
+    "readability guard: refusal shown with the ratio and a one-tap fix; the fix saved in 51 ms",
+    "tap a region in the preview: 1 tap; its group open after 6 ms",
+    "switch a section to the grid layout: 1 tap (Layout group); on the public page in 4 ms; in the preview after 117 ms"
+  ],
+  "transcript": [
+    {
+      "at": "2026-10-08T18:38:29.776Z",
+      "ms": 10,
+      "step": "db",
+      "text": "connected to database \"roses_check_20261008t183342z\" as application \"roses-check:style-drill\""
+    },
+    {
+      "at": "2026-10-08T18:38:30.002Z",
+      "ms": 236,
+      "step": "setup",
+      "text": "reset senso → 200"
+    },
+    {
+      "at": "2026-10-08T18:38:30.028Z",
+      "ms": 262,
+      "step": "setup",
+      "text": "reset kebab-land → 200"
+    },
+    {
+      "at": "2026-10-08T18:38:30.049Z",
+      "ms": 283,
+      "step": "day-one-senso",
+      "text": "PASS: senso: 32 of 38 served colours equal the pre-token look; known differences (pure black → ink) 6: tabs.active #000000→#1d1d1f, tabs.indicator #000000→#1d1d1f, tabs.list #000000→#1d1d1f, sheet.title #000000→#1d1d1f, sheet.price #000000→#1d1d1f, sheet.closeIcon #000000→#1d1d1f; unexpected 0; missing 0; extra variables 0; API: 8 groups, 38 tokens with plain-words labels (0 not), palette of 7 venue colours, layout options intro+photos"
+    },
+    {
+      "at": "2026-10-08T18:38:30.059Z",
+      "ms": 293,
+      "step": "day-one-kebab-land",
+      "text": "PASS: kebab-land: 33 of 39 served colours equal the pre-token look; known differences (pure black → ink) 6: tabs.active #000000→#1d1d1f, tabs.indicator #000000→#1d1d1f, tabs.list #000000→#1d1d1f, sheet.title #000000→#1d1d1f, sheet.price #000000→#1d1d1f, sheet.closeIcon #000000→#1d1d1f; unexpected 0; missing 0; extra variables 0; API: 8 groups, 39 tokens with plain-words labels (0 not), palette of 7 venue colours, layout options intro+photos"
+    },
+    {
+      "at": "2026-10-08T18:38:30.700Z",
+      "ms": 934,
+      "step": "shot",
+      "text": "01-style-phone.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:30.830Z",
+      "ms": 1064,
+      "step": "shot",
+      "text": "02-style-phone-group.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:31.383Z",
+      "ms": 1617,
+      "step": "shot",
+      "text": "03-style-phone-saved.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:31.383Z",
+      "ms": 1617,
+      "step": "t-bar-bg",
+      "text": "PASS: change the category bar background: 3 taps (Style tab, group, swatch \"Bar background: Gold #cc9434\"); the group opened with its first token ready (true); saved 61 ms after the tap, on the public page after 5 ms (553 ms after the tap); \"Saved · Undo\" shown: true"
+    },
+    {
+      "at": "2026-10-08T18:38:31.581Z",
+      "ms": 1815,
+      "step": "t-bar-bg-undo",
+      "text": "PASS: Undo → the bar background is Auto again (venues.style.colors has no tabs.bg: true), #ffffff back on the public page after 6 ms"
+    },
+    {
+      "at": "2026-10-08T18:38:31.644Z",
+      "ms": 1878,
+      "step": "t-bar-bg-custom",
+      "text": "PASS: custom colour: 3 taps (Style tab, group, Custom) + choosing in the picker → #fff8ee saved 54 ms after choosing"
+    },
+    {
+      "at": "2026-10-08T18:38:32.948Z",
+      "ms": 3182,
+      "step": "shot",
+      "text": "04-style-laptop.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:33.112Z",
+      "ms": 3346,
+      "step": "shot",
+      "text": "05-preview-colour.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:33.112Z",
+      "ms": 3346,
+      "step": "preview-1s",
+      "text": "PASS: row background #fff8ee shows in the preview 86 ms after Enter (target ≤ 1000); \"Saved · Undo\" shown: true; on the public page after 5 ms; the item rows stay outlined in the preview: true"
+    },
+    {
+      "at": "2026-10-08T18:38:33.749Z",
+      "ms": 3983,
+      "step": "preview-undo",
+      "text": "PASS: Undo → #ffffff back on the public page after 5 ms; the token reads \"Auto · same as the page background\" (auto, #ffffff)"
+    },
+    {
+      "at": "2026-10-08T18:38:34.241Z",
+      "ms": 4475,
+      "step": "shot",
+      "text": "06-linked-dark-rows.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:34.241Z",
+      "ms": 4475,
+      "step": "linked-auto",
+      "text": "PASS: row background → #141414: item name #ffffff (auto: \"Auto · light text for the row background\"), description #a1a1a6 (auto), price #ffffff (auto), line between rows #353535 (a light shade of the dark background); on the public page after 132 ms"
+    },
+    {
+      "at": "2026-10-08T18:38:35.227Z",
+      "ms": 5461,
+      "step": "shot",
+      "text": "07-linked-custom-stays.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:35.227Z",
+      "ms": 5461,
+      "step": "linked-custom",
+      "text": "PASS: price set to #ffc14d (custom; on the public page after 130 ms); row background → #2a2a2a: price stays #ffc14d (custom), item name re-derived #ffffff (auto), line #484848; on the public page after 129 ms"
+    },
+    {
+      "at": "2026-10-08T18:38:35.460Z",
+      "ms": 5694,
+      "step": "reset-group",
+      "text": "PASS: Reset group to venue default: 2 custom colours of the rows → 0, the public page back to the defaults after 5 ms; Undo → both custom colours back ({\"rows.bg\":\"#2a2a2a\",\"rows.price\":\"#ffc14d\"}), on the public page after 5 ms"
+    },
+    {
+      "at": "2026-10-08T18:38:36.398Z",
+      "ms": 6632,
+      "step": "shot",
+      "text": "08-guard-refused.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:36.398Z",
+      "ms": 6632,
+      "step": "guard-gold",
+      "text": "PASS: gold #cc9434 as the price on cream #fff8ee: refused with \"2.5:1 — Price on the row background needs 4.5:1. Use #936b25 instead.Use #936b25\" (measured 2.5:1); nothing saved (database: null, public page still #1d1d1f); one-tap fix offered: #936b25"
+    },
+    {
+      "at": "2026-10-08T18:38:36.482Z",
+      "ms": 6716,
+      "step": "guard-fix",
+      "text": "PASS: one tap on \"Use #936b25\" → saved 51 ms later, on the public page after 5 ms (84 ms after the tap); #936b25 on cream measures 4.6:1"
+    },
+    {
+      "at": "2026-10-08T18:38:36.613Z",
+      "ms": 6847,
+      "step": "guard-navy",
+      "text": "PASS: navy #042c7c as the section title on cream: allowed (measured 12:1, needs 3:1 for a heading), saved 52 ms after Enter"
+    },
+    {
+      "at": "2026-10-08T18:38:36.663Z",
+      "ms": 6897,
+      "step": "shot",
+      "text": "09-guard-allowed.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:37.344Z",
+      "ms": 7578,
+      "step": "reset-all",
+      "text": "PASS: Reset all colours (confirmed in the sheet): 3 custom colours → 0 (2 ms), the public page back to the defaults after 5 ms; Undo → all 3 back, on the public page after 5 ms"
+    },
+    {
+      "at": "2026-10-08T18:38:37.508Z",
+      "ms": 7742,
+      "step": "guard-route",
+      "text": "PASS: route: Kebab Land page → #141414 200 (the brand-red location labels fall back to Auto: footer label now #ffffff); red #b92e2e as the price on it → 400 \"3.1:1 — Price on the row background needs 4.5:1. Use #c85c5c instead.\" (ratio 3.1, needs 4.5); the same red as a section title → 200 (large text, needs 3); Senso page → cream 200; gold #cc9434 as the price → 400 (ratio 2.5, needs 4.5, suggested #936b25); gold as a section title → 400 (needs 3); navy #042c7c as the price → 200 (12:1)"
+    },
+    {
+      "at": "2026-10-08T18:38:37.724Z",
+      "ms": 7958,
+      "step": "shot",
+      "text": "10-region-tapped.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:37.724Z",
+      "ms": 7958,
+      "step": "region-tap",
+      "text": "PASS: tapped the footer in the preview → the Footer group opened 6 ms later (1 tap), scrolled into view: true; the footer is outlined in the preview: true"
+    },
+    {
+      "at": "2026-10-08T18:38:40.026Z",
+      "ms": 10260,
+      "step": "shot",
+      "text": "11-region-sheet.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:40.391Z",
+      "ms": 10625,
+      "step": "shot",
+      "text": "12-region-intro.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:40.398Z",
+      "ms": 10632,
+      "step": "region-outline",
+      "text": "PASS: opening a group outlines its region: Category tabs → #tabs outlined (true); Item popup → the first item's sheet opened and outlined (true); Intro → the logo overlay shown frozen (display grid, sheet closed again: true); a tap on an item row → Item rows open and its lists outlined (true)"
+    },
+    {
+      "at": "2026-10-08T18:38:43.240Z",
+      "ms": 13474,
+      "step": "shot",
+      "text": "13-no-jump-after-save.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:43.240Z",
+      "ms": 13474,
+      "step": "no-jump",
+      "text": "PASS: footer tapped in the preview, then Category tabs opened on the left and Tab text saved as #4a4a4a (on the public page after 132 ms): 1545 ms later the open group is still [tabs] with Tab text open (true), the preview outlines the tabs (true) and not the footer (true), the group is in view (true); a tap on the tab bar in the preview keeps Tab text open (true) and the group [tabs]"
+    },
+    {
+      "at": "2026-10-08T18:38:45.473Z",
+      "ms": 15707,
+      "step": "shot",
+      "text": "14-section-grid.jpg"
+    },
+    {
+      "at": "2026-10-08T18:38:45.473Z",
+      "ms": 15707,
+      "step": "section-grid",
+      "text": "PASS: \"Fresh Juice\" (8 shown items) switched to Grid: 1 tap in the Layout group; saved 3 ms after the tap, the public page renders 8 cards in a two-column grid (0 rows left, 8 popups, 0 photo placeholders) after 4 ms; the preview shows the grid 117 ms after the tap (display grid, 2 columns, first two cards side by side: true, photo 198 px wide); a tap on a card opens the popup \"Green Mojito\" (true); \"Grid · Undo\" shown: true; the control reads grid"
+    },
+    {
+      "at": "2026-10-08T18:38:45.909Z",
+      "ms": 16143,
+      "step": "section-grid-undo",
+      "text": "PASS: Undo → \"Fresh Juice\" is a list again (database list, control list), 8 rows back on the public page after 4 ms; change records: restore grid→list, update list→grid; an unknown layout on the route → 400 \"layout: list or grid\""
+    },
+    {
+      "at": "2026-10-08T18:38:46.264Z",
+      "ms": 16498,
+      "step": "persian-same",
+      "text": "PASS: Persian view: dir=rtl, page background #ffffff (English #ffffff)"
+    }
+  ]
+}

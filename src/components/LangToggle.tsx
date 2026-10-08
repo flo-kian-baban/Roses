@@ -1,9 +1,10 @@
 // Language toggle without React on the client: a button plus one inline script.
-// The head script (Intro.tsx) restores the saved language before first paint.
+// The head script (Intro.tsx) restores the saved language before first paint. Colours: the Header group's
+// "Language button" and "Language button text" tokens (src/venues/tokens.ts).
 export function LangToggle() {
   return (
     <>
-      <button type="button" id="lang-toggle" className="rounded-full bg-black/[.05] px-3.5 py-1.5 text-sm font-medium transition hover:bg-black/[.08]" aria-label="Switch language / تغییر زبان">
+      <button type="button" id="lang-toggle" className="rounded-full bg-(--c-header-lang-bg) px-3.5 py-1.5 text-sm font-medium text-(--c-header-lang-text) transition" aria-label="Switch language / تغییر زبان">
         <span lang="en">فارسی</span>
         <span lang="fa">English</span>
       </button>

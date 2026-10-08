@@ -1,8 +1,9 @@
 import type { AppProps } from 'next/app';
 import { montserrat, tinos, vazirmatn } from '@/app/fonts';
-import '@/app/globals.css';
+import '@/styles/public.css';
 
-// Font variables on :root so the venue theme can reference them; the files are bundled by next/font/local.
+// The customers' pages (Pages Router). Font variables on :root so the venue theme can reference them; the files are
+// bundled by next/font/local. The stylesheet is the public one (language switch, intro, menu kit; colours by tokens).
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>

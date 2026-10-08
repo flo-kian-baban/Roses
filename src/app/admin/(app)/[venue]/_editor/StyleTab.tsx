@@ -1,19 +1,34 @@
 'use client';
-// The Style tab (step 2; owner and admin): the options the venue's page template declares (src/venues/styles.ts),
-// loaded from /api/admin/style (403 for staff) and saved one change at a time with "Saved · Undo" like everything else.
-// Colours offer the recorded brand colours as swatches plus a custom picker; the brand record itself is never changed.
-import { useEffect, useState } from 'react';
-import type { StyleValues } from '@/lib/types';
+// The Style tab (Kian, 2026-10-08; owner and admin): the page's colours grouped by the parts customers see, top to bottom
+// (src/venues/tokens.ts), then the template's layout options (src/venues/styles.ts). Each token shows its swatch, a plain
+// label and where its colour comes from: "Auto" (derived from the background it sits on), "Venue default" (the brand
+// record) or "Custom". Tapping a token opens the venue's palette, a native colour picker and a hex field; a colour being
+// picked shows live in the preview and saves when chosen, with "Saved · Undo" like everything else. The readability guard
+// (WCAG contrast) refuses a colour that would be hard to read, with the ratio, the threshold and a one-tap nearest fix.
+// Opening a group outlines its region in the preview; a tap on a region in the preview opens its group here.
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { Brand, StyleValues } from '@/lib/types';
 import type { StyleOption } from '@/venues/styles';
+import { GROUPS, baseName, cssVar, isLight, normHex, resolveColors, unreadable, type GroupId, type Resolved, type TokenDef } from '@/venues/tokens';
 import { Icon } from '../../../_ui/icons';
-import { call, type Resp } from './api';
-import { Switch } from './ui';
+import { ApiFail, call, type Resp } from './api';
+import type { Region } from './Preview';
+import { ConfirmSheet, Switch, btnSecondary, fieldCls } from './ui';
 
-type Data = { template: { id: string; name: string }; options: StyleOption[]; values: StyleValues; chosen: StyleValues };
+type Data = { template: { id: string; name: string }; groups: typeof GROUPS; tokens: TokenDef[]; palette: { label: string; value: string }[]; layout: StyleOption[]; values: StyleValues; style: StyleValues; brand: Brand | null };
+type Fail = { key: string; error: string; suggestion: { key: string; value: string } | null; refused?: string };
+export type Picked = { region: Region; n: number } | null;
+const btnSmall = `${btnSecondary} min-h-9 px-3 text-sm`;
 
-export function StyleTab({ venueId, version, onSaved }: { venueId: string; version: number; onSaved: (r: Resp, text?: string) => void }) {
+export function StyleTab({ venueId, version, onSaved, onLive, onRegion, picked }: { venueId: string; version: number; onSaved: (r: Resp, text?: string) => void; onLive: (vars: Record<string, string> | null) => void; onRegion: (r: Region | null) => void; picked: Picked }) {
   const [data, setData] = useState<Data | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [fail, setFail] = useState<Fail | null>(null);
+  const [openGroup, setOpenGroup] = useState<GroupId | null>(null);
+  const [openToken, setOpenToken] = useState<string | null>(null);
+  const [pending, setPending] = useState<Record<string, string>>({});
+  const [confirmReset, setConfirmReset] = useState(false);
+  const groupRefs = useRef<Partial<Record<GroupId, HTMLElement | null>>>({});
   useEffect(() => {
     let live = true;
     fetch(`/api/admin/style?venue=${encodeURIComponent(venueId)}`, { credentials: 'same-origin' })
@@ -21,61 +36,149 @@ export function StyleTab({ venueId, version, onSaved }: { venueId: string; versi
       .catch((e) => { if (live) setErr((e as Error).message); });
     return () => { live = false; };
   }, [venueId, version]);
-  const set = async (key: string, value: string | boolean) => {
+  useEffect(() => { if (!err) return; const t = setTimeout(() => setErr(null), 6000); return () => clearTimeout(t); }, [err]);
+
+  const venue = useMemo(() => (data ? { template: data.template.id, brand: data.brand, style: data.style } : null), [data]);
+  const resolved: Resolved = useMemo(() => (venue ? resolveColors(venue, pending) : {}), [venue, pending]);
+  const warnings = useMemo(() => (venue ? unreadable(resolved, venue.template) : []), [venue, resolved]);
+  const tokensOfGroup = (g: GroupId) => (data?.tokens ?? []).filter((t) => t.group === g);
+  const label = (key: string) => data?.tokens.find((t) => t.key === key)?.label ?? key;
+  const varsOf = (res: Resolved) => Object.fromEntries(Object.entries(res).map(([k, r]) => [cssVar(k), r.value]));
+
+  const open = (g: GroupId | null, token?: string | null) => {
+    setOpenGroup(g); setOpenToken(g ? token ?? tokensOfGroup(g)[0]?.key ?? null : null); onRegion(g);
+    if (g) requestAnimationFrame(() => groupRefs.current[g]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+  };
+  // A tap on a region in the preview opens its group here and scrolls to it.
+  useEffect(() => { if (picked && data) open(picked.region); }, [picked, data]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const apply = (r: Resp) => setData((d) => (d ? { ...d, style: r.style as StyleValues, values: r.values as StyleValues, tokens: r.tokens as TokenDef[], palette: r.palette as Data['palette'], brand: r.brand as Brand | null } : d));
+  // Live: the colour under the picker shows in the preview before it is saved (every Auto token linked to it follows).
+  const live = (key: string, value: string) => { if (!venue) return; const p = { ...pending, [key]: value }; setPending(p); onLive(varsOf(resolveColors(venue, p))); };
+  // A refusal stays on screen until the next answer for that token (so its one-tap fix cannot vanish under the finger).
+  const setColor = async (key: string, value: string | null, text = 'Saved') => {
     if (!data) return;
-    const before = data;
-    setData({ ...data, values: { ...data.values, [key]: value } });
-    try { const r = await call('/api/admin/style', { action: 'update', venue: venueId, patch: { [key]: value } }); setData((d) => (d ? { ...d, values: r.values as StyleValues, chosen: r.chosen as StyleValues } : d)); onSaved(r); }
+    setPending({});
+    try { const r = await call('/api/admin/style', { action: 'update', venue: venueId, patch: { colors: { [key]: value } } }); apply(r); setFail((f) => (f?.key === key ? null : f)); onSaved(r, text); }
+    catch (e) { onLive(null); const x = e as ApiFail; if (x.extra?.guard) setFail({ key, error: x.message, suggestion: (x.extra.guard as { suggestion: Fail['suggestion'] }).suggestion, refused: value ?? undefined }); else setErr(x.message); }
+  };
+  const setLayout = async (key: string, value: string | boolean) => {
+    if (!data) return;
+    const before = data; setData({ ...data, values: { ...data.values, [key]: value } });
+    try { const r = await call('/api/admin/style', { action: 'update', venue: venueId, patch: { [key]: value } }); apply(r); onSaved(r); }
     catch (e) { setData(before); setErr((e as Error).message); }
   };
+  const reset = async (group?: GroupId) => {
+    setFail(null);
+    try { const r = await call('/api/admin/style', { action: 'reset', venue: venueId, ...(group ? { group } : {}) }); apply(r); setConfirmReset(false); onSaved(r, group ? 'Group reset' : 'All colours reset'); }
+    catch (e) { setErr((e as Error).message); }
+  };
+
   if (err && !data) return <p role="alert" className="mx-auto mt-6 max-w-3xl rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900">{err}</p>;
-  if (!data) return <p className="mx-auto mt-10 max-w-3xl px-5 text-center text-sm text-ink-muted" aria-busy="true">Loading the style options…</p>;
+  if (!data || !venue) return <p className="mx-auto mt-10 max-w-3xl px-5 text-center text-sm text-ink-muted" aria-busy="true">Loading the style options…</p>;
+  const customKeys = Object.keys(((data.style as Record<string, unknown>).colors as Record<string, string> | undefined) ?? {});
+  const anyCustom = customKeys.length > 0 || 'accent' in data.style || 'tile' in data.style;
+  const groups = data.groups.filter((g) => tokensOfGroup(g.id).length > 0);
   return (
     <div className="mx-auto w-full max-w-3xl px-3 pb-32 pt-4 sm:px-5" data-style-tab>
-      <p className="px-1 text-sm text-ink-muted">The {data.template.name} template offers these options. Each change saves itself and shows in the preview.</p>
+      <p className="px-1 text-sm text-ink-muted">Colours by part of the page, top to bottom. Tap a part in the preview, or open a group. Each change saves itself and shows in the preview.</p>
       {err && <p role="alert" className="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900">{err}</p>}
-      <div className="mt-3 divide-y divide-line rounded-2xl border border-line bg-white shadow-card">
-        {data.options.map((o) => (
-          <div key={o.key} className="px-4 py-4" data-style-option={o.key}>
-            {o.type === 'switch' ? (
-              <label className="flex items-center justify-between gap-4">
-                <span><span className="block font-medium">{o.label}</span>{o.hint && <span className="mt-0.5 block text-xs text-ink-muted">{o.hint}</span>}</span>
-                <Switch checked={data.values[o.key] === true} label={`${o.label}: ${data.values[o.key] === true ? 'on' : 'off'}`} onChange={(v) => set(o.key, v)} />
-              </label>
-            ) : o.type === 'color' ? (
-              <div>
-                <div className="flex items-center justify-between gap-3"><span className="font-medium">{o.label}</span><span className="rounded-full bg-fill px-2.5 py-0.5 font-mono text-[12px] uppercase text-ink-muted" data-style-value>{String(data.values[o.key])}</span></div>
-                {o.hint && <p className="mt-0.5 text-xs text-ink-muted">{o.hint}</p>}
-                <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label={`${o.label} swatches`}>
-                  {[...new Set([o.default, ...o.swatches])].map((c) => {
-                    const on = String(data.values[o.key]).toLowerCase() === c.toLowerCase();
-                    return <button key={c} type="button" onClick={() => set(o.key, c)} aria-label={`${o.label}: ${c}${c === o.default ? ' (default)' : ''}`} aria-pressed={on} className={`relative h-10 w-10 rounded-full border border-black/10 transition active:scale-95 ${on ? 'ring-[3px] ring-accent/40 ring-offset-2' : ''}`} style={{ background: c }}>{on && <Icon name="check" className="absolute inset-0 m-auto h-5 w-5" strokeWidth={2.6} />}<span className="sr-only">{c}</span><style>{`[aria-label="${o.label}: ${c}${c === o.default ? ' (default)' : ''}"] svg{color:${luma(c) > 0.6 ? '#000' : '#fff'}}`}</style></button>;
-                  })}
-                  <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line bg-white px-3 text-[14px] font-medium hover:bg-fill">
-                    <input type="color" value={String(data.values[o.key])} aria-label={`${o.label}: custom colour`} onChange={(e) => { void set(o.key, e.target.value); }} className="h-6 w-6 cursor-pointer appearance-none rounded-full border-0 bg-transparent p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0" />
-                    Custom
+      {warnings.length > 0 && <p role="status" className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[14px] text-amber-900" data-style-warnings>Hard to read: {warnings.map((w) => `${label(w.key)} on the ${baseName(w.on)} (${w.ratio.toFixed(1)}:1, needs ${w.threshold}:1)`).join('; ')}.</p>}
+      <div className="mt-3 space-y-3">
+        {groups.map((g) => {
+          const isOpen = openGroup === g.id; const toks = tokensOfGroup(g.id);
+          const groupCustom = toks.some((t) => resolved[t.key]?.state === 'custom');
+          return (
+            <section key={g.id} ref={(el) => { groupRefs.current[g.id] = el; }} data-style-group={g.id} data-open={isOpen ? '1' : undefined} className={`rounded-2xl border bg-white shadow-card ${isOpen ? 'border-accent/40' : 'border-line'}`} onFocusCapture={() => { if (isOpen) onRegion(g.id); }}>
+              <button type="button" aria-expanded={isOpen} aria-label={`${g.label}: ${isOpen ? 'close' : 'open'}`} onClick={() => open(isOpen ? null : g.id)} className="flex min-h-14 w-full items-center gap-3 px-4 py-2.5 text-left">
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[17px] font-semibold">{g.label}</span>
+                  {isOpen ? <span className="block text-xs text-ink-muted">{g.hint}</span> : <span className="mt-1 flex flex-wrap items-center gap-1" aria-label={`${g.label} colours`} data-style-summary>{toks.map((t) => <span key={t.key} className="h-4 w-4 rounded-full border border-black/10" style={{ background: resolved[t.key]?.value }} title={`${t.label}: ${resolved[t.key]?.value}`} />)}</span>}
+                </span>
+                <Icon name={isOpen ? 'up' : 'down'} className="h-5 w-5 shrink-0 text-ink-muted" />
+              </button>
+              {isOpen && (
+                <div className="border-t border-line px-1 pb-3 pt-1">
+                  {toks.map((t) => <TokenRow key={t.key} token={t} res={resolved[t.key]} base={t.on ? resolved[t.on] : null} baseLabel={t.on ? baseName(t.on) : null} open={openToken === t.key} palette={data.palette} fail={fail?.key === t.key ? fail : null}
+                    onOpen={() => { setOpenToken(openToken === t.key ? null : t.key); onRegion(g.id); }} onLive={(v) => live(t.key, v)} onSet={(v, text) => setColor(t.key, v, text)} />)}
+                  <div className="mt-2 px-3"><button type="button" className={btnSmall} disabled={!groupCustom} onClick={() => reset(g.id)}><Icon name="undo" className="h-4 w-4" />Reset group to venue default</button></div>
+                </div>
+              )}
+            </section>
+          );
+        })}
+        <section data-style-group="layout" className="rounded-2xl border border-line bg-white shadow-card">
+          <div className="px-4 pt-3"><h2 className="text-[17px] font-semibold">Layout</h2><p className="text-xs text-ink-muted">What the {data.template.name} template can switch.</p></div>
+          <div className="mt-1 divide-y divide-line">
+            {data.layout.map((o) => (
+              <div key={o.key} className="px-4 py-3" data-style-option={o.key}>
+                {o.type === 'switch' ? (
+                  <label className="flex items-center justify-between gap-4">
+                    <span><span className="block font-medium">{o.label}</span>{o.hint && <span className="mt-0.5 block text-xs text-ink-muted">{o.hint}</span>}</span>
+                    <Switch checked={data.values[o.key] === true} label={`${o.label}: ${data.values[o.key] === true ? 'on' : 'off'}`} onChange={(v) => setLayout(o.key, v)} />
                   </label>
-                </div>
+                ) : (
+                  <div>
+                    <span className="block font-medium">{o.label}</span>
+                    {o.hint && <p className="mt-0.5 text-xs text-ink-muted">{o.hint}</p>}
+                    <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label={o.label}>
+                      {o.choices.map((c) => <button key={c.value} type="button" role="radio" aria-checked={data.values[o.key] === c.value} onClick={() => setLayout(o.key, c.value)} className={`min-h-10 rounded-full border px-4 text-[15px] font-medium transition active:scale-[.97] ${data.values[o.key] === c.value ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:bg-fill'}`}>{c.label}</button>)}
+                    </div>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div>
-                <span className="block font-medium">{o.label}</span>
-                {o.hint && <p className="mt-0.5 text-xs text-ink-muted">{o.hint}</p>}
-                <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label={o.label}>
-                  {o.choices.map((c) => <button key={c.value} type="button" role="radio" aria-checked={data.values[o.key] === c.value} onClick={() => set(o.key, c.value)} className={`min-h-10 rounded-full border px-4 text-[15px] font-medium transition active:scale-[.97] ${data.values[o.key] === c.value ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:bg-fill'}`}>{c.label}</button>)}
-                </div>
-              </div>
-            )}
+            ))}
           </div>
-        ))}
+        </section>
       </div>
-      <p className="mt-3 px-1 text-xs text-ink-muted">The recorded brand colours (logo, website) stay on file; the swatches above come from them.</p>
+      <div className="mt-4 px-1">
+        <button type="button" className={btnSecondary} disabled={!anyCustom} onClick={() => setConfirmReset(true)} data-style-reset-all><Icon name="restore" className="h-4 w-4" />Reset all colours</button>
+        <p className="mt-2 text-xs text-ink-muted">Back to the venue&rsquo;s own look: the recorded brand colours (logo, website) stay on file and are the swatches in every group.</p>
+      </div>
+      {confirmReset && <ConfirmSheet title="Reset all colours?" body={<>Every colour goes back to the venue&rsquo;s default look. You can undo for 10 seconds.</>} label="Reset all colours" onConfirm={() => reset()} onClose={() => setConfirmReset(false)} />}
     </div>
   );
 }
 
-function luma(hex: string): number {
-  const m = hex.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (!m) return 0;
-  const [r, g, b] = [m[1], m[2], m[3]].map((x) => parseInt(x, 16) / 255);
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+// One token: its swatch, label and origin; opened, the venue's palette, the native picker, the hex field and "Back to auto".
+function TokenRow({ token: t, res, base, baseLabel, open, palette, fail, onOpen, onLive, onSet }: { token: TokenDef; res: Resolved[string] | undefined; base: Resolved[string] | null; baseLabel: string | null; open: boolean; palette: { label: string; value: string }[]; fail: Fail | null; onOpen: () => void; onLive: (v: string) => void; onSet: (v: string | null, text?: string) => Promise<void> }) {
+  const value = res?.value ?? '#ffffff';
+  const [hex, setHex] = useState(value);
+  const [hexErr, setHexErr] = useState<string | null>(null);
+  useEffect(() => { setHex(value); setHexErr(null); }, [value]);
+  // Leaving the field with the colour that was just refused does not send it again (the refusal and its fix stay).
+  const commitHex = async () => { const h = normHex(hex); if (!h) { setHexErr('Use #rrggbb'); return; } setHexErr(null); if (h !== value && h !== fail?.refused) await onSet(h); };
+  const state = res?.state ?? 'auto';
+  const backLabel = t.on ? 'Back to auto' : 'Back to venue default';
+  return (
+    <div data-style-token={t.key} data-state={state} className={`rounded-2xl ${open ? 'bg-fill/70' : ''}`}>
+      <button type="button" aria-expanded={open} aria-label={`${t.label}: ${value}, ${res?.why ?? ''}`} onClick={onOpen} className="flex min-h-12 w-full items-center gap-3 px-3 py-2 text-left">
+        <span className="h-7 w-7 shrink-0 rounded-full border border-black/10 shadow-[inset_0_0_0_1px_rgba(255,255,255,.4)]" style={{ background: value }} aria-hidden="true" data-style-swatch />
+        <span className="min-w-0 flex-1"><span className="block text-[15px] font-medium">{t.label}</span><span className="block truncate text-xs text-ink-muted" data-style-why>{res?.why}{t.note ? ` · ${t.note}` : ''}</span></span>
+        <span className="font-mono text-[12px] uppercase text-ink-muted" data-style-value>{value}</span>
+      </button>
+      {open && (
+        <div className="px-3 pb-3">
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-label={`${t.label}: venue colours`}>
+            {t.on && <button type="button" aria-pressed={state === 'auto'} onClick={() => { void onSet(null, 'Back to auto'); }} className={`flex h-10 items-center gap-1.5 rounded-full border px-3 text-[14px] font-medium ${state === 'auto' ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:bg-fill'}`}><Icon name="sparkle" className="h-4 w-4" />Auto</button>}
+            {palette.map((p) => {
+              const on = value === p.value;
+              return <button key={p.value} type="button" onClick={() => { void onSet(p.value); }} aria-label={`${t.label}: ${p.label} ${p.value}`} aria-pressed={on} title={p.label} className={`relative h-10 w-10 rounded-full border border-black/10 transition active:scale-95 ${on ? 'ring-[3px] ring-accent/40 ring-offset-2' : ''}`} style={{ background: p.value, color: isLight(p.value) ? '#000' : '#fff' }}>{on && <Icon name="check" className="absolute inset-0 m-auto h-5 w-5" strokeWidth={2.6} />}</button>;
+            })}
+            <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line bg-white px-3 text-[14px] font-medium hover:bg-fill">
+              <input type="color" value={value} aria-label={`${t.label}: custom colour`} onInput={(e) => onLive((e.target as HTMLInputElement).value)} onChange={(e) => { void onSet(e.target.value); }} className="h-6 w-6 cursor-pointer appearance-none rounded-full border-0 bg-transparent p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0" />
+              Custom
+            </label>
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <input type="text" inputMode="text" value={hex} aria-label={`${t.label}: hex`} spellCheck={false} onChange={(e) => setHex(e.target.value)} onBlur={() => { void commitHex(); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void commitHex(); } }} className={`${fieldCls} w-32 py-2 font-mono text-[14px] uppercase`} />
+            {state === 'custom' && <button type="button" className={btnSmall} onClick={() => { void onSet(null, backLabel); }}><Icon name="undo" className="h-4 w-4" />{backLabel}</button>}
+            {base && baseLabel && <span className="text-xs text-ink-muted">Sits on the {baseLabel} ({base.value}).</span>}
+          </div>
+          {hexErr && <p role="alert" className="mt-1 text-xs text-red-600">{hexErr}</p>}
+          {fail && <p role="alert" className="mt-2 flex flex-wrap items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-[14px] text-red-900" data-style-refused>{fail.error}{fail.suggestion && <button type="button" className={`${btnSmall} border-red-300`} onMouseDown={(e) => e.preventDefault()} onClick={() => { void onSet(fail.suggestion!.value); }} data-style-suggestion={fail.suggestion.value}><span className="h-4 w-4 rounded-full border border-black/10" style={{ background: fail.suggestion.value }} />Use {fail.suggestion.value}</button>}</p>}
+        </div>
+      )}
+    </div>
+  );
 }

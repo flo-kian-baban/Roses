@@ -3,15 +3,15 @@
 // left, the customers' page as a phone preview on the right (a Preview button on phones). Every change is saved at
 // once through the JSON API, answered with "Saved · Undo" for 10 seconds, and the preview reloads and scrolls to what
 // was edited. Tapping an item, a section heading or the header inside the preview opens the matching editor.
-import { useCallback, useEffect, useReducer, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import type { Bi, EditorItem, EditorVenue, Notes, Photo } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
 import { call, type Resp } from './api';
 import { reduce, type Filter, type Menu } from './state';
 import { MenuTab } from './MenuTab';
 import { ItemPanel, PhotoField } from './ItemPanel';
-import { Preview, type Focus, type Pick } from './Preview';
-import { StyleTab } from './StyleTab';
+import { Preview, type Focus, type Pick, type PreviewHandle, type Region } from './Preview';
+import { StyleTab, type Picked } from './StyleTab';
 import { DetailsTab } from './DetailsTab';
 import { ConfirmSheet, MoneyField, Sheet, TextField, btnDanger, btnPrimary, btnSecondary, fieldCls } from './ui';
 
@@ -39,6 +39,12 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
   const [query, setQuery] = useState('');
   const [highlight, setHighlight] = useState<string | null>(null);
   const [wide, setWide] = useState(false); // ≥ 1366 px: the item panel gets its own column between the list and the preview
+  // Style tab ↔ preview (Kian, 2026-10-08): the open group outlines its region in both previews (laptop frame, phone overlay),
+  // a colour being picked is applied live, and a tap on a region in the preview opens its group.
+  const previewA = useRef<PreviewHandle>(null), previewB = useRef<PreviewHandle>(null);
+  const [picked, setPicked] = useState<Picked>(null);
+  const previewLive = useCallback((vars: Record<string, string> | null) => { previewA.current?.setVars(vars); previewB.current?.setVars(vars); }, []);
+  const previewRegion = useCallback((r: Region | null) => { previewA.current?.setRegion(r); previewB.current?.setRegion(r); }, []);
   useEffect(() => { const mq = window.matchMedia('(min-width: 1366px)'); const f = () => setWide(mq.matches); f(); mq.addEventListener('change', f); return () => mq.removeEventListener('change', f); }, []);
 
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), toast.error ? 6000 : 10000); return () => clearTimeout(t); }, [toast]);
@@ -118,6 +124,7 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
   // Tap-to-edit in the preview: an item opens its editor, a section heading its rename sheet, the header the Details tab.
   const onPick = (pk: Pick) => {
     setPreviewOpen(false);
+    if (pk.kind === 'region') { setPicked({ region: pk.region, n: Date.now() }); return; }
     if (pk.kind === 'item' && pk.id && menu.items[pk.id]) { setOpen({ id: pk.id, section: menu.items[pk.id].placements[0]?.section_id ?? null }); setHighlight(pk.id); if (tab !== 'menu') return; requestAnimationFrame(() => document.querySelector(`[data-item="${pk.id}"]`)?.scrollIntoView({ block: 'center' })); }
     else if (pk.kind === 'section' && pk.id && menu.sections.some((s) => s.id === pk.id)) setRenaming(pk.id);
     else if (pk.kind === 'header' && me.canManage && tab !== 'details') window.location.href = `/admin/${venue.id}?tab=details`;
@@ -142,19 +149,19 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
               onToggleItem={(id, listed) => itemUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onPrice={(id, price) => itemUpdate(id, { price })}
               onToggleSection={(id, listed) => sectionUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onRename={(id) => setRenaming(id)} onMoveSection={sectionMove}
               onDeleteSection={sectionDelete} onReorderSections={sectionReorder} onMoveItem={itemMove} />}
-        {tab === 'style' && me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} />}
+        {tab === 'style' && me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onLive={previewLive} onRegion={previewRegion} picked={picked} />}
         {tab === 'details' && me.canManage && <DetailsTab venue={venue} version={reloadKey} onSaved={savedElsewhere} />}
       </div>
       {openItem && wide ? <div className="hidden lg:block">{panel}</div> : null}
       <aside className="hidden border-l border-line bg-fill lg:block">
-        <div className="sticky top-14 h-[calc(100dvh-3.5rem)]"><Preview venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame onPick={onPick} /></div>
+        <div className="sticky top-14 h-[calc(100dvh-3.5rem)]"><Preview ref={previewA} venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame onPick={onPick} styleMode={tab === 'style'} /></div>
       </aside>
 
       {openItem && !wide && <>
         <button type="button" aria-label="Close the item" onClick={() => setOpen(null)} className="fixed inset-0 z-40 hidden bg-black/10 lg:block" />
         {panel}
       </>}
-      {previewOpen && <div className="fixed inset-0 z-[60] lg:hidden"><Preview venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame={false} onClose={() => setPreviewOpen(false)} onPick={onPick} /></div>}
+      {previewOpen && <div className="fixed inset-0 z-[60] lg:hidden"><Preview ref={previewB} venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame={false} onClose={() => setPreviewOpen(false)} onPick={onPick} styleMode={tab === 'style'} /></div>}
       {adding && <AddItemSheet venueId={venue.id} sectionName={menu.sections.find((s) => s.id === adding)?.name.en ?? ''} onClose={() => setAdding(null)} onAdd={async (d) => { await itemCreate(adding, d); setAdding(null); }} />}
       {addingSection && <AddSectionSheet onClose={() => setAddingSection(false)} onAdd={sectionCreate} />}
       {renaming && menu.sections.some((s) => s.id === renaming) && <RenameSheet section={menu.sections.find((s) => s.id === renaming)!} onClose={() => setRenaming(null)} onPatch={(p) => sectionUpdate(renaming, p)} />}

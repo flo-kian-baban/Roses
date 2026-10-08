@@ -10,6 +10,7 @@
 // copy, runs every check, and writes reports/checks/<date-time>/report.md next to the raw evidence. Exit code 1 when
 // any check fails; a failed run's folder is kept (its report carries a one-line cause), never deleted.
 //   npm run check
+// 2026-10-08: the colour-literal scan (0 in the public sources) and the Style tab drill (scripts/style-drill.mjs) joined the suite.
 import fs from 'node:fs';
 import path from 'node:path';
 import net from 'node:net';
@@ -22,7 +23,7 @@ import { loadEnv } from './load-env.mjs';
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
 const out = path.resolve('reports/checks', stamp);
-fs.mkdirSync(path.join(out, 'editor'), { recursive: true });
+fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true });
 const DIST = '.next-check', PORT = 3100, PROXY_PORT = 3101;
 const base = `http://127.0.0.1:${PORT}`;
 const started = Date.now();
@@ -122,6 +123,11 @@ try {
   adminId = (await db.query('insert into admins (email, password_hash, pin_hash, name) values ($1,$2,$3,$4) returning id', [adminEmail, adminHash, adminPinHash, SUITE_ADMIN_NAME])).rows[0].id;
   await step('production build (.next-check)', async () => { const r = await run('npx', ['next', 'build'], { env: { NEXT_DIST_DIR: DIST, ROSES_APP_NAME: 'roses-check:build' }, logFile: 'build.log' }); return { pass: r.status === 0, evidence: ['build.log'], note: r.status === 0 ? 'next build ok' : `exit ${r.status}` }; });
   if (!results.at(-1).pass) throw new Error('build failed; stopping');
+  await step('colour literals in the public templates, the menu kit and the public stylesheet (Kian, 2026-10-08: 0 outside src/venues/tokens.ts)', async () => {
+    const r = await run('node', ['scripts/check-colour-literals.mjs', '--json', path.join(out, 'colour-literals.json')], { logFile: 'colour-literals.txt' });
+    const j = fs.existsSync(path.join(out, 'colour-literals.json')) ? JSON.parse(fs.readFileSync(path.join(out, 'colour-literals.json'), 'utf8')) : null;
+    return { pass: r.status === 0 && j?.count === 0, evidence: ['colour-literals.txt', 'colour-literals.json'], note: j ? `${j.count} colour literal(s) in ${j.files.length} public files; ${j.tokensFileHexLiterals} hex values live in the token defaults file` : `exit ${r.status}` };
+  });
 
   await step(`servers on ${PORT} and ${PROXY_PORT} (TRUST_PROXY=1)`, async () => {
     startServer(PORT, {}, 'server-3100.log'); startServer(PROXY_PORT, { TRUST_PROXY: '1' }, 'server-3101.log');
@@ -205,6 +211,12 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, evidence: ['editor/editor-drill.txt', 'editor/editor-drill.json', 'editor/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   });
+  await step('Style tab drill (day-one defaults = the pre-token look, task target with tap count, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, preview ↔ controls, Reset all with confirmation, Persian view)', async () => {
+    const r = await run('node', ['scripts/style-drill.mjs', '--base', base, '--out', path.join(out, 'style'), '--jpeg'], { env: drillEnv, logFile: 'style/style-drill.log' });
+    const m = (r.stdout.match(/STYLE DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
+    return { pass: r.status === 0, evidence: ['style/style-drill.txt', 'style/style-drill.json', 'style/day-one-senso.json', 'style/day-one-kebab-land.json', 'style/guard-route.json', 'style/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
+  });
   await step('backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)', async () => {
     const r = await run('bash', ['scripts/backup-drill.sh', path.join(out, 'backup-drill.txt')], { logFile: 'backup-drill.log' }); // drills the scratch copy (ROSES_DB), dump into the run folder
     const t = fs.existsSync(path.join(out, 'backup-drill.txt')) ? fs.readFileSync(path.join(out, 'backup-drill.txt'), 'utf8') : '';
@@ -242,7 +254,7 @@ try {
     const names = [...read(`server-${port}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]);
     processes.push({ process: app, source: `server-${port}.log`, databases: [...new Set(names)] });
   }
-  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
+  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['style-drill', 'style/style-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
     if (!fs.existsSync(path.join(out, file))) continue;
     processes.push({ process: `roses-check:${name}`, source: file, databases: [...new Set([...read(file).matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))] });
   }
@@ -252,7 +264,7 @@ try {
   const samples = [...seen.entries()].map(([k, n]) => ({ connection: k, samples: n })).sort((a, b) => a.connection.localeCompare(b.connection));
   const wrongProcess = processes.filter((p) => p.databases.length === 0 || p.databases.some((d) => d !== scratchName));
   const wrongSample = samples.filter((x) => !x.connection.endsWith(`→ ${scratchName}`) && !x.connection.startsWith('roses-check:suite-readonly →'));
-  const mustSee = ['roses-check:server-3100', 'roses-check:server-3101', 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
+  const mustSee = ['roses-check:server-3100', 'roses-check:server-3101', 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:style-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
   const unseen = mustSee.filter((a) => !samples.some((x) => x.connection.startsWith(`${a} →`)));
   const passA = wrongProcess.length === 0 && wrongSample.length === 0 && processes.length >= 8 && unseen.length === 0;
   fs.writeFileSync(path.join(out, 'isolation.json'), JSON.stringify({ scratch: scratchName, working: workName, processes, pgStatActivitySamples: samples, pass: passA }, null, 2));

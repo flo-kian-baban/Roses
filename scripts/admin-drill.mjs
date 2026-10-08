@@ -177,24 +177,29 @@ const ownerCookie = await cookieOf(ownerCtx);
   const back = await waitPublic('senso', (h) => h.includes(`content="${escHtml(before)}"`));
   const row = (await db.query(`select tagline->>'en' as t from venues where id='senso'`)).rows[0].t;
   check('details-undo', back.ok && row === before, `Undo → tagline "${row}" again, back on the public page after ${back.ms} ms`); }
-// Style tab (step 2): the owner loads the template's options, taps a swatch, the colour reaches the public page, Undo puts it back
+// Style tab (rebuilt 2026-10-08, colours by page region): the owner loads the template's tokens and layout options, opens the
+// Footer group, picks a venue colour for the phone link, the colour reaches the public page, Undo puts it back; the intro switch too
 { const r = await fetch(`${base}/api/admin/style?venue=senso`, { headers: { cookie: ownerCookie } }); const j = await r.json().catch(() => null);
-  const keys = (j?.options || []).map((o) => o.key);
-  check('style-owner-options', r.status === 200 && j?.template?.id === 'senso' && keys.includes('accent') && keys.includes('intro') && keys.includes('photos'), `owner GET /api/admin/style?venue=senso → ${r.status}; template ${j?.template?.id}, options ${keys.join(', ')}; current accent ${j?.values?.accent}`);
-  await opage.goto(`${base}/admin/senso?tab=style`); await opage.waitForSelector('[data-style-option="accent"]');
-  const swatches = opage.locator('[data-style-option="accent"] button[aria-label^="Accent colour: #"]');
-  let pick = null; for (let i = 0; i < await swatches.count(); i++) { const lab = await swatches.nth(i).getAttribute('aria-label'); const c = lab.match(/#[0-9a-f]{6}/i)[0].toLowerCase(); if (c !== j.values.accent) { pick = { i, c }; break; } }
-  const t0 = Date.now(); await swatches.nth(pick.i).click();
-  const w = await waitPublic('senso', (h) => h.includes(`--brand-accent:${pick.c}`));
-  const chosen = (await db.query(`select style from venues where id='senso'`)).rows[0].style;
-  await snap(opage, 'style-accent');
-  check('style-owner-save', w.ok && chosen.accent === pick.c, `owner tapped the swatch ${pick.c} (2 taps: Style tab, swatch) → venues.style ${JSON.stringify(chosen)}; the public page's CSS carries --brand-accent:${pick.c} after ${w.ms} ms (${Date.now() - t0} ms after the tap)`);
-  measure(`Style: change the accent colour: 2 taps (Style tab, swatch); on the public page in ${w.ms} ms`);
+  const layout = (j?.layout || []).map((o) => o.key); const tokens = (j?.tokens || []).map((t) => t.key);
+  check('style-owner-options', r.status === 200 && j?.template?.id === 'senso' && tokens.includes('footer.phone') && tokens.includes('rows.price') && layout.includes('intro') && layout.includes('photos') && (j?.palette || []).length > 0, `owner GET /api/admin/style?venue=senso → ${r.status}; template ${j?.template?.id}, ${j?.groups?.length} groups, ${tokens.length} colour tokens, layout options ${layout.join(', ')}, ${j?.palette?.length} venue colours as swatches`);
+  await opage.goto(`${base}/admin/senso?tab=style`); await opage.waitForSelector('[data-style-group="footer"]');
+  let taps = 0; const tap = async (sel) => { taps++; await opage.click(sel); };
+  await tap('[data-style-group="footer"] > button'); await opage.waitForSelector('[data-style-token="footer.phone"] > button');
+  await tap('[data-style-token="footer.phone"] > button'); await opage.waitForSelector('[data-style-token="footer.phone"] input[type=color]');
+  const current = ((await opage.textContent('[data-style-token="footer.phone"] [data-style-value]')) || '').trim().toLowerCase();
+  const swatches = opage.locator('[data-style-token="footer.phone"] button[aria-label^="Phone link: "]');
+  let pick = null; for (let i = 0; i < await swatches.count(); i++) { const lab = await swatches.nth(i).getAttribute('aria-label'); const c = (lab.match(/#[0-9a-f]{6}/i) || [])[0]?.toLowerCase(); if (c && c !== current) { pick = { i, c, lab }; break; } }
+  const t0 = Date.now(); await tap(`[data-style-token="footer.phone"] button[aria-label="${pick.lab}"]`);
+  const w = await waitPublic('senso', (h) => h.includes(`--c-footer-phone:${pick.c}`));
+  const chosen = (await db.query(`select style->'colors' as c from venues where id='senso'`)).rows[0].c;
+  await snap(opage, 'style-footer-phone');
+  check('style-owner-save', w.ok && chosen?.['footer.phone'] === pick.c, `owner tapped the venue colour "${pick.lab}" for the phone link (${taps} taps: Footer group, Phone link, swatch) → venues.style.colors ${JSON.stringify(chosen)}; the public page's CSS carries --c-footer-phone:${pick.c} after ${w.ms} ms (${Date.now() - t0} ms after the tap)`);
+  measure(`Style: change the footer phone-link colour: ${taps} taps (group, token, swatch); on the public page in ${w.ms} ms`);
   await opage.click('[role=status] button:has-text("Undo")'); await opage.waitForSelector('[role=status]:has-text("Undone")');
-  const back = await waitPublic('senso', (h) => h.includes(`--brand-accent:${j.values.accent}`));
-  const after = (await db.query(`select style from venues where id='senso'`)).rows[0].style;
-  check('style-undo', back.ok && (after.accent ?? j.values.accent) === j.values.accent, `Undo → --brand-accent:${j.values.accent} back on the public page after ${back.ms} ms; venues.style now ${JSON.stringify(after)}`);
-  // the switch options save too: intro off removes the intro from the page; Undo brings it back
+  const back = await waitPublic('senso', (h) => h.includes(`--c-footer-phone:${current}`));
+  const after = (await db.query(`select coalesce(style->'colors', '{}'::jsonb) as c from venues where id='senso'`)).rows[0].c;
+  check('style-undo', back.ok && !after['footer.phone'], `Undo → --c-footer-phone:${current} back on the public page after ${back.ms} ms; venues.style.colors now ${JSON.stringify(after)}`);
+  // the layout switches save too: intro off removes the intro from the page; Undo brings it back
   await opage.click('[data-style-option="intro"] input[role=switch]');
   const off = await waitPublic('senso', (h) => !/id="intro"/.test(h));
   await opage.click('[role=status] button:has-text("Undo")'); await opage.waitForSelector('[role=status]:has-text("Undone")');
@@ -212,7 +217,7 @@ const ownerCookie = await cookieOf(ownerCtx);
   const tPub = Date.now(); const pub = await fetch(`${base}/${id}`); const html = await pub.text(); const pubMs = Date.now() - tPub;
   await snap(ap, 'venue-added');
   const dd = await ap.$$eval('header details a[href^="/admin/"]', (els) => els.map((e) => e.getAttribute('href')));
-  check('add-venue', taps === 3 && row?.template === 'default' && secs === 1 && pub.status === 200 && html.includes('Drill venue') && html.includes('--brand-accent:') && dd.includes(`/admin/${id}`), `+ Add venue: ${taps} taps (venue menu, Add venue, Create) + the name → /admin/${id} (Details tab) ${landed} ms after Create; venues row template=${row?.template}, ${secs} starting section; GET /${id} → ${pub.status} in ${pubMs} ms (default template, name on the page: ${html.includes('Drill venue')}); in the venue dropdown: ${dd.includes(`/admin/${id}`)}`);
+  check('add-venue', taps === 3 && row?.template === 'default' && secs === 1 && pub.status === 200 && html.includes('Drill venue') && html.includes('--c-page-bg:') && dd.includes(`/admin/${id}`), `+ Add venue: ${taps} taps (venue menu, Add venue, Create) + the name → /admin/${id} (Details tab) ${landed} ms after Create; venues row template=${row?.template}, ${secs} starting section; GET /${id} → ${pub.status} in ${pubMs} ms (default template, name on the page: ${html.includes('Drill venue')}); in the venue dropdown: ${dd.includes(`/admin/${id}`)}`);
   measure(`+ Add venue: ${taps} taps + the name; Details tab open ${landed} ms after Create; the new page answers ${pub.status} (${pubMs} ms)`);
   await ap.close(); await actx.close(); }
 

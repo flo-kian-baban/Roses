@@ -2,17 +2,23 @@
 // The customers' real page on an iPhone 17 Pro Max mockup (laptop) or full screen (phone). Two frames are kept: a save loads
 // the fresh page into the hidden one, the language and the scroll position (or the item just edited, outlined) are
 // set while it is still hidden, then it is faded in. No flash, no jump. The customers' page carries no preview code.
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+// Style tab (Kian, 2026-10-08): the preview and the colour controls point at each other. The open group's region is outlined
+// in the frame (setRegion), a tap on a region reports it to the editor (onPick kind "region"), and a colour being picked is
+// applied live to the frame's CSS variables before it is saved (setVars). All of it is attached by the admin after the frame loads.
+import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
+import type { GroupId } from '@/venues/tokens';
 import { Icon } from '../../../_ui/icons';
 
 export type Focus = { id: string; alt?: string | null } | null;
-// What was tapped inside the preview (step 2, tap-to-edit): an item row, a section heading or the page header.
-export type Pick = { kind: 'item' | 'section' | 'header'; id?: string };
+export type Region = GroupId;
+// What was tapped inside the preview: an item row, a section heading or the page header (Menu tab); a page region (Style tab).
+export type Pick = { kind: 'item' | 'section' | 'header'; id?: string } | { kind: 'region'; region: Region };
+export type PreviewHandle = { setVars: (vars: Record<string, string> | null) => void; setRegion: (region: Region | null) => void };
 // iPhone 17 Pro Max (Kian, 2026-10-07): 6.9-inch class screen of 440 × 956 points, aluminium rail, black bezel, Dynamic Island,
 // status bar with the live time, home indicator. The page itself is laid out at 440 points wide, as on the real phone.
 const W = 440, H = 956, RAIL = 5, BEZEL = 13, STATUS = 54, EDGE = RAIL + BEZEL, BTN = 4;
 
-export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClose, onPick }: { venueId: string; reloadKey: number; focus: Focus; lang: 'en' | 'fa'; onLang: (l: 'en' | 'fa') => void; frame: boolean; onClose?: () => void; onPick?: (p: Pick) => void }) {
+export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: number; focus: Focus; lang: 'en' | 'fa'; onLang: (l: 'en' | 'fa') => void; frame: boolean; onClose?: () => void; onPick?: (p: Pick) => void; styleMode?: boolean }>(function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClose, onPick, styleMode = false }, handle) {
   const refA = useRef<HTMLIFrameElement>(null), refB = useRef<HTMLIFrameElement>(null);
   const frames = [refA, refB];
   const [active, setActive] = useState<0 | 1 | null>(null);
@@ -22,8 +28,16 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
   const focusRef = useRef(focus); focusRef.current = focus;
   const langRef = useRef(lang); langRef.current = lang;
   const pickRef = useRef(onPick); pickRef.current = onPick;
+  const styleModeRef = useRef(styleMode); styleModeRef.current = styleMode;
+  const regionRef = useRef<Region | null>(null);
   const scrollRef = useRef(0);
   const isOurs = (d: Document | null | undefined): d is Document => !!d && d.location.pathname === `/${venueId}`;
+  const activeDoc = () => { const a = activeRef.current; if (a === null) return null; const d = frames[a].current?.contentDocument; return isOurs(d) ? d : null; };
+
+  useImperativeHandle(handle, () => ({
+    setVars: (vars) => { const d = activeDoc(); if (d) applyVars(d, vars); },
+    setRegion: (region) => { regionRef.current = region; const d = activeDoc(); if (d) applyRegion(d, region, true); },
+  }));
 
   // A save (reloadKey) loads the page into the hidden slot.
   useEffect(() => {
@@ -41,8 +55,9 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
     if (!isOurs(d)) return;
     d.documentElement.dataset.intro = 'done'; // the logo intro and the page entrance play on every load for customers; the preview hides both before the frame is shown (see previewStyle)
     applyLang(d, langRef.current);
-    if (pickRef.current) attachPick(d, (p) => pickRef.current?.(p));
+    if (pickRef.current) attachPick(d, (p) => pickRef.current?.(p), () => styleModeRef.current);
     if (!showFocus(d, focusRef.current)) d.defaultView?.scrollTo({ top: scrollRef.current, behavior: 'auto' });
+    if (regionRef.current) applyRegion(d, regionRef.current, false);
     activeRef.current = slot; setActive(slot); setLoading(false);
   };
   useEffect(() => { const a = activeRef.current; if (a === null) return; const d = frames[a].current?.contentDocument; if (isOurs(d)) applyLang(d, lang); }, [lang]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -74,7 +89,7 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
       {(['en', 'fa'] as const).map((l) => <button key={l} type="button" onClick={() => onLang(l)} aria-pressed={lang === l} className={`rounded-full px-3 py-1 text-[13px] font-semibold transition ${lang === l ? 'bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,.12)]' : 'text-ink-muted hover:text-ink'}`}>{l === 'en' ? 'EN' : 'FA'}</button>)}
     </div>
   );
-  const status = <span className="text-[13px] font-medium text-ink-muted" aria-live="polite">{onPick ? 'Tap anything to edit it' : 'Customers see'}{loading && <span className="text-neutral-400"> · updating…</span>}</span>;
+  const status = <span className="text-[13px] font-medium text-ink-muted" aria-live="polite">{onPick ? (styleMode ? 'Tap a part of the page to colour it' : 'Tap anything to edit it') : 'Customers see'}{loading && <span className="text-neutral-400"> · updating…</span>}</span>;
 
   if (!frame) {
     return (
@@ -113,7 +128,7 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
       </div>
     </div>
   );
-}
+});
 
 const Cellular = () => <svg width="20" height="12" viewBox="0 0 20 12" fill="currentColor" aria-hidden="true"><rect x="0" y="8" width="3.5" height="4" rx="1" /><rect x="5.5" y="5.5" width="3.5" height="6.5" rx="1" /><rect x="11" y="3" width="3.5" height="9" rx="1" /><rect x="16.5" y="0" width="3.5" height="12" rx="1" /></svg>;
 const Wifi = () => <svg width="17" height="12" viewBox="0 0 17 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M1.5 4.2a10.5 10.5 0 0 1 14 0" /><path d="M4.3 7a6.5 6.5 0 0 1 8.4 0" /><path d="M7 9.8a2.6 2.6 0 0 1 3 0" /><circle cx="8.5" cy="11" r=".6" fill="currentColor" /></svg>;
@@ -123,29 +138,86 @@ function applyLang(d: Document, lang: 'en' | 'fa') {
   const h = d.documentElement; h.dataset.lang = lang; h.lang = lang; h.dir = lang === 'fa' ? 'rtl' : 'ltr';
 }
 
-// Positions the frame on the element with that id (the item; or the section when the item is hidden) and outlines it briefly. Returns false when neither is on the page.
+// The admin's own style inside the frame: no intro and no page entrance (the frame is shown only once loaded, as the customers
+// see the page after the intro), the outline of the item just edited, the hover marks of tap-to-edit, the Style tab's region
+// outline and the frozen intro while the Intro group is open.
 function previewStyle(d: Document) {
   if (d.getElementById('roses-preview-style')) return;
   const st = d.createElement('style'); st.id = 'roses-preview-style';
-  // No logo intro and no page entrance inside the preview: the frame is shown only once loaded, as the customers see the page after the intro.
   st.textContent = '#intro{display:none!important}main>header,#tabs,main section h2,li.item{animation:none!important}html{scrollbar-width:none}html::-webkit-scrollbar{display:none}.roses-preview-focus{box-shadow:inset 0 0 0 2px #ee6a3a;border-radius:12px;animation:roses-pf 2.6s ease-out forwards}@keyframes roses-pf{75%{box-shadow:inset 0 0 0 2px #ee6a3a}100%{box-shadow:inset 0 0 0 2px transparent}}'
-    + '.roses-pick li.item:hover,.roses-pick main section h2:hover,.roses-pick main>header:hover{outline:2px dashed rgba(238,106,58,.55);outline-offset:3px;border-radius:10px;cursor:pointer}';
+    + '.roses-pick:not(.roses-style) li.item:hover,.roses-pick:not(.roses-style) main section h2:hover,.roses-pick:not(.roses-style) main>header:hover{outline:2px dashed rgba(238,106,58,.55);outline-offset:3px;border-radius:10px;cursor:pointer}'
+    + '.roses-style main>header,.roses-style #tabs,.roses-style main section h2,.roses-style main section ul,.roses-style main footer,.roses-style dialog{cursor:pointer}'
+    + '.roses-region{outline:3px solid #ee6a3a!important;outline-offset:-3px;border-radius:10px;transition:outline-color .2s}dialog.roses-region{outline-offset:-3px}'
+    + 'html.roses-region-page body{box-shadow:inset 0 0 0 3px #ee6a3a;min-height:100dvh}'
+    + 'html.roses-show-intro #intro{display:grid!important;animation:none!important;opacity:1!important;visibility:visible!important}html.roses-show-intro #intro>*,html.roses-show-intro #intro img{animation:none!important;opacity:1!important;transform:none!important}';
   d.head.appendChild(st);
 }
-// Tap-to-edit: one capture-phase click listener on the loaded document. An item row, a section heading or the header
-// is reported to the editor and the page's own handler (the item sheet) does not run. The language toggle keeps working.
-function attachPick(d: Document, onPick: (p: Pick) => void) {
+// Tap-to-edit: one capture-phase click listener on the loaded document. Menu tab: an item row, a section heading or the
+// header is reported to the editor and the page's own handler (the item sheet) does not run. Style tab: every tap reports
+// the page region it landed on (the page's own handlers do not run), except the language toggle and the popup's close button.
+function attachPick(d: Document, onPick: (p: Pick) => void, styleMode: () => boolean) {
   if (d.documentElement.classList.contains('roses-pick')) return;
   d.documentElement.classList.add('roses-pick');
+  if (styleMode()) d.documentElement.classList.add('roses-style');
   d.addEventListener('click', (e) => {
+    if (d.documentElement.dataset.rosesSynthetic) return; // the admin itself opening the sheet for the Item popup group
     const t = e.target as Element | null; if (!t || typeof t.closest !== 'function') return;
-    if (t.closest('#lang-toggle, #tabs, dialog')) return;
+    if (t.closest('#lang-toggle')) return;
+    if (styleMode()) {
+      if (t.closest('#sheet-close')) { onPick({ kind: 'region', region: 'sheet' }); return; }
+      e.preventDefault(); e.stopPropagation(); onPick({ kind: 'region', region: regionOf(t) }); return;
+    }
+    if (t.closest('#tabs, dialog')) return;
     const li = t.closest('li.item[data-id]'); const h2 = t.closest('main section[data-id] h2'); const header = t.closest('main > header');
     const pick: Pick | null = li ? { kind: 'item', id: li.getAttribute('data-id') ?? undefined } : h2 ? { kind: 'section', id: h2.closest('section')?.getAttribute('data-id') ?? undefined } : header ? { kind: 'header' } : null;
     if (!pick) return;
     e.preventDefault(); e.stopPropagation(); onPick(pick);
   }, true);
 }
+function regionOf(t: Element): Region {
+  if (t.closest('#intro')) return 'intro';
+  if (t.closest('dialog#sheet, dialog#sections-dialog')) return 'sheet';
+  if (t.closest('#tabs')) return 'tabs';
+  if (t.closest('main > header')) return 'header';
+  if (t.closest('main footer')) return 'footer';
+  if (t.closest('li.item')) return 'rows';
+  if (t.closest('main section h2') || t.closest('main section h2 + p')) return 'headings';
+  if (t.closest('main section ul')) return 'rows';
+  return 'page';
+}
+// What each region outlines inside the frame. The popup region opens the first item's sheet (and closes it again when another
+// region takes over); the intro region shows the logo overlay frozen at its final state.
+const REGION_SEL: Record<Region, string> = { page: '', header: 'main > header', tabs: '#tabs', headings: 'main section h2', rows: 'main section ul', sheet: 'dialog#sheet', footer: 'main footer', intro: '#intro' };
+function applyRegion(d: Document, region: Region | null, scroll: boolean) {
+  previewStyle(d);
+  const h = d.documentElement;
+  d.querySelectorAll('.roses-region').forEach((el) => el.classList.remove('roses-region'));
+  h.classList.toggle('roses-region-page', region === 'page');
+  h.classList.toggle('roses-show-intro', region === 'intro');
+  const sheet = d.getElementById('sheet') as HTMLDialogElement | null;
+  if (region === 'sheet') {
+    if (sheet && !sheet.open) { const li = d.querySelector('li.item') as HTMLElement | null; if (li) { h.dataset.rosesSynthetic = '1'; li.click(); delete h.dataset.rosesSynthetic; } }
+  } else if (sheet?.open && h.dataset.rosesSheet) sheet.close();
+  if (region === 'sheet') h.dataset.rosesSheet = '1'; else delete h.dataset.rosesSheet;
+  if (!region) return;
+  const els = region === 'sheet' && sheet?.open ? [sheet] : [...d.querySelectorAll(REGION_SEL[region] || 'nothing')];
+  els.forEach((el) => el.classList.add('roses-region'));
+  const w = d.defaultView; if (!scroll || !w || region === 'page' || region === 'intro' || region === 'sheet' || !els.length) return;
+  const visible = els.some((el) => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < w.innerHeight; });
+  if (!visible) (els[0] as HTMLElement).scrollIntoView({ block: region === 'footer' ? 'end' : 'start', behavior: 'auto' });
+}
+// A colour being picked, applied live to the frame's CSS variables (the page's :root values stay in its own <style>); null takes
+// every live value away again (a refused colour). The two rules that carry plain values (::backdrop, the close button's shadow)
+// are rewritten in a live <style>.
+function applyVars(d: Document, vars: Record<string, string> | null) {
+  const h = d.documentElement;
+  let live = d.getElementById('roses-live-vars') as HTMLStyleElement | null;
+  if (!vars) { for (const k of [...h.style].filter((p) => p.startsWith('--c-'))) h.style.removeProperty(k); live?.remove(); return; }
+  for (const [k, v] of Object.entries(vars)) h.style.setProperty(k, v);
+  const dim = vars['--c-sheet-dim'];
+  if (dim) { if (!live) { live = d.createElement('style'); live.id = 'roses-live-vars'; d.head.appendChild(live); } live.textContent = `dialog.sheet::backdrop,dialog.list::backdrop{background:${dim};opacity:.45}.sheet-close{box-shadow:0 1px 4px ${dim}40}`; }
+}
+// Positions the frame on the element with that id (the item; or the section when the item is hidden) and outlines it briefly. Returns false when neither is on the page.
 function showFocus(d: Document, f: Focus): boolean {
   previewStyle(d);
   d.querySelectorAll('.roses-preview-focus').forEach((el) => el.classList.remove('roses-preview-focus'));

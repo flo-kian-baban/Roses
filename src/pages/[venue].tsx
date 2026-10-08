@@ -5,6 +5,7 @@ import type { Section, Venue } from '@/lib/types';
 import { Intro, headScript } from '@/components/Intro';
 import { DefaultPage } from '@/venues/default';
 import { styleOf } from '@/venues/styles';
+import { colorCss, resolveColors } from '@/venues/tokens';
 
 // Venues added in the admin ("+ Add venue", step 2): their page on the default template (src/venues/default.tsx).
 // Senso and Kebab Land keep their own files (src/pages/senso.tsx, kebab-land.tsx); a static route always wins over
@@ -31,19 +32,20 @@ export const getStaticProps: GetStaticProps<Props, { venue: string }> = async ({
 
 export default function VenuePage({ venue, sections }: Props) {
   const style = styleOf(venue);
-  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${style.accent};--brand-muted:#6e6e73;--brand-tile:${style.tile};--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:var(--font-vazirmatn), system-ui, sans-serif}`;
+  const colors = resolveColors(venue);
+  const css = `${colorCss(colors)}:root{--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:var(--font-vazirmatn), system-ui, sans-serif}`;
   return (
     <>
       <Head>
         <title>{`${venue.name.en} — Menu`}</title>
         <meta name="description" content={venue.tagline.en ?? `${venue.name.en} menu`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content={colors['page.bg'].value} />
         {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
         <script dangerouslySetInnerHTML={{ __html: headScript() }} />
       </Head>
-      <style dangerouslySetInnerHTML={{ __html: vars }} />
-      {style.intro !== false && venue.brand.logo && <Intro logo={venue.brand.logo} alt={venue.name.en ?? ''} tile={String(style.tile)} />}
+      <style dangerouslySetInnerHTML={{ __html: css }} />
+      {style.intro !== false && venue.brand.logo && <Intro logo={venue.brand.logo} alt={venue.name.en ?? ''} tile />}
       <DefaultPage venue={venue} sections={sections} style={style} />
     </>
   );

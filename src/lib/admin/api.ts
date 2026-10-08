@@ -41,7 +41,8 @@ export const text = (b: Body, k: string): string | null => { const v = (b[k] ?? 
 export const list = (b: Body, k: string): string[] => (b[k] ?? '').split(',').map((s) => s.trim()).filter(Boolean);
 
 // ---- JSON routes (the page editor) ----
-export class ApiError extends Error { status: number; constructor(status: number, message: string) { super(message); this.status = status; } }
+// `extra` travels with the refusal (the readability guard's suggested colour, for the one-tap fix in the Style tab).
+export class ApiError extends Error { status: number; extra: Record<string, unknown>; constructor(status: number, message: string, extra: Record<string, unknown> = {}) { super(message); this.status = status; this.extra = extra; } }
 export type JsonBody = Record<string, unknown>;
 export type JsonCtx = { req: NextApiRequest; res: NextApiResponse; session: Session; body: JsonBody };
 
@@ -58,7 +59,7 @@ export function jsonRoute(fn: (ctx: JsonCtx) => Promise<Record<string, unknown> 
     catch (e) {
       const status = e instanceof ApiError ? e.status : 400;
       if (!(e instanceof ApiError)) console.error('admin api error', e);
-      res.status(status).json({ ok: false, error: (e as Error).message || 'unexpected error' });
+      res.status(status).json({ ok: false, error: (e as Error).message || 'unexpected error', ...(e instanceof ApiError ? e.extra : {}) });
     }
   };
 }

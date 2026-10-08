@@ -5,6 +5,7 @@ import type { Section, Venue } from '@/lib/types';
 import { Intro, headScript } from '@/components/Intro';
 import { SensoPage } from '@/venues/senso';
 import { styleOf } from '@/venues/styles';
+import { colorCss, resolveColors } from '@/venues/tokens';
 
 // Senso Café & Bites: its own page template and styles (src/venues/senso.tsx). Shared with the other venue:
 // data access (src/lib/menu.ts), the language toggle and the intro logic (src/components). PM build decision of
@@ -27,22 +28,24 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 
 export default function Senso({ venue, sections }: Props) {
   const f = venue.brand.fonts ?? { heading: 'serif', body: 'system-ui', persian: 'system-ui' };
-  // White kit for now (Kian, 2026-10-07): the recorded brand background and text colours stay in the data. The accent, the
-  // intro and the list photos follow the Style tab (template-declared options, src/venues/styles.ts; defaults = the brand record).
+  // Colours: the venue's tokens (src/venues/tokens.ts; defaults = the white kit with the brand navy on phone links, Kian
+  // 2026-10-07; the Style tab's choices in venues.style). The intro and the list photos are the Style tab's layout options.
   const style = styleOf(venue);
-  const vars = `:root{--brand-bg:#ffffff;--brand-fg:#1d1d1f;--brand-accent:${style.accent};--brand-muted:#6e6e73;--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:${f.persian}}`;
+  const colors = resolveColors(venue);
+  const css = `${colorCss(colors)}:root{--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:${f.persian}}`;
   return (
     <>
       <Head>
         <title>{`${venue.name.en} — Menu`}</title>
         <meta name="description" content={venue.tagline.en ?? `${venue.name.en} menu`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content={colors['page.bg'].value} />
         {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
         {venue.brand.logo && <link rel="preload" as="image" href={venue.brand.logo.url} fetchPriority="high" />}
         <script dangerouslySetInnerHTML={{ __html: headScript() }} />
       </Head>
-      {/* In the body so it follows the global stylesheet in cascade order and wins over its :root defaults. */}
-      <style dangerouslySetInnerHTML={{ __html: vars }} />
+      {/* In the body so it follows the stylesheet in cascade order. */}
+      <style dangerouslySetInnerHTML={{ __html: css }} />
       {style.intro !== false && <Intro logo={venue.brand.logo} alt={venue.name.en ?? ''} />}
       <SensoPage venue={venue} sections={sections} photos={style.photos !== false} />
     </>

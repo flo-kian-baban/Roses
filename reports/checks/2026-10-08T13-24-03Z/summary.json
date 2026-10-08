@@ -1,0 +1,261 @@
+{
+  "stamp": "2026-10-08T13-24-03Z",
+  "commit": "cf1ddfb",
+  "pass": true,
+  "results": [
+    {
+      "name": "migrations on the scratch copy (roses_check_20261008t132403z)",
+      "pass": true,
+      "ms": 62,
+      "evidence": [
+        "migrate.log"
+      ],
+      "note": "0 migration(s) applied, 4 already present"
+    },
+    {
+      "name": "production build (.next-check)",
+      "pass": true,
+      "ms": 2741,
+      "evidence": [
+        "build.log"
+      ],
+      "note": "next build ok"
+    },
+    {
+      "name": "colour literals in the public templates, the menu kit and the public stylesheet (Kian, 2026-10-08: 0 outside src/venues/tokens.ts)",
+      "pass": true,
+      "ms": 37,
+      "evidence": [
+        "colour-literals.txt",
+        "colour-literals.json"
+      ],
+      "note": "0 colour literal(s) in 14 public files; 94 hex values live in the token defaults file"
+    },
+    {
+      "name": "servers on 3100 and 3101 (TRUST_PROXY=1)",
+      "pass": true,
+      "ms": 598,
+      "evidence": [
+        "server-3100.log",
+        "server-3101.log"
+      ],
+      "note": "both answer 200 on /senso"
+    },
+    {
+      "name": "temporary venue on the default template (created through the admin API: logo upload, tagline, location, 2 sections, 4 items)",
+      "pass": true,
+      "ms": 353,
+      "evidence": [
+        "new-venue/new-venue.json",
+        "new-venue/new-venue-drill.txt"
+      ],
+      "note": "/drill-default-venue: 2 sections, 4 shown items, logo uploads/drill-default-venue/logo-2f6d53d6-d782-46fd-8e0b-6349c5f86da7.png, GET → 200"
+    },
+    {
+      "name": "public page checks: senso (intro, repeat visit, reduced motion, Persian toggle, images, category tabs)",
+      "pass": true,
+      "ms": 78337,
+      "evidence": [
+        "senso/senso-checks.json",
+        "senso/senso-en.jpg",
+        "senso/senso-fa.jpg",
+        "senso/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 15; intro gone at 1423 ms, page slides in behind it (heading shown at 1638 ms, last of its 6 sliding rows at 1962 ms; all at once under reduced motion: true), plays again on reload (gone at 1398 ms, stored keys [\"roses-lang\"]); images 124/124; tabs: 18/18 taps end on their tab at the bar with 0 other tabs lit on the way, 0/632 scroll steps off, last tab at the bottom true, direct link true"
+    },
+    {
+      "name": "public page checks: kebab-land (intro, repeat visit, reduced motion, Persian toggle, images, category tabs)",
+      "pass": true,
+      "ms": 60033,
+      "evidence": [
+        "kebab-land/kebab-land-checks.json",
+        "kebab-land/kebab-land-en.jpg",
+        "kebab-land/kebab-land-fa.jpg",
+        "kebab-land/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 17; intro gone at 1395 ms, page slides in behind it (heading shown at 1614 ms, last of its 8 sliding rows at 2054 ms; all at once under reduced motion: true), plays again on reload (gone at 1414 ms, stored keys [\"roses-lang\"]); images 47/47; tabs: 20/20 taps end on their tab at the bar with 0 other tabs lit on the way, 0/416 scroll steps off, last tab at the bottom true, direct link true"
+    },
+    {
+      "name": "public page checks: drill-default-venue (temporary venue, default template) (intro, repeat visit, reduced motion, Persian toggle, images, category tabs)",
+      "pass": true,
+      "ms": 10045,
+      "evidence": [
+        "drill-default-venue/drill-default-venue-checks.json",
+        "drill-default-venue/drill-default-venue-en.jpg",
+        "drill-default-venue/drill-default-venue-fa.jpg",
+        "drill-default-venue/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 2; intro gone at 1411 ms, page slides in behind it (heading shown at 1579 ms, last of its 2 sliding rows at 1686 ms; all at once under reduced motion: true), plays again on reload (gone at 1407 ms, stored keys [\"roses-lang\"]); images 3/3; tabs: 5/5 taps end on their tab at the bar with 0 other tabs lit on the way, 0/10 scroll steps off, last tab at the bottom true, direct link true"
+    },
+    {
+      "name": "brand words in the built pages and the temporary venue's page",
+      "pass": true,
+      "ms": 33,
+      "evidence": [
+        "brand-words.txt"
+      ],
+      "note": "no \"Mealsy\" or \"Flo\" in visible text or metadata (3 pages)"
+    },
+    {
+      "name": "no runtime JavaScript: drill-default-venue (temporary venue, default template)",
+      "pass": true,
+      "ms": 0,
+      "evidence": [
+        "drill-default-venue/no-runtime-js.json"
+      ],
+      "note": "4 inline script tags (head decision, intro, language toggle, menu), 0 external, 0 JavaScript chunk references, 0 script preloads; default template: true"
+    },
+    {
+      "name": "photo links: senso",
+      "pass": true,
+      "ms": 3182,
+      "evidence": [
+        "senso/photo-links.md",
+        "senso/photo-links.json"
+      ],
+      "note": "135 URLs, 0 not 200/206"
+    },
+    {
+      "name": "photo links: kebab-land",
+      "pass": true,
+      "ms": 2325,
+      "evidence": [
+        "kebab-land/photo-links.md",
+        "kebab-land/photo-links.json"
+      ],
+      "note": "46 URLs, 0 not 200/206"
+    },
+    {
+      "name": "Lighthouse mobile ×3: senso",
+      "pass": true,
+      "ms": 31436,
+      "evidence": [
+        "senso/lighthouse-summary.json",
+        "senso/lighthouse.log"
+      ],
+      "note": "LCP 1203 / 1203 / 1202 ms, performance 100 / 100 / 100 (target ≤ 2500, local estimate)"
+    },
+    {
+      "name": "Lighthouse mobile ×3: kebab-land",
+      "pass": true,
+      "ms": 33145,
+      "evidence": [
+        "kebab-land/lighthouse-summary.json",
+        "kebab-land/lighthouse.log"
+      ],
+      "note": "LCP 1053 / 1056 / 1052 ms, performance 100 / 100 / 100 (target ≤ 2500, local estimate)"
+    },
+    {
+      "name": "Lighthouse mobile ×3: drill-default-venue (temporary venue, default template)",
+      "pass": true,
+      "ms": 23311,
+      "evidence": [
+        "drill-default-venue/lighthouse-summary.json",
+        "drill-default-venue/lighthouse.log"
+      ],
+      "note": "LCP 1054 / 1054 / 1055 ms, performance 100 / 100 / 100 (target ≤ 2500, local estimate)"
+    },
+    {
+      "name": "admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)",
+      "pass": true,
+      "ms": 11175,
+      "evidence": [
+        "admin/admin-drill.txt",
+        "admin/admin-drill.json",
+        "admin/*.jpg"
+      ],
+      "note": "ADMIN DRILL PASS (35/35); Details: change the tagline: 2 taps (Details tab, field) + typing + Enter; on the public page in 323 ms; Style: change the footer phone-link colour: 3 taps (group, token, swatch); on the public page in 319 ms; + Add venue: 3 taps + the name; Details tab open 100 ms after Create; the new page answers 200 (2 ms)"
+    },
+    {
+      "name": "lockout: 5 per venue + address, 50 per hour per venue with alert and unlock, revoked PIN",
+      "pass": true,
+      "ms": 6544,
+      "evidence": [
+        "lockout-drill.txt"
+      ],
+      "note": "LOCKOUT DRILL PASS"
+    },
+    {
+      "name": "revalidation: a price changed in the editor reaches the public page within 10 s, then Undo",
+      "pass": true,
+      "ms": 1414,
+      "evidence": [
+        "revalidation-log.txt"
+      ],
+      "note": "87 ms after Enter; Undo back on the page 345 ms after the tap"
+    },
+    {
+      "name": "page editor drill (task targets with tap counts, preview ≤ 1 s, reorder on the public page, Undo on the public page, change record, no preview script, drag-and-drop of items and sections, tap-to-edit in the preview, photo upload, section delete with move or delete and Undo, items in no section in the Needs-attention bar)",
+      "pass": true,
+      "ms": 10533,
+      "evidence": [
+        "editor/editor-drill.txt",
+        "editor/editor-drill.json",
+        "editor/*.jpg"
+      ],
+      "note": "EDITOR DRILL PASS (22/22); add an item: 1 tap + name + price + confirm (Enter); on the public page in 18 ms; sheet confirmed at +206 ms; change a price: 1 tap + typing + confirm (Enter); saved in 59 ms; hide an item: 1 tap; off the public page in 8 ms; photo upload: 2 taps + choose a photo; uploaded, saved and shown in the editor 103 ms after choosing (9818 bytes stored); on the public page in 5 ms; preview shows a saved change after 112 ms; Undo of a price change back on the public page after 6 ms; tap-to-edit: 1 tap on the item in the preview; editor open after 64 ms; drag an item (laptop): one drag; database and public page in the new order after 5 ms; drag a section (laptop): one drag; database and public page in the new order after 5 ms; delete a section, items moved: 3 taps (menu, Delete section, confirm with the default choice); on the public page in 5 ms"
+    },
+    {
+      "name": "Style tab drill (day-one defaults = the pre-token look, task target with tap count, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, preview ↔ controls, Reset all with confirmation, Persian view)",
+      "pass": true,
+      "ms": 11315,
+      "evidence": [
+        "style/style-drill.txt",
+        "style/style-drill.json",
+        "style/day-one-senso.json",
+        "style/day-one-kebab-land.json",
+        "style/guard-route.json",
+        "style/*.jpg"
+      ],
+      "note": "STYLE DRILL PASS (18/18); change the category bar background: 3 taps (Style tab, group, swatch) + 0 extra; on the public page in 6 ms; change the category bar background with the custom picker: 3 taps + choosing; saved in 56 ms; preview shows a saved colour after 239 ms; readability guard: refusal shown with the ratio and a one-tap fix; the fix saved in 57 ms; tap a region in the preview: 1 tap; its group open after 6 ms"
+    },
+    {
+      "name": "backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)",
+      "pass": true,
+      "ms": 3718,
+      "evidence": [
+        "backup-drill.txt"
+      ],
+      "note": "12 table comparisons equal, 0 different; item recovered: true"
+    },
+    {
+      "name": "uploads:clean on the run's uploads (keeps the temporary venue's logo, removes the editor drill's orphan photo, prints each file)",
+      "pass": true,
+      "ms": 71,
+      "evidence": [
+        "uploads-clean.txt"
+      ],
+      "note": "2 files before, 1 after; kept 1 referenced (the venue logo: true), removed 1 (9818 bytes: senso/photo-8e58b2a0-8cb5-420a-ba1f-1c047cda1d20.jpg); the scratch copy references 1 key(s)"
+    },
+    {
+      "name": "temporary venue removed from the scratch copy (drill-default-venue)",
+      "pass": true,
+      "ms": 73,
+      "evidence": [
+        "new-venue/new-venue-drill.txt"
+      ],
+      "note": "rows left 0; its page still answers 200 from the cache until the next save or build (the scratch copy is dropped anyway)"
+    },
+    {
+      "name": "isolation (a): every server and drill process connected to the scratch database roses_check_20261008t132403z (own log line per process + pg_stat_activity sampled every 400 ms)",
+      "pass": true,
+      "ms": 0,
+      "evidence": [
+        "isolation.json",
+        "server-3100.log",
+        "server-3101.log",
+        "*/…-drill.log"
+      ],
+      "note": "15 processes, every one on the scratch copy by its own log; pg_stat_activity: 10 distinct connections seen over 2069 samples (servers and drills included), none on roses"
+    },
+    {
+      "name": "isolation (b): the working database roses holds no row written by a suite account (admins, PINs, revisions, drill items/sections/venues, lockout-drill failure rows)",
+      "pass": true,
+      "ms": 0,
+      "evidence": [
+        "working-db-suite-rows.json"
+      ],
+      "note": "admins 0, pins 0, revisionsBySuiteAccounts 0, drillItemsOrSections 0, lockoutDrillFailureRows 0"
+    }
+  ]
+}

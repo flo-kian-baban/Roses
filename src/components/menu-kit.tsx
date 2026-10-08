@@ -116,10 +116,12 @@ export function ItemCard({ item, eager, photos = true }: { item: Item; eager: bo
 
 // A section's items in the layout chosen for it in the admin: the list (rows) or the two-column grid (cards). `first`
 // marks the first section of the page: its first row (or its first two cards, side by side) load their photo eagerly.
+// The grid carries its own breathing room (Kian, 2026-10-08): rows bring 16 px of padding above and below themselves, cards
+// do not, so the grid starts 16 px under the heading and ends 24 px above the band to the next section.
 export function ItemList({ section: s, first, photos = true, className = '' }: { section: Section; first: boolean; photos?: boolean; className?: string }) {
   const grid = s.layout === 'grid';
   return (
-    <ul className={`mt-3 ${grid ? 'grid grid-cols-2 gap-x-3 gap-y-5' : ''} ${className}`.trim()} data-layout={grid ? 'grid' : 'list'}>
+    <ul className={`${grid ? 'mt-4 grid grid-cols-2 gap-x-3 gap-y-6 pb-6' : 'mt-3'} ${className}`.trim()} data-layout={grid ? 'grid' : 'list'}>
       {s.items.map((i, n) => (grid ? <ItemCard key={i.id} item={i} eager={first && n < 2} photos={photos} /> : <ItemRow key={i.id} item={i} eager={first && n < 1} photos={photos} />))}
     </ul>
   );

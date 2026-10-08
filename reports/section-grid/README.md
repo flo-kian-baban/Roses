@@ -8,6 +8,7 @@ Every section is shown to customers as a **List** (the full-width rows of 2026-1
 |---|---|
 | save | HTTP 200, section answers `layout: grid`, one change record; the public page carried the grid 6 ms later |
 | public HTML of the section | 8 cards (its 8 shown items), 0 rows, 8 popups (one `<template>` per card), 0 placeholders (every shown juice has a photo), **0 descriptions on the cards** (the one juice that has a description shows it in its popup only); the other sections keep their own layout (12 lists in this copy, which carries Kian's live choices); 4 inline script tags, 0 external scripts (no runtime JavaScript) |
+| spacing around the grid (Kian, 2026-10-08, later: the last cards sat too close to the band) | heading to the first card 16 px; last card's price to the band of the next section 24 px (cards have no padding of their own, so the grid carries it: `mt-4` above, `pb-6` below, 24 px between rows) |
 | grid on an iPhone 13 viewport (390 px) | `display: grid`, columns `173px 173px`, gap 12 px across and 20 px down; cards at x = 16 and 201, photos 173 × 173 (a list row's photo is 96 × 96; the second row of cards starts 248 px below the first now that cards carry no description) |
 | first four cards | Green Mojito $9.99 · Cantaloupe $9.49 · Orange $10.99 · Mango $9.99 |
 | popup from a card | opens with the title "Green Mojito" and the hero photo |

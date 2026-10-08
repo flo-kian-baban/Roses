@@ -4,6 +4,8 @@ Commit 2581304 · Node v20.19.2 · Next 16.4.0 · build dir .next-check · serve
 
 **PASS** — 23 of 23 checks passed.
 
+Built with uncommitted changes from another session; not evidence for bcba8a8.
+
 | Check | Result | Time | Evidence | Notes |
 | --- | --- | --- | --- | --- |
 | migrations on the scratch copy (roses_check_20261008t020120z) | PASS | 0.1 s | `migrate.log` | 0 migration(s) applied, 4 already present |

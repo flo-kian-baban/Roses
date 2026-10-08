@@ -97,6 +97,13 @@ If you see a material problem with this stack for these requirements, raise it u
 - The hosted database (later) is filled by dump and restore of the working database, never by re-import. A fresh clone + `npm run setup` reproduces the reviewed state (imports, then the committed Persian review records).
 - Admin sign-in (Kian, 2026-10-07, replacing the PM's "email + password" build decision): admins sign in with a PIN only, on any venue; the email stays the account identifier and an email + password sign-in remains available for accounts that have a password. PINs may be 4 to 6 digits (generated staff PINs stay 6). Kian's own PIN is a temporary placeholder for now (never written down here or in any note) and must be changed before anything is reachable beyond the laptop (go-live checklist).
 
+## Process rules for every Claude session in this repo (PM, 2026-10-08, after the step-2 review)
+
+1. One working copy per session. A second session works in its own git worktree on its own branch (`git worktree add ../roses-<topic> -b <topic>`) and merges into `main` by rebase once its batch passes the suite. Never edit files in another session's working copy.
+2. Evidence only from committed code. `npm run check` refuses to start when the working tree has uncommitted changes outside `reports/checks` (it prints `git status --short` and exits 2). Flow: commit the code, run the suite, commit the report. Every report.md names the exact commit it tested.
+3. The run `reports/checks/2026-10-08T02-01-20Z` carries the line "Built with uncommitted changes from another session; not evidence for bcba8a8." The suite is run again on the commit the intro session makes.
+4. Intro session: before committing, report exactly what changed in the intro's behaviour with measured timings (when it shows, how long, whether it repeats on reload). Kian is ruling on repeat plays; no change to repeat behaviour is merged until he has ruled.
+
 ## Sources (use only these, plus any links Kian adds)
 
 1. https://onlineordering.mealsy.ca/en/#/ro-SensoCafe/online/menus

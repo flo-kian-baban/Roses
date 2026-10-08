@@ -59,6 +59,18 @@ function startServer(port, env, logFile) {
   servers.push(p); return p;
 }
 // preconditions
+// Evidence only from committed code (PM, 2026-10-08): the suite refuses to start when the working tree has uncommitted
+// changes outside reports/checks, so every report names the exact commit it tested. Flow: commit the code, run the suite, commit the report.
+{
+  const status = spawnSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).stdout.split('\n').filter(Boolean);
+  const outside = status.filter((l) => { const p = l.slice(3).split(' -> ').pop(); return !p.startsWith('reports/checks/'); });
+  if (outside.length) {
+    console.error('npm run check runs on committed code only (PM, 2026-10-08). Uncommitted changes outside reports/checks:');
+    console.error(spawnSync('git', ['status', '--short'], { encoding: 'utf8' }).stdout.trimEnd());
+    console.error('Commit (or stash) them, then run the suite again; commit the report afterwards.');
+    process.exit(2);
+  }
+}
 if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) { console.error('DATABASE_URL / SESSION_SECRET missing: run npm run setup'); process.exit(2); }
 const WORK_URL = process.env.DATABASE_URL;
 const workName = new URL(WORK_URL).pathname.slice(1);
@@ -279,7 +291,7 @@ try {
 const pass = results.length > 0 && results.every((r) => r.pass);
 const lines = [
   `# Check suite — ${stamp.replace('T', ' ').replace(/-(\d\d)-(\d\d)Z$/, ':$1:$2Z')}`, '',
-  `Commit ${commit} · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · servers ${PORT} and ${PROXY_PORT} · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
+  `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · servers ${PORT} and ${PROXY_PORT} · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
   `**${pass ? 'PASS' : 'FAIL'}** — ${results.filter((r) => r.pass).length} of ${results.length} checks passed.`, '',
   ...(pass ? [] : [`Cause: ${(() => { const f = results.find((r) => !r.pass); return `${f.name} — ${(f.note || '').replace(/\s+/g, ' ').slice(0, 300)}`; })()}`, '', 'This failed run is kept on purpose (PM, 2026-10-08): the folder is never deleted, even when a re-run passes.', '']),
   '| Check | Result | Time | Evidence | Notes |', '| --- | --- | --- | --- | --- |',

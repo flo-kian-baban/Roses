@@ -95,9 +95,9 @@ export function ItemRow({ item, eager, photos = true }: { item: Item; eager: boo
   );
 }
 
-// One card of the grid layout (Kian, 2026-10-08; Uber Eats-style): a big square photo on top, then the name, the price
-// and the description. An item without a photo keeps the photo's place as a placeholder so the two columns stay even.
-// Same tokens as the rows, same sheet on tap.
+// One card of the grid layout (Kian, 2026-10-08; Uber Eats-style): a big square photo on top, then the name and the price
+// only; the description shows in the sheet once the card is tapped (Kian, same day). An item without a photo keeps the
+// photo's place as a placeholder so the two columns stay even. Same tokens as the rows, same sheet on tap.
 export function ItemCard({ item, eager, photos = true }: { item: Item; eager: boolean; photos?: boolean }) {
   return (
     <li className="item card flex min-w-0 flex-col gap-2 bg-(--c-rows-bg)" tabIndex={0} role="button" aria-haspopup="dialog" data-id={item.id} data-photo={item.photo?.url ?? undefined}>
@@ -107,7 +107,6 @@ export function ItemCard({ item, eager, photos = true }: { item: Item; eager: bo
       <div className="min-w-0">
         <Bi as="h3" text={item.name} className="text-[15px] font-semibold leading-snug text-(--c-rows-name)" />
         <PriceLine item={item} />
-        <Bi as="p" text={item.description} className="mt-1 line-clamp-2 text-[13px] leading-snug text-(--c-rows-desc)" />
         {item.serves && <p className="mt-2"><Serves item={item} /></p>}
       </div>
       <Detail item={item} />

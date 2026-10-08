@@ -1,22 +1,24 @@
 {
-  "base": "http://127.0.0.1:3002",
-  "at": "2026-10-08T13:41:03.956Z",
+  "base": "http://127.0.0.1:3004",
+  "at": "2026-10-08T14:22:43.513Z",
   "sectionId": "66707ff4-11b3-4845-9a35-cf2e261abbc5",
   "save": {
     "status": 200,
     "layout": "grid",
     "revisions": [
-      "573"
+      "583"
     ]
   },
-  "publicAfterMs": 5,
+  "publicAfterMs": 6,
   "publicHtml": {
     "cards": 8,
+    "descriptionsOnCards": 0,
+    "descriptionsInPopups": 1,
     "rows": 0,
     "popups": 8,
     "placeholders": 0,
     "eagerPhotos": 0,
-    "listSectionsLeft": 14,
+    "listSectionsLeft": 12,
     "scriptTags": 4,
     "externalScripts": 0
   },
@@ -29,7 +31,7 @@
     "firstFour": [
       {
         "left": 16,
-        "top": 130,
+        "top": 122,
         "width": 173,
         "photo": "173×173",
         "name": "Green Mojito",
@@ -37,7 +39,7 @@
       },
       {
         "left": 201,
-        "top": 130,
+        "top": 122,
         "width": 173,
         "photo": "173×173",
         "name": "Cantaloupe",
@@ -45,7 +47,7 @@
       },
       {
         "left": 16,
-        "top": 378,
+        "top": 370,
         "width": 173,
         "photo": "173×173",
         "name": "Orange",
@@ -53,14 +55,14 @@
       },
       {
         "left": 201,
-        "top": 378,
+        "top": 370,
         "width": 173,
         "photo": "173×173",
         "name": "Mango",
         "price": "$9.99"
       }
     ],
-    "listRowPhoto": "96×96"
+    "listRowPhoto": "173×173"
   },
   "popup": {
     "open": true,
@@ -75,7 +77,7 @@
   "styleTab": [
     {
       "section": "Senso Signature",
-      "layout": "list"
+      "layout": "grid"
     },
     {
       "section": "Hot Beverage",
@@ -119,7 +121,7 @@
     },
     {
       "section": "Main Course",
-      "layout": "list"
+      "layout": "grid"
     },
     {
       "section": "Senso Pizza",

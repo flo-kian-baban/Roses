@@ -1,0 +1,258 @@
+{
+  "url": "http://127.0.0.1:3100/drill-default-venue",
+  "at": "2026-10-08T01:58:27.676Z",
+  "checks": {
+    "introInFirstHtml": {
+      "present": true,
+      "headScript": true,
+      "bytes": 14550
+    },
+    "firstVisit": {
+      "introVisibleAtMs": 11,
+      "introDoneAtMs": 1341,
+      "goneWithin1500ms": true,
+      "samples": [
+        {
+          "t": 11,
+          "intro": null,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 64,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 117,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 169,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 221,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 273,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 327,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 379,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 432,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 485,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 538,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 591,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 643,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 696,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 751,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 805,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 860,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 915,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 966,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1020,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1076,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1130,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1184,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1235,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "0.908857"
+        },
+        {
+          "t": 1288,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "0.660726"
+        },
+        {
+          "t": 1341,
+          "intro": "done",
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ]
+    },
+    "images": {
+      "total": 3,
+      "complete": 3,
+      "loaded": 3,
+      "failed": []
+    },
+    "dom": {
+      "lang": "en",
+      "dir": "ltr",
+      "title": "Drill default venue — Menu",
+      "sections": [
+        {
+          "id": "breakfast",
+          "en": "Breakfast",
+          "fa": "صبحانه",
+          "items": 2
+        },
+        {
+          "id": "drinks",
+          "en": "Drinks",
+          "fa": "نوشیدنی‌ها",
+          "items": 2
+        }
+      ],
+      "items": 4,
+      "pricesWithNonWesternDigits": 0,
+      "photos": 2
+    },
+    "fontRequests": {
+      "urls": [],
+      "thirdParty": []
+    },
+    "persianToggle": {
+      "lang": "fa",
+      "dir": "rtl",
+      "dataLang": "fa",
+      "visibleFaHeadings": 2,
+      "visibleEnHeadings": 0
+    },
+    "imagesFa": {
+      "total": 3,
+      "complete": 3,
+      "loaded": 3,
+      "failed": []
+    },
+    "repeatVisit": {
+      "intro": "skip",
+      "display": "none",
+      "storage": "1",
+      "lang": "fa",
+      "skipped": true
+    },
+    "reducedMotion": {
+      "intro": "skip",
+      "display": "none",
+      "prefersReduced": true,
+      "skipped": true
+    }
+  }
+}

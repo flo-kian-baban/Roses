@@ -16,6 +16,7 @@
     "check:lighthouse": "node scripts/check-lighthouse.mjs",
     "check:brand-words": "node scripts/check-brand-words.mjs .next/server/pages/senso.html .next/server/pages/kebab-land.html",
     "admin:create": "node scripts/admin-create.mjs",
+    "uploads:clean": "node scripts/uploads-clean.mjs",
     "setup": "node scripts/setup.mjs",
     "check": "node scripts/check.mjs"
   },

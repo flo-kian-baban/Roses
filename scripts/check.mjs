@@ -97,7 +97,8 @@ const adminPin = String(100000 + Math.floor(Math.random() * 900000));
 const pinSalt = randomBytes(16);
 const adminPinHash = ['$scrypt$N=16384,r=8,p=1', pinSalt.toString('base64'), scryptSync(adminPin, pinSalt, 32, { N: 16384, r: 8, p: 1 }).toString('base64')].join('$');
 const SUITE_ADMIN_NAME = 'Check suite', DRILL_PIN_NAMES = ['Drill staff', 'Drill owner', 'Lockout drill (valid PIN)', 'Lockout drill (to be revoked)'];
-const DRILL_ROW_NAMES = ['Drill editor item', 'Drill section', 'Drill section item 1', 'Drill section item 2', 'Drill venue'];
+const DRILL_ROW_NAMES = ['Drill editor item', 'Drill section', 'Drill section item 1', 'Drill section item 2', 'Drill venue', 'Drill default venue'];
+let newVenueId = null;
 scratchEnvRef = scratchEnv;
 const commit = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim();
 let adminId = null;
@@ -117,17 +118,40 @@ try {
   });
   if (!results.at(-1).pass) throw new Error('servers failed; stopping');
 
-  for (const venue of ['senso', 'kebab-land']) {
+  // Temporary venue on the default template (PM, 2026-10-08): created through the API in the scratch copy, checked like the two brand pages, removed at the end.
+  const nvout = path.join(out, 'new-venue'); fs.mkdirSync(nvout, { recursive: true });
+  await step('temporary venue on the default template (created through the admin API: logo upload, tagline, location, 2 sections, 4 items)', async () => {
+    const r = await run('node', ['scripts/new-venue-drill.mjs', '--base', base, '--out', nvout], { env: drillEnv, logFile: 'new-venue/new-venue-drill.log' });
+    newVenueId = (r.stdout.match(/^NEW VENUE (\S+)$/m) || [])[1] || null;
+    const j = fs.existsSync(path.join(nvout, 'new-venue.json')) ? JSON.parse(fs.readFileSync(path.join(nvout, 'new-venue.json'), 'utf8')) : null;
+    return { pass: r.status === 0 && !!newVenueId, evidence: ['new-venue/new-venue.json', 'new-venue/new-venue-drill.txt'], note: j ? `/${j.id}: ${j.sections} sections, ${j.items} shown items, logo ${j.logo.url.replace(/^\/uploads\//, 'uploads/')}, GET → ${j.status}` : `exit ${r.status}` };
+  });
+  const pageVenues = ['senso', 'kebab-land', ...(newVenueId ? [newVenueId] : [])];
+  const label = (v) => (v === newVenueId ? `${v} (temporary venue, default template)` : v);
+
+  for (const venue of pageVenues) {
     const vout = path.join(out, venue); fs.mkdirSync(vout, { recursive: true });
-    await step(`public page checks: ${venue} (intro, repeat visit, reduced motion, Persian toggle, images)`, async () => {
+    await step(`public page checks: ${label(venue)} (intro, repeat visit, reduced motion, Persian toggle, images)`, async () => {
       const r = await run('node', ['scripts/check-page.mjs', venue, '--base', base, '--out', vout, '--jpeg'], { logFile: `${venue}/check-page.log` });
       const j = JSON.parse(fs.readFileSync(path.join(vout, `${venue}-checks.json`), 'utf8')).checks;
       return { pass: r.status === 0, evidence: [`${venue}/${venue}-checks.json`, `${venue}/${venue}-en.jpg`, `${venue}/${venue}-fa.jpg`, `${venue}/check-page.log`], note: `toggle dir=${j.persianToggle.dir}, Persian headings ${j.persianToggle.visibleFaHeadings}; intro gone at ${j.firstVisit.introDoneAtMs} ms; images ${j.images.loaded}/${j.images.total}` };
     });
   }
-  await step('brand words in both built pages', async () => {
-    const r = await run('node', ['scripts/check-brand-words.mjs', `${DIST}/server/pages/senso.html`, `${DIST}/server/pages/kebab-land.html`], { logFile: 'brand-words.txt' });
-    return { pass: r.status === 0, evidence: ['brand-words.txt'], note: r.status === 0 ? 'no "Mealsy" or "Flo" in visible text or metadata' : 'see brand-words.txt' };
+  await step(`brand words in the built pages${newVenueId ? ' and the temporary venue\'s page' : ''}`, async () => {
+    const files = [`${DIST}/server/pages/senso.html`, `${DIST}/server/pages/kebab-land.html`];
+    if (newVenueId && fs.existsSync(path.join(out, newVenueId, `${newVenueId}-first-response.html`))) files.push(path.join(out, newVenueId, `${newVenueId}-first-response.html`)); // the dynamic page as served (check-page saved it)
+    const r = await run('node', ['scripts/check-brand-words.mjs', ...files], { logFile: 'brand-words.txt' });
+    return { pass: r.status === 0 && files.length === (newVenueId ? 3 : 2), evidence: ['brand-words.txt'], note: r.status === 0 ? `no "Mealsy" or "Flo" in visible text or metadata (${files.length} pages)` : 'see brand-words.txt' };
+  });
+  if (newVenueId) await step(`no runtime JavaScript: ${label(newVenueId)}`, async () => {
+    const f = path.join(out, newVenueId, `${newVenueId}-first-response.html`);
+    if (!fs.existsSync(f)) return { pass: false, note: 'no saved first response' };
+    const html = fs.readFileSync(f, 'utf8');
+    const tags = [...html.matchAll(/<script[^>]*>/g)].map((m) => m[0]);
+    const external = tags.filter((t) => /\bsrc=/.test(t)).length, chunks = (html.match(/\/_next\/static\/chunks\/[^"'\s>]+\.js\b/g) || []).length, preloads = (html.match(/<link[^>]+rel="(?:modulepreload|preload)"[^>]+as="script"/g) || []).length; // the stylesheet lives under /_next/static/chunks too and is allowed
+    const ok = external === 0 && chunks === 0 && preloads === 0 && tags.length === 4 && html.includes('default-price');
+    fs.writeFileSync(path.join(out, newVenueId, 'no-runtime-js.json'), JSON.stringify({ file: path.basename(f), scriptTags: tags, external, nextChunkReferences: chunks, scriptPreloads: preloads, defaultTemplate: html.includes('default-price'), pass: ok }, null, 2));
+    return { pass: ok, evidence: [`${newVenueId}/no-runtime-js.json`], note: `${tags.length} inline script tags (head decision, intro, language toggle, menu), ${external} external, ${chunks} JavaScript chunk references, ${preloads} script preloads; default template: ${html.includes('default-price')}` };
   });
   for (const venue of ['senso', 'kebab-land']) {
     await step(`photo links: ${venue}`, async () => {
@@ -139,8 +163,8 @@ try {
       return { pass: r.status === 0 && bad.length === 0, evidence: [`${venue}/photo-links.md`, `${venue}/photo-links.json`], note: `${Array.isArray(rows) ? rows.length : '?'} URLs, ${bad.length} not 200/206` };
     });
   }
-  for (const venue of ['senso', 'kebab-land']) {
-    await step(`Lighthouse mobile ×3: ${venue}`, async () => {
+  for (const venue of pageVenues) {
+    await step(`Lighthouse mobile ×3: ${label(venue)}`, async () => {
       const vout = path.join(out, venue);
       const r = await run('node', ['scripts/check-lighthouse.mjs', `${base}/${venue}`, '--runs', '3', '--out', vout], { logFile: `${venue}/lighthouse.log` });
       const s = JSON.parse(fs.readFileSync(path.join(vout, 'lighthouse-summary.json'), 'utf8'));
@@ -175,6 +199,24 @@ try {
     const equal = (t.match(/ equal$/gm) || []).length, different = (t.match(/DIFFERENT/g) || []).length, recovered = /after recovery: items with that id = 1, placements = 1/.test(t);
     return { pass: r.status === 0 && different === 0 && recovered, evidence: ['backup-drill.txt'], note: `${equal} table comparisons equal, ${different} different; item recovered: ${recovered}` };
   });
+  await step('uploads:clean on the run\'s uploads (keeps the temporary venue\'s logo, removes the editor drill\'s orphan photo, prints each file)', async () => {
+    const before = fs.existsSync(scratchEnv.UPLOAD_DIR) ? fs.readdirSync(scratchEnv.UPLOAD_DIR, { recursive: true }).filter((f) => /\.(jpg|png|webp|svg)$/.test(String(f))).map(String) : [];
+    const r = await run('node', ['scripts/uploads-clean.mjs', '--min-age', '0'], { logFile: 'uploads-clean.txt' });
+    const m = r.stdout.match(/SUMMARY referenced-kept (\d+), young-kept (\d+), left-alone (\d+), removed (\d+) \((\d+) bytes\); (\d+) keys? referenced/);
+    const removed = [...r.stdout.matchAll(/^removed: (\S+)/gm)].map((x) => x[1]);
+    const after = fs.existsSync(scratchEnv.UPLOAD_DIR) ? fs.readdirSync(scratchEnv.UPLOAD_DIR, { recursive: true }).filter((f) => /\.(jpg|png|webp|svg)$/.test(String(f))).map(String) : [];
+    const logoKey = newVenueId && fs.existsSync(path.join(nvout, 'new-venue.json')) ? JSON.parse(fs.readFileSync(path.join(nvout, 'new-venue.json'), 'utf8')).logo.key : null;
+    const logoKept = !!logoKey && after.includes(logoKey) && !removed.includes(logoKey);
+    const orphanGone = removed.some((k) => /\/photo-/.test(k)) && removed.every((k) => !after.includes(k));
+    const ok = r.status === 0 && !!m && Number(m[1]) >= 1 && logoKept && orphanGone && before.length - after.length === removed.length;
+    return { pass: ok, evidence: ['uploads-clean.txt'], note: m ? `${before.length} files before, ${after.length} after; kept ${m[1]} referenced (the venue logo: ${logoKept}), removed ${m[4]} (${m[5]} bytes: ${removed.join(', ') || 'none'}); the scratch copy references ${m[6]} key(s)` : `exit ${r.status}` };
+  });
+  if (newVenueId) await step(`temporary venue removed from the scratch copy (${newVenueId})`, async () => {
+    const r = await run('node', ['scripts/new-venue-drill.mjs', '--remove', newVenueId, '--out', nvout], { logFile: 'new-venue/new-venue-remove.log' });
+    const m = r.stdout.match(/^REMOVED (\S+) left (\d+)$/m);
+    const page = await fetch(`${base}/${newVenueId}`, { cache: 'no-store' }).then((x) => x.status).catch(() => 0);
+    return { pass: r.status === 0 && !!m && m[2] === '0', evidence: ['new-venue/new-venue-drill.txt'], note: m ? `rows left ${m[2]}; its page still answers ${page} from the cache until the next save or build (the scratch copy is dropped anyway)` : `exit ${r.status}` };
+  });
 } catch (e) {
   log(`suite stopped: ${e.message}`);
 } finally {
@@ -188,11 +230,12 @@ try {
     const names = [...read(`server-${port}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]);
     processes.push({ process: app, source: `server-${port}.log`, databases: [...new Set(names)] });
   }
-  for (const [name, file] of [['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
+  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
     if (!fs.existsSync(path.join(out, file))) continue;
     processes.push({ process: `roses-check:${name}`, source: file, databases: [...new Set([...read(file).matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))] });
   }
   if (fs.existsSync(path.join(out, 'backup-drill.txt'))) processes.push({ process: 'backup-drill.sh', source: 'backup-drill.txt', databases: [...new Set([...read('backup-drill.txt').matchAll(/— database (\S+)/g)].map((m) => m[1]))] });
+  if (fs.existsSync(path.join(out, 'uploads-clean.txt'))) processes.push({ process: 'roses-uploads-clean', source: 'uploads-clean.txt', databases: [...new Set([...read('uploads-clean.txt').matchAll(/^database "([^"]+)"/gm)].map((m) => m[1]))] });
   processes.push({ process: 'roses-check:migrate', source: 'migrate.log (DATABASE_URL)', databases: [scratchName] }, { process: 'roses-check:build', source: 'build.log (DATABASE_URL)', databases: [scratchName] });
   const samples = [...seen.entries()].map(([k, n]) => ({ connection: k, samples: n })).sort((a, b) => a.connection.localeCompare(b.connection));
   const wrongProcess = processes.filter((p) => p.databases.length === 0 || p.databases.some((d) => d !== scratchName));

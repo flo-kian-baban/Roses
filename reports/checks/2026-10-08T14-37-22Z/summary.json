@@ -1,0 +1,218 @@
+{
+  "stamp": "2026-10-08T14-37-22Z",
+  "commit": "b637077",
+  "pass": false,
+  "results": [
+    {
+      "name": "migrations on the scratch copy (roses_check_20261008t143722z)",
+      "pass": true,
+      "ms": 66,
+      "evidence": [
+        "migrate.log"
+      ],
+      "note": "0 migration(s) applied, 5 already present"
+    },
+    {
+      "name": "production build (.next-check)",
+      "pass": true,
+      "ms": 2970,
+      "evidence": [
+        "build.log"
+      ],
+      "note": "next build ok"
+    },
+    {
+      "name": "colour literals in the public templates, the menu kit and the public stylesheet (Kian, 2026-10-08: 0 outside src/venues/tokens.ts)",
+      "pass": true,
+      "ms": 38,
+      "evidence": [
+        "colour-literals.txt",
+        "colour-literals.json"
+      ],
+      "note": "0 colour literal(s) in 14 public files; 94 hex values live in the token defaults file"
+    },
+    {
+      "name": "servers on 3100 and 3101 (TRUST_PROXY=1)",
+      "pass": true,
+      "ms": 23,
+      "evidence": [
+        "server-3100.log",
+        "server-3101.log"
+      ],
+      "note": "both answer 200 on /senso"
+    },
+    {
+      "name": "temporary venue on the default template (created through the admin API: logo upload, tagline, location, 2 sections, 4 items)",
+      "pass": false,
+      "ms": 138,
+      "evidence": [
+        "new-venue/new-venue.json",
+        "new-venue/new-venue-drill.txt"
+      ],
+      "note": "exit 1"
+    },
+    {
+      "name": "public page checks: senso (intro, repeat visit, reduced motion, Persian toggle, images, category tabs, top after a reload)",
+      "pass": false,
+      "ms": 79727,
+      "evidence": [
+        "senso/senso-checks.json",
+        "senso/senso-en.jpg",
+        "senso/senso-fa.jpg",
+        "senso/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 15; intro gone at 1383 ms, page slides in behind it (heading shown at 1593 ms, last of its 6 sliding rows at 1963 ms; all at once under reduced motion: true), plays again on reload (gone at 1404 ms, stored keys [\"roses-lang\"]); images 124/124; tabs: 18/18 taps end on their tab at the bar with 0 other tabs lit on the way, 0/634 scroll steps off, last tab at the bottom true, direct link true; after a reload: 98 px from the top, hash \"#senso-signature\" (was 84 px, \"#senso-signature\")"
+    },
+    {
+      "name": "public page checks: kebab-land (intro, repeat visit, reduced motion, Persian toggle, images, category tabs, top after a reload)",
+      "pass": false,
+      "ms": 61474,
+      "evidence": [
+        "kebab-land/kebab-land-checks.json",
+        "kebab-land/kebab-land-en.jpg",
+        "kebab-land/kebab-land-fa.jpg",
+        "kebab-land/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 17; intro gone at 1375 ms, page slides in behind it (heading shown at 1589 ms, last of its 8 sliding rows at 2076 ms; all at once under reduced motion: true), plays again on reload (gone at 1374 ms, stored keys [\"roses-lang\"]); images 47/47; tabs: 20/20 taps end on their tab at the bar with 0 other tabs lit on the way, 0/416 scroll steps off, last tab at the bottom true, direct link true; after a reload: 98 px from the top, hash \"#appetizers\" (was 84 px, \"#appetizers\")"
+    },
+    {
+      "name": "brand words in the built pages",
+      "pass": true,
+      "ms": 34,
+      "evidence": [
+        "brand-words.txt"
+      ],
+      "note": "no \"Mealsy\" or \"Flo\" in visible text or metadata (2 pages)"
+    },
+    {
+      "name": "photo links: senso",
+      "pass": true,
+      "ms": 3168,
+      "evidence": [
+        "senso/photo-links.md",
+        "senso/photo-links.json"
+      ],
+      "note": "135 URLs, 0 not 200/206"
+    },
+    {
+      "name": "photo links: kebab-land",
+      "pass": true,
+      "ms": 2233,
+      "evidence": [
+        "kebab-land/photo-links.md",
+        "kebab-land/photo-links.json"
+      ],
+      "note": "46 URLs, 0 not 200/206"
+    },
+    {
+      "name": "Lighthouse mobile ×3: senso",
+      "pass": true,
+      "ms": 32347,
+      "evidence": [
+        "senso/lighthouse-summary.json",
+        "senso/lighthouse.log"
+      ],
+      "note": "LCP 1202 / 1202 / 1206 ms, performance 100 / 100 / 100 (target ≤ 2500, local estimate)"
+    },
+    {
+      "name": "Lighthouse mobile ×3: kebab-land",
+      "pass": false,
+      "ms": 14436,
+      "evidence": [],
+      "note": "error: ENOENT: no such file or directory, open '/Users/kianbaban/roses-top/reports/checks/2026-10-08T14-37-22Z/kebab-land/lighthouse-summary.json'"
+    },
+    {
+      "name": "admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route and section layout 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)",
+      "pass": false,
+      "ms": 496,
+      "evidence": [
+        "admin/admin-drill.txt",
+        "admin/admin-drill.json",
+        "admin/*.jpg"
+      ],
+      "note": "exit 1; "
+    },
+    {
+      "name": "lockout: 5 per venue + address, 50 per hour per venue with alert and unlock, revoked PIN",
+      "pass": false,
+      "ms": 71,
+      "evidence": [
+        "lockout-drill.txt"
+      ],
+      "note": "exit 1"
+    },
+    {
+      "name": "revalidation: a price changed in the editor reaches the public page within 10 s, then Undo",
+      "pass": false,
+      "ms": 289,
+      "evidence": [
+        "revalidation-log.txt"
+      ],
+      "note": "exit 1"
+    },
+    {
+      "name": "page editor drill (task targets with tap counts, preview ≤ 1 s, reorder on the public page, Undo on the public page, change record, no preview script, drag-and-drop of items and sections, tap-to-edit in the preview, photo upload, section delete with move or delete and Undo, items in no section in the Needs-attention bar)",
+      "pass": false,
+      "ms": 634,
+      "evidence": [
+        "editor/editor-drill.txt",
+        "editor/editor-drill.json",
+        "editor/*.jpg"
+      ],
+      "note": "exit 1; "
+    },
+    {
+      "name": "Style tab drill (day-one defaults = the pre-token look, task target with tap count, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, preview ↔ controls with the controls as the master through a save, section layout List/Grid on the public page and in the preview with Undo, Reset all with confirmation, Persian view)",
+      "pass": false,
+      "ms": 392,
+      "evidence": [
+        "style/style-drill.txt",
+        "style/style-drill.json",
+        "style/day-one-senso.json",
+        "style/day-one-kebab-land.json",
+        "style/guard-route.json",
+        "style/*.jpg"
+      ],
+      "note": "exit 1; "
+    },
+    {
+      "name": "backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)",
+      "pass": true,
+      "ms": 3464,
+      "evidence": [
+        "backup-drill.txt"
+      ],
+      "note": "12 table comparisons equal, 0 different; item recovered: true"
+    },
+    {
+      "name": "uploads:clean on the run's uploads (keeps the temporary venue's logo, removes the editor drill's orphan photo, prints each file)",
+      "pass": false,
+      "ms": 63,
+      "evidence": [
+        "uploads-clean.txt"
+      ],
+      "note": "0 files before, 0 after; kept 0 referenced (the venue logo: false), removed 0 (0 bytes: none); the scratch copy references 0 key(s)"
+    },
+    {
+      "name": "isolation (a): every server and drill process connected to the scratch database roses_check_20261008t143722z (own log line per process + pg_stat_activity sampled every 400 ms)",
+      "pass": false,
+      "ms": 0,
+      "evidence": [
+        "isolation.json",
+        "server-3100.log",
+        "server-3101.log",
+        "*/…-drill.log"
+      ],
+      "note": "WRONG: roses-check:server-3100 → no log line; roses-check:server-3101 → no log line roses-check:admin-drill → roses_check_20261008t143543z; roses-check:editor-drill → roses_check_20261008t143543z; roses-check:lockout-drill → roses_check_20261008t143543z; roses-check:revalidation-drill → roses_check_20261008t143543z; roses-check:server-3100 → roses_check_20261008t143543z; roses-check:server-3101 → roses_check_20261008t143543z; roses-check:style-drill → roses_check_20261008t143543z; roses-check:suite → roses_check_20261008t143543z "
+    },
+    {
+      "name": "isolation (b): the working database roses holds no row written by a suite account (admins, PINs, revisions, drill items/sections/venues, lockout-drill failure rows)",
+      "pass": true,
+      "ms": 0,
+      "evidence": [
+        "working-db-suite-rows.json"
+      ],
+      "note": "admins 0, pins 0, revisionsBySuiteAccounts 0, drillItemsOrSections 0, lockoutDrillFailureRows 0"
+    }
+  ]
+}

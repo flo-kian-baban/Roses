@@ -15,7 +15,10 @@ export function Intro({ logo, alt, tile }: { logo: { url: string; width: number;
   );
 }
 
-// Runs before first paint: restores the saved language and skips the intro when the device has reduced motion on.
-export function headScript(): string {
-  return `(function(){var h=document.documentElement;try{var l=localStorage.getItem('roses-lang');if(l==='fa'){h.dataset.lang='fa';h.lang='fa';h.dir='rtl';}}catch(e){}if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)h.dataset.intro='skip';})();`;
+// Runs before first paint: restores the saved language, skips the intro when the device has reduced motion on and, when the intro
+// plays (`intro`: the venue's logo-animation switch), turns the browser's scroll restoration off so every load and reload starts at
+// the top (Kian, 2026-10-08: Chrome re-anchored its restored position on the page entrance's first frame, where the header sits
+// 14 px lower, so every reload landed 14 px further down). A link straight to a section (#id) still opens on that section.
+export function headScript(intro = true): string {
+  return `(function(){var h=document.documentElement;try{var l=localStorage.getItem('roses-lang');if(l==='fa'){h.dataset.lang='fa';h.lang='fa';h.dir='rtl';}}catch(e){}if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)h.dataset.intro='skip';${intro ? "else if('scrollRestoration' in history)history.scrollRestoration='manual';" : ''}})();`;
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Evidence for a venue page on a running local server (default http://localhost:3000):
 // first HTML response contains the intro, intro gone within 1.5 s, played again on a repeat visit (Kian,
-// 2026-10-07: every refresh, nothing stored) and skipped under reduced motion; category tabs follow taps and the scroll (Kian, 2026-10-08);
+// 2026-10-07: every refresh, nothing stored) and skipped under reduced motion; category tabs follow taps and the scroll, top of the page after a reload (Kian, 2026-10-08);
 // full-page iPhone screenshots in English and Persian; DOM summary. Raw outputs go to reports/<dir>/.
 //   node scripts/check-page.mjs senso [--base http://localhost:3000] [--out reports/checkpoint-a]
 import fs from 'node:fs/promises';
@@ -123,6 +123,19 @@ const browser = await chromium.launch();
   log.checks.persianToggle = fa;
   log.checks.imagesFa = await loadAllImages(page);
   await page.screenshot(shotOpts(path.join(out, `${venue}-fa.png`)));
+  // 2c. top after a reload (Kian, 2026-10-08): after a tap on the first tab and an 8 px scroll, a reload comes back at the top with no
+  //     hash in the URL (Chrome re-anchored its restored position on the page entrance's first frame, 14 px lower on every reload;
+  //     a tap used to leave #section in the URL, which a reload jumped to)
+  await page.evaluate(() => { window.scrollTo(0, 0); const a = document.querySelector('#tabs a[data-tab]'); if (a) a.click(); });
+  await page.waitForTimeout(900);
+  await page.evaluate(() => window.scrollBy(0, 8));
+  await page.waitForTimeout(300);
+  const beforeReload = await page.evaluate(() => ({ y: Math.round(scrollY), hash: location.hash }));
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForFunction(() => document.documentElement.dataset.intro === 'done' || document.documentElement.dataset.intro === 'skip', null, { timeout: 5000 }).catch(() => {});
+  await page.waitForTimeout(400);
+  const afterReload = await page.evaluate(() => ({ y: Math.round(scrollY * 10) / 10, hash: location.hash, scrollRestoration: history.scrollRestoration }));
+  log.checks.topAfterReload = { beforeReload, afterReload, ok: afterReload.y === 0 && afterReload.hash === '' };
   // 3. repeat visit in the same context (localStorage kept, language saved as Persian): the intro must play again,
   //    visible at first and gone within 1.5 s, with nothing about it in storage
   await page.goto(url, { waitUntil: 'commit' });
@@ -167,8 +180,8 @@ await browser.close();
 await fs.writeFile(path.join(out, `${venue}-checks.json`), JSON.stringify(log, null, 2));
 const c = log.checks;
 console.log(JSON.stringify({ introInFirstHtml: c.introInFirstHtml, firstVisit: { introVisibleAtMs: c.firstVisit.introVisibleAtMs, introDoneAtMs: c.firstVisit.introDoneAtMs, goneWithin1500ms: c.firstVisit.goneWithin1500ms, entrance: c.firstVisit.entrance }, repeatVisit: { ...c.repeatVisit, samples: undefined }, reducedMotion: c.reducedMotion, persianToggle: c.persianToggle, dom: { ...c.dom, sections: c.dom.sections.length } }, null, 2));
-const pass = c.introInFirstHtml.present && c.introInFirstHtml.noStoredSkip && c.firstVisit.goneWithin1500ms && c.firstVisit.entrance.ok && c.repeatVisit.playsAgain && c.reducedMotion.skipped && c.reducedMotion.pageVisibleAtOnce && c.persianToggle.dir === 'rtl' && c.fontRequests.thirdParty.length === 0 && c.images.loaded === c.images.total && c.imagesFa.loaded === c.imagesFa.total && c.tabs.ok;
-console.log('tabs:', JSON.stringify({ ...c.tabs, taps: undefined }));
+const pass = c.introInFirstHtml.present && c.introInFirstHtml.noStoredSkip && c.firstVisit.goneWithin1500ms && c.firstVisit.entrance.ok && c.repeatVisit.playsAgain && c.reducedMotion.skipped && c.reducedMotion.pageVisibleAtOnce && c.persianToggle.dir === 'rtl' && c.fontRequests.thirdParty.length === 0 && c.images.loaded === c.images.total && c.imagesFa.loaded === c.imagesFa.total && c.tabs.ok && c.topAfterReload.ok;
+console.log('tabs:', JSON.stringify({ ...c.tabs, taps: undefined }), '\ntop after reload:', JSON.stringify(c.topAfterReload));
 console.log('fonts requested:', JSON.stringify(c.fontRequests), '\nimages EN:', JSON.stringify(c.images), '\nimages FA:', JSON.stringify(c.imagesFa));
 console.log(pass ? 'PASS' : 'FAIL');
 process.exit(pass ? 0 : 1);

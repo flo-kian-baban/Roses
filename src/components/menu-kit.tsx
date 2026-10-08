@@ -149,7 +149,8 @@ export function MenuDialogs({ sections }: { sections: Section[] }) {
 // section (a page too short to scroll keeps its first tab). A tap
 // lights its tab at once and locks it while the page scrolls there (the tabs in between never light up); the lock lifts when the
 // scroll settles (160 ms without a scroll event) or the customer takes over (touch, wheel, keys). The strip scrolls itself to
-// centre the active tab; it never scrolls the page.
+// centre the active tab; it never scrolls the page. A tap writes no #hash into the URL (Kian, 2026-10-08: a reload used to jump
+// to the tapped section, hiding the header); a link straight to a section still opens on it.
 const menuScript = `(function(){var sheet=document.getElementById('sheet'),hero=document.getElementById('sheet-hero'),content=document.getElementById('sheet-content');
 if(sheet&&sheet.showModal){var open=function(li){var tpl=li.querySelector('template.detail');if(!tpl)return;content.replaceChildren(tpl.content.cloneNode(true));hero.replaceChildren();var p=li.getAttribute('data-photo');if(p){var img=document.createElement('img');img.src=p;img.alt='';img.decoding='async';hero.appendChild(img);hero.hidden=false}else{hero.hidden=true}sheet.showModal();sheet.scrollTop=0;history.pushState({sheet:1},'')};
 document.querySelectorAll('li.item').forEach(function(li){li.addEventListener('click',function(){open(li)});li.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open(li)}})});
@@ -165,5 +166,5 @@ var update=function(instant){if(queued)return;queued=true;requestAnimationFrame(
 var release=function(){clearTimeout(lockTimer);lockTimer=null;lock=null};var settle=function(){clearTimeout(lockTimer);lockTimer=setTimeout(release,160)};
 window.addEventListener('scroll',function(){if(lock!==null)settle();else update()},{passive:true});window.addEventListener('resize',function(){update()});
 ['touchstart','wheel','keydown','pointerdown'].forEach(function(t){window.addEventListener(t,function(e){if(lock!==null&&!(nav&&nav.contains(e.target))){release();update()}},{passive:true})});
-document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var id=decodeURIComponent(a.getAttribute('href').slice(1)),t=document.getElementById(id);if(!t)return;e.preventDefault();if(byId[id]){lock=id;setActive(id);settle()}window.scrollTo({top:window.scrollY+t.getBoundingClientRect().top-(nav?nav.offsetHeight:0),behavior:reduced?'auto':'smooth'});history.replaceState(null,'',a.getAttribute('href'))});
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var id=decodeURIComponent(a.getAttribute('href').slice(1)),t=document.getElementById(id);if(!t)return;e.preventDefault();if(byId[id]){lock=id;setActive(id);settle()}window.scrollTo({top:window.scrollY+t.getBoundingClientRect().top-(nav?nav.offsetHeight:0),behavior:reduced?'auto':'smooth'})});
 if(secs.length)update(true)})();`;

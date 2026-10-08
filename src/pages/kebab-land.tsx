@@ -41,7 +41,7 @@ export default function KebabLand({ venue, sections }: Props) {
         <meta name="theme-color" content={colors['page.bg'].value} />
         {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
         {venue.brand.logo && <link rel="preload" as="image" href={venue.brand.logo.url} fetchPriority="high" />}
-        <script dangerouslySetInnerHTML={{ __html: headScript() }} />
+        <script dangerouslySetInnerHTML={{ __html: headScript(style.intro !== false) }} />
       </Head>
       <style dangerouslySetInnerHTML={{ __html: css }} />
       {style.intro !== false && <Intro logo={venue.brand.logo} alt={venue.name.en ?? ''} tile />}

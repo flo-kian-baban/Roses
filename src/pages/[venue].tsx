@@ -42,7 +42,7 @@ export default function VenuePage({ venue, sections }: Props) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content={colors['page.bg'].value} />
         {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
-        <script dangerouslySetInnerHTML={{ __html: headScript() }} />
+        <script dangerouslySetInnerHTML={{ __html: headScript(style.intro !== false) }} />
       </Head>
       <style dangerouslySetInnerHTML={{ __html: css }} />
       {style.intro !== false && venue.brand.logo && <Intro logo={venue.brand.logo} alt={venue.name.en ?? ''} tile />}

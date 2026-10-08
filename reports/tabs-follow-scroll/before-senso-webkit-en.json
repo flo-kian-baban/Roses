@@ -1,0 +1,349 @@
+{
+  "label": "before",
+  "build": "eab383f (the build served by the main checkout)",
+  "venue": "senso",
+  "browser": "webkit",
+  "lang": "en",
+  "dir": "ltr",
+  "at": "2026-10-08T13:08:02.414Z",
+  "viewport": {
+    "width": 390,
+    "height": 664
+  },
+  "barHeight": 48.4,
+  "sections": 15,
+  "taps": [
+    {
+      "tapped": "senso-signature",
+      "index": 0,
+      "activeAfter": "senso-signature",
+      "ok": true,
+      "expectedByPosition": "senso-signature",
+      "sectionTopMinusBar": 0,
+      "finalY": 68,
+      "settleMs": 449,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "hot-beverage",
+      "index": 1,
+      "activeAfter": "senso-signature",
+      "ok": false,
+      "expectedByPosition": "senso-signature",
+      "sectionTopMinusBar": 8,
+      "finalY": 907,
+      "settleMs": 530,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "tea-herbal-tea",
+      "index": 2,
+      "activeAfter": "hot-beverage",
+      "ok": false,
+      "expectedByPosition": "hot-beverage",
+      "sectionTopMinusBar": 8,
+      "finalY": 3044,
+      "settleMs": 543,
+      "hops": [
+        "hot-beverage"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "cold-beverage",
+      "index": 3,
+      "activeAfter": "tea-herbal-tea",
+      "ok": false,
+      "expectedByPosition": "tea-herbal-tea",
+      "sectionTopMinusBar": 7.7,
+      "finalY": 4831,
+      "settleMs": 527,
+      "hops": [
+        "tea-herbal-tea"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "fresh-juice",
+      "index": 4,
+      "activeAfter": "fresh-juice",
+      "ok": true,
+      "expectedByPosition": "cold-beverage",
+      "sectionTopMinusBar": 7.4,
+      "finalY": 5927,
+      "settleMs": 527,
+      "hops": [
+        "cold-beverage"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "dessert",
+      "index": 5,
+      "activeAfter": "dessert",
+      "ok": true,
+      "expectedByPosition": "fresh-juice",
+      "sectionTopMinusBar": 7.4,
+      "finalY": 7032,
+      "settleMs": 525,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "ice-cream",
+      "index": 6,
+      "activeAfter": "ice-cream",
+      "ok": true,
+      "expectedByPosition": "dessert",
+      "sectionTopMinusBar": 7.4,
+      "finalY": 9814,
+      "settleMs": 520,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "milkshake",
+      "index": 7,
+      "activeAfter": "milkshake",
+      "ok": true,
+      "expectedByPosition": "ice-cream",
+      "sectionTopMinusBar": 7.4,
+      "finalY": 10403,
+      "settleMs": 522,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "persian-breakfast",
+      "index": 8,
+      "activeAfter": "persian-breakfast",
+      "ok": true,
+      "expectedByPosition": "milkshake",
+      "sectionTopMinusBar": 7.4,
+      "finalY": 10992,
+      "settleMs": 523,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "salad",
+      "index": 9,
+      "activeAfter": "salad",
+      "ok": true,
+      "expectedByPosition": "persian-breakfast",
+      "sectionTopMinusBar": 7.2,
+      "finalY": 13857,
+      "settleMs": 524,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "appetizer",
+      "index": 10,
+      "activeAfter": "appetizer",
+      "ok": true,
+      "expectedByPosition": "salad",
+      "sectionTopMinusBar": 7.2,
+      "finalY": 14446,
+      "settleMs": 549,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "main-course",
+      "index": 11,
+      "activeAfter": "appetizer",
+      "ok": false,
+      "expectedByPosition": "appetizer",
+      "sectionTopMinusBar": 7.6,
+      "finalY": 15802,
+      "settleMs": 526,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "senso-pizza",
+      "index": 12,
+      "activeAfter": "main-course",
+      "ok": false,
+      "expectedByPosition": "main-course",
+      "sectionTopMinusBar": 8,
+      "finalY": 16774,
+      "settleMs": 529,
+      "hops": [
+        "main-course"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "beverage",
+      "index": 13,
+      "activeAfter": "beverage",
+      "ok": true,
+      "expectedByPosition": "senso-pizza",
+      "sectionTopMinusBar": 7.4,
+      "finalY": 17733,
+      "settleMs": 535,
+      "hops": [
+        "senso-pizza"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "extra",
+      "index": 14,
+      "activeAfter": "extra",
+      "ok": true,
+      "expectedByPosition": "beverage",
+      "sectionTopMinusBar": 7.4,
+      "finalY": 18193,
+      "settleMs": 535,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "senso-signature",
+      "index": 0,
+      "activeAfter": "senso-signature",
+      "ok": true,
+      "expectedByPosition": "senso-signature",
+      "sectionTopMinusBar": 0,
+      "finalY": 68,
+      "settleMs": 538,
+      "hops": [
+        "senso-pizza",
+        "appetizer",
+        "persian-breakfast",
+        "dessert",
+        "fresh-juice",
+        "tea-herbal-tea",
+        "hot-beverage"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "extra",
+      "index": 14,
+      "activeAfter": "extra",
+      "ok": true,
+      "expectedByPosition": "beverage",
+      "sectionTopMinusBar": 7.4,
+      "finalY": 18193,
+      "settleMs": 538,
+      "hops": [
+        "tea-herbal-tea",
+        "fresh-juice",
+        "dessert",
+        "persian-breakfast",
+        "salad",
+        "appetizer",
+        "main-course",
+        "senso-pizza",
+        "beverage"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "hot-beverage",
+      "index": 1,
+      "activeAfter": "senso-signature",
+      "ok": false,
+      "expectedByPosition": "senso-signature",
+      "sectionTopMinusBar": 8,
+      "finalY": 907,
+      "settleMs": 568,
+      "hops": [
+        "beverage",
+        "senso-pizza",
+        "salad",
+        "persian-breakfast",
+        "cold-beverage",
+        "tea-herbal-tea",
+        "senso-signature"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "beverage",
+      "index": 13,
+      "activeAfter": "beverage",
+      "ok": true,
+      "expectedByPosition": "senso-pizza",
+      "sectionTopMinusBar": 7.4,
+      "finalY": 17733,
+      "settleMs": 536,
+      "hops": [
+        "hot-beverage",
+        "tea-herbal-tea",
+        "fresh-juice",
+        "dessert",
+        "persian-breakfast",
+        "appetizer",
+        "main-course",
+        "senso-pizza"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "senso-signature",
+      "index": 0,
+      "activeAfter": "senso-signature",
+      "ok": true,
+      "expectedByPosition": "senso-signature",
+      "sectionTopMinusBar": 0,
+      "finalY": 68,
+      "settleMs": 535,
+      "hops": [
+        "senso-pizza",
+        "main-course",
+        "persian-breakfast",
+        "ice-cream",
+        "dessert",
+        "cold-beverage",
+        "tea-herbal-tea",
+        "hot-beverage"
+      ],
+      "activeTabVisible": true
+    }
+  ],
+  "manual": {
+    "down": {
+      "samples": 316,
+      "mismatches": 1,
+      "maxLagPx": 2861,
+      "tabHiddenInStrip": 0,
+      "lastTabActiveAtBottom": true,
+      "firstMismatches": [
+        {
+          "y": 13860,
+          "active": "salad",
+          "expected": "persian-breakfast",
+          "mismatch": true,
+          "atBottom": false,
+          "activeTabVisible": true,
+          "lagPx": 2861
+        }
+      ]
+    },
+    "up": {
+      "samples": 316,
+      "mismatches": 1,
+      "maxLagPx": 588,
+      "tabHiddenInStrip": 0,
+      "lastTabActiveAtBottom": null,
+      "firstMismatches": [
+        {
+          "y": 10409,
+          "active": "milkshake",
+          "expected": "ice-cream",
+          "mismatch": true,
+          "atBottom": false,
+          "activeTabVisible": true,
+          "lagPx": 588
+        }
+      ]
+    }
+  }
+}

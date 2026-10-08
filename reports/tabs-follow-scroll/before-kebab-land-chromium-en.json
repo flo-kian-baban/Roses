@@ -1,0 +1,423 @@
+{
+  "label": "before",
+  "build": "eab383f (the build served by the main checkout)",
+  "venue": "kebab-land",
+  "browser": "chromium",
+  "lang": "en",
+  "dir": "ltr",
+  "at": "2026-10-08T12:57:24.902Z",
+  "viewport": {
+    "width": 390,
+    "height": 664
+  },
+  "barHeight": 48.4,
+  "sections": 17,
+  "taps": [
+    {
+      "tapped": "appetizers",
+      "index": 0,
+      "activeAfter": "appetizers",
+      "ok": true,
+      "expectedByPosition": "appetizers",
+      "sectionTopMinusBar": 0,
+      "finalY": 68,
+      "settleMs": 473,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "main-menu",
+      "index": 1,
+      "activeAfter": "main-menu",
+      "ok": true,
+      "expectedByPosition": "appetizers",
+      "sectionTopMinusBar": 7.2,
+      "finalY": 978,
+      "settleMs": 849,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "chef-s-special",
+      "index": 2,
+      "activeAfter": "chef-s-special",
+      "ok": true,
+      "expectedByPosition": "main-menu",
+      "sectionTopMinusBar": 7.2,
+      "finalY": 2986,
+      "settleMs": 1111,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "mixed-kebabs",
+      "index": 3,
+      "activeAfter": "mixed-kebabs",
+      "ok": true,
+      "expectedByPosition": "chef-s-special",
+      "sectionTopMinusBar": 7.5,
+      "finalY": 4120,
+      "settleMs": 910,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "platters",
+      "index": 4,
+      "activeAfter": "platters",
+      "ok": true,
+      "expectedByPosition": "mixed-kebabs",
+      "sectionTopMinusBar": 7.5,
+      "finalY": 5096,
+      "settleMs": 844,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "drinks",
+      "index": 5,
+      "activeAfter": "drinks",
+      "ok": true,
+      "expectedByPosition": "platters",
+      "sectionTopMinusBar": 7.1,
+      "finalY": 6119,
+      "settleMs": 905,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "dessert",
+      "index": 6,
+      "activeAfter": "dessert",
+      "ok": true,
+      "expectedByPosition": "drinks",
+      "sectionTopMinusBar": 7.1,
+      "finalY": 6570,
+      "settleMs": 689,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "summer-sip",
+      "index": 7,
+      "activeAfter": "summer-sip",
+      "ok": true,
+      "expectedByPosition": "dessert",
+      "sectionTopMinusBar": 7.5,
+      "finalY": 7057,
+      "settleMs": 698,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "must-try",
+      "index": 8,
+      "activeAfter": "must-try",
+      "ok": true,
+      "expectedByPosition": "summer-sip",
+      "sectionTopMinusBar": 7.5,
+      "finalY": 7259,
+      "settleMs": 585,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "beer",
+      "index": 9,
+      "activeAfter": "beer",
+      "ok": true,
+      "expectedByPosition": "must-try",
+      "sectionTopMinusBar": 7.5,
+      "finalY": 7461,
+      "settleMs": 586,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "sake",
+      "index": 10,
+      "activeAfter": "sake",
+      "ok": true,
+      "expectedByPosition": "beer",
+      "sectionTopMinusBar": 7.5,
+      "finalY": 7663,
+      "settleMs": 596,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "cocktails",
+      "index": 11,
+      "activeAfter": "cocktails",
+      "ok": true,
+      "expectedByPosition": "sake",
+      "sectionTopMinusBar": 7.5,
+      "finalY": 7865,
+      "settleMs": 588,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "vodka",
+      "index": 12,
+      "activeAfter": "vodka",
+      "ok": true,
+      "expectedByPosition": "cocktails",
+      "sectionTopMinusBar": 7.2,
+      "finalY": 10412,
+      "settleMs": 1178,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "whiskey",
+      "index": 13,
+      "activeAfter": "vodka",
+      "ok": false,
+      "expectedByPosition": "vodka",
+      "sectionTopMinusBar": 7.9,
+      "finalY": 10733,
+      "settleMs": 650,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "wine-bottles",
+      "index": 14,
+      "activeAfter": "wine-bottles",
+      "ok": true,
+      "expectedByPosition": "whiskey",
+      "sectionTopMinusBar": 7.4,
+      "finalY": 11138,
+      "settleMs": 694,
+      "hops": [
+        "whiskey"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "traditional-spirits",
+      "index": 15,
+      "activeAfter": "traditional-spirits",
+      "ok": true,
+      "expectedByPosition": "wine-bottles",
+      "sectionTopMinusBar": 7.5,
+      "finalY": 11791,
+      "settleMs": 756,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "wine",
+      "index": 16,
+      "activeAfter": "wine",
+      "ok": true,
+      "expectedByPosition": "traditional-spirits",
+      "sectionTopMinusBar": 7.2,
+      "finalY": 12030,
+      "settleMs": 599,
+      "hops": [],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "appetizers",
+      "index": 0,
+      "activeAfter": "appetizers",
+      "ok": true,
+      "expectedByPosition": "appetizers",
+      "sectionTopMinusBar": 0,
+      "finalY": 68,
+      "settleMs": 1837,
+      "hops": [
+        "traditional-spirits",
+        "wine-bottles",
+        "whiskey",
+        "vodka",
+        "cocktails",
+        "must-try",
+        "dessert",
+        "drinks",
+        "platters",
+        "mixed-kebabs",
+        "chef-s-special",
+        "main-menu"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "wine",
+      "index": 16,
+      "activeAfter": "wine",
+      "ok": true,
+      "expectedByPosition": "traditional-spirits",
+      "sectionTopMinusBar": 7.2,
+      "finalY": 12030,
+      "settleMs": 1862,
+      "hops": [
+        "main-menu",
+        "chef-s-special",
+        "mixed-kebabs",
+        "platters",
+        "drinks",
+        "dessert",
+        "must-try",
+        "beer",
+        "cocktails",
+        "vodka",
+        "whiskey",
+        "wine-bottles",
+        "traditional-spirits"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "main-menu",
+      "index": 1,
+      "activeAfter": "main-menu",
+      "ok": true,
+      "expectedByPosition": "appetizers",
+      "sectionTopMinusBar": 7.2,
+      "finalY": 978,
+      "settleMs": 1804,
+      "hops": [
+        "traditional-spirits",
+        "wine-bottles",
+        "whiskey",
+        "vodka",
+        "cocktails",
+        "sake",
+        "must-try",
+        "dessert",
+        "drinks",
+        "platters",
+        "mixed-kebabs",
+        "chef-s-special"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "traditional-spirits",
+      "index": 15,
+      "activeAfter": "traditional-spirits",
+      "ok": true,
+      "expectedByPosition": "wine-bottles",
+      "sectionTopMinusBar": 7.5,
+      "finalY": 11791,
+      "settleMs": 1864,
+      "hops": [
+        "chef-s-special",
+        "mixed-kebabs",
+        "platters",
+        "drinks",
+        "dessert",
+        "summer-sip",
+        "beer",
+        "sake",
+        "cocktails",
+        "vodka",
+        "whiskey",
+        "wine-bottles"
+      ],
+      "activeTabVisible": true
+    },
+    {
+      "tapped": "appetizers",
+      "index": 0,
+      "activeAfter": "appetizers",
+      "ok": true,
+      "expectedByPosition": "appetizers",
+      "sectionTopMinusBar": 0,
+      "finalY": 68,
+      "settleMs": 1812,
+      "hops": [
+        "wine-bottles",
+        "whiskey",
+        "vodka",
+        "cocktails",
+        "sake",
+        "must-try",
+        "dessert",
+        "drinks",
+        "platters",
+        "mixed-kebabs",
+        "chef-s-special",
+        "main-menu"
+      ],
+      "activeTabVisible": true
+    }
+  ],
+  "manual": {
+    "down": {
+      "samples": 208,
+      "mismatches": 3,
+      "maxLagPx": 1017,
+      "tabHiddenInStrip": 0,
+      "lastTabActiveAtBottom": true,
+      "firstMismatches": [
+        {
+          "y": 5100,
+          "active": "platters",
+          "expected": "mixed-kebabs",
+          "mismatch": true,
+          "atBottom": false,
+          "activeTabVisible": true,
+          "lagPx": 973
+        },
+        {
+          "y": 6120,
+          "active": "drinks",
+          "expected": "platters",
+          "mismatch": true,
+          "atBottom": false,
+          "activeTabVisible": true,
+          "lagPx": 1017
+        },
+        {
+          "y": 7260,
+          "active": "must-try",
+          "expected": "summer-sip",
+          "mismatch": true,
+          "atBottom": false,
+          "activeTabVisible": true,
+          "lagPx": 196
+        }
+      ]
+    },
+    "up": {
+      "samples": 208,
+      "mismatches": 3,
+      "maxLagPx": 1129,
+      "tabHiddenInStrip": 0,
+      "lastTabActiveAtBottom": null,
+      "firstMismatches": [
+        {
+          "y": 11142,
+          "active": "wine-bottles",
+          "expected": "whiskey",
+          "mismatch": true,
+          "atBottom": false,
+          "activeTabVisible": true,
+          "lagPx": 401
+        },
+        {
+          "y": 7062,
+          "active": "summer-sip",
+          "expected": "dessert",
+          "mismatch": true,
+          "atBottom": false,
+          "activeTabVisible": true,
+          "lagPx": 485
+        },
+        {
+          "y": 4122,
+          "active": "mixed-kebabs",
+          "expected": "chef-s-special",
+          "mismatch": true,
+          "atBottom": false,
+          "activeTabVisible": true,
+          "lagPx": 1129
+        }
+      ]
+    }
+  }
+}

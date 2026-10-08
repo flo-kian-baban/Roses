@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Evidence for a venue page on a running local server (default http://localhost:3000):
 // first HTML response contains the intro, intro gone within 1.5 s, played again on a repeat visit (Kian,
-// 2026-10-07: every refresh, nothing stored) and skipped under reduced motion; full-page iPhone screenshots in English and Persian; DOM summary. Raw outputs go to reports/<dir>/.
+// 2026-10-07: every refresh, nothing stored) and skipped under reduced motion; category tabs follow taps and the scroll (Kian, 2026-10-08);
+// full-page iPhone screenshots in English and Persian; DOM summary. Raw outputs go to reports/<dir>/.
 //   node scripts/check-page.mjs senso [--base http://localhost:3000] [--out reports/checkpoint-a]
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -30,6 +31,47 @@ async function loadAllImages(page) {
   } while (Date.now() < deadline);
   await page.waitForTimeout(300);
   return state;
+}
+
+// Category tabs (Kian, 2026-10-08): the active tab names the section under the bar. A tap on every tab (then three long jumps) must
+// end with that tab active, its section's top at the bar's bottom edge (within 1 px; or as far as the page scrolls for a short last
+// section), no other tab lit on the way and the tab visible in the strip; stepping through the page (60 px, down then up) the active
+// tab must always be the section under the bar (the last one at the end of the page). Raw samples go to the checks JSON.
+async function checkTabs(page) {
+  await page.evaluate(() => { window.scrollTo(0, 0); window.__lit = []; const mo = new MutationObserver(() => { const a = document.querySelector('#tabs a.active'); const id = a ? a.dataset.tab : null; if (window.__lit.at(-1) !== id) window.__lit.push(id); }); document.querySelectorAll('#tabs a[data-tab]').forEach((a) => mo.observe(a, { attributes: true, attributeFilter: ['class'] })); });
+  const state = () => page.evaluate(() => { const bar = document.getElementById('tabs').getBoundingClientRect(); const secs = [...document.querySelectorAll('main section[id]')].map((s) => ({ id: s.id, top: s.getBoundingClientRect().top })); const maxY = document.documentElement.scrollHeight - innerHeight; const atBottom = scrollY >= maxY - 1; let under = secs[0]?.id ?? null; for (const s of secs) if (s.top <= bar.bottom + 1) under = s.id; if (atBottom && secs.length) under = secs.at(-1).id; const active = document.querySelector('#tabs a.active')?.dataset.tab ?? null; const a = active ? document.querySelector(`#tabs a[data-tab="${active}"]`) : null; const ul = document.querySelector('#tabs ul').getBoundingClientRect(); const ar = a ? a.getBoundingClientRect() : null; return { y: Math.round(scrollY), atBottom, barHeight: Math.round(bar.height * 10) / 10, barBottom: bar.bottom, active, under, tabVisible: ar ? ar.left >= ul.left - 1 && ar.right <= ul.right + 1 : null, secs }; });
+  const settle = async () => { let last = -1, since = Date.now(); const t0 = Date.now(); while (Date.now() - t0 < 4000) { const y = await page.evaluate(() => scrollY); if (y !== last) { last = y; since = Date.now(); } else if (Date.now() - since > 300) break; await page.waitForTimeout(50); } return Date.now() - t0; };
+  const first = await state();
+  const ids = first.secs.map((s) => s.id);
+  const taps = [];
+  for (const id of [...ids, ids[0], ids.at(-1), ids[1] ?? ids[0]]) {
+    await page.evaluate(() => { window.__lit = []; });
+    await page.evaluate((id) => document.querySelector(`#tabs a[data-tab="${id}"]`).click(), id);
+    const ms = await settle();
+    const s = await state();
+    const lit = await page.evaluate(() => window.__lit);
+    const top = s.secs.find((x) => x.id === id).top - s.barBottom;
+    taps.push({ id, active: s.active, atBar: Math.abs(top) <= 1 || (s.atBottom && top > 0), topMinusBar: Math.round(top * 10) / 10, othersLit: lit.filter((l) => l !== id), tabVisible: s.tabVisible, settleMs: ms });
+  }
+  const scroll = {};
+  for (const dir of ['down', 'up']) {
+    if (dir === 'down') { await page.evaluate(() => window.scrollTo(0, 0)); await page.waitForTimeout(250); }
+    const mism = []; let n = 0;
+    for (; n < 800; n++) {
+      await page.evaluate((d) => window.scrollBy(0, d === 'down' ? 60 : -60), dir);
+      await page.waitForTimeout(60);
+      const s = await state();
+      if (s.active !== s.under) mism.push({ y: s.y, active: s.active, under: s.under });
+      if (dir === 'down' ? s.atBottom : s.y === 0) break;
+    }
+    scroll[dir] = { samples: n + 1, mismatches: mism.length, first: mism.slice(0, 5) };
+    if (dir === 'down') scroll.lastTabActiveAtBottom = (await state()).active === ids.at(-1);
+  }
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(250);
+  const summary = { count: taps.length, onTappedTab: taps.filter((t) => t.active === t.id).length, atBar: taps.filter((t) => t.atBar).length, othersLit: taps.reduce((n, t) => n + t.othersLit.length, 0), tabVisible: taps.filter((t) => t.tabVisible).length, maxSettleMs: Math.max(...taps.map((t) => t.settleMs)) };
+  const ok = summary.onTappedTab === taps.length && summary.atBar === taps.length && summary.othersLit === 0 && summary.tabVisible === taps.length && scroll.down.mismatches === 0 && scroll.up.mismatches === 0 && scroll.lastTabActiveAtBottom;
+  return { barHeight: first.barHeight, sections: ids.length, summary, scroll, ok, taps };
 }
 
 // 1. first HTML response (no JavaScript): the intro overlay and its decision script must be in it
@@ -65,6 +107,7 @@ const browser = await chromium.launch();
   await page.waitForLoadState('networkidle').catch(() => {});
   log.checks.images = await loadAllImages(page);
   await page.screenshot(shotOpts(path.join(out, `${venue}-en.png`)));
+  log.checks.tabs = await checkTabs(page);
   const dom = await page.evaluate(() => ({
     lang: document.documentElement.lang, dir: document.documentElement.dir || 'ltr', title: document.title,
     sections: [...document.querySelectorAll('main section')].map((s) => ({ id: s.id, en: s.querySelector('h2 [lang=en]')?.textContent || s.querySelector('h2')?.textContent, fa: s.querySelector('h2 [lang=fa]')?.textContent || null, items: s.querySelectorAll('li').length })),
@@ -97,6 +140,19 @@ const browser = await chromium.launch();
   await ctx.close();
 }
 
+// 3b. a link straight to a section (#id, the third one) opens with that tab active, fresh context
+{
+  const ctx = await browser.newContext(DEVICE);
+  const page = await ctx.newPage();
+  const target = log.checks.dom.sections[Math.min(2, log.checks.dom.sections.length - 1)]?.id ?? null;
+  await page.goto(`${url}#${target}`, { waitUntil: 'load' });
+  await page.waitForTimeout(600);
+  const d = await page.evaluate(() => { const bar = document.getElementById('tabs').getBoundingClientRect(); const secs = [...document.querySelectorAll('main section[id]')]; let under = secs[0]?.id ?? null; for (const s of secs) if (s.getBoundingClientRect().top <= bar.bottom + 1) under = s.id; return { active: document.querySelector('#tabs a.active')?.dataset.tab ?? null, under, y: Math.round(scrollY) }; });
+  log.checks.tabs.directLink = { target, ...d, ok: !!target && d.active === target && d.under === target };
+  log.checks.tabs.ok = log.checks.tabs.ok && log.checks.tabs.directLink.ok;
+  await ctx.close();
+}
+
 // 4. reduced motion, fresh context (no storage)
 {
   const ctx = await browser.newContext({ ...DEVICE, reducedMotion: 'reduce' });
@@ -110,7 +166,8 @@ await browser.close();
 await fs.writeFile(path.join(out, `${venue}-checks.json`), JSON.stringify(log, null, 2));
 const c = log.checks;
 console.log(JSON.stringify({ introInFirstHtml: c.introInFirstHtml, firstVisit: { introVisibleAtMs: c.firstVisit.introVisibleAtMs, introDoneAtMs: c.firstVisit.introDoneAtMs, goneWithin1500ms: c.firstVisit.goneWithin1500ms, entrance: c.firstVisit.entrance }, repeatVisit: { ...c.repeatVisit, samples: undefined }, reducedMotion: c.reducedMotion, persianToggle: c.persianToggle, dom: { ...c.dom, sections: c.dom.sections.length } }, null, 2));
-const pass = c.introInFirstHtml.present && c.introInFirstHtml.noStoredSkip && c.firstVisit.goneWithin1500ms && c.firstVisit.entrance.ok && c.repeatVisit.playsAgain && c.reducedMotion.skipped && c.reducedMotion.pageVisibleAtOnce && c.persianToggle.dir === 'rtl' && c.fontRequests.thirdParty.length === 0 && c.images.loaded === c.images.total && c.imagesFa.loaded === c.imagesFa.total;
+const pass = c.introInFirstHtml.present && c.introInFirstHtml.noStoredSkip && c.firstVisit.goneWithin1500ms && c.firstVisit.entrance.ok && c.repeatVisit.playsAgain && c.reducedMotion.skipped && c.reducedMotion.pageVisibleAtOnce && c.persianToggle.dir === 'rtl' && c.fontRequests.thirdParty.length === 0 && c.images.loaded === c.images.total && c.imagesFa.loaded === c.imagesFa.total && c.tabs.ok;
+console.log('tabs:', JSON.stringify({ ...c.tabs, taps: undefined }));
 console.log('fonts requested:', JSON.stringify(c.fontRequests), '\nimages EN:', JSON.stringify(c.images), '\nimages FA:', JSON.stringify(c.imagesFa));
 console.log(pass ? 'PASS' : 'FAIL');
 process.exit(pass ? 0 : 1);

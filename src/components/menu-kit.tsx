@@ -1,6 +1,6 @@
 // Public menu kit (Kian, 2026-10-07): Uber Eats-style category tabs that follow the scroll, full-width item rows with a
 // square photo, and a tap-to-open item sheet. Display only: no cart, no ordering. No framework JavaScript on the public
-// pages: one small inline script (menuScript) drives the tabs and the native <dialog> sheets; everything else is HTML + CSS.
+// pages: one small inline script (menuScript) drives the tabs (by scroll position) and the native <dialog> sheets; everything else is HTML + CSS.
 // Both venue templates compose these pieces with their own header, accent and footer. Colours are tokens (src/venues/tokens.ts)
 // read through CSS variables: the Category tabs, Item rows and Item popup groups; no colour literal here.
 import type { Item, Section } from '@/lib/types';
@@ -104,7 +104,12 @@ export function MenuDialogs({ sections }: { sections: Section[] }) {
   );
 }
 
-// Tabs follow the scroll (IntersectionObserver); rows open the sheet (native <dialog>); Back closes it (history state).
+// Rows open the sheet (native <dialog>); Back closes it (history state). Tabs follow the scroll by position (Kian, 2026-10-08,
+// replacing the IntersectionObserver band): the current section is the last one whose top has reached the bar's bottom edge,
+// so the tie at a section boundary goes to the section that just arrived; at the end of the page it is the last section. A tap
+// lights its tab at once and locks it while the page scrolls there (the tabs in between never light up); the lock lifts when the
+// scroll settles (160 ms without a scroll event) or the customer takes over (touch, wheel, keys). The strip scrolls itself to
+// centre the active tab; it never scrolls the page.
 const menuScript = `(function(){var sheet=document.getElementById('sheet'),hero=document.getElementById('sheet-hero'),content=document.getElementById('sheet-content');
 if(sheet&&sheet.showModal){var open=function(li){var tpl=li.querySelector('template.detail');if(!tpl)return;content.replaceChildren(tpl.content.cloneNode(true));hero.replaceChildren();var p=li.getAttribute('data-photo');if(p){var img=document.createElement('img');img.src=p;img.alt='';img.decoding='async';hero.appendChild(img);hero.hidden=false}else{hero.hidden=true}sheet.showModal();sheet.scrollTop=0;history.pushState({sheet:1},'')};
 document.querySelectorAll('li.item').forEach(function(li){li.addEventListener('click',function(){open(li)});li.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open(li)}})});
@@ -112,7 +117,13 @@ document.getElementById('sheet-close').addEventListener('click',function(){sheet
 sheet.addEventListener('close',function(){if(history.state&&history.state.sheet)history.back()});window.addEventListener('popstate',function(){if(sheet.open)sheet.close()});
 var list=document.getElementById('sections-dialog'),btn=document.getElementById('tabs-list');if(list&&btn&&list.showModal){btn.addEventListener('click',function(){list.showModal()});list.addEventListener('click',function(e){if(e.target===list||e.target.closest('a'))list.close()})}}
 var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var t=document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));if(!t)return;e.preventDefault();t.scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'});history.replaceState(null,'',a.getAttribute('href'))});
-var tabs=[].slice.call(document.querySelectorAll('#tabs a[data-tab]')),byId={};tabs.forEach(function(a){byId[a.getAttribute('data-tab')]=a});var current=null;
-var setActive=function(id){if(current===id)return;current=id;tabs.forEach(function(a){a.classList.toggle('active',a.getAttribute('data-tab')===id)});var a=byId[id];if(a&&a.scrollIntoView)a.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'})};
-var secs=[].slice.call(document.querySelectorAll('main section[id]'));if(secs.length){setActive(secs[0].id);if('IntersectionObserver' in window){var vis={};var io=new IntersectionObserver(function(entries){entries.forEach(function(en){vis[en.target.id]=en.isIntersecting});for(var i=0;i<secs.length;i++){if(vis[secs[i].id]){setActive(secs[i].id);break}}},{rootMargin:'-56px 0px -65% 0px',threshold:0});secs.forEach(function(s){io.observe(s)})}}})();`;
+var nav=document.getElementById('tabs'),strip=nav&&nav.querySelector('ul'),tabs=[].slice.call(document.querySelectorAll('#tabs a[data-tab]')),byId={};tabs.forEach(function(a){byId[a.getAttribute('data-tab')]=a});
+var secs=[].slice.call(document.querySelectorAll('main section[id]')),current=null,lock=null,lockTimer=null,queued=false;
+var setActive=function(id,instant){if(current===id)return;current=id;tabs.forEach(function(a){a.classList.toggle('active',a.getAttribute('data-tab')===id)});var a=byId[id];if(a&&strip){var r=a.getBoundingClientRect(),s=strip.getBoundingClientRect(),d=r.left+r.width/2-(s.left+s.width/2);if(strip.scrollBy)strip.scrollBy({left:d,behavior:instant||reduced?'auto':'smooth'});else strip.scrollLeft+=d}};
+var sectionAt=function(){var b=(nav?nav.getBoundingClientRect().bottom:0)+1,id=secs[0].id;for(var i=0;i<secs.length;i++)if(secs[i].getBoundingClientRect().top<=b)id=secs[i].id;if(window.scrollY+window.innerHeight>=document.documentElement.scrollHeight-1)id=secs[secs.length-1].id;return id};
+var update=function(instant){if(queued)return;queued=true;requestAnimationFrame(function(){queued=false;if(lock===null&&secs.length)setActive(sectionAt(),instant)})};
+var release=function(){clearTimeout(lockTimer);lockTimer=null;lock=null};var settle=function(){clearTimeout(lockTimer);lockTimer=setTimeout(release,160)};
+window.addEventListener('scroll',function(){if(lock!==null)settle();else update()},{passive:true});window.addEventListener('resize',function(){update()});
+['touchstart','wheel','keydown','pointerdown'].forEach(function(t){window.addEventListener(t,function(e){if(lock!==null&&!(nav&&nav.contains(e.target))){release();update()}},{passive:true})});
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var id=decodeURIComponent(a.getAttribute('href').slice(1)),t=document.getElementById(id);if(!t)return;e.preventDefault();if(byId[id]){lock=id;setActive(id);settle()}window.scrollTo({top:window.scrollY+t.getBoundingClientRect().top-(nav?nav.offsetHeight:0),behavior:reduced?'auto':'smooth'});history.replaceState(null,'',a.getAttribute('href'))});
+if(secs.length)update(true)})();`;

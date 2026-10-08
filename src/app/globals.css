@@ -96,8 +96,15 @@ body:has(dialog[open]) { overflow: hidden; }
 main section li.item:last-child { border-bottom: 0; }
 
 /* ---------- Page editor (admin rebuild, Kian 2026-10-07): phone frame for the preview, drop markers for drag-and-drop. ---------- */
-.admin .phone-frame { width: 390px; max-width: 100%; height: min(760px, calc(100dvh - 9.5rem)); border: 10px solid #1d1d1f; border-radius: 40px; background: #1d1d1f; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .45); }
-.admin .phone-frame iframe { border-radius: 30px; }
+.admin .phone-frame { border-radius: 44px; background: #111113; box-shadow: 0 0 0 1px rgba(0, 0, 0, .12), 0 1px 0 rgba(255, 255, 255, .18) inset, 0 32px 64px -28px rgba(0, 0, 0, .5); }
+.admin .phone-screen { border-radius: 36px; }
+.admin .panel-in { animation: panel-in .22s cubic-bezier(.2, .8, .2, 1); }
+.admin .sheet-in { animation: sheet-up .26s cubic-bezier(.2, .8, .2, 1); }
+.admin .backdrop-in { animation: fade-in .2s ease-out; }
+@keyframes panel-in { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+@keyframes sheet-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .admin .panel-in, .admin .sheet-in, .admin .backdrop-in { animation: none; } }
 .admin .drop-before { box-shadow: 0 -2px 0 0 var(--color-accent); }
 .admin .drop-after { box-shadow: 0 2px 0 0 var(--color-accent); }
 .admin [draggable="true"] { -webkit-user-drag: element; }

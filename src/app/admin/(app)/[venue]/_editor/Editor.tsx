@@ -33,6 +33,8 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
   const [filter, setFilter] = useState<Filter>('all');
   const [query, setQuery] = useState('');
   const [highlight, setHighlight] = useState<string | null>(null);
+  const [wide, setWide] = useState(false); // ≥ 1366 px: the item panel gets its own column between the list and the preview
+  useEffect(() => { const mq = window.matchMedia('(min-width: 1366px)'); const f = () => setWide(mq.matches); f(); mq.addEventListener('change', f); return () => mq.removeEventListener('change', f); }, []);
 
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), toast.error ? 6000 : 10000); return () => clearTimeout(t); }, [toast]);
   useEffect(() => { if (!highlight) return; const t = setTimeout(() => setHighlight(null), 2500); return () => clearTimeout(t); }, [highlight]);
@@ -102,8 +104,9 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
   const openItem = open ? menu.items[open.id] : null;
   const tabLink = (t: Tab, label: string) => <a href={`/admin/${venue.id}${t === 'menu' ? '' : `?tab=${t}`}`} aria-current={tab === t ? 'page' : undefined} className={`flex h-9 items-center rounded-full px-3.5 text-[15px] font-semibold ${tab === t ? 'bg-ink text-white' : 'text-ink-muted hover:bg-fill hover:text-ink'}`}>{label}</a>;
 
+  const panel = openItem && <ItemPanel item={openItem} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} column={wide} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (
-    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_460px]">
+    <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_460px]' : 'lg:grid-cols-[minmax(0,1fr)_460px]'}`}>
       <div className="relative min-w-0">
         <div className="glass sticky top-14 z-30 flex h-11 items-center gap-1 border-b border-line px-3 sm:px-5">
           {tabLink('menu', 'Menu')}
@@ -120,11 +123,15 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
               onDeleteSection={sectionDelete} onReorderSections={sectionReorder} onMoveItem={itemMove} />
           : <div className="mx-auto max-w-3xl px-5 py-10 text-center text-ink-muted"><p className="font-medium text-ink">{tab === 'style' ? 'Style' : 'Details'}</p><p className="mt-1 text-sm">Built in step 2 of the admin rebuild.</p></div>}
       </div>
+      {openItem && wide ? <div className="hidden lg:block">{panel}</div> : null}
       <aside className="hidden border-l border-line bg-fill lg:block">
         <div className="sticky top-14 h-[calc(100dvh-3.5rem)]"><Preview venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame /></div>
       </aside>
 
-      {openItem && <ItemPanel item={openItem} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />}
+      {openItem && !wide && <>
+        <button type="button" aria-label="Close the item" onClick={() => setOpen(null)} className="fixed inset-0 z-40 hidden bg-black/10 lg:block" />
+        {panel}
+      </>}
       {previewOpen && <div className="fixed inset-0 z-[60] lg:hidden"><Preview venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame={false} onClose={() => setPreviewOpen(false)} /></div>}
       {adding && <AddItemSheet sectionName={menu.sections.find((s) => s.id === adding)?.name.en ?? ''} onClose={() => setAdding(null)} onAdd={async (d) => { await itemCreate(adding, d); setAdding(null); }} />}
       {addingSection && <AddSectionSheet onClose={() => setAddingSection(false)} onAdd={sectionCreate} />}

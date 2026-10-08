@@ -9,12 +9,12 @@ import { listingProblem } from './state';
 import { Badge, MoneyField, Photo, Switch, TextField, btnDanger, btnGhost, btnSecondary, fieldCls } from './ui';
 
 export type ItemPanelProps = {
-  item: EditorItem; sections: EditorSection[]; sectionId: string | null; canNotes: boolean;
+  item: EditorItem; sections: EditorSection[]; sectionId: string | null; canNotes: boolean; column?: boolean;
   onPatch: (patch: Record<string, unknown>) => Promise<void>; onNotes: (notes: Notes) => Promise<void>; onDelete: () => void;
   onMove: (sectionId: string, id: string, index: number) => Promise<void>; onClose: () => void;
 };
 
-export function ItemPanel({ item, sections, sectionId, canNotes, onPatch, onNotes, onDelete, onMove, onClose }: ItemPanelProps) {
+export function ItemPanel({ item, sections, sectionId, canNotes, column, onPatch, onNotes, onDelete, onMove, onClose }: ItemPanelProps) {
   const [more, setMore] = useState(false);
   const [advanced, setAdvanced] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export function ItemPanel({ item, sections, sectionId, canNotes, onPatch, onNote
   const orderIn = sections.filter((s) => inSections.has(s.id));
 
   return (
-    <div className="item-panel fixed inset-0 z-50 flex flex-col bg-white lg:inset-auto lg:bottom-0 lg:right-[460px] lg:top-14 lg:w-[440px] lg:border-l lg:border-line lg:shadow-[-12px_0_32px_-24px_rgba(0,0,0,.3)]" role="dialog" aria-modal="true" aria-label={`Edit ${item.name.en ?? 'item'}`}>
+    <div className={`item-panel panel-in flex flex-col bg-white ${column ? 'sticky top-14 h-[calc(100dvh-3.5rem)] border-l border-line' : 'fixed inset-0 z-50 lg:inset-auto lg:bottom-0 lg:right-[460px] lg:top-14 lg:w-[440px] lg:border-l lg:border-line lg:shadow-[-12px_0_32px_-24px_rgba(0,0,0,.3)]'}`} role="dialog" aria-modal={column ? undefined : true} aria-label={`Edit ${item.name.en ?? 'item'}`}>
       <div className="glass flex h-12 shrink-0 items-center gap-2 border-b border-line px-2">
         <button type="button" onClick={onClose} className="flex h-10 items-center gap-1 rounded-full px-2.5 text-[15px] font-semibold"><Icon name="back" className="h-5 w-5" /><span className="lg:hidden">Done</span><span className="hidden lg:inline">Close</span></button>
         <span className="min-w-0 flex-1 truncate text-center text-[15px] font-semibold">{item.name.en}</span>

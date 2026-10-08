@@ -65,7 +65,7 @@ export function MenuTab(p: MenuTabProps) {
   const dropCls = (id: string) => (over?.id === id ? (over.after ? 'drop-after' : 'drop-before') : '');
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-3 pb-32 sm:px-5">
+    <div className="mx-auto w-full max-w-4xl px-3 pb-32 sm:px-5">
       {anyAttention && (
         <div className="mt-3 flex flex-wrap items-center gap-1.5 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2" aria-label="Needs attention">
           <span className="mr-1 flex items-center gap-1 text-sm font-semibold text-amber-900"><Icon name="alert" className="h-4 w-4" />Needs attention</span>
@@ -98,10 +98,10 @@ export function MenuTab(p: MenuTabProps) {
           onDragOver={dnd.overRow('section', s.id)} onDrop={dnd.drop('section', s.id)}>
           <header className={`flex items-center gap-1 py-1.5 pl-1 pr-2 ${s.listed ? '' : 'opacity-70'}`} draggable={fine} onDragStart={dnd.start({ kind: 'section', id: s.id })} onDragEnd={dnd.end}>
             <button type="button" onClick={() => toggle(s.id)} aria-expanded={!collapsed.has(s.id)} aria-label={collapsed.has(s.id) ? `Expand ${s.name.en}` : `Collapse ${s.name.en}`} className="flex h-10 w-9 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-fill"><Icon name="down" className={`h-5 w-5 transition ${collapsed.has(s.id) ? '-rotate-90' : ''}`} /></button>
-            <button type="button" onClick={() => toggle(s.id)} className="flex min-w-0 flex-1 items-baseline gap-x-2 gap-y-0 text-left">
-              <span className="truncate text-[17px] font-semibold">{s.name.en}</span>
-              <span className="shrink-0 text-sm tabular-nums text-ink-muted">{s.item_ids.length}</span>
-              {s.name.fa && <span lang="fa" dir="rtl" className="hidden min-w-0 truncate text-[14px] text-ink-muted sm:inline">{s.name.fa}</span>}
+            <button type="button" onClick={() => toggle(s.id)} className="flex min-w-0 flex-1 items-center gap-x-2 text-left">
+              <span className="truncate text-[17px] font-semibold leading-6">{s.name.en}</span>
+              <span className="shrink-0 text-sm leading-6 tabular-nums text-ink-muted">{s.item_ids.length}</span>
+              {s.name.fa && <span lang="fa" dir="rtl" className="hidden min-w-0 truncate text-[14px] leading-6 text-ink-muted sm:inline">{s.name.fa}</span>}
             </button>
             <span className="flex shrink-0 items-center gap-0.5">
               {!s.listed && <Badge>Hidden</Badge>}

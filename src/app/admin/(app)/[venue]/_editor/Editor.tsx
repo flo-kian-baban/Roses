@@ -116,8 +116,9 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
 
   const undo = async () => {
     if (!toast?.revisions.length) return;
-    const revisions = toast.revisions; setToast({ text: 'Undoing…', revisions: [], key: Date.now() });
-    try { const r = await call('/api/admin/undo', { venue: venue.id, revisions }); apply(r); setToast({ text: 'Undone', revisions: [], key: Date.now() }); setReloadKey((k) => k + 1); }
+    const revisions = toast.revisions, key = Date.now(); setToast({ text: 'Undoing…', revisions: [], key });
+    // a change saved while the undo was in flight keeps its own "Saved · Undo" (the undo route regenerates the public page before it answers, so a late answer must not wipe a newer toast)
+    try { const r = await call('/api/admin/undo', { venue: venue.id, revisions }); apply(r); setToast((t) => (t && t.key !== key ? t : { text: 'Undone', revisions: [], key: Date.now() })); setReloadKey((k) => k + 1); }
     catch (e) { setToast({ text: (e as Error).message, revisions: [], key: Date.now(), error: true }); }
   };
   // Style and Details tabs report their saves here (the toast, the Undo and the preview reload are shared).

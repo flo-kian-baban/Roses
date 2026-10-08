@@ -265,7 +265,7 @@ await snap(l, 'style-laptop');
   const openAfterTap = await l.$$eval('[data-style-group][data-open]', (els) => els.map((e) => e.getAttribute('data-style-group')));
   await snap(l, 'no-jump-after-save');
   check('no-jump', openAfter.join() === 'tabs' && tokenAfter === 'true' && outlinedAfter.tabs && !outlinedAfter.footer && scrolledTo && tokenAfterTap === 'true' && openAfterTap.join() === 'tabs' && pubTabs.ok, `footer tapped in the preview, then Category tabs opened on the left and Tab text saved as #4a4a4a (on the public page after ${pubTabs.ms} ms): ${Date.now() - tSave} ms later the open group is still [${openAfter.join(', ')}] with Tab text open (${tokenAfter}), the preview outlines the tabs (${outlinedAfter.tabs}) and not the footer (${!outlinedAfter.footer}), the group is in view (${scrolledTo}); a tap on the tab bar in the preview keeps Tab text open (${tokenAfterTap}) and the group [${openAfterTap.join(', ')}]`);
-  await l.click('[role=status] button:has-text("Undo")').catch(() => {}); await waitPublic('senso', (h) => publicVar(h, 'tabs.text') !== '#4a4a4a');
+  await l.click('[role=status] button:has-text("Undo")').catch(() => {}); await l.waitForSelector('[role=status]:has-text("Undone")', { timeout: 10000 }).catch(() => {}); await waitPublic('senso', (h) => publicVar(h, 'tabs.text') !== '#4a4a4a'); // wait for the undo's answer like every other Undo step: the route regenerates the public page before it answers
   await api('/api/admin/style', { action: 'reset', venue: 'senso' }, await cookieOf(laptop)); await waitPublic('senso', (h) => publicVar(h, 'tabs.text') === '#6b6b6b');
   // section layout: a section switched to Grid in the Layout group
   {

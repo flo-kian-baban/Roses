@@ -55,12 +55,14 @@ function priceSpan(item: Item): string | null {
 const Amount = ({ children, extra }: { children: ReactNode; extra?: boolean }) => <bdi dir="ltr" className={extra ? 'amount extra' : 'amount'}>{children}</bdi>;
 
 // One group of the popup (Uber Eats-style): a full-width band with the heading and a small line under it, then its rows.
+// A <div>, not a <section>: the templates sit inside the page's own <section> elements, and the drills read the item order
+// of a section from the HTML up to its closing tag (a nested </section> cut that short, check run 2026-10-08T18-24-33Z).
 function Group({ title, sub, children, ...rest }: { title: ReactNode; sub?: ReactNode; children: ReactNode; 'data-notes'?: string }) {
   return (
-    <section className="sheet-group" {...rest}>
+    <div className="sheet-group" {...rest}>
       <div className="sheet-band"><h3>{title}</h3>{sub && <p>{sub}</p>}</div>
       {children}
-    </section>
+    </div>
   );
 }
 

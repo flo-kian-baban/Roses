@@ -106,7 +106,7 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
 
   const panel = openItem && <ItemPanel item={openItem} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} column={wide} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (
-    <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_460px]' : 'lg:grid-cols-[minmax(0,1fr)_460px]'}`}>
+    <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
       <div className="relative min-w-0">
         <div className="glass sticky top-14 z-30 flex h-11 items-center gap-1 border-b border-line px-3 sm:px-5">
           {tabLink('menu', 'Menu')}

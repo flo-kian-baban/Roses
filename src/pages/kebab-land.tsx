@@ -39,10 +39,10 @@ export default function KebabLand({ venue, sections }: Props) {
         <meta name="theme-color" content="#ffffff" />
         {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
         {venue.brand.logo && <link rel="preload" as="image" href={venue.brand.logo.url} fetchPriority="high" />}
-        <script dangerouslySetInnerHTML={{ __html: headScript(venue.id) }} />
+        <script dangerouslySetInnerHTML={{ __html: headScript() }} />
       </Head>
       <style dangerouslySetInnerHTML={{ __html: vars }} />
-      {style.intro !== false && <Intro venueId={venue.id} logo={venue.brand.logo} alt={venue.name.en ?? ''} tile={tile} />}
+      {style.intro !== false && <Intro logo={venue.brand.logo} alt={venue.name.en ?? ''} tile={tile} />}
       <KebabLandPage venue={venue} sections={sections} photos={style.photos !== false} />
     </>
   );

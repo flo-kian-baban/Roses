@@ -31,7 +31,6 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
     loadingSlot.current = next;
     const cur = activeRef.current === null ? null : frames[activeRef.current].current;
     scrollRef.current = cur?.contentWindow?.scrollY ?? 0;
-    try { localStorage.setItem(`roses-intro-${venueId}`, '1'); } catch { /* storage blocked: the intro plays once */ }
     setLoading(true);
     const f = frames[next].current; if (f) f.src = `/${venueId}?preview=${reloadKey}.${Date.now()}`;
   }, [venueId, reloadKey]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -40,6 +39,7 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
     if (slot !== loadingSlot.current) return;
     const d = frames[slot].current?.contentDocument;
     if (!isOurs(d)) return;
+    d.documentElement.dataset.intro = 'done'; // the logo intro plays on every load for customers; the preview hides it before the frame is shown
     applyLang(d, langRef.current);
     if (pickRef.current) attachPick(d, (p) => pickRef.current?.(p));
     if (!showFocus(d, focusRef.current)) d.defaultView?.scrollTo({ top: scrollRef.current, behavior: 'auto' });

@@ -1,0 +1,490 @@
+{
+  "url": "http://127.0.0.1:3100/drill-default-venue",
+  "at": "2026-10-08T02:05:15.372Z",
+  "checks": {
+    "introInFirstHtml": {
+      "present": true,
+      "headScript": true,
+      "noStoredSkip": true,
+      "bytes": 14351
+    },
+    "firstVisit": {
+      "introVisibleAtMs": 11,
+      "introDoneAtMs": 1332,
+      "goneWithin1500ms": true,
+      "samples": [
+        {
+          "t": 11,
+          "intro": null,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 65,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 117,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 171,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 224,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 276,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 329,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 381,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 435,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 488,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 546,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 600,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 655,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 715,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 771,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 829,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 885,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 942,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 996,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1050,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1106,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1163,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1222,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1278,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "0.660693"
+        },
+        {
+          "t": 1332,
+          "intro": "done",
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ]
+    },
+    "images": {
+      "total": 3,
+      "complete": 3,
+      "loaded": 3,
+      "failed": []
+    },
+    "dom": {
+      "lang": "en",
+      "dir": "ltr",
+      "title": "Drill default venue — Menu",
+      "sections": [
+        {
+          "id": "breakfast",
+          "en": "Breakfast",
+          "fa": "صبحانه",
+          "items": 2
+        },
+        {
+          "id": "drinks",
+          "en": "Drinks",
+          "fa": "نوشیدنی‌ها",
+          "items": 2
+        }
+      ],
+      "items": 4,
+      "pricesWithNonWesternDigits": 0,
+      "photos": 2
+    },
+    "fontRequests": {
+      "urls": [],
+      "thirdParty": []
+    },
+    "persianToggle": {
+      "lang": "fa",
+      "dir": "rtl",
+      "dataLang": "fa",
+      "visibleFaHeadings": 2,
+      "visibleEnHeadings": 0
+    },
+    "imagesFa": {
+      "total": 3,
+      "complete": 3,
+      "loaded": 3,
+      "failed": []
+    },
+    "repeatVisit": {
+      "introVisibleAtMs": 11,
+      "introDoneAtMs": 1352,
+      "storedKeys": [
+        "roses-lang"
+      ],
+      "lang": "fa",
+      "playsAgain": true,
+      "samples": [
+        {
+          "t": 11,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 64,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 116,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 168,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 220,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 273,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 326,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 380,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 432,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 483,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 536,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 590,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 643,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 697,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 751,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 805,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 860,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 916,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 971,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1030,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1084,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1137,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1194,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1248,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1300,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1352,
+          "intro": "done",
+          "display": "none",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        }
+      ]
+    },
+    "reducedMotion": {
+      "intro": "skip",
+      "display": "none",
+      "prefersReduced": true,
+      "skipped": true
+    }
+  }
+}

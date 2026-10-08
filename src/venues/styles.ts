@@ -13,7 +13,7 @@ export type Template = { id: string; name: string; options: (brand: Brand | null
 
 const HEX = /^#[0-9a-f]{6}$/i;
 const swatches = (b: Brand | null | undefined, extra: string[] = []) => [...new Set([...Object.values(b?.colors ?? {}), ...extra].filter((c) => HEX.test(c)).map((c) => c.toLowerCase()))];
-const intro: StyleOption = { key: 'intro', type: 'switch', label: 'Logo animation on the first visit', default: true, hint: 'Plays once while the menu loads. Never on repeat visits, never when the phone has reduced motion on.' };
+const intro: StyleOption = { key: 'intro', type: 'switch', label: 'Logo animation', default: true, hint: 'Plays while the menu loads, on every visit and refresh. Never when the phone has reduced motion on.' };
 const photos: StyleOption = { key: 'photos', type: 'switch', label: 'Photos in the list', default: true, hint: 'Off: the list shows text only; the photo still opens with the item.' };
 
 export const TEMPLATES: Record<string, Template> = {

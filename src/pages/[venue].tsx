@@ -40,10 +40,10 @@ export default function VenuePage({ venue, sections }: Props) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#ffffff" />
         {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
-        <script dangerouslySetInnerHTML={{ __html: headScript(venue.id) }} />
+        <script dangerouslySetInnerHTML={{ __html: headScript() }} />
       </Head>
       <style dangerouslySetInnerHTML={{ __html: vars }} />
-      {style.intro !== false && venue.brand.logo && <Intro venueId={venue.id} logo={venue.brand.logo} alt={venue.name.en ?? ''} tile={String(style.tile)} />}
+      {style.intro !== false && venue.brand.logo && <Intro logo={venue.brand.logo} alt={venue.name.en ?? ''} tile={String(style.tile)} />}
       <DefaultPage venue={venue} sections={sections} style={style} />
     </>
   );

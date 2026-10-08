@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Evidence for a venue page on a running local server (default http://localhost:3000):
-// first HTML response contains the intro, intro gone within 1.5 s, skipped on a repeat visit and under
-// reduced motion; full-page iPhone screenshots in English and Persian; DOM summary. Raw outputs go to reports/<dir>/.
+// first HTML response contains the intro, intro gone within 1.5 s, played again on a repeat visit (Kian,
+// 2026-10-07: every refresh, nothing stored) and skipped under reduced motion; full-page iPhone screenshots in English and Persian; DOM summary. Raw outputs go to reports/<dir>/.
 //   node scripts/check-page.mjs senso [--base http://localhost:3000] [--out reports/checkpoint-a]
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -35,7 +35,7 @@ async function loadAllImages(page) {
 // 1. first HTML response (no JavaScript): the intro overlay and its decision script must be in it
 const html = await (await fetch(url)).text();
 await fs.writeFile(path.join(out, `${venue}-first-response.html`), html);
-log.checks.introInFirstHtml = { present: /id="intro"/.test(html), headScript: /roses-intro-/.test(html), bytes: html.length };
+log.checks.introInFirstHtml = { present: /id="intro"/.test(html), headScript: /prefers-reduced-motion/.test(html), noStoredSkip: !/roses-intro-/.test(html), bytes: html.length };
 
 const browser = await chromium.launch();
 
@@ -74,10 +74,20 @@ const browser = await chromium.launch();
   log.checks.persianToggle = fa;
   log.checks.imagesFa = await loadAllImages(page);
   await page.screenshot(shotOpts(path.join(out, `${venue}-fa.png`)));
-  // 3. repeat visit in the same context (localStorage kept): the intro must be skipped before first paint
-  await page.goto(url, { waitUntil: 'domcontentloaded' });
-  const repeat = await page.evaluate(() => { const el = document.getElementById('intro'); return { intro: document.documentElement.dataset.intro || null, display: el ? getComputedStyle(el).display : 'absent', storage: localStorage.getItem('roses-intro-' + location.pathname.split('/')[1]), lang: document.documentElement.dataset.lang }; });
-  log.checks.repeatVisit = { ...repeat, skipped: repeat.intro === 'skip' && repeat.display === 'none' };
+  // 3. repeat visit in the same context (localStorage kept, language saved as Persian): the intro must play again,
+  //    visible at first and gone within 1.5 s, with nothing about it in storage
+  await page.goto(url, { waitUntil: 'commit' });
+  const again = [];
+  for (let i = 0; i < 40; i++) {
+    const s = await page.evaluate(() => { const el = document.getElementById('intro'); return { t: Math.round(performance.now()), intro: document.documentElement.dataset.intro || null, display: el ? getComputedStyle(el).display : 'absent', storedKeys: Object.keys(localStorage).filter((k) => k.startsWith('roses-')), lang: document.documentElement.dataset.lang }; });
+    again.push(s);
+    if (s.intro === 'done' && i > 2) break;
+    await page.waitForTimeout(50);
+  }
+  const againVisible = again.find((s) => s.display !== 'none' && s.display !== 'absent');
+  const againGone = again.find((s) => s.intro === 'done');
+  const stored = again.at(-1).storedKeys;
+  log.checks.repeatVisit = { introVisibleAtMs: againVisible?.t ?? null, introDoneAtMs: againGone?.t ?? null, storedKeys: stored, lang: again.at(-1).lang, playsAgain: !!againVisible && !!againGone && againGone.t <= 1500 && !again.some((s) => s.intro === 'skip') && !stored.some((k) => k.startsWith('roses-intro')), samples: again };
   await ctx.close();
 }
 
@@ -93,8 +103,8 @@ const browser = await chromium.launch();
 await browser.close();
 await fs.writeFile(path.join(out, `${venue}-checks.json`), JSON.stringify(log, null, 2));
 const c = log.checks;
-console.log(JSON.stringify({ introInFirstHtml: c.introInFirstHtml, firstVisit: { introVisibleAtMs: c.firstVisit.introVisibleAtMs, introDoneAtMs: c.firstVisit.introDoneAtMs, goneWithin1500ms: c.firstVisit.goneWithin1500ms }, repeatVisit: c.repeatVisit, reducedMotion: c.reducedMotion, persianToggle: c.persianToggle, dom: { ...c.dom, sections: c.dom.sections.length } }, null, 2));
-const pass = c.introInFirstHtml.present && c.firstVisit.goneWithin1500ms && c.repeatVisit.skipped && c.reducedMotion.skipped && c.persianToggle.dir === 'rtl' && c.fontRequests.thirdParty.length === 0 && c.images.loaded === c.images.total && c.imagesFa.loaded === c.imagesFa.total;
+console.log(JSON.stringify({ introInFirstHtml: c.introInFirstHtml, firstVisit: { introVisibleAtMs: c.firstVisit.introVisibleAtMs, introDoneAtMs: c.firstVisit.introDoneAtMs, goneWithin1500ms: c.firstVisit.goneWithin1500ms }, repeatVisit: { ...c.repeatVisit, samples: undefined }, reducedMotion: c.reducedMotion, persianToggle: c.persianToggle, dom: { ...c.dom, sections: c.dom.sections.length } }, null, 2));
+const pass = c.introInFirstHtml.present && c.introInFirstHtml.noStoredSkip && c.firstVisit.goneWithin1500ms && c.repeatVisit.playsAgain && c.reducedMotion.skipped && c.persianToggle.dir === 'rtl' && c.fontRequests.thirdParty.length === 0 && c.images.loaded === c.images.total && c.imagesFa.loaded === c.imagesFa.total;
 console.log('fonts requested:', JSON.stringify(c.fontRequests), '\nimages EN:', JSON.stringify(c.images), '\nimages FA:', JSON.stringify(c.imagesFa));
 console.log(pass ? 'PASS' : 'FAIL');
 process.exit(pass ? 0 : 1);

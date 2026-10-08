@@ -39,11 +39,11 @@ export default function Senso({ venue, sections }: Props) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
         {venue.brand.logo && <link rel="preload" as="image" href={venue.brand.logo.url} fetchPriority="high" />}
-        <script dangerouslySetInnerHTML={{ __html: headScript(venue.id) }} />
+        <script dangerouslySetInnerHTML={{ __html: headScript() }} />
       </Head>
       {/* In the body so it follows the global stylesheet in cascade order and wins over its :root defaults. */}
       <style dangerouslySetInnerHTML={{ __html: vars }} />
-      {style.intro !== false && <Intro venueId={venue.id} logo={venue.brand.logo} alt={venue.name.en ?? ''} />}
+      {style.intro !== false && <Intro logo={venue.brand.logo} alt={venue.name.en ?? ''} />}
       <SensoPage venue={venue} sections={sections} photos={style.photos !== false} />
     </>
   );

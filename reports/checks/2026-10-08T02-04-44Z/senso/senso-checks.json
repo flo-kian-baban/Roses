@@ -1,0 +1,566 @@
+{
+  "url": "http://127.0.0.1:3100/senso",
+  "at": "2026-10-08T02:04:48.694Z",
+  "checks": {
+    "introInFirstHtml": {
+      "present": true,
+      "headScript": true,
+      "noStoredSkip": true,
+      "bytes": 209633
+    },
+    "firstVisit": {
+      "introVisibleAtMs": 30,
+      "introDoneAtMs": 1341,
+      "goneWithin1500ms": true,
+      "samples": [
+        {
+          "t": 30,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 88,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 140,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 192,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 245,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 297,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 349,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 401,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 454,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 506,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 559,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 610,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 663,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 714,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 767,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 820,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 873,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 924,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 976,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1029,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1081,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1133,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1185,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1238,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        {
+          "t": 1290,
+          "intro": null,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "0.739577"
+        },
+        {
+          "t": 1341,
+          "intro": "done",
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        }
+      ]
+    },
+    "images": {
+      "total": 124,
+      "complete": 124,
+      "loaded": 124,
+      "failed": []
+    },
+    "dom": {
+      "lang": "en",
+      "dir": "ltr",
+      "title": "Senso Café & Bites — Menu",
+      "sections": [
+        {
+          "id": "senso-signature",
+          "en": "Senso Signature",
+          "fa": "ویژه سنسو",
+          "items": 6
+        },
+        {
+          "id": "hot-beverage",
+          "en": "Hot Beverage",
+          "fa": "نوشیدنی گرم",
+          "items": 16
+        },
+        {
+          "id": "tea-herbal-tea",
+          "en": "Tea & Herbal Tea",
+          "fa": "چاى و دمنوش",
+          "items": 14
+        },
+        {
+          "id": "cold-beverage",
+          "en": "Cold Beverage",
+          "fa": "نوشیدنی سرد",
+          "items": 9
+        },
+        {
+          "id": "fresh-juice",
+          "en": "Fresh Juice",
+          "fa": "آبمیوه طبیعی",
+          "items": 8
+        },
+        {
+          "id": "dessert",
+          "en": "Dessert",
+          "fa": "دسر",
+          "items": 21
+        },
+        {
+          "id": "ice-cream",
+          "en": "Ice Cream",
+          "fa": "بستنی",
+          "items": 4
+        },
+        {
+          "id": "milkshake",
+          "en": "Milkshake",
+          "fa": "میلک شیک",
+          "items": 4
+        },
+        {
+          "id": "persian-breakfast",
+          "en": "Persian Breakfast",
+          "fa": "صبحانه",
+          "items": 22
+        },
+        {
+          "id": "salad",
+          "en": "Salad",
+          "fa": "سالاد",
+          "items": 4
+        },
+        {
+          "id": "appetizer",
+          "en": "Appetizer",
+          "fa": "پیش غذا",
+          "items": 10
+        },
+        {
+          "id": "main-course",
+          "en": "Main Course",
+          "fa": "غذا اصلی",
+          "items": 7
+        },
+        {
+          "id": "senso-pizza",
+          "en": "Senso Pizza",
+          "fa": "پیتزا",
+          "items": 7
+        },
+        {
+          "id": "beverage",
+          "en": "Beverage",
+          "fa": "نوشیدنی",
+          "items": 3
+        },
+        {
+          "id": "extra",
+          "en": "Extra",
+          "fa": "افزودنی",
+          "items": 13
+        }
+      ],
+      "items": 148,
+      "pricesWithNonWesternDigits": 0,
+      "photos": 123
+    },
+    "fontRequests": {
+      "urls": [],
+      "thirdParty": []
+    },
+    "persianToggle": {
+      "lang": "fa",
+      "dir": "rtl",
+      "dataLang": "fa",
+      "visibleFaHeadings": 15,
+      "visibleEnHeadings": 0
+    },
+    "imagesFa": {
+      "total": 124,
+      "complete": 124,
+      "loaded": 124,
+      "failed": []
+    },
+    "repeatVisit": {
+      "introVisibleAtMs": 46,
+      "introDoneAtMs": 1340,
+      "storedKeys": [
+        "roses-lang"
+      ],
+      "lang": "fa",
+      "playsAgain": true,
+      "samples": [
+        {
+          "t": 46,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 98,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 150,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 202,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 255,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 308,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 363,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 419,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 475,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 532,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 585,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 639,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 691,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 744,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 799,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 854,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 908,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 961,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1013,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1068,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1124,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1178,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1234,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1288,
+          "intro": null,
+          "display": "grid",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        },
+        {
+          "t": 1340,
+          "intro": "done",
+          "display": "none",
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "lang": "fa"
+        }
+      ]
+    },
+    "reducedMotion": {
+      "intro": "skip",
+      "display": "none",
+      "prefersReduced": true,
+      "skipped": true
+    }
+  }
+}

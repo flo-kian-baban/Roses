@@ -19,7 +19,7 @@ export async function getPublicMenu(venueId: string, showDrafts: boolean): Promi
         and exists (select 1 from item_sections x join items i on i.id = x.item_id where x.section_id = s.id and i.listed)
       order by s.position`, [venueId]);
   const items = await query<Item & { section_id: string }>(
-    `select i.id, i.name, i.description, i.price, i.variants, i.add_ons, i.components, i.serves, i.photo, i.listed, i.fa_draft, x.position, x.section_id
+    `select i.id, i.name, i.description, i.price, i.variants, i.add_ons, i.components, i.serves, i.photo, i.notes, i.listed, i.fa_draft, x.position, x.section_id
        from item_sections x join items i on i.id = x.item_id
       where i.venue_id = $1 and i.listed
       order by x.position, i.name->>'en'`, [venueId]);

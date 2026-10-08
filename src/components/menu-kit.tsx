@@ -54,6 +54,7 @@ function Detail({ item }: { item: Item }) {
         <PriceLine item={item} big />
         {item.serves && <p className="mt-2"><Serves item={item} /></p>}
         <Bi as="p" text={item.description} className="mt-3 text-[16px] leading-relaxed text-(--c-sheet-body) whitespace-pre-line" />
+        <GoodToKnow item={item} />
         {item.variants.length > 0 && (
           <div className="mt-6">
             <h3 className="text-[17px] font-semibold text-(--c-sheet-title)"><span lang="en">Sizes</span><span lang="fa" dir="rtl">اندازه‌ها</span></h3>
@@ -74,6 +75,25 @@ function Detail({ item }: { item: Item }) {
         )}
       </div>
     </template>
+  );
+}
+
+// The owner's allergen, dietary and halal notes (ruling 10: optional per item, set by the owner or an admin; Kian, 2026-10-08:
+// shown to customers in the popup). Only what is set appears: halal as a chip, each dietary word as a chip, the allergens as
+// "Contains …", then the free note in both languages. Nothing of it on the rows or cards.
+function GoodToKnow({ item }: { item: Item }) {
+  const n = item.notes;
+  if (!n) return null;
+  const chips = [...(n.halal === true ? [{ en: 'Halal', fa: 'حلال' }] : n.halal === false ? [{ en: 'Not halal', fa: 'غیر حلال' }] : []), ...n.dietary.map((d) => ({ en: d, fa: d }))];
+  const hasText = !!(n.text?.en || n.text?.fa);
+  if (!chips.length && !n.allergens.length && !hasText) return null;
+  return (
+    <div className="mt-5" data-notes>
+      <h3 className="text-[17px] font-semibold text-(--c-sheet-title)"><span lang="en">Good to know</span><span lang="fa" dir="rtl">نکات</span></h3>
+      {chips.length > 0 && <p className="mt-2 flex flex-wrap gap-1.5">{chips.map((c, i) => <span key={i} className="chip"><span lang="en">{c.en}</span><span lang="fa" dir="rtl">{c.fa}</span></span>)}</p>}
+      {n.allergens.length > 0 && <p className="mt-2 text-[15px] text-(--c-sheet-body)"><span lang="en">Contains {n.allergens.join(', ')}</span><span lang="fa" dir="rtl">حاوی {n.allergens.join('، ')}</span></p>}
+      {hasText && <Bi as="p" text={n.text} className="mt-2 text-[15px] leading-relaxed text-(--c-sheet-body) whitespace-pre-line" />}
+    </div>
   );
 }
 

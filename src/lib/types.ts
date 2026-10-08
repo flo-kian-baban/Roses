@@ -16,7 +16,7 @@ export type Variant = { label: Bi; price: number | null };
 export type Component = { item_id: string | null; label: Bi; qty: number };
 export type Item = {
   id: string; name: Bi; description: Bi; price: number | null; variants: Variant[]; add_ons: AddOn[]; components: Component[];
-  serves: string | null; photo: Photo | null; listed: boolean; fa_draft: string[]; position: number;
+  serves: string | null; photo: Photo | null; notes: Notes; listed: boolean; fa_draft: string[]; position: number;
 };
 // How a section is shown to customers (Kian, 2026-10-08): 'list' = full-width rows with a small square photo; 'grid' = two columns with bigger photos.
 export type SectionLayout = 'list' | 'grid';

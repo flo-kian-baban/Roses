@@ -88,14 +88,15 @@ dialog.sheet.closing::backdrop { animation: dim-out .26s ease-in forwards; }
   dialog.sheet[open] { animation-name: sheet-in-centre; }
   dialog.sheet.closing { animation-name: sheet-out-centre; }
 }
-/* The photo (Kian, 2026-10-08): 4:3, dissolving into the sheet through a gradient to the sheet background over its lower
-   part; the title block starts inside the fully faded strip, so there is no hard crop edge above the text. */
+/* The photo (Kian, 2026-10-08): 4:3, its bottom edge softened by a short gradient to the sheet background (the lower 22 %
+   of the photo, a plain linear fade: Kian asked for much less shade than the first version, which covered 45 % and reached
+   full opacity at 70 % of its height); the title block starts 12 px inside the faded edge, so there is no hard crop line. */
 .sheet-top { position: relative; min-height: 64px; }
 .sheet-hero { position: relative; }
 .sheet-hero[hidden] { display: none; }
 .sheet-hero img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--c-sheet-hero); }
-.sheet-hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(to bottom, transparent, var(--c-sheet-bg) 70%, var(--c-sheet-bg)); pointer-events: none; }
-dialog.sheet.has-photo #sheet-content { position: relative; margin-top: -36px; }
+.sheet-hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 22%; background: linear-gradient(to bottom, transparent, var(--c-sheet-bg)); pointer-events: none; }
+dialog.sheet.has-photo #sheet-content { position: relative; margin-top: -12px; }
 .sheet-close { position: absolute; top: 12px; left: 12px; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 9999px; background: var(--c-sheet-close-bg); color: var(--c-sheet-close-icon); }
 [dir="rtl"] .sheet-close { left: auto; right: 12px; }
 /* Section list (Kian, 2026-10-08): the same slide as the item sheet, at most three quarters of the screen (the page and its tab

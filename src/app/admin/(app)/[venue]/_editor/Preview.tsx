@@ -3,8 +3,10 @@
 // the fresh page into the hidden one, the language and the scroll position (or the item just edited, outlined) are
 // set while it is still hidden, then it is faded in. No flash, no jump. The customers' page carries no preview code.
 // Style tab (Kian, 2026-10-08): the preview and the colour controls point at each other. The open group's region is outlined
-// in the frame (setRegion), a tap on a region reports it to the editor (onPick kind "region"), and a colour being picked is
-// applied live to the frame's CSS variables before it is saved (setVars). All of it is attached by the admin after the frame loads.
+// in the frame (the `region` prop, owned by the editor so both previews show the same outline; a new `n` re-applies it), a tap
+// on a region reports it to the editor (onPick kind "region"), and a colour being picked is applied live to the frame's CSS
+// variables before it is saved (setVars). All of it is attached by the admin after the frame loads. The controls on the left
+// are the master: the frame only ever follows them; it never changes the open group by itself.
 import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import type { GroupId } from '@/venues/tokens';
 import { Icon } from '../../../_ui/icons';
@@ -13,12 +15,14 @@ export type Focus = { id: string; alt?: string | null } | null;
 export type Region = GroupId;
 // What was tapped inside the preview: an item row, a section heading or the page header (Menu tab); a page region (Style tab).
 export type Pick = { kind: 'item' | 'section' | 'header'; id?: string } | { kind: 'region'; region: Region };
-export type PreviewHandle = { setVars: (vars: Record<string, string> | null) => void; setRegion: (region: Region | null) => void };
+export type RegionState = { region: Region | null; n: number };
+export const NO_REGION: RegionState = { region: null, n: 0 };
+export type PreviewHandle = { setVars: (vars: Record<string, string> | null) => void };
 // iPhone 17 Pro Max (Kian, 2026-10-07): 6.9-inch class screen of 440 × 956 points, aluminium rail, black bezel, Dynamic Island,
 // status bar with the live time, home indicator. The page itself is laid out at 440 points wide, as on the real phone.
 const W = 440, H = 956, RAIL = 5, BEZEL = 13, STATUS = 54, EDGE = RAIL + BEZEL, BTN = 4;
 
-export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: number; focus: Focus; lang: 'en' | 'fa'; onLang: (l: 'en' | 'fa') => void; frame: boolean; onClose?: () => void; onPick?: (p: Pick) => void; styleMode?: boolean }>(function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClose, onPick, styleMode = false }, handle) {
+export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: number; focus: Focus; lang: 'en' | 'fa'; onLang: (l: 'en' | 'fa') => void; frame: boolean; onClose?: () => void; onPick?: (p: Pick) => void; styleMode?: boolean; region?: RegionState }>(function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClose, onPick, styleMode = false, region = NO_REGION }, handle) {
   const refA = useRef<HTMLIFrameElement>(null), refB = useRef<HTMLIFrameElement>(null);
   const frames = [refA, refB];
   const [active, setActive] = useState<0 | 1 | null>(null);
@@ -29,15 +33,16 @@ export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: n
   const langRef = useRef(lang); langRef.current = lang;
   const pickRef = useRef(onPick); pickRef.current = onPick;
   const styleModeRef = useRef(styleMode); styleModeRef.current = styleMode;
-  const regionRef = useRef<Region | null>(null);
+  const regionRef = useRef(region); regionRef.current = region;
   const scrollRef = useRef(0);
   const isOurs = (d: Document | null | undefined): d is Document => !!d && d.location.pathname === `/${venueId}`;
   const activeDoc = () => { const a = activeRef.current; if (a === null) return null; const d = frames[a].current?.contentDocument; return isOurs(d) ? d : null; };
 
   useImperativeHandle(handle, () => ({
     setVars: (vars) => { const d = activeDoc(); if (d) applyVars(d, vars); },
-    setRegion: (region) => { regionRef.current = region; const d = activeDoc(); if (d) applyRegion(d, region, true); },
   }));
+  // The open group's region (or a re-assertion of it): outlined in the loaded frame, scrolled to when out of view.
+  useEffect(() => { const d = activeDoc(); if (d) applyRegion(d, region.region, true); }, [region]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A save (reloadKey) loads the page into the hidden slot.
   useEffect(() => {
@@ -57,7 +62,7 @@ export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: n
     applyLang(d, langRef.current);
     if (pickRef.current) attachPick(d, (p) => pickRef.current?.(p), () => styleModeRef.current);
     if (!showFocus(d, focusRef.current)) d.defaultView?.scrollTo({ top: scrollRef.current, behavior: 'auto' });
-    if (regionRef.current) applyRegion(d, regionRef.current, false);
+    if (regionRef.current.region) applyRegion(d, regionRef.current.region, activeRef.current === null); // the first load of this preview (the phone overlay opening) scrolls to the open group's region; a reload after a save keeps its place
     activeRef.current = slot; setActive(slot); setLoading(false);
   };
   useEffect(() => { const a = activeRef.current; if (a === null) return; const d = frames[a].current?.contentDocument; if (isOurs(d)) applyLang(d, lang); }, [lang]); // eslint-disable-line react-hooks/exhaustive-deps

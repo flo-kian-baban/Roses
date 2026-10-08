@@ -8,6 +8,11 @@
 //   the readability guard, in the UI and on the route: gold on cream refused (≈2.5:1) with a one-tap nearest fix, navy on cream
 //     allowed (≈12:1), Kebab Land red on #141414 refused for body text (≈3.1:1) and allowed for a large heading;
 //   the preview and the controls point at each other: a tap on a region opens its group, an open group outlines its region;
+//   the controls stay the master (Kian, 2026-10-08): after a tap in the preview, a colour saved in another group keeps that group
+//     open through the save, the data reload and the preview reload (the regression of the "jump" bug); a tap on the open group's
+//     region keeps the open colour;
+//   section layout (Kian, 2026-10-08): a section switched to Grid in the Layout group renders two-column cards on the public page
+//     (same item popup), the preview shows it, Undo puts the list back; staff cannot set it (the admin drill checks the 403);
 //   Reset all colours with its confirmation, then Undo; the Persian view keeps the same colours.
 // Needs the production server at --base and DRILL_ADMIN_PIN (an admin PIN valid on any venue).
 //   DRILL_ADMIN_PIN=… node scripts/style-drill.mjs --base http://127.0.0.1:3100 --out reports/checks/<stamp>/style --jpeg
@@ -243,6 +248,55 @@ await snap(l, 'style-laptop');
   await l.waitForSelector('[data-style-group="rows"][data-open]');
   const rowsOutlined = await frameEval((d) => !!d.querySelector('main section ul.roses-region') && getComputedStyle(d.getElementById('intro')).display === 'none');
   check('region-outline', tabsOutlined && sheet.open && sheet.outlined && intro.display !== 'none' && intro.sheetClosed && rowsOutlined, `opening a group outlines its region: Category tabs → #tabs outlined (${tabsOutlined}); Item popup → the first item's sheet opened and outlined (${sheet.open && sheet.outlined}); Intro → the logo overlay shown frozen (display ${intro.display}, sheet closed again: ${intro.sheetClosed}); a tap on an item row → Item rows open and its lists outlined (${rowsOutlined})`);
+  // the controls are the master: a preview tap, then a colour saved in another group; the group stays open through the save,
+  // the data reload and the preview reload (before the fix of 2026-10-08 the tapped group reopened after every save)
+  await frameEval((d) => { d.querySelector('main footer p').click(); }); await l.waitForSelector('[data-style-group="footer"][data-open]');
+  await openGroup('tabs'); await openToken('tabs.text');
+  const tSave = Date.now(); await setHex('tabs.text', '#4a4a4a');
+  const pubTabs = await waitPublic('senso', (h) => publicVar(h, 'tabs.text') === '#4a4a4a');
+  await l.waitForSelector('[role=status]:has-text("Saved")'); await frameReady(); await sleep(900); // the data refetch and the preview reload have both happened
+  const openAfter = await l.$$eval('[data-style-group][data-open]', (els) => els.map((e) => e.getAttribute('data-style-group')));
+  const tokenAfter = await l.getAttribute('[data-style-token="tabs.text"] > button', 'aria-expanded');
+  const outlinedAfter = await frameEval((d) => ({ tabs: !!d.querySelector('#tabs.roses-region'), footer: !!d.querySelector('main footer.roses-region') }));
+  const scrolledTo = await l.evaluate(() => { const r = document.querySelector('[data-style-group="tabs"]').getBoundingClientRect(); return r.top >= 0 && r.top < window.innerHeight; });
+  // a tap on the open group's own region keeps the open colour
+  await frameEval((d) => { d.querySelector('#tabs a').click(); }); await sleep(400);
+  const tokenAfterTap = await l.getAttribute('[data-style-token="tabs.text"] > button', 'aria-expanded');
+  const openAfterTap = await l.$$eval('[data-style-group][data-open]', (els) => els.map((e) => e.getAttribute('data-style-group')));
+  await snap(l, 'no-jump-after-save');
+  check('no-jump', openAfter.join() === 'tabs' && tokenAfter === 'true' && outlinedAfter.tabs && !outlinedAfter.footer && scrolledTo && tokenAfterTap === 'true' && openAfterTap.join() === 'tabs' && pubTabs.ok, `footer tapped in the preview, then Category tabs opened on the left and Tab text saved as #4a4a4a (on the public page after ${pubTabs.ms} ms): ${Date.now() - tSave} ms later the open group is still [${openAfter.join(', ')}] with Tab text open (${tokenAfter}), the preview outlines the tabs (${outlinedAfter.tabs}) and not the footer (${!outlinedAfter.footer}), the group is in view (${scrolledTo}); a tap on the tab bar in the preview keeps Tab text open (${tokenAfterTap}) and the group [${openAfterTap.join(', ')}]`);
+  await l.click('[role=status] button:has-text("Undo")').catch(() => {}); await waitPublic('senso', (h) => publicVar(h, 'tabs.text') !== '#4a4a4a');
+  await api('/api/admin/style', { action: 'reset', venue: 'senso' }, await cookieOf(laptop)); await waitPublic('senso', (h) => publicVar(h, 'tabs.text') === '#6b6b6b');
+  // section layout: a section switched to Grid in the Layout group
+  {
+    const sec = (await db.query(`select s.id, s.name->>'en' as name, s.layout, (select count(*)::int from item_sections x join items i on i.id = x.item_id and i.listed where x.section_id = s.id) as n from sections s where s.venue_id = 'senso' and s.listed and s.name->>'en' = 'Fresh Juice'`)).rows[0];
+    const cardsOf = (html) => { const m = html.match(new RegExp(`<section[^>]*data-id="${sec.id}"[\\s\\S]*?</section>`)); if (!m) return null; const ul = m[0].match(/<ul class="([^"]*)"[^>]*data-layout="([^"]+)"/); return { classes: ul?.[1] || '', layout: ul?.[2] || null, cards: (m[0].match(/<li class="item card /g) || []).length, rows: (m[0].match(/<li class="item flex /g) || []).length, templates: (m[0].match(/<template class="detail"/g) || []).length, placeholders: (m[0].match(/aspect-square w-full rounded-xl bg-\(--c-rows-photo\)" aria-hidden/g) || []).length }; };
+    const before = cardsOf(await publicHtml('senso'));
+    let taps = 0; const tap = async (sel) => { taps++; await l.click(sel); };
+    await l.evaluate((id) => document.querySelector(`[data-section-layout="${id}"]`)?.scrollIntoView({ block: 'center' }), sec.id);
+    const t0 = Date.now(); await tap(`[data-section-layout="${sec.id}"] button[role=radio]:has-text("Grid")`);
+    const savedGrid = await waitDb('select layout from sections where id = $1', [sec.id], (r) => r?.layout === 'grid');
+    const pubGrid = await waitPublic('senso', (h) => cardsOf(h)?.layout === 'grid');
+    const after = cardsOf(pubGrid.html || await publicHtml('senso'));
+    let shownAt = null; const tp = Date.now(); while (Date.now() - tp < 6000) { if (await frameEval((d, id) => !!d.querySelector(`section[data-id="${id}"] ul[data-layout="grid"]`), sec.id)) { shownAt = Date.now() - t0; break; } await sleep(40); }
+    const frameGrid = await frameEval((d, id) => { const ul = d.querySelector(`section[data-id="${id}"] ul[data-layout="grid"]`); if (!ul) return null; const cs = getComputedStyle(ul); const cards = [...ul.querySelectorAll('li.item')]; const r = cards.slice(0, 2).map((c) => c.getBoundingClientRect()); return { display: cs.display, columns: cs.gridTemplateColumns.split(' ').length, cards: cards.length, sideBySide: r.length === 2 && Math.abs(r[0].top - r[1].top) < 2 && r[1].left > r[0].right, photoW: Math.round(cards[0].querySelector('img, div[aria-hidden]')?.getBoundingClientRect().width || 0) }; }, sec.id);
+    // the popup opens from a card like from a row
+    const sheet = await frameEval((d, id) => { const card = d.querySelector(`section[data-id="${id}"] li.item.card`); card.click(); const s = d.getElementById('sheet'); const title = s.querySelector('h2 [lang=en]')?.textContent; const open = s.open; s.close(); return { open, title, cardTitle: card.querySelector('h3 [lang=en]')?.textContent }; }, sec.id);
+    const toast = await l.waitForSelector('[role=status]:has-text("Grid")').then(() => true).catch(() => false);
+    const control = await l.getAttribute(`[data-section-layout="${sec.id}"]`, 'data-layout');
+    await snap(l, 'section-grid');
+    const ok = before?.layout === 'list' && before.rows === sec.n && before.cards === 0 && savedGrid.ok && pubGrid.ok && after?.layout === 'grid' && after.cards === sec.n && after.rows === 0 && after.templates === sec.n && /grid-cols-2/.test(after.classes)
+      && shownAt != null && shownAt <= 1000 && frameGrid?.display === 'grid' && frameGrid.columns === 2 && frameGrid.sideBySide && frameGrid.photoW > 150 && sheet.open && sheet.title === sheet.cardTitle && toast && control === 'grid';
+    check('section-grid', ok, `"${sec.name}" (${sec.n} shown items) switched to Grid: ${taps} tap in the Layout group; saved ${savedGrid.ms} ms after the tap, the public page renders ${after?.cards} cards in ${after?.layout === 'grid' ? 'a two-column grid' : after?.layout} (${after?.rows} rows left, ${after?.templates} popups, ${after?.placeholders} photo placeholders) after ${pubGrid.ms} ms; the preview shows the grid ${shownAt} ms after the tap (display ${frameGrid?.display}, ${frameGrid?.columns} columns, first two cards side by side: ${frameGrid?.sideBySide}, photo ${frameGrid?.photoW} px wide); a tap on a card opens the popup "${sheet.title}" (${sheet.open}); "Grid · Undo" shown: ${toast}; the control reads ${control}`);
+    measure(`switch a section to the grid layout: ${taps} tap (Layout group); on the public page in ${pubGrid.ms} ms; in the preview after ${shownAt} ms`);
+    await l.click('[role=status] button:has-text("Undo")'); await l.waitForSelector('[role=status]:has-text("Undone")');
+    const backList = await waitPublic('senso', (h) => cardsOf(h)?.layout === 'list');
+    const dbBack = (await db.query('select layout from sections where id = $1', [sec.id])).rows[0].layout;
+    await sleep(300); const controlBack = await l.getAttribute(`[data-section-layout="${sec.id}"]`, 'data-layout');
+    const rec = (await db.query(`select action, before->>'layout' as b, after->>'layout' as a from revisions where table_name = 'sections' and row_id = $1 order by id desc limit 2`, [sec.id])).rows;
+    const bad = await api('/api/admin/section', { action: 'update', id: sec.id, patch: { layout: 'tiles' } }, await cookieOf(laptop));
+    check('section-grid-undo', backList.ok && dbBack === 'list' && controlBack === 'list' && cardsOf(backList.html || await publicHtml('senso'))?.rows === sec.n && rec.length === 2 && rec[1].action === 'update' && rec[1].b === 'list' && rec[1].a === 'grid' && rec[0].action === 'restore' && bad.status === 400, `Undo → "${sec.name}" is a list again (database ${dbBack}, control ${controlBack}), ${sec.n} rows back on the public page after ${backList.ms} ms; change records: ${rec.map((r) => `${r.action} ${r.b ?? '∅'}→${r.a ?? '∅'}`).join(', ')}; an unknown layout on the route → ${bad.status} "${bad.json?.error}"`);
+  }
   // the Persian view keeps the same colours
   const en = await frameVar('--c-page-bg'); await l.click('[aria-label="Preview language"] button:has-text("FA")'); await sleep(300);
   const fa = await frameEval((d) => ({ dir: d.documentElement.dir, bg: getComputedStyle(d.documentElement).getPropertyValue('--c-page-bg').trim() }));

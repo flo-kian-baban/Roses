@@ -6,12 +6,11 @@
 import type { Section, Venue, StyleValues } from '@/lib/types';
 import { Bi } from '@/components/Bi';
 import { LangToggle } from '@/components/LangToggle';
-import { ItemRow, MenuDialogs, SectionTabs, slug } from '@/components/menu-kit';
+import { ItemList, MenuDialogs, SectionTabs, slug } from '@/components/menu-kit';
 
 export function DefaultPage({ venue, sections, style }: { venue: Venue; sections: Section[]; style: StyleValues }) {
   const logo = venue.brand.logo;
   const header = logo ? String(style.header ?? 'name') : 'name';
-  let photoIndex = 0;
   return (
     <>
       <main>
@@ -34,7 +33,7 @@ export function DefaultPage({ venue, sections, style }: { venue: Venue; sections
               {n > 0 && <div className="section-divider" aria-hidden="true" />}
               <Bi as="h2" text={s.name} className="pt-6 text-[24px] font-bold leading-tight text-(--c-headings-title)" />
               <Bi as="p" text={s.note} className="mt-1 text-[14px] text-(--c-headings-note)" />
-              <ul className="mt-3 default-price">{s.items.map((i) => <ItemRow key={i.id} item={i} eager={photoIndex++ < 1} photos={style.photos !== false} />)}</ul>
+              <ItemList section={s} first={n === 0} photos={style.photos !== false} className="default-price" />
             </section>
           ))}
 

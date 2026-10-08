@@ -1,17 +1,18 @@
 // Sections, JSON (the page editor). Every action answers { ok, revisions, ... } and regenerates the public page.
 //   create  { action:'create', venue, name:{en,fa} }
-//   update  { action:'update', id, patch:{ name, note, listed } }
+//   update  { action:'update', id, patch:{ name, note, listed, layout } }   layout 'list' | 'grid' (Kian, 2026-10-08): owner and admin only, 403 for staff
 //   move    { action:'move', id, direction:'up'|'down' }       or   reorder { action:'reorder', venue, section_ids }
 //   delete  { action:'delete', id, items:'move'|'delete'|'keep', target_section_id }   move its items to another section (default in the UI) or delete them too
 import { jsonRoute, ApiError, revalidateVenue, biOf, boolOf, idOf, str, type JsonBody } from '@/lib/admin/api';
-import { canEditVenue } from '@/lib/admin/auth';
+import { canEditVenue, canManage } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
-import { createSection, deleteSection, getSection, listSections, reorderSections, updateSection, type DeleteItems, type SectionPatch } from '@/lib/admin/sections';
+import { LAYOUTS, createSection, deleteSection, getSection, listSections, reorderSections, updateSection, type DeleteItems, type SectionPatch } from '@/lib/admin/sections';
+import type { SectionLayout } from '@/lib/types';
 import { editorMenu } from '@/lib/admin/overview';
 import { pool } from '@/lib/db';
 import { sectionOrder } from '@/lib/admin/items';
 
-const sectionOut = async (id: string) => { const s = await getSection(id); return s ? { id: s.id, name: s.name, note: s.note, position: s.position, listed: s.listed, fa_draft: s.fa_draft, item_ids: await sectionOrder(pool, id) } : null; };
+const sectionOut = async (id: string) => { const s = await getSection(id); return s ? { id: s.id, name: s.name, note: s.note, position: s.position, listed: s.listed, fa_draft: s.fa_draft, layout: s.layout, item_ids: await sectionOrder(pool, id) } : null; };
 
 export default jsonRoute(async ({ res, session, body }) => {
   const by = byOf(session);
@@ -39,6 +40,11 @@ export default jsonRoute(async ({ res, session, body }) => {
     if ('name' in p) patch.name = biOf(p.name);
     if ('note' in p) patch.note = biOf(p.note);
     if ('listed' in p) patch.listed = boolOf(p.listed);
+    if ('layout' in p) {
+      if (!canManage(session)) throw new ApiError(403, 'the layout of a section is set by the owner or an admin');
+      if (!LAYOUTS.includes(p.layout as SectionLayout)) throw new ApiError(400, 'layout: list or grid');
+      patch.layout = p.layout as SectionLayout;
+    }
     const r = await updateSection(id, patch, by);
     if (!r.ok) throw new ApiError(400, r.error);
     await revalidateVenue(res, sec.venue_id);

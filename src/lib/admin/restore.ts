@@ -61,7 +61,7 @@ async function undoOne(client: PoolClient, r: Revision, by: By): Promise<Result>
     return { ok: true, id: r.row_id, revision: await rec(beforeNow, snap) };
   }
   if (r.table_name === 'sections') {
-    const cur = (await client.query<SectionSnapshot>('select name, note, position, listed, fa_draft from sections where id = $1', [r.row_id])).rows[0] ?? null;
+    const cur = (await client.query<SectionSnapshot>('select name, note, position, listed, fa_draft, layout from sections where id = $1', [r.row_id])).rows[0] ?? null;
     if (cur) cur.items = await sectionOrder(client, r.row_id);
     if (!target) { if (cur) await client.query('delete from sections where id = $1', [r.row_id]); }
     else {

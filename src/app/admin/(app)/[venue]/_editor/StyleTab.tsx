@@ -5,9 +5,12 @@
 // record) or "Custom". Tapping a token opens the venue's palette, a native colour picker and a hex field; a colour being
 // picked shows live in the preview and saves when chosen, with "Saved · Undo" like everything else. The readability guard
 // (WCAG contrast) refuses a colour that would be hard to read, with the ratio, the threshold and a one-tap nearest fix.
-// Opening a group outlines its region in the preview; a tap on a region in the preview opens its group here.
+// Opening a group outlines its region in the preview; a tap on a region in the preview opens its group here. The controls
+// here are the master (Kian, 2026-10-08): a preview tap is acted on once, when it happens; nothing that follows (a save,
+// the data reloading, the preview reloading) ever changes the open group or the open colour again.
+// Layout group (Kian, 2026-10-08): the template's switches, then the layout of every section: List or Grid.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Brand, StyleValues } from '@/lib/types';
+import type { Brand, EditorSection, SectionLayout, StyleValues } from '@/lib/types';
 import type { StyleOption } from '@/venues/styles';
 import { GROUPS, baseName, cssVar, isLight, normHex, resolveColors, unreadable, type GroupId, type Resolved, type TokenDef } from '@/venues/tokens';
 import { Icon } from '../../../_ui/icons';
@@ -20,7 +23,7 @@ type Fail = { key: string; error: string; suggestion: { key: string; value: stri
 export type Picked = { region: Region; n: number } | null;
 const btnSmall = `${btnSecondary} min-h-9 px-3 text-sm`;
 
-export function StyleTab({ venueId, version, onSaved, onLive, onRegion, picked }: { venueId: string; version: number; onSaved: (r: Resp, text?: string) => void; onLive: (vars: Record<string, string> | null) => void; onRegion: (r: Region | null) => void; picked: Picked }) {
+export function StyleTab({ venueId, version, onSaved, onLive, onRegion, picked, sections, onLayout }: { venueId: string; version: number; onSaved: (r: Resp, text?: string) => void; onLive: (vars: Record<string, string> | null) => void; onRegion: (r: Region | null) => void; picked: Picked; sections: EditorSection[]; onLayout: (id: string, layout: SectionLayout) => Promise<void> }) {
   const [data, setData] = useState<Data | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [fail, setFail] = useState<Fail | null>(null);
@@ -29,6 +32,8 @@ export function StyleTab({ venueId, version, onSaved, onLive, onRegion, picked }
   const [pending, setPending] = useState<Record<string, string>>({});
   const [confirmReset, setConfirmReset] = useState(false);
   const groupRefs = useRef<Partial<Record<GroupId, HTMLElement | null>>>({});
+  const handledPick = useRef(0); // the preview tap already acted on (its `n`), so a later data reload never replays it
+  const [layoutBusy, setLayoutBusy] = useState<string | null>(null);
   useEffect(() => {
     let live = true;
     fetch(`/api/admin/style?venue=${encodeURIComponent(venueId)}`, { credentials: 'same-origin' })
@@ -49,8 +54,14 @@ export function StyleTab({ venueId, version, onSaved, onLive, onRegion, picked }
     setOpenGroup(g); setOpenToken(g ? token ?? tokensOfGroup(g)[0]?.key ?? null : null); onRegion(g);
     if (g) requestAnimationFrame(() => groupRefs.current[g]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
   };
-  // A tap on a region in the preview opens its group here and scrolls to it.
-  useEffect(() => { if (picked && data) open(picked.region); }, [picked, data]); // eslint-disable-line react-hooks/exhaustive-deps
+  // A tap on a region in the preview opens its group here and scrolls to it, once per tap (never again when the data or the
+  // preview reload after a save). A tap on the group that is already open only re-outlines it: the open colour stays.
+  useEffect(() => {
+    if (!picked || !data || picked.n === handledPick.current) return;
+    handledPick.current = picked.n;
+    if (openGroup === picked.region) { onRegion(picked.region); return; }
+    open(picked.region);
+  }, [picked, data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const apply = (r: Resp) => setData((d) => (d ? { ...d, style: r.style as StyleValues, values: r.values as StyleValues, tokens: r.tokens as TokenDef[], palette: r.palette as Data['palette'], brand: r.brand as Brand | null } : d));
   // Live: the colour under the picker shows in the preview before it is saved (every Auto token linked to it follows).
@@ -67,6 +78,10 @@ export function StyleTab({ venueId, version, onSaved, onLive, onRegion, picked }
     const before = data; setData({ ...data, values: { ...data.values, [key]: value } });
     try { const r = await call('/api/admin/style', { action: 'update', venue: venueId, patch: { [key]: value } }); apply(r); onSaved(r); }
     catch (e) { setData(before); setErr((e as Error).message); }
+  };
+  const setSectionLayout = async (id: string, layout: SectionLayout) => {
+    setLayoutBusy(id);
+    try { await onLayout(id, layout); } catch (e) { setErr((e as Error).message); } finally { setLayoutBusy(null); }
   };
   const reset = async (group?: GroupId) => {
     setFail(null);
@@ -128,6 +143,28 @@ export function StyleTab({ venueId, version, onSaved, onLive, onRegion, picked }
                 )}
               </div>
             ))}
+            <div className="px-4 py-3" data-style-option="sectionLayout">
+              <span className="block font-medium">Section layout</span>
+              <p className="mt-0.5 text-xs text-ink-muted">List: full-width rows with a small photo. Grid: two columns with bigger photos, good for juices, desserts and drinks. Tapping an item opens the same popup in both.</p>
+              {sections.length === 0 ? <p className="mt-2 text-sm text-ink-muted">No sections yet.</p> : (
+                <ul className="mt-2 divide-y divide-line">
+                  {sections.map((s) => {
+                    const grid = s.layout === 'grid'; const busy = layoutBusy === s.id;
+                    return (
+                      <li key={s.id} className="flex items-center justify-between gap-3 py-2" data-section-layout={s.id} data-layout={grid ? 'grid' : 'list'}>
+                        <span className="min-w-0 flex-1"><span className={`block truncate text-[15px] ${s.listed ? '' : 'text-ink-muted'}`}>{s.name.en}</span><span className="block text-xs text-ink-muted">{s.item_ids.length} item{s.item_ids.length === 1 ? '' : 's'}{s.listed ? '' : ' · hidden'}</span></span>
+                        <span className="flex shrink-0 rounded-full bg-fill p-0.5" role="radiogroup" aria-label={`${s.name.en}: layout`}>
+                          {(['list', 'grid'] as const).map((v) => {
+                            const on = (v === 'grid') === grid;
+                            return <button key={v} type="button" role="radio" aria-checked={on} disabled={busy} onClick={() => { if (!on) void setSectionLayout(s.id, v); }} className={`flex h-9 items-center gap-1.5 rounded-full px-3 text-[14px] font-semibold transition ${on ? 'bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,.12)]' : 'text-ink-muted hover:text-ink'}`}><Icon name={v} className="h-4 w-4" />{v === 'grid' ? 'Grid' : 'List'}</button>;
+                          })}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
           </div>
         </section>
       </div>

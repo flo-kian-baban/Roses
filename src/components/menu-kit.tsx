@@ -1,6 +1,7 @@
 // Public menu kit (Kian, 2026-10-07): Uber Eats-style category tabs that follow the scroll, full-width item rows with a
-// square photo, and a tap-to-open item sheet. Display only: no cart, no ordering. No framework JavaScript on the public
-// pages: one small inline script (menuScript) drives the tabs (by scroll position) and the native <dialog> sheets; everything else is HTML + CSS.
+// square photo (or, per section since 2026-10-08, a two-column grid of cards with bigger photos), and a tap-to-open item sheet.
+// Display only: no cart, no ordering. No framework JavaScript on the public pages: one small inline script (menuScript)
+// drives the tabs (by scroll position) and the native <dialog> sheets; everything else is HTML + CSS.
 // Both venue templates compose these pieces with their own header, accent and footer. Colours are tokens (src/venues/tokens.ts)
 // read through CSS variables: the Category tabs, Item rows and Item popup groups; no colour literal here.
 import type { Item, Section } from '@/lib/types';
@@ -41,11 +42,43 @@ function PriceLine({ item, big }: { item: Item; big?: boolean }) {
   );
 }
 
-// One row of the list. The whole row opens the sheet; the sheet's content travels in an inert <template> next to it,
-// so the page carries each item once and images in the template never load until the sheet opens.
-export function ItemRow({ item, eager, photos = true }: { item: Item; eager: boolean; photos?: boolean }) {
+// The sheet's content travels in an inert <template> next to the row or card, so the page carries each item once and
+// images in the template never load until the sheet opens.
+function Detail({ item }: { item: Item }) {
   const groups = new Map<string, Item['add_ons']>();
   for (const a of item.add_ons) { const k = a.group.en ?? ''; groups.set(k, [...(groups.get(k) ?? []), a]); }
+  return (
+    <template className="detail">
+      <div className="px-5 pb-10 pt-5">
+        <Bi as="h2" text={item.name} className="text-[26px] font-bold leading-tight text-(--c-sheet-title)" />
+        <PriceLine item={item} big />
+        {item.serves && <p className="mt-2"><Serves item={item} /></p>}
+        <Bi as="p" text={item.description} className="mt-3 text-[16px] leading-relaxed text-(--c-sheet-body) whitespace-pre-line" />
+        {item.variants.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-[17px] font-semibold text-(--c-sheet-title)"><span lang="en">Sizes</span><span lang="fa" dir="rtl">اندازه‌ها</span></h3>
+            <ul className="mt-1 divide-y divide-(--c-sheet-line) text-(--c-sheet-price)">{item.variants.map((v, n) => <li key={n} className="flex items-center justify-between gap-3 py-3 text-[15px]"><Bi text={v.label} />{v.price != null && <span className="tabular-nums">{price(v.price)}</span>}</li>)}</ul>
+          </div>
+        )}
+        {[...groups.entries()].map(([k, list]) => (
+          <div key={k} className="mt-6">
+            <h3 className="text-[17px] font-semibold text-(--c-sheet-title)">{list[0].group.en ? <Bi text={list[0].group} /> : <><span lang="en">Options</span><span lang="fa" dir="rtl">گزینه‌ها</span></>}</h3>
+            <ul className="mt-1 divide-y divide-(--c-sheet-line) text-(--c-sheet-price)">{list.map((a, n) => <li key={n} className="flex items-center justify-between gap-3 py-3 text-[15px]"><Bi text={a.label} />{a.price > 0 && <span className="tabular-nums text-(--c-sheet-muted)">+{price(a.price)}</span>}</li>)}</ul>
+          </div>
+        ))}
+        {item.components.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-[17px] font-semibold text-(--c-sheet-title)"><span lang="en">Includes</span><span lang="fa" dir="rtl">شامل</span></h3>
+            <ul className="mt-1 divide-y divide-(--c-sheet-line) text-(--c-sheet-price)">{item.components.map((c, n) => <li key={n} className="py-3 text-[15px]">{c.qty > 1 && `${c.qty}× `}<Bi text={c.label} /></li>)}</ul>
+          </div>
+        )}
+      </div>
+    </template>
+  );
+}
+
+// One row of the list layout: text on the left, a small square photo on the right. The whole row opens the sheet.
+export function ItemRow({ item, eager, photos = true }: { item: Item; eager: boolean; photos?: boolean }) {
   return (
     <li className="item flex items-start justify-between gap-4 border-b border-(--c-rows-line) bg-(--c-rows-bg) py-4" tabIndex={0} role="button" aria-haspopup="dialog" data-id={item.id} data-photo={item.photo?.url ?? undefined}>
       <div className="min-w-0 flex-1">
@@ -57,33 +90,39 @@ export function ItemRow({ item, eager, photos = true }: { item: Item; eager: boo
       {photos && item.photo && (
         <img src={item.photo.url} alt={item.photo.alt?.en ?? ''} width={96} height={96} loading={eager ? 'eager' : 'lazy'} fetchPriority={eager ? 'high' : undefined} decoding="async" className="h-24 w-24 shrink-0 rounded-lg bg-(--c-rows-photo) object-cover" style={{ aspectRatio: '1 / 1' }} />
       )}
-      <template className="detail">
-        <div className="px-5 pb-10 pt-5">
-          <Bi as="h2" text={item.name} className="text-[26px] font-bold leading-tight text-(--c-sheet-title)" />
-          <PriceLine item={item} big />
-          {item.serves && <p className="mt-2"><Serves item={item} /></p>}
-          <Bi as="p" text={item.description} className="mt-3 text-[16px] leading-relaxed text-(--c-sheet-body) whitespace-pre-line" />
-          {item.variants.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-[17px] font-semibold text-(--c-sheet-title)"><span lang="en">Sizes</span><span lang="fa" dir="rtl">اندازه‌ها</span></h3>
-              <ul className="mt-1 divide-y divide-(--c-sheet-line) text-(--c-sheet-price)">{item.variants.map((v, n) => <li key={n} className="flex items-center justify-between gap-3 py-3 text-[15px]"><Bi text={v.label} />{v.price != null && <span className="tabular-nums">{price(v.price)}</span>}</li>)}</ul>
-            </div>
-          )}
-          {[...groups.entries()].map(([k, list]) => (
-            <div key={k} className="mt-6">
-              <h3 className="text-[17px] font-semibold text-(--c-sheet-title)">{list[0].group.en ? <Bi text={list[0].group} /> : <><span lang="en">Options</span><span lang="fa" dir="rtl">گزینه‌ها</span></>}</h3>
-              <ul className="mt-1 divide-y divide-(--c-sheet-line) text-(--c-sheet-price)">{list.map((a, n) => <li key={n} className="flex items-center justify-between gap-3 py-3 text-[15px]"><Bi text={a.label} />{a.price > 0 && <span className="tabular-nums text-(--c-sheet-muted)">+{price(a.price)}</span>}</li>)}</ul>
-            </div>
-          ))}
-          {item.components.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-[17px] font-semibold text-(--c-sheet-title)"><span lang="en">Includes</span><span lang="fa" dir="rtl">شامل</span></h3>
-              <ul className="mt-1 divide-y divide-(--c-sheet-line) text-(--c-sheet-price)">{item.components.map((c, n) => <li key={n} className="py-3 text-[15px]">{c.qty > 1 && `${c.qty}× `}<Bi text={c.label} /></li>)}</ul>
-            </div>
-          )}
-        </div>
-      </template>
+      <Detail item={item} />
     </li>
+  );
+}
+
+// One card of the grid layout (Kian, 2026-10-08; Uber Eats-style): a big square photo on top, then the name, the price
+// and the description. An item without a photo keeps the photo's place as a placeholder so the two columns stay even.
+// Same tokens as the rows, same sheet on tap.
+export function ItemCard({ item, eager, photos = true }: { item: Item; eager: boolean; photos?: boolean }) {
+  return (
+    <li className="item card flex min-w-0 flex-col gap-2 bg-(--c-rows-bg)" tabIndex={0} role="button" aria-haspopup="dialog" data-id={item.id} data-photo={item.photo?.url ?? undefined}>
+      {photos && (item.photo
+        ? <img src={item.photo.url} alt={item.photo.alt?.en ?? ''} width={400} height={400} loading={eager ? 'eager' : 'lazy'} fetchPriority={eager ? 'high' : undefined} decoding="async" className="aspect-square w-full rounded-xl bg-(--c-rows-photo) object-cover" />
+        : <div className="aspect-square w-full rounded-xl bg-(--c-rows-photo)" aria-hidden="true" />)}
+      <div className="min-w-0">
+        <Bi as="h3" text={item.name} className="text-[15px] font-semibold leading-snug text-(--c-rows-name)" />
+        <PriceLine item={item} />
+        <Bi as="p" text={item.description} className="mt-1 line-clamp-2 text-[13px] leading-snug text-(--c-rows-desc)" />
+        {item.serves && <p className="mt-2"><Serves item={item} /></p>}
+      </div>
+      <Detail item={item} />
+    </li>
+  );
+}
+
+// A section's items in the layout chosen for it in the admin: the list (rows) or the two-column grid (cards). `first`
+// marks the first section of the page: its first row (or its first two cards, side by side) load their photo eagerly.
+export function ItemList({ section: s, first, photos = true, className = '' }: { section: Section; first: boolean; photos?: boolean; className?: string }) {
+  const grid = s.layout === 'grid';
+  return (
+    <ul className={`mt-3 ${grid ? 'grid grid-cols-2 gap-x-3 gap-y-5' : ''} ${className}`.trim()} data-layout={grid ? 'grid' : 'list'}>
+      {s.items.map((i, n) => (grid ? <ItemCard key={i.id} item={i} eager={first && n < 2} photos={photos} /> : <ItemRow key={i.id} item={i} eager={first && n < 1} photos={photos} />))}
+    </ul>
   );
 }
 

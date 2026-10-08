@@ -190,7 +190,7 @@ try {
       return { pass: r.status === 0 && s.runs.length === 3 && worst <= 2500, evidence: [`${venue}/lighthouse-summary.json`, `${venue}/lighthouse.log`], note: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms, performance ${s.runs.map((x) => x.performance).join(' / ')} (target ≤ 2500, local estimate)` };
     });
   }
-  await step('admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)', async () => {
+  await step('admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route and section layout 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)', async () => {
     const r = await run('node', ['scripts/admin-drill.mjs', '--base', base, '--out', path.join(out, 'admin'), '--jpeg'], { env: drillEnv, logFile: 'admin/admin-drill.log' });
     const m = (r.stdout.match(/ADMIN DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || []);
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
@@ -211,7 +211,7 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, evidence: ['editor/editor-drill.txt', 'editor/editor-drill.json', 'editor/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   });
-  await step('Style tab drill (day-one defaults = the pre-token look, task target with tap count, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, preview ↔ controls, Reset all with confirmation, Persian view)', async () => {
+  await step('Style tab drill (day-one defaults = the pre-token look, task target with tap count, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, preview ↔ controls with the controls as the master through a save, section layout List/Grid on the public page and in the preview with Undo, Reset all with confirmation, Persian view)', async () => {
     const r = await run('node', ['scripts/style-drill.mjs', '--base', base, '--out', path.join(out, 'style'), '--jpeg'], { env: drillEnv, logFile: 'style/style-drill.log' });
     const m = (r.stdout.match(/STYLE DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);

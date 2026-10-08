@@ -5,11 +5,10 @@
 import type { Section, Venue } from '@/lib/types';
 import { Bi } from '@/components/Bi';
 import { LangToggle } from '@/components/LangToggle';
-import { ItemRow, MenuDialogs, SectionTabs, slug } from '@/components/menu-kit';
+import { ItemList, MenuDialogs, SectionTabs, slug } from '@/components/menu-kit';
 
 export function SensoPage({ venue, sections, photos = true }: { venue: Venue; sections: Section[]; photos?: boolean }) {
   const logo = venue.brand.logo;
-  let photoIndex = 0;
   return (
     <>
       <main>
@@ -30,7 +29,7 @@ export function SensoPage({ venue, sections, photos = true }: { venue: Venue; se
               {n > 0 && <div className="section-divider" aria-hidden="true" />}
               <Bi as="h2" text={s.name} className="pt-6 text-[24px] font-bold leading-tight text-(--c-headings-title)" />
               <Bi as="p" text={s.note} className="mt-1 text-[14px] text-(--c-headings-note)" />
-              <ul className="mt-3">{s.items.map((i) => <ItemRow key={i.id} item={i} eager={photoIndex++ < 1} photos={photos} />)}</ul>
+              <ItemList section={s} first={n === 0} photos={photos} />
             </section>
           ))}
 

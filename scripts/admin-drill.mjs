@@ -146,6 +146,11 @@ check('h-staff-ui', !staffNotesField && /set by the owner or an admin/.test(staf
 { const r = await fetch(`${base}/api/admin/style?venue=senso`, { headers: { cookie: staffCookie } }); const j = await r.json().catch(() => null);
   const r2 = await api('/api/admin/style', { action: 'update', venue: 'senso', patch: { accent: '#112233' } }, staffCookie);
   check('style-staff-403', r.status === 403 && r2.status === 403, `staff GET /api/admin/style?venue=senso → ${r.status} "${j?.error}"; staff POST update → ${r2.status} "${r2.json?.error}"`); }
+// Section layout (Kian, 2026-10-08): staff may rename or hide a section but not change its layout (owner and admin, Style tab)
+{ const r = await api('/api/admin/section', { action: 'update', id: sec.id, patch: { layout: 'grid' } }, staffCookie);
+  const r2 = await api('/api/admin/section', { action: 'update', id: sec.id, patch: { name: { en: sec.name, fa: null }, layout: 'grid' } }, staffCookie);
+  const still = (await db.query('select layout from sections where id=$1', [sec.id])).rows[0].layout;
+  check('layout-staff-403', r.status === 403 && r2.status === 403 && still === 'list', `staff POST section layout=grid → ${r.status} "${r.json?.error}"; with a rename in the same patch → ${r2.status}; "${sec.name}" still ${still}`); }
 { const r = await fetch(`${base}/admin/new`, { headers: { cookie: staffCookie } }); const html = await r.text(); check('staff-add-venue', /owner and admin only/.test(html) && !/Create venue/.test(html), `staff GET /admin/new → refusal shown: ${/owner and admin only/.test(html)}, no form`); }
 const ownerCtx = await browser.newContext(DEVICE);
 const opage = await loginPage(ownerCtx, 'pin', { venue: 'senso', pin: owner.pin }); await opage.waitForSelector('[data-item]');

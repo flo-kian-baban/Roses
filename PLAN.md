@@ -101,6 +101,7 @@ create table sections (
   position    integer not null,
   listed      boolean not null default true,    -- Kian: admins list/unlist any section
   fa_draft    text[] not null default '{}',     -- fields whose Persian is a machine draft
+  layout      text not null default 'list',     -- 'list' | 'grid' (Kian, 2026-10-08; migration 005): rows, or two columns of cards with big photos
   source      jsonb not null default '[]',      -- internal only, never rendered
   updated_at  timestamptz not null default now()
 );

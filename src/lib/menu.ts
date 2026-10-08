@@ -13,7 +13,7 @@ export async function getVenue(id: string): Promise<Venue | null> {
 // Public menu: listed sections that have at least one listed item, with their listed items in position order.
 export async function getPublicMenu(venueId: string, showDrafts: boolean): Promise<Section[]> {
   const sections = await query<Section>(
-    `select s.id, s.name, s.note, s.position, s.listed, s.fa_draft
+    `select s.id, s.name, s.note, s.position, s.listed, s.fa_draft, s.layout
        from sections s
       where s.venue_id = $1 and s.listed
         and exists (select 1 from item_sections x join items i on i.id = x.item_id where x.section_id = s.id and i.listed)

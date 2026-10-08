@@ -16,7 +16,7 @@ them and the amount on the end side. When an item has no price of its own but si
 literals, no new token (the group bands use the Item popup group's "Photo placeholder" token, relabelled "Photo placeholder
 and group bands" in the Style tab).
 
-## Measured (`measure.mjs` → `measure.json`; Chromium, iPhone 13 viewport 390 × 664 and a 1280 × 800 laptop; scratch copy of the working database with Kian's live Style choices)
+## Measured on commit 4851e1a (`measure.mjs` → `measure.json`; Chromium, iPhone 13 viewport 390 × 664 and a 1280 × 800 laptop; scratch copy of the working database with Kian's live Style choices)
 
 Six items that between them carry every kind of content the popup can show, each in English and Persian:
 

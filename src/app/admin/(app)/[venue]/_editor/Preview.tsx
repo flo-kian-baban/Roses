@@ -66,7 +66,7 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
   if (!frame) {
     return (
       <div className="flex h-full flex-col bg-white">
-        <div className="glass flex h-12 shrink-0 items-center gap-2 border-b border-line px-2">
+        <div className="glass flex h-11 shrink-0 items-center gap-2 border-b border-line px-2">
           <button type="button" onClick={onClose} className="flex h-10 items-center gap-1 rounded-full px-2.5 text-[15px] font-semibold"><Icon name="back" className="h-5 w-5" />Edit</button>
           <span className="flex-1 text-center">{status}</span>
           {toggle}
@@ -77,9 +77,9 @@ export function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClos
   }
   const outerW = W + 2 * BEZEL, outerH = H + 2 * BEZEL;
   return (
-    <div className="flex h-full flex-col items-center px-4 pb-4 pt-3">
-      <div className="mb-3 flex w-full max-w-[390px] items-center justify-between">{status}{toggle}</div>
-      <div ref={box} className="flex min-h-0 w-full flex-1 items-start justify-center">
+    <div className="flex h-full flex-col items-center">
+      <div className="flex h-11 w-full shrink-0 items-center justify-center border-b border-line px-4"><div className="flex w-full max-w-[390px] items-center justify-between">{status}{toggle}</div></div>
+      <div ref={box} className="flex min-h-0 w-full flex-1 items-start justify-center p-4">
         <div style={{ width: outerW * scale, height: outerH * scale }}>
           <div className="phone-frame" style={{ width: outerW, height: outerH, transform: `scale(${scale})`, transformOrigin: 'top left', padding: BEZEL }}>
             <div className="phone-screen relative h-full w-full overflow-hidden bg-white">

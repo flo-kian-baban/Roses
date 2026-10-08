@@ -1,0 +1,64 @@
+Admin drill PASS (25/25 checks)
+
+PASS e-unauth: unauthenticated POST /api/admin/item → 401 {"ok":false,"error":"not signed in"}
+PASS c-cookie: Set-Cookie attributes: roses_session=<token>; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200 (Secure is added when served over https); signed in lands on /admin/kebab-land (the first venue's page editor)
+PASS admin-pin: admin PIN on the Kebab Land sign-in → 303 to /admin/kebab-land, cookie set: true; Team (owner and admin) answers 200 with the admin accounts: true
+PASS pin-create: PIN created for "Drill staff" (staff, senso): shown once on the response page (6 digits: true), hash stored: true
+PASS pin-create: PIN created for "Drill owner" (owner, senso+kebab-land): shown once on the response page (6 digits: true), hash stored: true
+PASS d-hash: pins with a hash not starting with $scrypt$: 0; plain PIN column: none exists (schema has pin_hash only)
+PASS c-logout: logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://127.0.0.1:3100/admin shows the sign-in form and no admin frame (a still-valid token is simply no longer sent: 307)
+PASS pin-login: staff PIN sign-in lands on http://127.0.0.1:3100/admin/senso (page editor); tabs visible to staff: Menu (no Style or Details)
+PASS f-ui: editor: the Shown switch on "Aash-e-Reshteh" (no price) refuses with "The item needs a price before it can be shown"; still hidden in the database
+PASS f-server: direct POST action=update listed=true → 400, error="The item needs a price before it can be shown"
+PASS f-check: SQL "update items set listed = true" on the priceless item → 23514 listed_requires_price: new row for relation "items" violates check constraint "listed_requires_price"
+PASS f-sizes: save "Prosecco" shown with a second size without price → 400 "Every size needs a price before the item can be shown"; row unchanged: true
+PASS f-public-listed: "Aash-e-Reshteh" priced $7.25 in place and switched on → on the public page after 316 ms
+PASS f-public-hidden: hidden and price cleared again → gone from the public page after 6 ms
+PASS g-section: section "Extra" switched off in the editor → gone from the public page after 312 ms
+PASS g-section-back: section "Extra" switched on again → back after 315 ms
+PASS g-last-item: all 3 items of "Beverage" hidden → the section disappears from the public page after 4 ms
+PASS g-last-item-back: items shown again → "Beverage" back after 4 ms
+PASS h-staff-ui: staff item panel (Advanced): notes inputs present = false; explanatory line shown = true
+PASS h-staff-403: staff POST action=notes → 403 "Allergen, dietary and halal notes are set by the owner or an admin only"
+PASS h-staff-style: staff GET /admin/senso?tab=style → HTTP 200, refusal page shown: true (the Style tab and its HTTP 403 come with step 2)
+PASS h-owner: owner saved notes in the panel (each field on its own): {"text":{"en":null,"fa":null},"halal":true,"dietary":[],"allergens":["nuts"]}
+PASS h-admin: admin cleared the notes again: {"text":{"en":null,"fa":null},"halal":null,"dietary":[],"allergens":[]}
+PASS venue-staff-403: staff POST /api/admin/venue → 403 "venue details are edited by the main admin"
+PASS b-revoked: revoked staff PIN → 303, error="wrong PIN (4 tries left)", cookie set: false
+
+Transcript:
+2026-10-08T00:10:29.222Z [e-unauth] PASS: unauthenticated POST /api/admin/item → 401 {"ok":false,"error":"not signed in"}
+2026-10-08T00:10:29.472Z [shot] 01-login-pin.jpg
+2026-10-08T00:10:29.558Z [shot] 02-login-admin.jpg
+2026-10-08T00:10:29.917Z [shot] 03-editor-admin.jpg
+2026-10-08T00:10:29.956Z [c-cookie] PASS: Set-Cookie attributes: roses_session=<token>; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200 (Secure is added when served over https); signed in lands on /admin/kebab-land (the first venue's page editor)
+2026-10-08T00:10:30.042Z [admin-pin] PASS: admin PIN on the Kebab Land sign-in → 303 to /admin/kebab-land, cookie set: true; Team (owner and admin) answers 200 with the admin accounts: true
+2026-10-08T00:10:30.081Z [pin-create] PASS: PIN created for "Drill staff" (staff, senso): shown once on the response page (6 digits: true), hash stored: true
+2026-10-08T00:10:30.116Z [pin-create] PASS: PIN created for "Drill owner" (owner, senso+kebab-land): shown once on the response page (6 digits: true), hash stored: true
+2026-10-08T00:10:30.117Z [d-hash] PASS: pins with a hash not starting with $scrypt$: 0; plain PIN column: none exists (schema has pin_hash only)
+2026-10-08T00:10:30.296Z [shot] 04-team.jpg
+2026-10-08T00:10:30.454Z [c-logout] PASS: logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://127.0.0.1:3100/admin shows the sign-in form and no admin frame (a still-valid token is simply no longer sent: 307)
+2026-10-08T00:10:30.875Z [pin-login] PASS: staff PIN sign-in lands on http://127.0.0.1:3100/admin/senso (page editor); tabs visible to staff: Menu (no Style or Details)
+2026-10-08T00:10:30.985Z [shot] 05-editor-staff.jpg
+2026-10-08T00:10:31.068Z [f-ui] PASS: editor: the Shown switch on "Aash-e-Reshteh" (no price) refuses with "The item needs a price before it can be shown"; still hidden in the database
+2026-10-08T00:10:31.180Z [shot] 06-needs-price-refused.jpg
+2026-10-08T00:10:31.191Z [f-server] PASS: direct POST action=update listed=true → 400, error="The item needs a price before it can be shown"
+2026-10-08T00:10:31.192Z [f-check] PASS: SQL "update items set listed = true" on the priceless item → 23514 listed_requires_price: new row for relation "items" violates check constraint "listed_requires_price"
+2026-10-08T00:10:31.507Z [f-sizes] PASS: save "Prosecco" shown with a second size without price → 400 "Every size needs a price before the item can be shown"; row unchanged: true
+2026-10-08T00:10:31.937Z [f-public-listed] PASS: "Aash-e-Reshteh" priced $7.25 in place and switched on → on the public page after 316 ms
+2026-10-08T00:10:32.050Z [shot] 07-priced-and-shown.jpg
+2026-10-08T00:10:32.093Z [f-public-hidden] PASS: hidden and price cleared again → gone from the public page after 6 ms
+2026-10-08T00:10:32.510Z [g-section] PASS: section "Extra" switched off in the editor → gone from the public page after 312 ms
+2026-10-08T00:10:32.638Z [shot] 08-section-hidden.jpg
+2026-10-08T00:10:32.991Z [g-section-back] PASS: section "Extra" switched on again → back after 315 ms
+2026-10-08T00:10:33.098Z [g-last-item] PASS: all 3 items of "Beverage" hidden → the section disappears from the public page after 4 ms
+2026-10-08T00:10:33.186Z [g-last-item-back] PASS: items shown again → "Beverage" back after 4 ms
+2026-10-08T00:10:34.823Z [shot] 09-staff-no-notes.jpg
+2026-10-08T00:10:34.823Z [h-staff-ui] PASS: staff item panel (Advanced): notes inputs present = false; explanatory line shown = true
+2026-10-08T00:10:34.827Z [h-staff-403] PASS: staff POST action=notes → 403 "Allergen, dietary and halal notes are set by the owner or an admin only"
+2026-10-08T00:10:34.836Z [h-staff-style] PASS: staff GET /admin/senso?tab=style → HTTP 200, refusal page shown: true (the Style tab and its HTTP 403 come with step 2)
+2026-10-08T00:10:35.856Z [shot] 10-owner-notes-saved.jpg
+2026-10-08T00:10:35.856Z [h-owner] PASS: owner saved notes in the panel (each field on its own): {"text":{"en":null,"fa":null},"halal":true,"dietary":[],"allergens":["nuts"]}
+2026-10-08T00:10:36.182Z [h-admin] PASS: admin cleared the notes again: {"text":{"en":null,"fa":null},"halal":null,"dietary":[],"allergens":[]}
+2026-10-08T00:10:36.191Z [venue-staff-403] PASS: staff POST /api/admin/venue → 403 "venue details are edited by the main admin"
+2026-10-08T00:10:36.558Z [b-revoked] PASS: revoked staff PIN → 303, error="wrong PIN (4 tries left)", cookie set: false

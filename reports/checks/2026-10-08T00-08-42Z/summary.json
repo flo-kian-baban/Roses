@@ -1,0 +1,158 @@
+{
+  "stamp": "2026-10-08T00-08-42Z",
+  "commit": "77aac63",
+  "pass": true,
+  "results": [
+    {
+      "name": "production build (.next-check)",
+      "pass": true,
+      "ms": 4095,
+      "evidence": [
+        "build.log"
+      ],
+      "note": "next build ok"
+    },
+    {
+      "name": "servers on 3100 and 3101 (TRUST_PROXY=1)",
+      "pass": true,
+      "ms": 587,
+      "evidence": [
+        "server-3100.log",
+        "server-3101.log"
+      ],
+      "note": "both answer 200 on /senso"
+    },
+    {
+      "name": "public page checks: senso (intro, repeat visit, reduced motion, Persian toggle, images)",
+      "pass": true,
+      "ms": 13423,
+      "evidence": [
+        "senso/senso-checks.json",
+        "senso/senso-en.jpg",
+        "senso/senso-fa.jpg",
+        "senso/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 15; intro gone at 1341 ms; images 124/124"
+    },
+    {
+      "name": "public page checks: kebab-land (intro, repeat visit, reduced motion, Persian toggle, images)",
+      "pass": true,
+      "ms": 18107,
+      "evidence": [
+        "kebab-land/kebab-land-checks.json",
+        "kebab-land/kebab-land-en.jpg",
+        "kebab-land/kebab-land-fa.jpg",
+        "kebab-land/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 17; intro gone at 1339 ms; images 47/47"
+    },
+    {
+      "name": "brand words in both built pages",
+      "pass": true,
+      "ms": 31,
+      "evidence": [
+        "brand-words.txt"
+      ],
+      "note": "no \"Mealsy\" or \"Flo\" in visible text or metadata"
+    },
+    {
+      "name": "photo links: senso",
+      "pass": true,
+      "ms": 4226,
+      "evidence": [
+        "senso/photo-links.md",
+        "senso/photo-links.json"
+      ],
+      "note": "135 URLs, 0 not 200/206"
+    },
+    {
+      "name": "photo links: kebab-land",
+      "pass": true,
+      "ms": 3029,
+      "evidence": [
+        "kebab-land/photo-links.md",
+        "kebab-land/photo-links.json"
+      ],
+      "note": "46 URLs, 0 not 200/206"
+    },
+    {
+      "name": "Lighthouse mobile ×3: senso",
+      "pass": true,
+      "ms": 33622,
+      "evidence": [
+        "senso/lighthouse-summary.json",
+        "senso/lighthouse.log"
+      ],
+      "note": "LCP 1203 / 1203 / 1203 ms, performance 100 / 100 / 100 (target ≤ 2500, local estimate)"
+    },
+    {
+      "name": "Lighthouse mobile ×3: kebab-land",
+      "pass": true,
+      "ms": 29286,
+      "evidence": [
+        "kebab-land/lighthouse-summary.json",
+        "kebab-land/lighthouse.log"
+      ],
+      "note": "LCP 1053 / 1052 / 1053 ms, performance 100 / 100 / 100 (target ≤ 2500, local estimate)"
+    },
+    {
+      "name": "admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, revoked PIN)",
+      "pass": true,
+      "ms": 7756,
+      "evidence": [
+        "admin/admin-drill.txt",
+        "admin/admin-drill.json",
+        "admin/*.jpg"
+      ],
+      "note": "ADMIN DRILL PASS (25/25)"
+    },
+    {
+      "name": "lockout: 5 per venue + address, 50 per hour per venue with alert and unlock, revoked PIN",
+      "pass": true,
+      "ms": 6254,
+      "evidence": [
+        "lockout-drill.txt"
+      ],
+      "note": "LOCKOUT DRILL PASS"
+    },
+    {
+      "name": "revalidation: a price changed in the editor reaches the public page within 10 s, then Undo",
+      "pass": true,
+      "ms": 1279,
+      "evidence": [
+        "revalidation-log.txt"
+      ],
+      "note": "85 ms after Enter; Undo back on the page 324 ms after the tap"
+    },
+    {
+      "name": "page editor drill (task targets with tap counts, preview ≤ 1 s, reorder on the public page, Undo on the public page, change record, no preview script)",
+      "pass": true,
+      "ms": 5291,
+      "evidence": [
+        "editor/editor-drill.txt",
+        "editor/editor-drill.json",
+        "editor/*.jpg"
+      ],
+      "note": "EDITOR DRILL PASS (11/11); add an item: 1 tap + name + price + confirm (Enter); on the public page in 15 ms; sheet confirmed at +212 ms; change a price: 1 tap + typing + confirm (Enter); saved in 54 ms; hide an item: 1 tap; off the public page in 6 ms; preview shows a saved change after 126 ms; Undo of a price change back on the public page after 6 ms"
+    },
+    {
+      "name": "backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)",
+      "pass": true,
+      "ms": 3448,
+      "evidence": [
+        "backup-drill.txt"
+      ],
+      "note": "12 table comparisons equal, 0 different; item recovered: true"
+    },
+    {
+      "name": "working database untouched (roses: per-table counts and newest revision id identical before and after)",
+      "pass": true,
+      "ms": 0,
+      "evidence": [
+        "working-db-before-after.json",
+        "working-db-copy.dump (gitignored)"
+      ],
+      "note": "venues 2, sections 33, items 387, item_sections 388, revisions 180, admins 1, pins 0, login_failures 0, admin_alerts 0, schema_migrations 3; newest revision id 180"
+    }
+  ]
+}

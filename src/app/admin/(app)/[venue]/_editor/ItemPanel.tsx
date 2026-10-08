@@ -29,7 +29,7 @@ export function ItemPanel({ item, sections, sectionId, canNotes, column, onPatch
 
   return (
     <div className={`item-panel panel-in flex flex-col bg-white ${column ? 'sticky top-14 h-[calc(100dvh-3.5rem)] border-l border-line' : 'fixed inset-0 z-50 lg:inset-auto lg:bottom-0 lg:right-[460px] lg:top-14 lg:w-[440px] lg:border-l lg:border-line lg:shadow-[-12px_0_32px_-24px_rgba(0,0,0,.3)]'}`} role="dialog" aria-modal={column ? undefined : true} aria-label={`Edit ${item.name.en ?? 'item'}`}>
-      <div className="glass flex h-12 shrink-0 items-center gap-2 border-b border-line px-2">
+      <div className="glass flex h-11 shrink-0 items-center gap-2 border-b border-line px-2">
         <button type="button" onClick={onClose} className="flex h-10 items-center gap-1 rounded-full px-2.5 text-[15px] font-semibold"><Icon name="back" className="h-5 w-5" /><span className="lg:hidden">Done</span><span className="hidden lg:inline">Close</span></button>
         <span className="min-w-0 flex-1 truncate text-center text-[15px] font-semibold">{item.name.en}</span>
         <span className="hidden shrink-0 whitespace-nowrap text-xs text-ink-muted sm:block">Saves as you go</span>

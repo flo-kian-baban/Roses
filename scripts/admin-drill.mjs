@@ -187,8 +187,15 @@ const ownerCookie = await cookieOf(ownerCtx);
   await tap('[data-style-group="footer"] > button'); await opage.waitForSelector('[data-style-token="footer.phone"] > button');
   await tap('[data-style-token="footer.phone"] > button'); await opage.waitForSelector('[data-style-token="footer.phone"] input[type=color]');
   const current = ((await opage.textContent('[data-style-token="footer.phone"] [data-style-value]')) || '').trim().toLowerCase();
+  // the first venue colour that is not the current one and that the readability guard accepts on the footer background (WCAG ≥ 4.5:1;
+  // Senso's gold is refused there at 2.7:1, which the Style drill covers): the same contrast maths as src/venues/tokens.ts
+  const footerBg = ((await publicHtml('senso')).match(/--c-footer-bg:(#[0-9a-f]{6})/) || [])[1] || '#ffffff';
+  const lin = (x) => { const v = x / 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+  const lum = (h) => 0.2126 * lin(parseInt(h.slice(1, 3), 16)) + 0.7152 * lin(parseInt(h.slice(3, 5), 16)) + 0.0722 * lin(parseInt(h.slice(5, 7), 16));
+  const contrast = (x, y) => (Math.max(lum(x), lum(y)) + 0.05) / (Math.min(lum(x), lum(y)) + 0.05);
   const swatches = opage.locator('[data-style-token="footer.phone"] button[aria-label^="Phone link: "]');
-  let pick = null; for (let i = 0; i < await swatches.count(); i++) { const lab = await swatches.nth(i).getAttribute('aria-label'); const c = (lab.match(/#[0-9a-f]{6}/i) || [])[0]?.toLowerCase(); if (c && c !== current) { pick = { i, c, lab }; break; } }
+  let pick = null; const skipped = []; for (let i = 0; i < await swatches.count(); i++) { const lab = await swatches.nth(i).getAttribute('aria-label'); const c = (lab.match(/#[0-9a-f]{6}/i) || [])[0]?.toLowerCase(); if (!c || c === current) continue; if (contrast(c, footerBg) < 4.5) { skipped.push(`${c} (${(Math.round(contrast(c, footerBg) * 10) / 10)}:1)`); continue; } pick = { i, c, lab }; break; }
+  log('style', `footer background ${footerBg}; venue colours the guard would refuse there, skipped: ${skipped.join(', ') || 'none'}; picking ${pick?.c}`);
   const t0 = Date.now(); await tap(`[data-style-token="footer.phone"] button[aria-label="${pick.lab}"]`);
   const w = await waitPublic('senso', (h) => h.includes(`--c-footer-phone:${pick.c}`));
   const chosen = (await db.query(`select style->'colors' as c from venues where id='senso'`)).rows[0].c;

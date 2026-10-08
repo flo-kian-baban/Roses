@@ -4,6 +4,7 @@
 // drives the tabs (by scroll position) and the native <dialog> sheets; everything else is HTML + CSS.
 // Both venue templates compose these pieces with their own header, accent and footer. Colours are tokens (src/venues/tokens.ts)
 // read through CSS variables: the Category tabs, Item rows and Item popup groups; no colour literal here.
+import type { ReactNode } from 'react';
 import type { Item, Section } from '@/lib/types';
 import { price } from '@/lib/format';
 import { Bi } from './Bi';
@@ -31,56 +32,84 @@ function Serves({ item }: { item: Item }) {
   return item.serves ? <span className="chip"><span lang="en">Serves {item.serves}</span><span lang="fa" dir="rtl">برای {item.serves} نفر</span></span> : null;
 }
 
-function PriceLine({ item, big }: { item: Item; big?: boolean }) {
-  const color = big ? 'text-(--c-sheet-price)' : 'text-(--c-rows-price)';
-  if (item.price != null) return <p className={`${big ? 'mt-1 text-[20px] tabular-nums' : 'mt-1 text-[15px]'} ${color}`}><span className="shrink-0 tabular-nums">{price(item.price)}</span></p>;
+function PriceLine({ item }: { item: Item }) {
+  if (item.price != null) return <p className="mt-1 text-[15px] text-(--c-rows-price)"><span className="shrink-0 tabular-nums">{price(item.price)}</span></p>;
   if (item.variants.length === 0) return null;
   return (
-    <p className={`mt-1 ${big ? 'text-[17px]' : 'text-[15px]'} ${color}`}>
+    <p className="mt-1 text-[15px] text-(--c-rows-price)">
       {item.variants.map((v, n) => <span key={n}>{n > 0 && ' · '}<Bi text={v.label} /> {v.price != null && <span className="tabular-nums">{price(v.price)}</span>}</span>)}
     </p>
   );
 }
 
+// The popup's price: the item's price, or the span of its sizes ("$7 – $120"; one figure when they agree), so the Sizes
+// group below is not repeated at the top. Amounts are rendered in an isolated left-to-right <bdi> so "$15 – $30" and "+$4"
+// keep their order in Persian too (Western digits in both languages).
+function priceSpan(item: Item): string | null {
+  if (item.price != null) return price(item.price);
+  const ps = item.variants.map((v) => v.price).filter((p): p is number => p != null);
+  if (!ps.length) return null;
+  const lo = Math.min(...ps), hi = Math.max(...ps);
+  return lo === hi ? price(lo) : `${price(lo)} – ${price(hi)}`;
+}
+const Amount = ({ children, extra }: { children: ReactNode; extra?: boolean }) => <bdi dir="ltr" className={extra ? 'amount extra' : 'amount'}>{children}</bdi>;
+
+// One group of the popup (Uber Eats-style): a full-width band with the heading and a small line under it, then its rows.
+function Group({ title, sub, children, ...rest }: { title: ReactNode; sub?: ReactNode; children: ReactNode; 'data-notes'?: string }) {
+  return (
+    <section className="sheet-group" {...rest}>
+      <div className="sheet-band"><h3>{title}</h3>{sub && <p>{sub}</p>}</div>
+      {children}
+    </section>
+  );
+}
+
 // The sheet's content travels in an inert <template> next to the row or card, so the page carries each item once and
-// images in the template never load until the sheet opens.
+// images in the template never load until the sheet opens. Layout (Kian, 2026-10-08, after the Uber Eats reference): the
+// title block (name, the price line with "Serves", the description), then one banded group per kind: Sizes, each option
+// group (Required / Optional), Includes, and the owner's notes under Good to know. Styles: .sheet-* in src/styles/public.css.
 function Detail({ item }: { item: Item }) {
   const groups = new Map<string, Item['add_ons']>();
   for (const a of item.add_ons) { const k = a.group.en ?? ''; groups.set(k, [...(groups.get(k) ?? []), a]); }
+  const span = priceSpan(item);
   return (
     <template className="detail">
-      <div className="px-5 pb-10 pt-5">
-        <Bi as="h2" text={item.name} className="text-[26px] font-bold leading-tight text-(--c-sheet-title)" />
-        <PriceLine item={item} big />
-        {item.serves && <p className="mt-2"><Serves item={item} /></p>}
-        <Bi as="p" text={item.description} className="mt-3 text-[16px] leading-relaxed text-(--c-sheet-body) whitespace-pre-line" />
-        <GoodToKnow item={item} />
+      <div className="sheet-body">
+        <div className="sheet-head">
+          <Bi as="h2" text={item.name} className="sheet-title" />
+          {(span || item.serves) && (
+            <p className="sheet-price">
+              {span && <bdi dir="ltr">{span}</bdi>}
+              {item.serves && <span className="sheet-serves">{span && <span aria-hidden="true"> · </span>}<span lang="en">Serves {item.serves}</span><span lang="fa" dir="rtl">برای {item.serves} نفر</span></span>}
+            </p>
+          )}
+          <Bi as="p" text={item.description} className="sheet-desc" />
+        </div>
         {item.variants.length > 0 && (
-          <div className="mt-6">
-            <h3 className="text-[17px] font-semibold text-(--c-sheet-title)"><span lang="en">Sizes</span><span lang="fa" dir="rtl">اندازه‌ها</span></h3>
-            <ul className="mt-1 divide-y divide-(--c-sheet-line) text-(--c-sheet-price)">{item.variants.map((v, n) => <li key={n} className="flex items-center justify-between gap-3 py-3 text-[15px]"><Bi text={v.label} />{v.price != null && <span className="tabular-nums">{price(v.price)}</span>}</li>)}</ul>
-          </div>
+          <Group title={<><span lang="en">Sizes</span><span lang="fa" dir="rtl">اندازه‌ها</span></>}>
+            <ul className="sheet-rows">{item.variants.map((v, n) => <li key={n}><Bi text={v.label} />{v.price != null && <Amount>{price(v.price)}</Amount>}</li>)}</ul>
+          </Group>
         )}
         {[...groups.entries()].map(([k, list]) => (
-          <div key={k} className="mt-6">
-            <h3 className="text-[17px] font-semibold text-(--c-sheet-title)">{list[0].group.en ? <Bi text={list[0].group} /> : <><span lang="en">Options</span><span lang="fa" dir="rtl">گزینه‌ها</span></>}</h3>
-            <ul className="mt-1 divide-y divide-(--c-sheet-line) text-(--c-sheet-price)">{list.map((a, n) => <li key={n} className="flex items-center justify-between gap-3 py-3 text-[15px]"><Bi text={a.label} />{a.price > 0 && <span className="tabular-nums text-(--c-sheet-muted)">+{price(a.price)}</span>}</li>)}</ul>
-          </div>
+          <Group key={k} title={list[0].group.en ? <Bi text={list[0].group} /> : <><span lang="en">Options</span><span lang="fa" dir="rtl">گزینه‌ها</span></>} sub={list.every((a) => a.required) ? <><span lang="en">Required</span><span lang="fa" dir="rtl">الزامی</span></> : <><span lang="en">Optional</span><span lang="fa" dir="rtl">اختیاری</span></>}>
+            <ul className="sheet-rows">{list.map((a, n) => <li key={n}><Bi text={a.label} />{a.price > 0 && <Amount extra>+{price(a.price)}</Amount>}</li>)}</ul>
+          </Group>
         ))}
         {item.components.length > 0 && (
-          <div className="mt-6">
-            <h3 className="text-[17px] font-semibold text-(--c-sheet-title)"><span lang="en">Includes</span><span lang="fa" dir="rtl">شامل</span></h3>
-            <ul className="mt-1 divide-y divide-(--c-sheet-line) text-(--c-sheet-price)">{item.components.map((c, n) => <li key={n} className="py-3 text-[15px]">{c.qty > 1 && `${c.qty}× `}<Bi text={c.label} /></li>)}</ul>
-          </div>
+          <Group title={<><span lang="en">Includes</span><span lang="fa" dir="rtl">شامل</span></>}>
+            <ul className="sheet-rows">{item.components.map((c, n) => <li key={n}><span>{c.qty > 1 && `${c.qty}× `}<Bi text={c.label} /></span></li>)}</ul>
+          </Group>
         )}
+        <GoodToKnow item={item} />
       </div>
     </template>
   );
 }
 
 // The owner's allergen, dietary and halal notes (ruling 10: optional per item, set by the owner or an admin; Kian, 2026-10-08:
-// shown to customers in the popup). Only what is set appears: halal as a chip, each dietary word as a chip, the allergens as
-// "Contains …", then the free note in both languages. Nothing of it on the rows or cards.
+// shown to customers in the popup). The last group of the popup, under Good to know; only what is set appears: halal as a
+// chip, each dietary word as a chip, the allergens as "Contains …", then the free note in both languages. Nothing of it on
+// the rows or cards.
 function GoodToKnow({ item }: { item: Item }) {
   const n = item.notes;
   if (!n) return null;
@@ -88,12 +117,13 @@ function GoodToKnow({ item }: { item: Item }) {
   const hasText = !!(n.text?.en || n.text?.fa);
   if (!chips.length && !n.allergens.length && !hasText) return null;
   return (
-    <div className="mt-5" data-notes>
-      <h3 className="text-[17px] font-semibold text-(--c-sheet-title)"><span lang="en">Good to know</span><span lang="fa" dir="rtl">نکات</span></h3>
-      {chips.length > 0 && <p className="mt-2 flex flex-wrap gap-1.5">{chips.map((c, i) => <span key={i} className="chip"><span lang="en">{c.en}</span><span lang="fa" dir="rtl">{c.fa}</span></span>)}</p>}
-      {n.allergens.length > 0 && <p className="mt-2 text-[15px] text-(--c-sheet-body)"><span lang="en">Contains {n.allergens.join(', ')}</span><span lang="fa" dir="rtl">حاوی {n.allergens.join('، ')}</span></p>}
-      {hasText && <Bi as="p" text={n.text} className="mt-2 text-[15px] leading-relaxed text-(--c-sheet-body) whitespace-pre-line" />}
-    </div>
+    <Group data-notes="" title={<><span lang="en">Good to know</span><span lang="fa" dir="rtl">نکات</span></>}>
+      <div className="sheet-notes">
+        {chips.length > 0 && <p className="chips">{chips.map((c, i) => <span key={i} className="chip"><span lang="en">{c.en}</span><span lang="fa" dir="rtl">{c.fa}</span></span>)}</p>}
+        {n.allergens.length > 0 && <p className="contains"><span lang="en">Contains {n.allergens.join(', ')}</span><span lang="fa" dir="rtl">حاوی {n.allergens.join('، ')}</span></p>}
+        {hasText && <Bi as="p" text={n.text} className="note" />}
+      </div>
+    </Group>
   );
 }
 

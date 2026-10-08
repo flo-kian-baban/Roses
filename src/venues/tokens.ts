@@ -66,7 +66,7 @@ export const TOKENS: TokenDef[] = [
   { key: 'sheet.body', group: 'sheet', label: 'Description text', kind: 'text', on: 'sheet.bg', rule: 'body' },
   { key: 'sheet.muted', group: 'sheet', label: 'Option prices', kind: 'text', on: 'sheet.bg', rule: 'muted', note: 'The “+$” prices and the “Menu” caption of the section list.' },
   { key: 'sheet.line', group: 'sheet', label: 'Lines between sizes and options', kind: 'decor', on: 'sheet.bg', rule: 'line' },
-  { key: 'sheet.hero', group: 'sheet', label: 'Photo placeholder', kind: 'decor', on: 'sheet.bg', rule: 'band' },
+  { key: 'sheet.hero', group: 'sheet', label: 'Photo placeholder and group bands', kind: 'decor', on: 'sheet.bg', rule: 'band', note: 'Behind the headings of Sizes, Options, Includes and Good to know; also where a photo is missing.' },
   { key: 'sheet.closeBg', group: 'sheet', label: 'Close button', kind: 'bg', on: 'sheet.bg', rule: 'same' },
   { key: 'sheet.closeIcon', group: 'sheet', label: 'Close button icon', kind: 'indicator', on: 'sheet.closeBg', rule: 'text' },
   { key: 'sheet.dim', group: 'sheet', label: 'Dim behind the popup', kind: 'bg', note: 'Shown at 45% over the page.' },

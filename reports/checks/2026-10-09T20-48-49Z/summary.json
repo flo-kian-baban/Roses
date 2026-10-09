@@ -1,0 +1,285 @@
+{
+  "stamp": "2026-10-09T20-48-49Z",
+  "commit": "66d30d4",
+  "pass": false,
+  "results": [
+    {
+      "name": "migrations on the scratch copy (roses_check_20261009t204849z)",
+      "pass": true,
+      "ms": 63,
+      "evidence": [
+        "migrate.log"
+      ],
+      "note": "0 migration(s) applied, 5 already present"
+    },
+    {
+      "name": "production build (.next-check)",
+      "pass": true,
+      "ms": 3195,
+      "evidence": [
+        "build.log"
+      ],
+      "note": "next build ok"
+    },
+    {
+      "name": "colour literals in the public templates, the menu kit and the public stylesheet (Kian, 2026-10-08: 0 outside src/venues/tokens.ts)",
+      "pass": true,
+      "ms": 41,
+      "evidence": [
+        "colour-literals.txt",
+        "colour-literals.json"
+      ],
+      "note": "0 colour literal(s) in 16 public files; 140 hex values live in the token defaults file"
+    },
+    {
+      "name": "servers on 3100 and 3101 (TRUST_PROXY=1)",
+      "pass": true,
+      "ms": 602,
+      "evidence": [
+        "server-3100.log",
+        "server-3101.log"
+      ],
+      "note": "both answer 200 on /senso"
+    },
+    {
+      "name": "temporary venue on the default template (created through the admin API: logo upload, tagline, location, 2 sections, 4 items)",
+      "pass": true,
+      "ms": 346,
+      "evidence": [
+        "new-venue/new-venue.json",
+        "new-venue/new-venue-drill.txt"
+      ],
+      "note": "/drill-default-venue: 2 sections, 4 shown items, logo uploads/drill-default-venue/logo-ed6d89f2-bd63-4dba-baf8-2969cd9a0944.png, GET → 200"
+    },
+    {
+      "name": "public page checks: senso (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms, reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)",
+      "pass": true,
+      "ms": 84477,
+      "evidence": [
+        "senso/senso-checks.json",
+        "senso/senso-en.jpg",
+        "senso/senso-fa.jpg",
+        "senso/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 15; welcome screen up at the first sample (56 ms, greeting \"afternoon\" in both languages, fall scene with 20 particles, nothing pre-highlighted: true; logo at 661 ms, greeting at 928 / 1052 ms, buttons at 1303 ms), tap English → menu visible in 239 ms (stored [\"roses-lang\"]); shows again on reload with [\"fa\"] pre-highlighted (stored keys [\"roses-lang\"]); reduced motion: shown still with 0 animations running, page visible at once true, off in 1 ms; JavaScript off: overlay display none, menu visible true; images 124/124; tabs: 18/18 taps end on their tab at the bar with 0 other tabs lit on the way, 0/638 scroll steps off, last tab at the bottom true, direct link true; after a reload: 0 px from the top, hash \"\" (was 84 px, \"\")"
+    },
+    {
+      "name": "public page checks: kebab-land (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms, reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)",
+      "pass": false,
+      "ms": 57890,
+      "evidence": [],
+      "note": "error: ENOENT: no such file or directory, open '/Users/kianbaban/roses-preview/reports/checks/2026-10-09T20-48-49Z/kebab-land/kebab-land-checks.json'"
+    },
+    {
+      "name": "public page checks: drill-default-venue (temporary venue, default template) (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms, reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)",
+      "pass": false,
+      "ms": 279,
+      "evidence": [],
+      "note": "error: ENOENT: no such file or directory, open '/Users/kianbaban/roses-preview/reports/checks/2026-10-09T20-48-49Z/drill-default-venue/drill-default-venue-checks.json'"
+    },
+    {
+      "name": "brand words in the built pages and the temporary venue's page",
+      "pass": false,
+      "ms": 34,
+      "evidence": [
+        "brand-words.txt"
+      ],
+      "note": "no \"Mealsy\" or \"Flo\" in visible text or metadata (2 pages)"
+    },
+    {
+      "name": "no runtime JavaScript: drill-default-venue (temporary venue, default template)",
+      "pass": false,
+      "ms": 0,
+      "evidence": [],
+      "note": "no saved first response"
+    },
+    {
+      "name": "photo links: senso",
+      "pass": true,
+      "ms": 4285,
+      "evidence": [
+        "senso/photo-links.md",
+        "senso/photo-links.json"
+      ],
+      "note": "135 URLs, 0 not 200/206"
+    },
+    {
+      "name": "photo links: kebab-land",
+      "pass": true,
+      "ms": 2976,
+      "evidence": [
+        "kebab-land/photo-links.md",
+        "kebab-land/photo-links.json"
+      ],
+      "note": "46 URLs, 0 not 200/206"
+    },
+    {
+      "name": "welcome screen drill (greeting boundaries with a mocked clock, the page's season scene ≤ 20 particles on transform and opacity, reduced motion still, tap → menu ≤ 300 ms with the language persisted and pre-highlighted, section anchor, keyboard and labels, JavaScript off, kill switch, default contrast, inline code ≤ 15 KB gzipped on senso with the picked artwork and ≤ 10 KB on kebab-land)",
+      "pass": false,
+      "ms": 480,
+      "evidence": [
+        "welcome/welcome-drill.txt",
+        "welcome/welcome-drill.json",
+        "welcome/*.jpg"
+      ],
+      "note": "exit 1; "
+    },
+    {
+      "name": "season drill (current season only: render tests at the Toronto boundary instants Aug 31 / Sep 1, Nov 30 / Dec 1, Feb 28 / Mar 1, May 31 / Jun 1 on a copy of the build with a fixed server clock, two renders an hour apart with the cached page aged 3601 s and a control within the hour, revalidate 3600 in the manifest; senso's picked artwork: 20 particles at most 2 near present and mid-flight on the first sample, smoothness on the iPhone 13 viewport with CPU 4× (median ≥ 50 fps, no long task > 50 ms), two loads differ, reduced-motion still, inline size per season, recordings; kebab-land and the default template: the served scene of every season and its symbols byte for byte as in the fixture from the previous commit, the motion rules verbatim; one still per season per venue)",
+      "pass": false,
+      "ms": 67193,
+      "evidence": [
+        "season/season-drill.txt",
+        "season/season-drill.json",
+        "season/season-server.log",
+        "season/*.jpg",
+        "season/senso-fall.webm and senso-winter.webm (on disk only)"
+      ],
+      "note": "SEASON DRILL FAIL (16/17); regeneration interval: 3600 s configured (revalidate; the same in getStaticProps of every public page); an hour later the next request serves the previous render and the fresh season lands after 114 / 115 / 112 / 114 ms; senso fall: inline welcome code with the picked artwork 7.0 KB gzipped (21.0 KB raw), symbols F1, F2, F4, F8, F9; senso fall smoothness (CPU 4×): median 60 fps, longest task 0 ms; senso winter: inline welcome code with the picked artwork 2.6 KB gzipped (7.2 KB raw), symbols W1, W3, W5, W7, W10; senso winter smoothness (CPU 4×): median 60 fps, longest task 0 ms"
+    },
+    {
+      "name": "menu after the language tap under throttled mobile conditions (Slow 4G as DevTools applies it, CPU 4×): the first section visible and its photos in view loaded within 2.5 s of the tap, on senso with its first section as a List and as a Grid and on kebab-land; the eager rule (the first row only); first-section photo bytes",
+      "pass": false,
+      "ms": 564,
+      "evidence": [
+        "after-tap/after-tap.txt",
+        "after-tap/after-tap.json"
+      ],
+      "note": "exit 1; "
+    },
+    {
+      "name": "Lighthouse mobile ×3: senso (LCP ≤ 2.5 s, TBT ≤ 50 ms)",
+      "pass": false,
+      "ms": 5668,
+      "evidence": [],
+      "note": "error: ENOENT: no such file or directory, open '/Users/kianbaban/roses-preview/reports/checks/2026-10-09T20-48-49Z/senso/lighthouse-summary.json'"
+    },
+    {
+      "name": "Lighthouse mobile ×3: kebab-land (LCP ≤ 2.5 s, TBT ≤ 50 ms)",
+      "pass": false,
+      "ms": 4897,
+      "evidence": [],
+      "note": "error: ENOENT: no such file or directory, open '/Users/kianbaban/roses-preview/reports/checks/2026-10-09T20-48-49Z/kebab-land/lighthouse-summary.json'"
+    },
+    {
+      "name": "Lighthouse mobile ×3: drill-default-venue (temporary venue, default template) (LCP ≤ 2.5 s, TBT ≤ 50 ms)",
+      "pass": false,
+      "ms": 4894,
+      "evidence": [],
+      "note": "error: ENOENT: no such file or directory, open '/Users/kianbaban/roses-preview/reports/checks/2026-10-09T20-48-49Z/drill-default-venue/lighthouse-summary.json'"
+    },
+    {
+      "name": "admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route and section layout 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)",
+      "pass": false,
+      "ms": 30699,
+      "evidence": [
+        "admin/admin-drill.txt",
+        "admin/admin-drill.json",
+        "admin/*.jpg"
+      ],
+      "note": "exit 1; "
+    },
+    {
+      "name": "lockout: 5 per venue + address, 50 per hour per venue with alert and unlock, revoked PIN",
+      "pass": false,
+      "ms": 148,
+      "evidence": [
+        "lockout-drill.txt"
+      ],
+      "note": "exit 1"
+    },
+    {
+      "name": "revalidation: a price changed in the editor reaches the public page within 10 s, then Undo",
+      "pass": false,
+      "ms": 30512,
+      "evidence": [
+        "revalidation-log.txt"
+      ],
+      "note": "exit 1"
+    },
+    {
+      "name": "page editor drill (task targets with tap counts, preview ≤ 1 s, reorder on the public page, Undo on the public page, change record, no preview script, the preview never shows the welcome screen after a save, drag-and-drop of items and sections, tap-to-edit in the preview, photo upload, section delete with move or delete and Undo, items in no section in the Needs-attention bar)",
+      "pass": false,
+      "ms": 30507,
+      "evidence": [
+        "editor/editor-drill.txt",
+        "editor/editor-drill.json",
+        "editor/*.jpg"
+      ],
+      "note": "exit 1; "
+    },
+    {
+      "name": "preview control bar drill (from the Menu tab on the iPhone 13 viewport: the welcome screen in another season, in the evening, in Persian in ≤ 4 taps with the customers' page byte-identical; every switch of the bar within 300 ms on the phone and the laptop, Replay; the screen per tab with the frame kept across tabs; the section list and the item popup open again after a save; a language tap on the previewed welcome screen; the customers' HTML without preview markup)",
+      "pass": false,
+      "ms": 30521,
+      "evidence": [
+        "preview/preview-drill.txt",
+        "preview/preview-drill.json",
+        "preview/*.jpg"
+      ],
+      "note": "exit 1; "
+    },
+    {
+      "name": "Style tab drill (day-one defaults = the pre-token look, task target with tap count, the phone's bottom sheet with ≥ 45 % of the viewport left to the preview while a colour is edited and Compare held on touch, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, every group switching the preview to its screen with its region outlined, preview ↔ controls with the controls as the master through a save, the Welcome group with the bar's season switch and a saved colour, Compare toggled on the laptop, What changed with the per-colour reset through the guard, section layout List/Grid on the public page and in the preview with Undo, position and screen kept through a colour save, Discard this session's changes restoring the opening snapshot with Undo, Reset all with confirmation, Persian view)",
+      "pass": false,
+      "ms": 422,
+      "evidence": [
+        "style/style-drill.txt",
+        "style/style-drill.json",
+        "style/day-one-senso.json",
+        "style/day-one-kebab-land.json",
+        "style/guard-route.json",
+        "style/*.jpg"
+      ],
+      "note": "exit 1; "
+    },
+    {
+      "name": "backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)",
+      "pass": true,
+      "ms": 3667,
+      "evidence": [
+        "backup-drill.txt"
+      ],
+      "note": "12 table comparisons equal, 0 different; item recovered: true"
+    },
+    {
+      "name": "uploads:clean on the run's uploads (keeps the temporary venue's logo, removes the editor drill's orphan photo, prints each file)",
+      "pass": false,
+      "ms": 73,
+      "evidence": [
+        "uploads-clean.txt"
+      ],
+      "note": "1 files before, 1 after; kept 1 referenced (the venue logo: true), removed 0 (0 bytes: none); the scratch copy references 1 key(s)"
+    },
+    {
+      "name": "temporary venue removed from the scratch copy (drill-default-venue)",
+      "pass": true,
+      "ms": 71,
+      "evidence": [
+        "new-venue/new-venue-drill.txt"
+      ],
+      "note": "rows left 0; its page still answers 404 from the cache until the next save or build (the scratch copy is dropped anyway)"
+    },
+    {
+      "name": "isolation (a): every server and drill process connected to the scratch database roses_check_20261009t204849z (own log line per process + pg_stat_activity sampled every 400 ms)",
+      "pass": false,
+      "ms": 0,
+      "evidence": [
+        "isolation.json",
+        "server-3100.log",
+        "server-3101.log",
+        "*/…-drill.log"
+      ],
+      "note": "WRONG: roses-check:server-3101 → no log line  never sampled: roses-check:server-3101, roses-check:style-drill, roses-check:lockout-drill"
+    },
+    {
+      "name": "isolation (b): the working database roses holds no row written by a suite account (admins, PINs, revisions, drill items/sections/venues, lockout-drill failure rows)",
+      "pass": true,
+      "ms": 0,
+      "evidence": [
+        "working-db-suite-rows.json"
+      ],
+      "note": "admins 0, pins 0, revisionsBySuiteAccounts 0, drillItemsOrSections 0, lockoutDrillFailureRows 0"
+    }
+  ]
+}

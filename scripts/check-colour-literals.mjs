@@ -28,8 +28,9 @@ const RULES = [
   { kind: 'named (css value)', re: new RegExp(`:\\s*[^;{}]*?\\b(${NAMED})\\b`, 'gi'), cssOnly: true },
   { kind: 'tailwind palette', re: new RegExp(`(?<![\\w-])(?:hover:|focus:|active:|focus-visible:|dark:|group-hover:)?(?:${TW_PREFIX})-(?:${TW_PALETTE})(?:-\\d{2,3})?(?:/\\[?[\\d.]+\\]?)?(?![\\w-])`, 'g') },
 ];
-// A line (or a CSS declaration) is scanned without its string-free parts: URLs and SVG data are not colours of the page.
-const STRIP = [/url\([^)]*\)/g, /https?:\/\/\S+/g];
+// A line (or a CSS declaration) is scanned without its string-free parts: URLs and SVG data are not colours of the page, and a
+// reference to a custom property (var(--c-welcome-snow): a token name, not a value; 2026-10-09) is never a literal.
+const STRIP = [/url\([^)]*\)/g, /https?:\/\/\S+/g, /var\(--[a-z0-9-]+\)/g];
 
 const found = [];
 for (const file of list) {

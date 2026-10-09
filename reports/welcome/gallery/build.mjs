@@ -108,10 +108,9 @@ table { border-collapse: collapse; font-size: 13px; margin: 8px 0 0; } td, th { 
 @keyframes fall { from { transform: translate3d(0, calc(var(--s) * -1.3), 0); } to { transform: translate3d(var(--dr), calc(var(--h) + var(--s) * .4), 0); } }
 @keyframes sway { 0% { transform: translate(calc(var(--sw) * -1), 0); animation-timing-function: ease-in; } 50% { transform: translate(0, var(--dip)); animation-timing-function: ease-out; } 100% { transform: translate(var(--sw), 0); } }
 @keyframes flutter {
-  0% { transform: perspective(260px) rotateX(calc(var(--rx) * -1)) rotateY(calc(var(--ry) * -.4)) rotateZ(calc(var(--rz) * -1)); }
-  35% { transform: perspective(260px) rotateX(calc(var(--rx) * .3)) rotateY(var(--ry)) rotateZ(calc(var(--rz) * .2)); }
-  70% { transform: perspective(260px) rotateX(var(--rx)) rotateY(calc(var(--ry) * -.2)) rotateZ(calc(var(--rz) * .6)); }
-  100% { transform: perspective(260px) rotateX(calc(var(--rx) * -.5)) rotateY(calc(var(--ry) * .7)) rotateZ(var(--rz)); }
+  0% { transform: perspective(260px) rotateX(calc(var(--rx) * -1)) rotateY(calc(var(--ry) * -.5)) rotateZ(calc(var(--rz) * -1)); }
+  50% { transform: perspective(260px) rotateX(calc(var(--rx) * .2)) rotateY(calc(var(--ry) * .3)) rotateZ(calc(var(--rz) * .1)); }
+  100% { transform: perspective(260px) rotateX(calc(var(--rx) * .6)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .scene.still .y, .scene.still .s, .scene.still .w { animation: none; }
@@ -125,9 +124,9 @@ const js = `
 (function () {
   var LEAF = ${JSON.stringify(LEAVES.map((c) => c.no))}, SNOW = ${JSON.stringify(FLAKES.map((c) => c.no))}, SOFT = ['W8', 'W9', 'W10'];
   var LAYERS = {
-    leaves: { base: 44, far: { n: 9, size: [.42, .6], dur: [15, 22], op: [.35, .55], sway: [6, 12], sp: [3.4, 5.2], drift: [-.1, .1], fp: [3.6, 5.5] },
-              mid: { n: 9, size: [.65, .9], dur: [10, 15], op: [.7, .9], sway: [12, 22], sp: [2.8, 4.2], drift: [-.16, .16], fp: [2.8, 4.4] },
-              near: { n: 2, size: [1, 1.3], dur: [7.5, 10.5], op: [.85, .95], sway: [20, 34], sp: [2.4, 3.6], drift: [-.22, .22], fp: [2.2, 3.6] } },
+    leaves: { base: 44, far: { n: 9, size: [.42, .6], dur: [15, 22], op: [.35, .55], sway: [6, 12], sp: [3.4, 5.2], drift: [-.1, .1], fp: [6, 9] },
+              mid: { n: 9, size: [.65, .9], dur: [10, 15], op: [.7, .9], sway: [12, 22], sp: [2.8, 4.2], drift: [-.16, .16], fp: [5, 7.5] },
+              near: { n: 2, size: [1, 1.3], dur: [7.5, 10.5], op: [.85, .95], sway: [20, 34], sp: [2.4, 3.6], drift: [-.22, .22], fp: [4.2, 6.5] } },
     snow: { base: 26, far: { n: 9, size: [.45, .65], dur: [14, 20], op: [.4, .6], sway: [4, 8], sp: [3.5, 6], drift: [-.06, .06], fp: [30, 48] },
             mid: { n: 9, size: [.7, .95], dur: [10, 14], op: [.7, .9], sway: [6, 12], sp: [3, 5], drift: [-.1, .1], fp: [24, 40] },
             near: { n: 2, size: [1, 1.3], dur: [8, 11], op: [.85, 1], sway: [8, 16], sp: [2.8, 4.4], drift: [-.14, .14], fp: [20, 32] } }
@@ -137,7 +136,7 @@ const js = `
   var pick = function (list) { return list[Math.floor(Math.random() * list.length)]; };
   function particle(kind, layer, design, w, h) {
     var K = LAYERS[kind], L = K[layer], size = Math.round(K.base * rnd(L.size[0], L.size[1]) * (SOFT.indexOf(design) >= 0 ? 1.4 : 1)), d = r1(rnd(L.dur[0], L.dur[1]));
-    return { design: design, layer: layer, x: r1(rnd(.02, .98) * 100) / 100, s: size, d: d, l: r1(-rnd(0, d)), o: r1(rnd(L.op[0], L.op[1]) * 100) / 100, sw: Math.round(rnd(L.sway[0], L.sway[1])), sp: r1(rnd(L.sp[0], L.sp[1])), dr: Math.round(rnd(L.drift[0], L.drift[1]) * w), rx: Math.round(rnd(25, 60)), ry: Math.round(rnd(30, 70)), rz: Math.round(rnd(15, 45)), fp: r1(rnd(L.fp[0], L.fp[1])), dip: Math.round(rnd(4, 10)) };
+    return { design: design, layer: layer, x: r1(rnd(.02, .98) * 100) / 100, s: size, d: d, l: r1(-rnd(0, d)), o: r1(rnd(L.op[0], L.op[1]) * 100) / 100, sw: Math.round(rnd(L.sway[0], L.sway[1])), sp: r1(rnd(L.sp[0], L.sp[1])), dr: Math.round(rnd(L.drift[0], L.drift[1]) * w), rx: Math.round(rnd(10, 28)), ry: Math.round(rnd(15, 40)), rz: Math.round(rnd(5, 16)), fp: r1(rnd(L.fp[0], L.fp[1])), dip: Math.round(rnd(4, 10)) };
   }
   function el(p, kind) {
     var i = document.createElement('i'); i.className = 'p ' + p.layer + (kind === 'snow' ? ' snow' : '') + (SOFT.indexOf(p.design) >= 0 ? ' soft' : '');

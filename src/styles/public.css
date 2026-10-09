@@ -75,11 +75,12 @@ html[data-welcome="done"] #welcome { opacity: 0; visibility: hidden; pointer-eve
 .scene[data-engine].still .y, .scene[data-engine].still .s, .scene[data-engine].still .w { animation: none; }
 @keyframes wa-fall { from { transform: translate3d(0, calc(var(--s) * -1.3), 0); } to { transform: translate3d(var(--dr), calc(100vh + var(--s) * .4), 0); } }
 @keyframes wa-sway { 0% { transform: translate(calc(var(--sw) * -1), 0); animation-timing-function: ease-in; } 50% { transform: translate(0, var(--dip)); animation-timing-function: ease-out; } 100% { transform: translate(var(--sw), 0); } }
+/* Flutter (Kian, 2026-10-09, later: smoother; the first version reversed every axis twice per cycle and wiggled): each axis tilts one
+   way across a cycle and alternate brings it back, with the three axes out of step so the turn never looks mechanical. */
 @keyframes wa-flutter {
-  0% { transform: perspective(260px) rotateX(calc(var(--rx) * -1)) rotateY(calc(var(--ry) * -.4)) rotateZ(calc(var(--rz) * -1)); }
-  35% { transform: perspective(260px) rotateX(calc(var(--rx) * .3)) rotateY(var(--ry)) rotateZ(calc(var(--rz) * .2)); }
-  70% { transform: perspective(260px) rotateX(var(--rx)) rotateY(calc(var(--ry) * -.2)) rotateZ(calc(var(--rz) * .6)); }
-  100% { transform: perspective(260px) rotateX(calc(var(--rx) * -.5)) rotateY(calc(var(--ry) * .7)) rotateZ(var(--rz)); }
+  0% { transform: perspective(260px) rotateX(calc(var(--rx) * -1)) rotateY(calc(var(--ry) * -.5)) rotateZ(calc(var(--rz) * -1)); }
+  50% { transform: perspective(260px) rotateX(calc(var(--rx) * .2)) rotateY(calc(var(--ry) * .3)) rotateZ(calc(var(--rz) * .1)); }
+  100% { transform: perspective(260px) rotateX(calc(var(--rx) * .6)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
 @keyframes wa-spin { to { transform: rotate(360deg); } }
 .welcome-card { position: relative; display: grid; justify-items: center; gap: 24px; width: min(100% - 48px, 340px); padding-bottom: 4vh; text-align: center; }

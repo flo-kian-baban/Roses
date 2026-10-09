@@ -182,7 +182,7 @@ const browser = await chromium.launch();
   const ctx = await browser.newContext(DEVICE);
   const page = await ctx.newPage();
   const target = log.checks.dom.sections[Math.min(2, log.checks.dom.sections.length - 1)]?.id ?? null;
-  await page.goto(`${url}#${target}`, { waitUntil: 'load' });
+  await page.goto(`${url}#${target}`, { waitUntil: 'domcontentloaded' }); // not 'load': the photos come from the venues' own hosts and a slow one timed out the navigation on 2026-10-09; the overlay and the tabs are in the HTML
   await waitShow(page); const behind = await page.evaluate(() => Math.round(scrollY)); await page.evaluate(tapLang, 'en'); await waitOff(page); // the choice puts the page at the top
   await page.waitForTimeout(600);
   const d = await page.evaluate(() => { const bar = document.getElementById('tabs').getBoundingClientRect(); const secs = [...document.querySelectorAll('main section[id]')]; let under = secs[0]?.id ?? null; for (const s of secs) if (s.getBoundingClientRect().top <= bar.bottom + 1) under = s.id; const atBottom = scrollY > 0 && scrollY >= document.documentElement.scrollHeight - innerHeight - 1; if (atBottom && secs.length) under = secs.at(-1).id; return { active: document.querySelector('#tabs a.active')?.dataset.tab ?? null, under, atBottom, y: Math.round(scrollY) }; });

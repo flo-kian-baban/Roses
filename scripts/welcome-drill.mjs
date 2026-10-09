@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // Welcome screen acceptance (Kian, 2026-10-09: the overlay that replaced the logo intro), measured by Playwright on the iPhone 13
 // viewport for senso and kebab-land:
-//   boundaries with a mocked device clock (the browser context runs in UTC, so the wall clock is the mocked instant): the greeting at
-//     04:59 / 05:00 / 11:59 / 12:00 / 16:59 / 17:00 and the season at Aug 31 / Sep 1, Nov 30 / Dec 1, Feb 28 / Mar 1, May 31 / Jun 1, each
-//     read from the html attributes the head script sets, with the greeting shown in both languages and exactly one scene displayed;
-//   the scene: at most 20 particles, every running animation on transform or opacity only; reduced motion: shown but still, the fade instant;
+//   greeting boundaries with a mocked device clock (the browser context runs in UTC, so the wall clock is the mocked instant): 04:59 /
+//     05:00 / 11:59 / 12:00 / 16:59 / 17:00, read from the html attribute the head script sets, both languages shown (the season is the
+//     page's since the PM's decision of 2026-10-09, current season only: its boundaries are render tests in scripts/season-drill.mjs);
+//   the scene of the season the page was rendered for: at most 20 particles, every running animation on transform or opacity only;
+//     reduced motion: shown but still, the fade instant;
 //   the tap: the menu visible within 300 ms (measured in the page from the click to the overlay gone), the language set and stored,
 //     pre-highlighted on the next load (English, then Persian, whose greeting line then reads first);
 //   a section anchor in the URL: scrolled to under the category bar after the choice, with its tab active;
@@ -12,8 +13,8 @@
 //     behind is inert while the overlay is up and reachable again after the choice;
 //   JavaScript off: the menu visible, no overlay; the kill switch on the Style route (owner): off → no overlay in the HTML and the menu shown
 //     directly, on → back, both recorded; the default colours pass the thresholds (greeting 3:1, buttons 4.5:1);
-//   budget: the added inline code (the overlay markup with its script, plus the head decision script) ≤ 10 KB gzipped, the welcome CSS block too;
-//   evidence: a short recording of the fall scene per venue (<venue>-fall.webm, gitignored: on disk only) and one still per season.
+//   budget: the added inline code (the overlay markup with its scene and script, plus the head decision script) ≤ 15 KB gzipped on senso
+//     (the picked artwork included) and ≤ 10 KB on kebab-land, the welcome CSS block ≤ 10 KB; recordings and stills per season: the season drill.
 // Needs the production server at --base and DRILL_ADMIN_PIN (an admin PIN valid on any venue, for the kill switch).
 //   DRILL_ADMIN_PIN=… node scripts/welcome-drill.mjs --base http://127.0.0.1:3100 --out reports/checks/<stamp>/welcome --jpeg
 import fs from 'node:fs/promises';
@@ -72,7 +73,7 @@ const PROBE = () => {
   const logo = w ? w.querySelector('.welcome-card img, .welcome-name') : null;
   return {
     welcome: h.dataset.welcome || null, display: cs ? cs.display : 'absent', opacity: cs ? cs.opacity : null, visibility: cs ? cs.visibility : null, bg: cs ? cs.backgroundColor : null,
-    greet: g, season: h.dataset.season || null, saved: h.dataset.langSaved || null, lang: h.dataset.lang, dir: h.dir || 'ltr',
+    greet: g, season: w ? w.dataset.season || null : null, saved: h.dataset.langSaved || null, lang: h.dataset.lang, dir: h.dir || 'ltr',
     en: line('en'), fa: line('fa'), otherSlotsHidden: w ? [...w.querySelectorAll('.g')].filter((e) => e.dataset.g !== g).every((e) => getComputedStyle(e).display === 'none') : null,
     buttons: w ? [...w.querySelectorAll('button[data-lang]')].map((b) => { const r = b.getBoundingClientRect(); const c = getComputedStyle(b); return { lang: b.dataset.lang, name: (b.getAttribute('aria-label') || b.textContent || '').trim(), pressed: b.getAttribute('aria-pressed'), h: Math.round(r.height), w: Math.round(r.width), bg: c.backgroundColor, color: c.color, opacity: Number(c.opacity) }; }) : [],
     shownScenes: scene.map((e) => e.dataset.scene), particles: particles.length, particlesVisible: particles.filter((p) => vis(p) && p.getBoundingClientRect().bottom > 0 && p.getBoundingClientRect().top < innerHeight).length,
@@ -94,7 +95,7 @@ const settled = (page) => page.waitForFunction(() => { const b = document.queryS
 const off = (page) => page.waitForFunction(() => document.documentElement.dataset.welcome === 'off', null, { timeout: 5000 }).then(() => true).catch(() => false);
 const sceneId = (venue) => (venue === 'senso' ? 'senso' : 'kebab');
 
-// ---- 1. boundaries with a mocked clock (greeting on senso; season on both venues)
+// ---- 1. greeting boundaries with a mocked clock (senso)
 {
   const ctx = await browser.newContext(DEVICE);
   const load = async (venue, when, waitEntrance) => { const page = await ctx.newPage(); await page.clock.setFixedTime(when); await page.goto(`${base}/${venue}`, { waitUntil: 'load' }); if (waitEntrance) await settled(page); const p = await page.evaluate(PROBE); await page.close(); return p; };
@@ -103,13 +104,7 @@ const sceneId = (venue) => (venue === 'senso' ? 'senso' : 'kebab');
   for (const [hh, mm, want] of GREET) { const p = await load('senso', utc(2026, 10, 9, hh, mm), true); rows.push({ time: `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`, want, got: p.greet, en: p.en?.text, fa: p.fa?.text, bothShown: !!p.en?.shown && !!p.fa?.shown && p.en.opacity === 1 && p.fa.opacity === 1, otherSlotsHidden: p.otherSlotsHidden, shown: p.welcome === 'show' && p.display === 'grid' }); }
   const ok = rows.every((r) => r.got === r.want && r.bothShown && r.otherSlotsHidden && r.shown);
   check('greeting-boundaries', ok, `senso, device clock mocked (UTC): ${rows.map((r) => `${r.time} → ${r.got}${r.got === r.want ? '' : ` (wanted ${r.want})`} "${r.en}" / "${r.fa}"`).join('; ')}; both languages shown and the other two greetings hidden in every case: ${ok}`);
-  const SEASON = [[2026, 8, 31, 'summer'], [2026, 9, 1, 'fall'], [2026, 11, 30, 'fall'], [2026, 12, 1, 'winter'], [2027, 2, 28, 'winter'], [2027, 3, 1, 'spring'], [2027, 5, 31, 'spring'], [2027, 6, 1, 'summer']];
-  for (const venue of VENUES) {
-    const srows = [];
-    for (const [y, m, d, want] of SEASON) { const p = await load(venue, utc(y, m, d, 10, 0), false); srows.push({ date: `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`, want, got: p.season, shownScenes: p.shownScenes, particles: p.particles }); }
-    const sok = srows.every((r) => r.got === r.want && r.shownScenes.length === 1 && r.shownScenes[0] === r.want && r.particles >= 10 && r.particles <= 20);
-    check(`season-boundaries-${venue}`, sok, `${venue}, date mocked: ${srows.map((r) => `${r.date} → ${r.got}${r.got === r.want ? '' : ` (wanted ${r.want})`} (${r.shownScenes.join('+') || 'no scene'}, ${r.particles} particles)`).join('; ')}`);
-  }
+  // the season boundaries are render tests with a fixed server clock in scripts/season-drill.mjs (the PM, 2026-10-09)
   await ctx.close();
 }
 
@@ -121,7 +116,7 @@ for (const venue of VENUES) {
   await page.goto(`${base}/${venue}`, { waitUntil: 'load' }); await sleep(900);
   const p = await page.evaluate(PROBE);
   const onlyTO = p.animatedProps.every((x) => x === 'transform' || x === 'opacity');
-  check(`scene-${venue}`, p.welcome === 'show' && p.shownScenes.join() === 'fall' && p.particles <= 20 && p.particles >= 10 && p.running > 0 && onlyTO && p.logo?.visible && p.role === 'dialog' && p.modal === 'true' && errors.length === 0, `${venue} fall scene: ${p.particles} particles (≤ 20), ${p.running} animations running, properties animated: ${p.animatedProps.join(', ') || 'none'} (transform and opacity only: ${onlyTO}); logo visible: ${p.logo?.visible}; role ${p.role}, aria-modal ${p.modal}; page errors: ${errors.length}`);
+  check(`scene-${venue}`, p.welcome === 'show' && !!p.season && p.shownScenes.join() === p.season && p.particles <= 20 && p.particles >= 10 && p.running > 0 && onlyTO && p.logo?.visible && p.role === 'dialog' && p.modal === 'true' && errors.length === 0, `${venue} ${p.season} scene (the page's season; the only scene in the HTML: ${p.shownScenes.join('+')}): ${p.particles} particles (≤ 20), ${p.running} animations running, properties animated: ${p.animatedProps.join(', ') || 'none'} (transform and opacity only: ${onlyTO}); logo visible: ${p.logo?.visible}; role ${p.role}, aria-modal ${p.modal}; page errors: ${errors.length}`);
   await ctx.close();
   const rctx = await browser.newContext({ ...DEVICE, reducedMotion: 'reduce' }); const rp = await rctx.newPage();
   await rp.clock.setFixedTime(utc(2026, 10, 9, 10, 30));
@@ -213,8 +208,8 @@ for (const venue of VENUES) {
     const onR = await api('/api/admin/style', { action: 'update', venue: 'senso', patch: { welcome: true } }, cookie);
     const back = await waitPublic('senso', hasWelcome);
     const dbOn = (await db.query(`select style->>'welcome' as w from venues where id='senso'`)).rows[0].w;
-    const scripts = (back.html.match(/<script[^>]*>/g) || []).length;
-    check('kill-switch', offR.status === 200 && gone.ok && dbOff === 'false' && p.display === 'absent' && p.welcome === null && p.rowVisible && p.headerVisible && onR.status === 200 && back.ok && dbOn === 'true' && scripts === 4, `Welcome screen off (Style route, owner) → the public HTML carries no overlay after ${gone.ms} ms (venues.style.welcome ${dbOff}); the menu shows directly (overlay ${p.display}, first row visible ${p.rowVisible}); on again → back after ${back.ms} ms (${dbOn}); ${scripts} inline script tags with it on (head decision, welcome, language toggle, menu)`);
+    const scripts = (back.html.match(/<script[^>]*>/g) || []).length, wantScripts = /data-engine=/.test(back.html) ? 5 : 4; // the artwork engine is its own script right after the scene (senso)
+    check('kill-switch', offR.status === 200 && gone.ok && dbOff === 'false' && p.display === 'absent' && p.welcome === null && p.rowVisible && p.headerVisible && onR.status === 200 && back.ok && dbOn === 'true' && scripts === wantScripts, `Welcome screen off (Style route, owner) → the public HTML carries no overlay after ${gone.ms} ms (venues.style.welcome ${dbOff}); the menu shows directly (overlay ${p.display}, first row visible ${p.rowVisible}); on again → back after ${back.ms} ms (${dbOn}); ${scripts} inline script tags with it on (head decision, ${wantScripts === 5 ? 'artwork engine, ' : ''}welcome, language toggle, menu; wanted ${wantScripts})`);
     measure(`kill switch: off → the menu shows directly after ${gone.ms} ms; on → the welcome screen back after ${back.ms} ms`);
     // defaults: the thresholds the guard enforces on a save hold for what is served
     for (const venue of VENUES) {
@@ -223,36 +218,24 @@ for (const venue of VENUES) {
       const scene = ['leaves', 'snow', 'blossoms', 'light'].map((k) => `${k} ${v[`--c-welcome-${k}`]}`);
       check(`defaults-${venue}`, pairs.every((x) => x.ratio != null && x.ratio >= x.th), `${venue} served defaults: background ${v['--c-welcome-bg']}; ${pairs.map((x) => `${x.pair} ${x.a} / ${x.b} = ${x.ratio}:1 (needs ${x.th})`).join('; ')}; scene colours: ${scene.join(', ')}`);
     }
-    // budget: the inline code added for the welcome screen, gzipped; and the stylesheet block
-    const html = back.html;
-    const overlay = html.slice(html.indexOf('<div id="welcome"'), html.indexOf('<main'));
-    const head = (html.match(/<script[^>]*>\(function\(\)\{var h=document\.documentElement,l=null;[\s\S]*?<\/script>/) || [''])[0];
+    // budget: the inline code added for the welcome screen, gzipped (senso ≤ 15 KB with the picked artwork, the PM 2026-10-09; kebab-land ≤ 10 KB); and the stylesheet block
     const css = await fs.readFile('src/styles/public.css', 'utf8').then((t) => t.slice(t.indexOf('/* ---------- Welcome screen'), t.indexOf('/* ---------- Menu kit'))).catch(() => '');
     const gz = (s) => zlib.gzipSync(Buffer.from(s)).length;
-    const inlineRaw = overlay.length + head.length, inlineGz = gz(overlay + head), cssGz = gz(css);
-    check('budget', overlay.length > 0 && head.length > 0 && inlineGz <= 10240 && css.length > 0 && cssGz <= 10240, `inline code added to the page (the overlay with its scenes and script ${overlay.length} B, the head decision script ${head.length} B): ${inlineRaw} B raw, ${inlineGz} B gzipped (≤ 10 240); the welcome block of the stylesheet: ${css.length} B raw, ${cssGz} B gzipped`);
-    measure(`inline code for the welcome screen: ${(inlineGz / 1024).toFixed(1)} KB gzipped (${(inlineRaw / 1024).toFixed(1)} KB raw); its stylesheet block ${(cssGz / 1024).toFixed(1)} KB gzipped`);
+    const cssGz = gz(css);
+    for (const venue of VENUES) {
+      const html = await publicHtml(venue);
+      const overlay = html.slice(html.indexOf('<div id="welcome"'), html.indexOf('<main'));
+      const head = (html.match(/<script[^>]*>\(function\(\)\{var h=document\.documentElement,l=null;[\s\S]*?<\/script>/) || [''])[0];
+      const limit = venue === 'senso' ? 15360 : 10240;
+      const inlineRaw = overlay.length + head.length, inlineGz = gz(overlay + head);
+      const season = (html.match(/id="welcome"[^>]*data-season="([a-z]+)"/) || [])[1];
+      check(`budget-${venue}`, overlay.length > 0 && head.length > 0 && inlineGz <= limit && css.length > 0 && cssGz <= 10240, `${venue} (${season} scene): inline code added to the page (the overlay with its scene and script ${overlay.length} B, the head decision script ${head.length} B): ${inlineRaw} B raw, ${inlineGz} B gzipped (≤ ${limit}); the welcome block of the stylesheet: ${css.length} B raw, ${cssGz} B gzipped (≤ 10 240)`);
+      measure(`${venue}: inline code for the welcome screen (${season} scene): ${(inlineGz / 1024).toFixed(1)} KB gzipped (${(inlineRaw / 1024).toFixed(1)} KB raw); its stylesheet block ${(cssGz / 1024).toFixed(1)} KB gzipped`);
+    }
   }
 }
 
-// ---- 7. evidence: a recording of the fall scene per venue, a still of every season
-const SEASON_TIMES = { fall: utc(2026, 10, 9, 10, 30), winter: utc(2027, 1, 15, 9, 0), spring: utc(2027, 4, 15, 14, 0), summer: utc(2027, 7, 15, 19, 0) };
-for (const venue of VENUES) {
-  const ctx = await browser.newContext({ ...DEVICE, recordVideo: { dir: out, size: { width: 390, height: 844 } } }); const page = await ctx.newPage();
-  await page.clock.setFixedTime(SEASON_TIMES.fall);
-  await page.goto(`${base}/${venue}`, { waitUntil: 'load' }); await sleep(3600);
-  await page.tap('#welcome button[data-lang="en"]'); await sleep(1000);
-  const video = page.video(); await ctx.close();
-  const file = path.join(out, `${venue}-fall.webm`); await video.saveAs(file); await video.delete().catch(() => {});
-  const size = (await fs.stat(file)).size;
-  log('video', `${path.basename(file)} (${size} bytes; gitignored, on disk only)`);
-  for (const [season, when] of Object.entries(SEASON_TIMES)) {
-    const c = await browser.newContext(DEVICE); const p = await c.newPage(); await p.clock.setFixedTime(when);
-    await p.goto(`${base}/${venue}`, { waitUntil: 'load' }); await sleep(1300);
-    await shot(p, `${venue}-${season}`); await c.close();
-  }
-  check(`recording-${venue}`, size > 10000, `${venue}: ${path.relative(process.cwd(), file)} (${(size / 1024).toFixed(0)} KB) and stills ${Object.keys(SEASON_TIMES).map((s) => `${venue}-${s}.${ext}`).join(', ')}`);
-}
+// (recordings and one still per season per venue: scripts/season-drill.mjs, which renders every season with a fixed server clock)
 
 await browser.close(); await db.end();
 const pass = results.every((r) => r.ok);

@@ -9,10 +9,11 @@
 // are the master: the frame only ever follows them; it never changes the open group by itself.
 // Welcome screen (Kian, 2026-10-09): customers get it on every load; the preview switches it off before the frame is shown, so a
 // save or a reload never shows it, and shows it only while the Style tab's Welcome group is open (the `region`). The `season` prop
-// is the tab's preview-only season switch: it sets the frame's scene and changes nothing for customers.
+// is the tab's preview-only season switch: it swaps another season's scene into the frame (fetched from the admin API, since the
+// customers' page carries only the current season) and changes nothing for customers.
 import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import type { GroupId } from '@/venues/tokens';
-import { seasonOf, type Season } from '@/lib/welcome';
+import type { Season } from '@/lib/welcome';
 import { Icon } from '../../../_ui/icons';
 
 export type Focus = { id: string; alt?: string | null } | null;
@@ -49,7 +50,7 @@ export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: n
   // The open group's region (or a re-assertion of it): outlined in the loaded frame, scrolled to when out of view.
   useEffect(() => { const d = activeDoc(); if (d) applyRegion(d, region.region, true); }, [region]); // eslint-disable-line react-hooks/exhaustive-deps
   // The preview-only season: applied to the loaded frame (null = today's season, as the frame's own head script chose it).
-  useEffect(() => { const d = activeDoc(); if (d) applySeason(d, season); }, [season]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const d = activeDoc(); if (d) void applySeason(d, venueId, season, () => seasonRef.current === season); }, [season]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A save (reloadKey) loads the page into the hidden slot.
   useEffect(() => {
@@ -68,7 +69,7 @@ export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: n
     d.documentElement.dataset.welcome = 'off'; // the welcome screen shows on every load for customers; the preview switches it off before the frame is shown, and shows it only while the Welcome group is open (applyRegion)
     const main = d.querySelector('main'); if (main) main.inert = false; // the page's script made the menu inert behind the overlay; the admin edits it
     applyLang(d, langRef.current);
-    if (seasonRef.current) applySeason(d, seasonRef.current);
+    if (seasonRef.current) { const want = seasonRef.current; void applySeason(d, venueId, want, () => seasonRef.current === want); }
     if (pickRef.current) attachPick(d, (p) => pickRef.current?.(p), () => styleModeRef.current);
     if (!showFocus(d, focusRef.current)) d.defaultView?.scrollTo({ top: scrollRef.current, behavior: 'auto' });
     if (regionRef.current.region) applyRegion(d, regionRef.current.region, activeRef.current === null); // the first load of this preview (the phone overlay opening) scrolls to the open group's region; a reload after a save keeps its place
@@ -220,9 +221,21 @@ function applyRegion(d: Document, region: Region | null, scroll: boolean) {
   const visible = els.some((el) => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < w.innerHeight; });
   if (!visible) (els[0] as HTMLElement).scrollIntoView({ block: region === 'footer' ? 'end' : 'start', behavior: 'auto' });
 }
-// The Style tab's preview-only season switch (Kian, 2026-10-09): the frame shows the chosen scene; null puts it back on today's
-// season, the one the frame's own head script chose. Nothing is saved, so customers are never affected.
-function applySeason(d: Document, season: Season | null) { d.documentElement.dataset.season = season ?? seasonOf(new Date().getMonth()); }
+// The Style tab's preview-only season switch (Kian, 2026-10-09; current season only since the PM's decision of the same day): the
+// customers' page carries only today's scene, so another season's scene is fetched from the admin API and swapped into the frame
+// (today's is kept and put back on "Now"); the artwork engine's script is run again on the new scene. Nothing is saved.
+async function applySeason(d: Document, venueId: string, season: Season | null, stillWanted: () => boolean) {
+  const holder = d.querySelector<HTMLElement>('#welcome .welcome-scene'), w = d.getElementById('welcome');
+  if (!holder || !w) return;
+  const kept = holder as HTMLElement & { rosesToday?: { html: string; season: string } };
+  if (!season) { if (kept.rosesToday) { holder.innerHTML = kept.rosesToday.html; w.dataset.season = kept.rosesToday.season; delete kept.rosesToday; } return; }
+  if (w.dataset.season === season && !kept.rosesToday) return; // today's season is already up
+  const r = await fetch(`/api/admin/welcome-scene?venue=${encodeURIComponent(venueId)}&season=${season}`).then((x) => x.json() as Promise<{ ok: boolean; html?: string; script?: string | null }>).catch(() => null);
+  if (!r?.ok || !r.html || !stillWanted() || !holder.isConnected) return;
+  if (!kept.rosesToday) kept.rosesToday = { html: holder.innerHTML, season: w.dataset.season ?? '' };
+  holder.innerHTML = r.html; w.dataset.season = season;
+  if (r.script) { const s = d.createElement('script'); s.textContent = r.script; holder.appendChild(s); s.remove(); }
+}
 // A colour being picked, applied live to the frame's CSS variables (the page's :root values stay in its own <style>); null takes
 // every live value away again (a refused colour). The two rules that carry plain values (::backdrop, the close button's shadow)
 // are rewritten in a live <style>.

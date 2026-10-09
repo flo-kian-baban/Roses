@@ -240,7 +240,7 @@ function WelcomeControls({ option: o, on, onSwitch, season, onSeason }: { option
       )}
       <div className="py-2.5" data-style-season={season ?? 'now'}>
         <span className="block text-[15px] font-medium">Season in the preview</span>
-        <p className="mt-0.5 text-xs text-ink-muted">Only here. Customers always get the season of the day: {SEASONS.map((s) => `${s.label.toLowerCase()} ${s.months}`).join(', ')}.</p>
+        <p className="mt-0.5 text-xs text-ink-muted">Only here. Customers always get the season of the day in Toronto: {SEASONS.map((s) => `${s.label.toLowerCase()} ${s.months}`).join(', ')}.</p>
         <div className="mt-2 flex flex-wrap gap-1.5" role="radiogroup" aria-label="Season in the preview">
           {choices.map((c) => <button key={c.id ?? 'now'} type="button" role="radio" aria-checked={season === c.id} data-season={c.id ?? 'now'} onClick={() => onSeason(c.id)} className={`min-h-9 rounded-full border px-3.5 text-[14px] font-medium transition active:scale-[.97] ${season === c.id ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:bg-fill'}`}>{c.label}</button>)}
         </div>

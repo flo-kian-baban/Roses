@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { getPublicMenu, getVenue } from '@/lib/menu';
 import type { Section, Venue } from '@/lib/types';
 import { Welcome, headScript } from '@/components/Welcome';
+import { REVALIDATE_SECONDS, seasonNow, type Season } from '@/lib/welcome';
 import { SensoPage } from '@/venues/senso';
 import { styleOf } from '@/venues/styles';
 import { colorCss, resolveColors } from '@/venues/tokens';
@@ -10,23 +11,24 @@ import { colorCss, resolveColors } from '@/venues/tokens';
 // Senso Café & Bites: its own page template and styles (src/venues/senso.tsx). Shared with the other venue:
 // data access (src/lib/menu.ts), the language toggle and the welcome screen (src/components). PM build decision of
 // 2026-10-07: the venues are separate brands under the Roses parent brand and their pages must not look alike.
-// Pre-rendered at build time from the database and served as plain HTML with no framework JavaScript
+// Pre-rendered at build time from the database, regenerated hourly for the season (the PM, 2026-10-09) and on every admin
+// save, and served as plain HTML with no framework JavaScript. Welcome artwork: Kian's picks of 2026-10-09 (`art`; Senso only)
 // (`runtime` is listed only because Next 16's type validator rejects a config object without one of its known keys).
 export const config = { unstable_runtimeJS: false, runtime: 'nodejs' };
 
 // Public kit fonts (Kian, 2026-10-07): the system sans on every device; the recorded brand fonts stay in the data.
 const SYSTEM = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 const VENUE = 'senso';
-type Props = { venue: Venue; sections: Section[] };
+type Props = { venue: Venue; sections: Section[]; season: Season };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const venue = await getVenue(VENUE);
   if (!venue) return { notFound: true };
   const sections = await getPublicMenu(VENUE, venue.settings?.showPersianDrafts !== false);
-  return { props: JSON.parse(JSON.stringify({ venue, sections })) };
+  return { props: JSON.parse(JSON.stringify({ venue, sections, season: seasonNow() })), revalidate: REVALIDATE_SECONDS };
 };
 
-export default function Senso({ venue, sections }: Props) {
+export default function Senso({ venue, sections, season }: Props) {
   const f = venue.brand.fonts ?? { heading: 'serif', body: 'system-ui', persian: 'system-ui' };
   // Colours: the venue's tokens (src/venues/tokens.ts; defaults = the white kit with the brand navy on phone links, Kian
   // 2026-10-07; the Style tab's choices in venues.style). The welcome screen and the list photos are the Style tab's switches.
@@ -46,7 +48,7 @@ export default function Senso({ venue, sections }: Props) {
       </Head>
       {/* In the body so it follows the stylesheet in cascade order. */}
       <style dangerouslySetInnerHTML={{ __html: css }} />
-      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} />}
+      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} season={season} art />}
       <SensoPage venue={venue} sections={sections} photos={style.photos !== false} />
     </>
   );

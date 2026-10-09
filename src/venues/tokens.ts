@@ -97,6 +97,21 @@ const MUTED = ['#6b6b6b', '#a1a1a6'], BODY = ['#545454', '#c7c7cc'];
 // The welcome scenes' own constants (Kian, 2026-10-09): warm orange leaves, a cool blue to tint snow on a light background, soft pink
 // blossoms, warm yellow light. A template pins the venue's brand colours over them where it has fitting ones (see TEMPLATE_COLORS).
 const LEAVES = '#e0782f', SNOW_INK = '#7f98b5', BLOSSOM = '#f2a0b4', LIGHT = '#f5c35c';
+// The welcome artwork palette (Kian's picks of 2026-10-09 for Senso: sugar maple F1, red oak F2, trembling aspen F4, sweetgum F8,
+// American beech F9; the PM: realistic leaves carry their own natural colours, so they live here, the only public file with
+// colour literals, as a named palette; src/components/welcome-art.ts draws from it and holds no literal). Per leaf: the base
+// gradient from the tip (`tip`) through the blade (`mid`) to the stem end (`base`), the shadow side (`dark`), the veins (`vein`),
+// the pale underside and fold of a curled edge (`under`, `fold`), the petiole (`stem`), and a turning patch where the species has one.
+// The brown spots are shared. Snow is drawn in the "Winter snow" token (currentColor) with white plates (WHITE).
+export const ARTWORK = {
+  spot: '#5a2d0c',
+  maple: { tip: '#f4b43e', mid: '#ec7a2c', base: '#c43a1c', dark: '#7a1e0c', vein: '#8c2714', under: '#f6c58a', fold: '#8a2a12', stem: '#8c3a1c' },
+  redOak: { tip: '#d98a3a', mid: '#b5461f', base: '#7a2c14', dark: '#3a1208', vein: '#4a1a0a', under: '#e8b878', fold: '#4a1a0a', stem: '#5a2a12' },
+  aspen: { tip: '#fbd54a', mid: '#f3b92a', base: '#e89a22', dark: '#9a4a0a', vein: '#a8720f', stem: '#a06a16', blush: '#f28a2c', blushEdge: '#e8702a' },
+  sweetgum: { tip: '#ef8a2a', mid: '#d8402c', base: '#7c1a3a', dark: '#3a0410', vein: '#4a0a1a', stem: '#5a1a22' },
+  beech: { tip: '#d99a3c', mid: '#c27a2a', base: '#9a5a1e', dark: '#4a2208', vein: '#5a2e0a', under: '#e8c08a', fold: '#5a2e0a', stem: '#6b3a12' },
+  white: WHITE, black: BLACK,
+} as const;
 
 // Per template: which tokens the page uses, its base defaults, and the venue defaults pinned on linked tokens (computed
 // from the brand record; a legacy Style value "accent" or "tile" saved before the tokens still counts as the venue's choice).
@@ -107,10 +122,12 @@ export const TEMPLATE_COLORS: Record<string, TemplateColors> = {
   // Welcome screen defaults (Kian, 2026-10-09): Senso on its recorded cream with the navy on the remembered button and the brand gold
   // as leaves and summer light, its site pink as blossoms; Kebab Land on its recorded dark background with the brand red on the
   // remembered button, its site orange as leaves and its price yellow as light; both get Auto snow. The two screens never look alike.
+  // Senso's fall leaves are the picked artwork with its own palette (ARTWORK; the PM, 2026-10-09), so its Welcome group has no
+  // "Fall leaves" tint; the tint stays on the templates that keep the tinted leaves (Kebab Land until its own artwork, the default template).
   senso: {
-    omit: ['page.subtext', 'header.tile', 'header.title'],
+    omit: ['page.subtext', 'header.tile', 'header.title', 'welcome.leaves'],
     bases: (b) => ({ 'page.bg': WHITE, 'sheet.dim': BLACK, 'welcome.bg': brandHex(b, 'background', '#fff8ee') }),
-    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', '#042c7c'); const gold = brandHex(b, 'gold', '#cc9434'); return { 'footer.phone': accent, 'welcome.activeBg': accent, 'welcome.leaves': gold, 'welcome.light': gold, 'welcome.blossoms': brandHex(b, 'siteLink', BLOSSOM) }; },
+    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', '#042c7c'); const gold = brandHex(b, 'gold', '#cc9434'); return { 'footer.phone': accent, 'welcome.activeBg': accent, 'welcome.light': gold, 'welcome.blossoms': brandHex(b, 'siteLink', BLOSSOM) }; },
   },
   'kebab-land': {
     omit: ['page.subtext', 'header.title'],

@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const DEFAULT_FILES = [
-  'src/components/menu-kit.tsx', 'src/components/Welcome.tsx', 'src/components/LangToggle.tsx', 'src/components/Bi.tsx', 'src/lib/welcome.ts',
+  'src/components/menu-kit.tsx', 'src/components/Welcome.tsx', 'src/components/welcome-art.ts', 'src/components/LangToggle.tsx', 'src/components/Bi.tsx', 'src/lib/welcome.ts',
   'src/venues/senso.tsx', 'src/venues/kebab-land.tsx', 'src/venues/default.tsx', 'src/venues/styles.ts',
   'src/pages/senso.tsx', 'src/pages/kebab-land.tsx', 'src/pages/[venue].tsx', 'src/pages/_app.tsx', 'src/pages/_document.tsx',
   'src/styles/public.css',

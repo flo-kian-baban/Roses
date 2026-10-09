@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { getPublicMenu, getVenue } from '@/lib/menu';
 import type { Section, Venue } from '@/lib/types';
 import { Welcome, headScript } from '@/components/Welcome';
+import { REVALIDATE_SECONDS, seasonNow, type Season } from '@/lib/welcome';
 import { KebabLandPage } from '@/venues/kebab-land';
 import { styleOf } from '@/venues/styles';
 import { colorCss, isLight, resolveColors } from '@/venues/tokens';
@@ -15,16 +16,17 @@ export const config = { unstable_runtimeJS: false, runtime: 'nodejs' };
 // Public kit fonts (Kian, 2026-10-07): the system sans on every device; the recorded brand fonts stay in the data.
 const SYSTEM = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 const VENUE = 'kebab-land';
-type Props = { venue: Venue; sections: Section[] };
+type Props = { venue: Venue; sections: Section[]; season: Season };
 
+// Regenerated hourly for the season of the day in Toronto (the PM, 2026-10-09; the welcome scene of 2026-10-09, unchanged) and on every admin save.
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const venue = await getVenue(VENUE);
   if (!venue) return { notFound: true };
   const sections = await getPublicMenu(VENUE, venue.settings?.showPersianDrafts !== false);
-  return { props: JSON.parse(JSON.stringify({ venue, sections })) };
+  return { props: JSON.parse(JSON.stringify({ venue, sections, season: seasonNow() })), revalidate: REVALIDATE_SECONDS };
 };
 
-export default function KebabLand({ venue, sections }: Props) {
+export default function KebabLand({ venue, sections, season }: Props) {
   const f = venue.brand.fonts ?? { heading: 'serif', body: 'system-ui', persian: 'system-ui' };
   // Colours: the venue's tokens (src/venues/tokens.ts; defaults = the white kit, the brand background on the logo tile and
   // the brand red on the footer labels and phone links; the recorded dark-page colours stay in the brand record). The welcome
@@ -44,7 +46,7 @@ export default function KebabLand({ venue, sections }: Props) {
         <script dangerouslySetInnerHTML={{ __html: headScript(style.welcome !== false) }} />
       </Head>
       <style dangerouslySetInnerHTML={{ __html: css }} />
-      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} tile={isLight(colors['welcome.bg'].value)} />}
+      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} season={season} tile={isLight(colors['welcome.bg'].value)} />}
       <KebabLandPage venue={venue} sections={sections} photos={style.photos !== false} />
     </>
   );

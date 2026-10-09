@@ -28,7 +28,8 @@ html[data-lang="fa"] body { font-family: var(--font-persian); }
    A full-screen overlay in the same static page: the logo, a time-of-day greeting in both languages, the two language buttons
    and the season's scene; the menu is laid out behind it. The head script decides before first paint: html[data-welcome="show"]
    displays the overlay (with JavaScript off nothing sets it and the menu shows directly), data-greet picks the greeting by the
-   device clock, data-season the scene by the month, data-lang-saved fills the button of the language chosen last time. A tap on a
+   device clock, data-lang-saved fills the button of the language chosen last time; the season is the page's (rendered for the
+   current season in America/Toronto, #welcome[data-season]; the PM, 2026-10-09). A tap on a
    button sets and stores the language and fades the overlay out over 200 ms (data-welcome="done"); the script then sets "off"
    (display none, so the scene's animations stop). Entrance: the logo settles (600 ms), the greeting lines rise and fade in after
    it (from 350 ms), then the two buttons (from 620 ms). Reduced motion: no animation at all, the scene still, the fade instant.
@@ -41,8 +42,7 @@ html[data-welcome="show"] body { overflow: hidden; }
 html[data-welcome="done"] #welcome { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .2s ease-out, visibility 0s .2s; }
 #welcome [lang] { display: block; } /* both languages stay visible here until one is chosen (the page's language rules hide the other everywhere else) */
 .welcome-scene, .welcome-scene .scene { position: absolute; inset: 0; pointer-events: none; }
-.welcome-scene .scene { display: none; }
-html[data-season="fall"] .scene-fall, html[data-season="winter"] .scene-winter, html[data-season="spring"] .scene-spring, html[data-season="summer"] .scene-summer { display: block; }
+.welcome-scene .scene { display: block; } /* one scene per page: the current season's (the PM, 2026-10-09; #welcome[data-season] names it) */
 .welcome-scene .p { position: absolute; left: 0; top: 0; display: block; opacity: var(--o); transform: translate(var(--x), var(--y)); }
 .welcome-scene .y, .welcome-scene .w { display: block; will-change: transform; }
 .welcome-scene .y { animation: w-fall var(--d) linear var(--l) infinite; }
@@ -57,6 +57,31 @@ html[data-season="fall"] .scene-fall, html[data-season="winter"] .scene-winter, 
 @keyframes w-sway { from { transform: translateX(-12px) rotate(calc(-1 * var(--r))); } to { transform: translateX(12px) rotate(var(--r)); } }
 @keyframes w-drift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(var(--sx), -36px, 0); } }
 @keyframes w-pulse { from { transform: scale(.85); opacity: .7; } to { transform: scale(1.12); opacity: 1; } }
+/* Artwork engine (Senso, Kian's picks of 2026-10-09; the symbols in src/components/welcome-art.ts, the particles drawn on every
+   load by the inline script in src/components/Welcome.tsx). Three nested boxes per particle, each its own compositor layer:
+   .y falls (linear, --d long, started --l earlier so the scene is full and mid-flight on the first frame) and drifts by --dr;
+   .s swings like a pendulum (--sw wide, --sp per swing: ease-in to the centre, ease-out to the far side, dipping --dip through the
+   centre, so the fall speeds and slows); .w flutters in 3D (rotateX/Y/Z up to --rx/--ry/--rz over --fp). Snow: no flutter, a slow
+   turn for the crystals, none for the soft flake. Layers (far, mid, near) differ by size, speed and opacity, never by blur.
+   Reduced motion: the still composition (.still: each design resting at --y, turned by --rs). Transform and opacity only. */
+.scene[data-engine] .p { position: absolute; left: var(--x); top: 0; width: var(--s); height: var(--s); margin-left: calc(var(--s) * -.5); opacity: var(--o); transform: none; }
+.scene[data-engine] .y, .scene[data-engine] .s, .scene[data-engine] .w { display: block; width: 100%; height: 100%; will-change: transform; }
+.scene[data-engine] .y { animation: wa-fall var(--d) linear var(--l) infinite; }
+.scene[data-engine] .s { animation: wa-sway var(--sp) var(--l) infinite alternate; }
+.scene[data-engine] .w { animation: wa-flutter var(--fp) ease-in-out var(--l) infinite alternate; }
+.scene[data-engine="snow"] .w { animation: wa-spin var(--fp) linear var(--l) infinite; }
+.scene[data-engine] .soft .w { animation: none; }
+.scene[data-engine].still .p { top: var(--y); transform: rotate(var(--rs)); }
+.scene[data-engine].still .y, .scene[data-engine].still .s, .scene[data-engine].still .w { animation: none; }
+@keyframes wa-fall { from { transform: translate3d(0, calc(var(--s) * -1.3), 0); } to { transform: translate3d(var(--dr), calc(100vh + var(--s) * .4), 0); } }
+@keyframes wa-sway { 0% { transform: translate(calc(var(--sw) * -1), 0); animation-timing-function: ease-in; } 50% { transform: translate(0, var(--dip)); animation-timing-function: ease-out; } 100% { transform: translate(var(--sw), 0); } }
+@keyframes wa-flutter {
+  0% { transform: perspective(260px) rotateX(calc(var(--rx) * -1)) rotateY(calc(var(--ry) * -.4)) rotateZ(calc(var(--rz) * -1)); }
+  35% { transform: perspective(260px) rotateX(calc(var(--rx) * .3)) rotateY(var(--ry)) rotateZ(calc(var(--rz) * .2)); }
+  70% { transform: perspective(260px) rotateX(var(--rx)) rotateY(calc(var(--ry) * -.2)) rotateZ(calc(var(--rz) * .6)); }
+  100% { transform: perspective(260px) rotateX(calc(var(--rx) * -.5)) rotateY(calc(var(--ry) * .7)) rotateZ(var(--rz)); }
+}
+@keyframes wa-spin { to { transform: rotate(360deg); } }
 .welcome-card { position: relative; display: grid; justify-items: center; gap: 24px; width: min(100% - 48px, 340px); padding-bottom: 4vh; text-align: center; }
 /* The logo is the largest contentful paint: wider than a grid card's photo in the first section behind the overlay (half the
    screen less the gutters), so a late photo never takes the metric over. */

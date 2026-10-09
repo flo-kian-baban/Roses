@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { getPublicMenu, getVenue, getVenues } from '@/lib/menu';
 import type { Section, Venue } from '@/lib/types';
 import { Welcome, headScript } from '@/components/Welcome';
+import { REVALIDATE_SECONDS, seasonNow, type Season } from '@/lib/welcome';
 import { DefaultPage } from '@/venues/default';
 import { styleOf } from '@/venues/styles';
 import { colorCss, isLight, resolveColors } from '@/venues/tokens';
@@ -14,23 +15,24 @@ import { colorCss, isLight, resolveColors } from '@/venues/tokens';
 export const config = { unstable_runtimeJS: false, runtime: 'nodejs' };
 
 const SYSTEM = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
-type Props = { venue: Venue; sections: Section[] };
+type Props = { venue: Venue; sections: Section[]; season: Season };
 
 export const getStaticPaths: GetStaticPaths = async () => ({
   paths: (await getVenues()).filter((v) => v.template === 'default').map((v) => ({ params: { venue: v.id } })),
   fallback: 'blocking',
 });
 
+// Regenerated hourly for the season of the day in Toronto (the PM, 2026-10-09; the welcome scene of 2026-10-09, unchanged) and on every admin save.
 export const getStaticProps: GetStaticProps<Props, { venue: string }> = async ({ params }) => {
   const id = params?.venue ?? '';
   if (!/^[a-z0-9-]{1,40}$/.test(id)) return { notFound: true };
   const venue = await getVenue(id);
   if (!venue || venue.template !== 'default') return { notFound: true };
   const sections = await getPublicMenu(id, venue.settings?.showPersianDrafts !== false);
-  return { props: JSON.parse(JSON.stringify({ venue, sections })) };
+  return { props: JSON.parse(JSON.stringify({ venue, sections, season: seasonNow() })), revalidate: REVALIDATE_SECONDS };
 };
 
-export default function VenuePage({ venue, sections }: Props) {
+export default function VenuePage({ venue, sections, season }: Props) {
   const style = styleOf(venue);
   const colors = resolveColors(venue);
   const css = `${colorCss(colors)}:root{--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:var(--font-vazirmatn), system-ui, sans-serif}`;
@@ -45,7 +47,7 @@ export default function VenuePage({ venue, sections }: Props) {
         <script dangerouslySetInnerHTML={{ __html: headScript(style.welcome !== false) }} />
       </Head>
       <style dangerouslySetInnerHTML={{ __html: css }} />
-      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} tile={isLight(colors['welcome.bg'].value)} />}
+      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} season={season} tile={isLight(colors['welcome.bg'].value)} />}
       <DefaultPage venue={venue} sections={sections} style={style} />
     </>
   );

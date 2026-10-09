@@ -15,6 +15,7 @@
 // pre-highlighted, reduced motion still, JavaScript off) and the welcome drill (scripts/welcome-drill.mjs) covers the boundaries, the
 // scene, the tap, the kill switch and the budgets; Lighthouse also requires TBT ≤ 50 ms. The PM's correction of the same day: Lighthouse's
 // LCP now measures the welcome screen (its logo is the largest paint), so the after-tap drill (scripts/after-tap-drill.mjs) measures the
+// (2026-10-09, later: the season drill (scripts/season-drill.mjs) proves the render-time season and the hourly regeneration on a copy of the build.)
 // menu after the language tap under throttled mobile conditions, with a 2.5 s target reported as measured.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -28,13 +29,13 @@ import { loadEnv } from './load-env.mjs';
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
 const out = path.resolve('reports/checks', stamp);
-fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true }); fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.mkdirSync(path.join(out, 'after-tap'), { recursive: true });
-const DIST = '.next-check', PORT = 3100, PROXY_PORT = 3101;
+fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true }); fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.mkdirSync(path.join(out, 'season'), { recursive: true }); fs.mkdirSync(path.join(out, 'after-tap'), { recursive: true });
+const DIST = '.next-check', PORT = Number(process.env.CHECK_PORT || 3100), PROXY_PORT = PORT + 1, SEASON_PORT = PORT + 2; // CHECK_PORT moves the suite's three ports when 3100 is taken by another project's server (2026-10-09)
 const base = `http://127.0.0.1:${PORT}`;
 const started = Date.now();
 const results = [];
 const servers = [];
-const SERVER_APPS = { [3100]: 'roses-check:server-3100', [3101]: 'roses-check:server-3101' };
+const SERVER_APPS = { [PORT]: `roses-check:server-${PORT}`, [PROXY_PORT]: `roses-check:server-${PROXY_PORT}` };
 const log = (s) => console.log(`${new Date().toISOString()} ${s}`);
 const rel = (p) => path.relative(out, p) || '.';
 
@@ -104,7 +105,7 @@ const sampler = setInterval(async () => {
   try { for (const r of (await db.query(`select application_name as app, datname as db from pg_stat_activity where application_name like 'roses-check:%'`)).rows) seen.set(`${r.app} → ${r.db}`, (seen.get(`${r.app} → ${r.db}`) || 0) + 1); } catch { /* between queries */ }
 }, 400);
 if (!fs.existsSync(chromium.executablePath())) { console.error('Playwright Chromium missing: npx playwright install chromium'); process.exit(2); }
-for (const p of [PORT, PROXY_PORT]) if (!(await portFree(p))) { console.error(`port ${p} is in use; stop whatever listens there`); process.exit(2); }
+for (const p of [PORT, PROXY_PORT, SEASON_PORT]) if (!(await portFree(p))) { console.error(`port ${p} is in use; stop whatever listens there, or run with CHECK_PORT=<free port> (three ports from it)`); process.exit(2); }
 if (!process.env.CHROME_PATH) { const mac = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'; if (!fs.existsSync(mac) && !spawnSync('which', ['google-chrome']).stdout?.length) process.env.CHROME_PATH = chromium.executablePath(); }
 
 // temporary admin account for the drills (removed at the end; never written to any file)
@@ -135,9 +136,9 @@ try {
   });
 
   await step(`servers on ${PORT} and ${PROXY_PORT} (TRUST_PROXY=1)`, async () => {
-    startServer(PORT, {}, 'server-3100.log'); startServer(PROXY_PORT, { TRUST_PROXY: '1' }, 'server-3101.log');
+    startServer(PORT, {}, `server-${PORT}.log`); startServer(PROXY_PORT, { TRUST_PROXY: '1' }, `server-${PROXY_PORT}.log`);
     const ok = (await waitHttp(`${base}/senso`)) && (await waitHttp(`http://127.0.0.1:${PROXY_PORT}/senso`));
-    return { pass: ok, evidence: ['server-3100.log', 'server-3101.log'], note: ok ? 'both answer 200 on /senso' : 'a server did not come up' };
+    return { pass: ok, evidence: [`server-${PORT}.log`, `server-${PROXY_PORT}.log`], note: ok ? 'both answer 200 on /senso' : 'a server did not come up' };
   });
   if (!results.at(-1).pass) throw new Error('servers failed; stopping');
 
@@ -188,11 +189,18 @@ try {
     });
   }
   // The welcome screen (Kian, 2026-10-09): the clock and date boundaries, the scene and its budget, the tap, the kill switch, recordings.
-  await step('welcome screen drill (greeting boundaries with a mocked clock, season boundaries with mocked dates, scene ≤ 20 particles on transform and opacity, reduced motion still, tap → menu ≤ 300 ms with the language persisted and pre-highlighted, section anchor, keyboard and labels, JavaScript off, kill switch, default contrast, inline code ≤ 10 KB gzipped, recordings)', async () => {
+  await step('welcome screen drill (greeting boundaries with a mocked clock, the page\'s season scene ≤ 20 particles on transform and opacity, reduced motion still, tap → menu ≤ 300 ms with the language persisted and pre-highlighted, section anchor, keyboard and labels, JavaScript off, kill switch, default contrast, inline code ≤ 15 KB gzipped on senso with the picked artwork and ≤ 10 KB on kebab-land)', async () => {
     const r = await run('node', ['scripts/welcome-drill.mjs', '--base', base, '--out', path.join(out, 'welcome'), '--jpeg'], { env: drillEnv, logFile: 'welcome/welcome-drill.log' });
     const m = (r.stdout.match(/WELCOME DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
-    return { pass: r.status === 0, evidence: ['welcome/welcome-drill.txt', 'welcome/welcome-drill.json', 'welcome/*.jpg', 'welcome/*-fall.webm (on disk only)'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
+    return { pass: r.status === 0, evidence: ['welcome/welcome-drill.txt', 'welcome/welcome-drill.json', 'welcome/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
+  });
+  // Season at render time and hourly regeneration (the PM, 2026-10-09): on a copy of the build with its own server and a fixed clock.
+  await step('season drill (current season only: render tests at the Toronto boundary instants Aug 31 / Sep 1, Nov 30 / Dec 1, Feb 28 / Mar 1, May 31 / Jun 1 on a copy of the build with a fixed server clock, two renders an hour apart with the cached page aged 3601 s and a control within the hour, revalidate 3600 in the manifest; senso\'s picked artwork: 20 particles at most 2 near present and mid-flight on the first sample, smoothness on the iPhone 13 viewport with CPU 4× (median ≥ 50 fps, no long task > 50 ms), two loads differ, reduced-motion still, inline size per season, recordings; kebab-land and the default template: the served scene of every season and its symbols byte for byte as in the fixture from the previous commit, the motion rules verbatim; one still per season per venue)', async () => {
+    const r = await run('node', ['scripts/season-drill.mjs', '--dist', DIST, '--copy', '.next-season', '--port', String(SEASON_PORT), '--out', path.join(out, 'season'), '--venues', pageVenues.join(','), '--jpeg'], { logFile: 'season/season-drill.log' });
+    const m = (r.stdout.match(/SEASON DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
+    return { pass: r.status === 0, evidence: ['season/season-drill.txt', 'season/season-drill.json', 'season/season-server.log', 'season/*.jpg', 'season/senso-fall.webm and senso-winter.webm (on disk only)'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   });
   // The menu after the tap (the PM, 2026-10-09): the overlay covers the menu, so Lighthouse's LCP measures the welcome screen; what the
   // customer waits for after the language tap is measured here, under throttled mobile conditions, and reported as measured.
@@ -278,7 +286,7 @@ try {
     const names = [...read(`server-${port}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]);
     processes.push({ process: app, source: `server-${port}.log`, databases: [...new Set(names)] });
   }
-  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['after-tap-drill', 'after-tap/after-tap-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
+  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['season-server', 'season/season-server.log'], ['after-tap-drill', 'after-tap/after-tap-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
     if (!fs.existsSync(path.join(out, file))) continue;
     processes.push({ process: `roses-check:${name}`, source: file, databases: [...new Set([...read(file).matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))] });
   }
@@ -293,11 +301,11 @@ try {
   const onWorking = (c) => c.endsWith(`→ ${workName}`);
   const wrongSample = samples.filter((x) => onWorking(x.connection) && !x.connection.startsWith('roses-check:suite-readonly →'));
   const otherRuns = samples.filter((x) => !onWorking(x.connection) && !x.connection.endsWith(`→ ${scratchName}`));
-  const mustSee = ['roses-check:server-3100', 'roses-check:server-3101', 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:style-drill', 'roses-check:welcome-drill', 'roses-check:after-tap-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
+  const mustSee = [...Object.values(SERVER_APPS), 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:style-drill', 'roses-check:welcome-drill', 'roses-check:season-server', 'roses-check:after-tap-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
   const unseen = mustSee.filter((a) => !samples.some((x) => x.connection.startsWith(`${a} →`)));
   const passA = wrongProcess.length === 0 && wrongSample.length === 0 && processes.length >= 8 && unseen.length === 0;
   fs.writeFileSync(path.join(out, 'isolation.json'), JSON.stringify({ scratch: scratchName, working: workName, processes, pgStatActivitySamples: samples, otherRunsSeen: otherRuns, pass: passA }, null, 2));
-  results.push({ name: `isolation (a): every server and drill process connected to the scratch database ${scratchName} (own log line per process + pg_stat_activity sampled every 400 ms)`, pass: passA, ms: 0, evidence: ['isolation.json', 'server-3100.log', 'server-3101.log', '*/…-drill.log'], note: passA ? `${processes.length} processes, every one on the scratch copy by its own log; pg_stat_activity: ${samples.length} distinct connections seen over ${samples.reduce((n, x) => n + x.samples, 0)} samples (servers and drills included), none on ${workName}${otherRuns.length ? `; ${otherRuns.length} connection(s) of other sessions' runs on their own copies seen and listed in isolation.json` : ''}` : `WRONG: ${wrongProcess.map((p) => `${p.process} → ${p.databases.join(',') || 'no log line'}`).join('; ')} ${wrongSample.map((x) => x.connection).join('; ')} ${unseen.length ? `never sampled: ${unseen.join(', ')}` : ''}` });
+  results.push({ name: `isolation (a): every server and drill process connected to the scratch database ${scratchName} (own log line per process + pg_stat_activity sampled every 400 ms)`, pass: passA, ms: 0, evidence: ['isolation.json', `server-${PORT}.log`, `server-${PROXY_PORT}.log`, '*/…-drill.log'], note: passA ? `${processes.length} processes, every one on the scratch copy by its own log; pg_stat_activity: ${samples.length} distinct connections seen over ${samples.reduce((n, x) => n + x.samples, 0)} samples (servers and drills included), none on ${workName}${otherRuns.length ? `; ${otherRuns.length} connection(s) of other sessions' runs on their own copies seen and listed in isolation.json` : ''}` : `WRONG: ${wrongProcess.map((p) => `${p.process} → ${p.databases.join(',') || 'no log line'}`).join('; ')} ${wrongSample.map((x) => x.connection).join('; ')} ${unseen.length ? `never sampled: ${unseen.join(', ')}` : ''}` });
   log(`   ${passA ? 'PASS' : 'FAIL'} isolation (a)`);
   // (b) the working database holds no row written by a suite account.
   let b = null;

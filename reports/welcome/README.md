@@ -96,3 +96,50 @@ How a card reads: the design large and still (leaves on white; snow on the cream
 Colours: the leaves carry their own natural palettes and are not tinted by the Style tab's "Fall leaves" token (an open question for Kian); the snow is drawn in the "Winter snow" token, `#b2becc` on Senso's cream (the Auto rule: cream mixed 60 % toward the snow ink), which is soft on the cream by design; W2 and W4 carry white plates. The gallery sets the same `--c-welcome-*` variables the page's own `<style>` sets.
 
 Stills (Chromium, 1.5 s after load): `gallery-fall-demo.jpg`, `gallery-winter-demo.jpg` (the demos running), `gallery-fall-still.jpg`, `gallery-winter-still.jpg` (the reduced-motion compositions), `gallery-fall-cards.jpg`, `gallery-winter-cards.jpg` (the card grids). Checked on the built file: 172 animations running, every animated element with a valid computed transform (Chromium and WebKit), two loads of the page draw different scenes (the readout under each demo lists every particle's design, column, size and duration). No app code changes in this step; Kebab Land and the default template are untouched.
+
+## Step 2: Senso's picked artwork built, current season only (2026-10-09)
+
+Kian's picks: fall F1 sugar maple, F2 red oak, F4 trembling aspen, F8 sweetgum, F9 American beech; winter W1 stellar dendrite, W3 fernlike dendrite, W5 needle star, W7 twelve-branched, W10 soft round flake. Built Senso only (code commit `fac7c2f`, drill fixes `1be0a5d`); Kebab Land, the default template and Senso's spring and summer keep the scenes of 2026-10-09. The PM's decisions: the "Fall leaves" token left Senso's Welcome group (the artwork carries its own palette, `ARTWORK` in `src/venues/tokens.ts`, the only public file with colour literals); the Auto snow tint stays; each page ships only the current season, chosen at render time from the date in America/Toronto, with `revalidate: 3600` on every public page so the season flips within an hour of midnight on the 1st; the greeting stays on the device clock. The artwork is built from geometry at render time (`src/components/welcome-art.ts`) and drawn on every load by the engine in `src/components/Welcome.tsx` (its own inline script right after the scene).
+
+Evidence: the check-suite run `reports/checks/2026-10-09T16-28-47Z` on commit `1be0a5d` (27 of 28; the one miss is the after-tap step, below). Its season drill (`scripts/season-drill.mjs`) ran on a copy of the build with its own server and a fixed clock (`ROSES_NOW`, a suite-only hook).
+
+### The season at render time and the hourly regeneration, as measured
+
+Render tests with a fixed server clock, Toronto time, on senso, kebab-land and the suite's temporary venue on the default template (all three the same):
+
+| Instant (Toronto) | Season rendered |
+| --- | --- |
+| Aug 31 22:30 EDT (already Sep 1 in UTC) | summer |
+| Aug 31 23:30 EDT | summer |
+| Sep 1 00:30 EDT | fall |
+| Nov 30 23:30 EST | fall |
+| Dec 1 00:30 EST | winter |
+| Feb 28 23:30 EST | winter |
+| Mar 1 00:30 EST | spring |
+| May 31 23:30 EDT | spring |
+| Jun 1 00:30 EDT | summer |
+
+Regeneration interval: 3600 s configured (`initialRevalidateSeconds` 3600 for `/senso` and `/kebab-land` in the prerender manifest; the default template's dynamic route carries the same revalidate from its `getStaticProps`, shown by its renders). Two renders an hour apart, simulated by ageing the cached page by 3601 s between them (Next 16 keeps the build seed under `server/pages` and the route-cache entry under `server/route-cache`; both file times and the entry's `routeCacheLastModified` stamp were aged on a fresh server): at 23:30 → 00:30 the first request still served the previous render and the fresh season landed after 114 / 114 / 113 / 113 ms (Sep 1, Dec 1, Mar 1, Jun 1), the cache entry rewritten each time; aged by 3000 s (within the hour) two requests 2.5 s apart left the entry unchanged. `Cache-Control: s-maxage=3600, stale-while-revalidate`.
+
+### Senso's artwork and motion, as measured (iPhone 13 viewport, Chromium)
+
+| Measure | Target | Fall | Winter |
+| --- | --- | --- | --- |
+| Inline welcome code, gzipped (overlay with its scene and scripts + the head script) | ≤ 15 KB | 7.1 KB (21.2 KB raw) | 2.7 KB (7.5 KB raw) |
+| Particles (near) | 20 (≤ 2 near) | 20 (2) | 20 (2) |
+| Scene full on the first frame that shows the card, every animation mid-flight | yes | 27 ms after navigation, 60 animations, the earliest 17 ms into its cycle | 29 ms, 55 animations, 17 ms |
+| Animated properties | transform and opacity only | transform | transform |
+| Smoothness, CPU throttled 4×, 5 s of requestAnimationFrame | median ≥ 50 fps, no long task > 50 ms | median 60 fps, longest task 0 ms | median 60 fps, longest task 0 ms |
+| Two loads differ (designs and parameters) | yes | 0 of 20 particles with the same parameters | 0 of 20 |
+| Reduced motion | a still composition | 10 designs resting, 0 animations | 12 designs resting, 0 animations |
+| Kebab Land's inline welcome code, gzipped | ≤ 10 KB | 2.3 KB (7.9 KB raw) | — |
+
+Recordings (Playwright video, gitignored, on disk only): `reports/checks/2026-10-09T16-28-47Z/season/senso-fall.webm` (603 KB) and `senso-winter.webm` (381 KB), copied to `senso-artwork-fall.webm` and `senso-artwork-winter.webm` in this folder. Stills (committed): `senso-artwork-fall.jpg`, `senso-artwork-winter.jpg`, `senso-artwork-fall-reduced-motion.jpg`, `senso-artwork-winter-reduced-motion.jpg`, and `kebab-land-fall-after-batch.jpg` (Kebab Land unchanged).
+
+### Kebab Land and the default template unchanged
+
+The served scene of every season (fall 18 particles with wl1, wl2, wl3; winter 20 with ws1, ws2; spring 16 with wp1, wp2; summer 16 with wg, wk, wgrad) and its symbols are byte for byte as in `scripts/fixtures/welcome-scenes.json`, captured by `scripts/welcome-fixture.mjs` from a production build of commit `68bce67` (the previous commit), on kebab-land and on the temporary venue on the default template; the stylesheet keeps the motion rules of 2026-10-09 verbatim. The head script no longer decides a season (the page names it on `#welcome[data-season]`); nothing else about their welcome screens changed.
+
+### Existing checks on every venue (the same run)
+
+Tap → menu visible: senso 213 ms (English) / 232 ms (Persian), kebab-land 227 / 216 ms (target ≤ 300). Lighthouse mobile ×3: LCP 1203 / 1203 / 1204 ms (senso), 1204 / 1204 / 1204 ms (kebab-land), 1055 / 1055 / 1055 ms (the temporary venue), TBT 0 throughout; the LCP element is the welcome logo, so these measure the welcome screen. Reduced motion still, JavaScript off showing the menu directly, the kill switch (off → menu after 5 ms, on → back after 5 ms; 5 inline script tags on senso with the engine, 4 elsewhere), the Style tab's season switch through `/api/admin/welcome-scene` (Winter → 20 flakes in the preview, nothing saved, Now → the page's own season) all pass. The after-tap step keeps its known miss on senso (photos over Slow 4G: the 4 photos in view 8010 / 8277 ms as a List, 4778 / 4862 ms as a Grid; the menu itself 244 / 245 ms; kebab-land within target), unchanged by this batch and reported as measured, as the PM asked. The suite ran on ports 3110–3112 (`CHECK_PORT=3110`) because port 3100 was taken by another project's server.

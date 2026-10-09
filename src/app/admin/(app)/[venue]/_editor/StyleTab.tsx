@@ -9,9 +9,13 @@
 // here are the master (Kian, 2026-10-08): a preview tap is acted on once, when it happens; nothing that follows (a save,
 // the data reloading, the preview reloading) ever changes the open group or the open colour again.
 // Layout group (Kian, 2026-10-08): the template's switches, then the layout of every section: List or Grid.
+// Welcome group (Kian, 2026-10-09, replacing the Intro group): its on/off switch (the kill switch) at the top, a preview-only season
+// switch (Now / Fall / Winter / Spring / Summer; it sets the preview's scene and changes nothing for customers), then the welcome
+// screen's colours as tokens under the readability guard. While the group is open the preview shows the welcome screen.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Brand, EditorSection, SectionLayout, StyleValues } from '@/lib/types';
 import type { StyleOption } from '@/venues/styles';
+import { SEASONS, type Season } from '@/lib/welcome';
 import { GROUPS, baseName, cssVar, isLight, normHex, resolveColors, unreadable, type GroupId, type Resolved, type TokenDef } from '@/venues/tokens';
 import { Icon } from '../../../_ui/icons';
 import { ApiFail, call, type Resp } from './api';
@@ -23,7 +27,7 @@ type Fail = { key: string; error: string; suggestion: { key: string; value: stri
 export type Picked = { region: Region; n: number } | null;
 const btnSmall = `${btnSecondary} min-h-9 px-3 text-sm`;
 
-export function StyleTab({ venueId, version, onSaved, onLive, onRegion, picked, sections, onLayout }: { venueId: string; version: number; onSaved: (r: Resp, text?: string) => void; onLive: (vars: Record<string, string> | null) => void; onRegion: (r: Region | null) => void; picked: Picked; sections: EditorSection[]; onLayout: (id: string, layout: SectionLayout) => Promise<void> }) {
+export function StyleTab({ venueId, version, onSaved, onLive, onRegion, picked, sections, onLayout, season, onSeason }: { venueId: string; version: number; onSaved: (r: Resp, text?: string) => void; onLive: (vars: Record<string, string> | null) => void; onRegion: (r: Region | null) => void; picked: Picked; sections: EditorSection[]; onLayout: (id: string, layout: SectionLayout) => Promise<void>; season: Season | null; onSeason: (s: Season | null) => void }) {
   const [data, setData] = useState<Data | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [fail, setFail] = useState<Fail | null>(null);
@@ -114,6 +118,7 @@ export function StyleTab({ venueId, version, onSaved, onLive, onRegion, picked, 
               </button>
               {isOpen && (
                 <div className="border-t border-line px-1 pb-3 pt-1">
+                  {g.id === 'welcome' && <WelcomeControls option={data.layout.find((o) => o.key === 'welcome')} on={data.values.welcome !== false} onSwitch={(v) => setLayout('welcome', v)} season={season} onSeason={onSeason} />}
                   {toks.map((t) => <TokenRow key={t.key} token={t} res={resolved[t.key]} base={t.on ? resolved[t.on] : null} baseLabel={t.on ? baseName(t.on) : null} open={openToken === t.key} palette={data.palette} fail={fail?.key === t.key ? fail : null}
                     onOpen={() => { setOpenToken(openToken === t.key ? null : t.key); onRegion(g.id); }} onLive={(v) => live(t.key, v)} onSet={(v, text) => setColor(t.key, v, text)} />)}
                   <div className="mt-2 px-3"><button type="button" className={btnSmall} disabled={!groupCustom} onClick={() => reset(g.id)}><Icon name="undo" className="h-4 w-4" />Reset group to venue default</button></div>
@@ -125,7 +130,7 @@ export function StyleTab({ venueId, version, onSaved, onLive, onRegion, picked, 
         <section data-style-group="layout" className="rounded-2xl border border-line bg-white shadow-card">
           <div className="px-4 pt-3"><h2 className="text-[17px] font-semibold">Layout</h2><p className="text-xs text-ink-muted">What the {data.template.name} template can switch.</p></div>
           <div className="mt-1 divide-y divide-line">
-            {data.layout.map((o) => (
+            {data.layout.filter((o) => o.key !== 'welcome').map((o) => (
               <div key={o.key} className="px-4 py-3" data-style-option={o.key}>
                 {o.type === 'switch' ? (
                   <label className="flex items-center justify-between gap-4">
@@ -216,6 +221,30 @@ function TokenRow({ token: t, res, base, baseLabel, open, palette, fail, onOpen,
           {fail && <p role="alert" className="mt-2 flex flex-wrap items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-[14px] text-red-900" data-style-refused>{fail.error}{fail.suggestion && <button type="button" className={`${btnSmall} border-red-300`} onMouseDown={(e) => e.preventDefault()} onClick={() => { void onSet(fail.suggestion!.value); }} data-style-suggestion={fail.suggestion.value}><span className="h-4 w-4 rounded-full border border-black/10" style={{ background: fail.suggestion.value }} />Use {fail.suggestion.value}</button>}</p>}
         </div>
       )}
+    </div>
+  );
+}
+
+// The Welcome group's own controls above its colours: the kill switch and the preview-only season switch. The switch is the
+// template's "welcome" option (src/venues/styles.ts), saved like the Layout switches with "Saved · Undo"; the season buttons
+// only set the preview's scene (Now = the season of the day, as customers get it).
+function WelcomeControls({ option: o, on, onSwitch, season, onSeason }: { option: StyleOption | undefined; on: boolean; onSwitch: (v: boolean) => void; season: Season | null; onSeason: (s: Season | null) => void }) {
+  const choices: { id: Season | null; label: string }[] = [{ id: null, label: 'Now' }, ...SEASONS.map((s) => ({ id: s.id, label: s.label }))];
+  return (
+    <div className="mb-1 divide-y divide-line border-b border-line px-3">
+      {o && o.type === 'switch' && (
+        <label className="flex min-h-12 items-center justify-between gap-4 py-2.5" data-style-option="welcome">
+          <span><span className="block text-[15px] font-medium">{o.label}</span>{o.hint && <span className="mt-0.5 block text-xs text-ink-muted">{o.hint}</span>}</span>
+          <Switch checked={on} label={`${o.label}: ${on ? 'on' : 'off'}`} onChange={(v) => onSwitch(v)} />
+        </label>
+      )}
+      <div className="py-2.5" data-style-season={season ?? 'now'}>
+        <span className="block text-[15px] font-medium">Season in the preview</span>
+        <p className="mt-0.5 text-xs text-ink-muted">Only here. Customers always get the season of the day: {SEASONS.map((s) => `${s.label.toLowerCase()} ${s.months}`).join(', ')}.</p>
+        <div className="mt-2 flex flex-wrap gap-1.5" role="radiogroup" aria-label="Season in the preview">
+          {choices.map((c) => <button key={c.id ?? 'now'} type="button" role="radio" aria-checked={season === c.id} data-season={c.id ?? 'now'} onClick={() => onSeason(c.id)} className={`min-h-9 rounded-full border px-3.5 text-[14px] font-medium transition active:scale-[.97] ${season === c.id ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:bg-fill'}`}>{c.label}</button>)}
+        </div>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,9 @@
 // any check fails; a failed run's folder is kept (its report carries a one-line cause), never deleted.
 //   npm run check
 // 2026-10-08: the colour-literal scan (0 in the public sources) and the Style tab drill (scripts/style-drill.mjs) joined the suite.
+// 2026-10-09: the welcome screen replaced the logo intro: the page checks follow it instead (first visit, reload with the last language
+// pre-highlighted, reduced motion still, JavaScript off) and the welcome drill (scripts/welcome-drill.mjs) covers the boundaries, the
+// scene, the tap, the kill switch and the budgets; Lighthouse also requires TBT ≤ 50 ms.
 import fs from 'node:fs';
 import path from 'node:path';
 import net from 'node:net';
@@ -23,7 +26,7 @@ import { loadEnv } from './load-env.mjs';
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
 const out = path.resolve('reports/checks', stamp);
-fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true });
+fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true }); fs.mkdirSync(path.join(out, 'welcome'), { recursive: true });
 const DIST = '.next-check', PORT = 3100, PROXY_PORT = 3101;
 const base = `http://127.0.0.1:${PORT}`;
 const started = Date.now();
@@ -149,10 +152,11 @@ try {
 
   for (const venue of pageVenues) {
     const vout = path.join(out, venue); fs.mkdirSync(vout, { recursive: true });
-    await step(`public page checks: ${label(venue)} (intro, repeat visit, reduced motion, Persian toggle, images, category tabs, top after a reload)`, async () => {
+    await step(`public page checks: ${label(venue)} (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms, reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)`, async () => {
       const r = await run('node', ['scripts/check-page.mjs', venue, '--base', base, '--out', vout, '--jpeg'], { logFile: `${venue}/check-page.log` });
       const j = JSON.parse(fs.readFileSync(path.join(vout, `${venue}-checks.json`), 'utf8')).checks;
-      return { pass: r.status === 0, evidence: [`${venue}/${venue}-checks.json`, `${venue}/${venue}-en.jpg`, `${venue}/${venue}-fa.jpg`, `${venue}/check-page.log`], note: `toggle dir=${j.persianToggle.dir}, Persian headings ${j.persianToggle.visibleFaHeadings}; intro gone at ${j.firstVisit.introDoneAtMs} ms, page slides in behind it (heading shown at ${j.firstVisit.entrance.h2ShownAtMs} ms, last of its ${j.firstVisit.entrance.rowsAnimated} sliding rows at ${j.firstVisit.entrance.lastRowShownAtMs} ms; all at once under reduced motion: ${j.reducedMotion.pageVisibleAtOnce}), plays again on reload (gone at ${j.repeatVisit.introDoneAtMs} ms, stored keys ${JSON.stringify(j.repeatVisit.storedKeys)}); images ${j.images.loaded}/${j.images.total}; tabs: ${j.tabs.summary.onTappedTab}/${j.tabs.summary.count} taps end on their tab at the bar with ${j.tabs.summary.othersLit} other tabs lit on the way, ${j.tabs.scroll.down.mismatches + j.tabs.scroll.up.mismatches}/${j.tabs.scroll.down.samples + j.tabs.scroll.up.samples} scroll steps off, last tab at the bottom ${j.tabs.scroll.lastTabActiveAtBottom}, direct link ${j.tabs.directLink.ok}; after a reload: ${j.topAfterReload.afterReload.y} px from the top, hash "${j.topAfterReload.afterReload.hash}" (was ${j.topAfterReload.beforeReload.y} px, "${j.topAfterReload.beforeReload.hash}")` };
+      const fv = j.firstVisit, rv = j.repeatVisit, rm = j.reducedMotion;
+      return { pass: r.status === 0, evidence: [`${venue}/${venue}-checks.json`, `${venue}/${venue}-en.jpg`, `${venue}/${venue}-fa.jpg`, `${venue}/check-page.log`], note: `toggle dir=${j.persianToggle.dir}, Persian headings ${j.persianToggle.visibleFaHeadings}; welcome screen up at the first sample (${fv.upAtFirstSampleMs} ms, greeting "${fv.greet}" in both languages, ${fv.season} scene with ${fv.particles} particles, nothing pre-highlighted: ${fv.noPreHighlight}; logo at ${fv.entrance.logoShownAtMs} ms, greeting at ${fv.entrance.greetingEnAtMs} / ${fv.entrance.greetingFaAtMs} ms, buttons at ${fv.entrance.buttonsAtMs} ms), tap English → menu visible in ${fv.tap.ms} ms (stored ${JSON.stringify(fv.tap.storedKeys)}); shows again on reload with ${JSON.stringify(rv.pressed)} pre-highlighted (stored keys ${JSON.stringify(rv.storedKeys)}); reduced motion: shown still with ${rm.running} animations running, page visible at once ${rm.pageVisibleAtOnce}, off in ${rm.tap.ms} ms; JavaScript off: overlay display ${j.javascriptOff.display ?? j.javascriptOff.overlayVisible}, menu visible ${j.javascriptOff.rowVisible}; images ${j.images.loaded}/${j.images.total}; tabs: ${j.tabs.summary.onTappedTab}/${j.tabs.summary.count} taps end on their tab at the bar with ${j.tabs.summary.othersLit} other tabs lit on the way, ${j.tabs.scroll.down.mismatches + j.tabs.scroll.up.mismatches}/${j.tabs.scroll.down.samples + j.tabs.scroll.up.samples} scroll steps off, last tab at the bottom ${j.tabs.scroll.lastTabActiveAtBottom}, direct link ${j.tabs.directLink.ok}; after a reload: ${j.topAfterReload.afterReload.y} px from the top, hash "${j.topAfterReload.afterReload.hash}" (was ${j.topAfterReload.beforeReload.y} px, "${j.topAfterReload.beforeReload.hash}")` };
     });
   }
   await step(`brand words in the built pages${newVenueId ? ' and the temporary venue\'s page' : ''}`, async () => {
@@ -169,7 +173,7 @@ try {
     const external = tags.filter((t) => /\bsrc=/.test(t)).length, chunks = (html.match(/\/_next\/static\/chunks\/[^"'\s>]+\.js\b/g) || []).length, preloads = (html.match(/<link[^>]+rel="(?:modulepreload|preload)"[^>]+as="script"/g) || []).length; // the stylesheet lives under /_next/static/chunks too and is allowed
     const ok = external === 0 && chunks === 0 && preloads === 0 && tags.length === 4 && html.includes('default-price');
     fs.writeFileSync(path.join(out, newVenueId, 'no-runtime-js.json'), JSON.stringify({ file: path.basename(f), scriptTags: tags, external, nextChunkReferences: chunks, scriptPreloads: preloads, defaultTemplate: html.includes('default-price'), pass: ok }, null, 2));
-    return { pass: ok, evidence: [`${newVenueId}/no-runtime-js.json`], note: `${tags.length} inline script tags (head decision, intro, language toggle, menu), ${external} external, ${chunks} JavaScript chunk references, ${preloads} script preloads; default template: ${html.includes('default-price')}` };
+    return { pass: ok, evidence: [`${newVenueId}/no-runtime-js.json`], note: `${tags.length} inline script tags (head decision, welcome screen, language toggle, menu), ${external} external, ${chunks} JavaScript chunk references, ${preloads} script preloads; default template: ${html.includes('default-price')}` };
   });
   for (const venue of ['senso', 'kebab-land']) {
     await step(`photo links: ${venue}`, async () => {
@@ -181,13 +185,20 @@ try {
       return { pass: r.status === 0 && bad.length === 0, evidence: [`${venue}/photo-links.md`, `${venue}/photo-links.json`], note: `${Array.isArray(rows) ? rows.length : '?'} URLs, ${bad.length} not 200/206` };
     });
   }
+  // The welcome screen (Kian, 2026-10-09): the clock and date boundaries, the scene and its budget, the tap, the kill switch, recordings.
+  await step('welcome screen drill (greeting boundaries with a mocked clock, season boundaries with mocked dates, scene ≤ 20 particles on transform and opacity, reduced motion still, tap → menu ≤ 300 ms with the language persisted and pre-highlighted, section anchor, keyboard and labels, JavaScript off, kill switch, default contrast, inline code ≤ 10 KB gzipped, recordings)', async () => {
+    const r = await run('node', ['scripts/welcome-drill.mjs', '--base', base, '--out', path.join(out, 'welcome'), '--jpeg'], { env: drillEnv, logFile: 'welcome/welcome-drill.log' });
+    const m = (r.stdout.match(/WELCOME DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
+    return { pass: r.status === 0, evidence: ['welcome/welcome-drill.txt', 'welcome/welcome-drill.json', 'welcome/*.jpg', 'welcome/*-fall.webm (on disk only)'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
+  });
   for (const venue of pageVenues) {
-    await step(`Lighthouse mobile ×3: ${label(venue)}`, async () => {
+    await step(`Lighthouse mobile ×3: ${label(venue)} (LCP ≤ 2.5 s, TBT ≤ 50 ms)`, async () => {
       const vout = path.join(out, venue);
       const r = await run('node', ['scripts/check-lighthouse.mjs', `${base}/${venue}`, '--runs', '3', '--out', vout], { logFile: `${venue}/lighthouse.log` });
       const s = JSON.parse(fs.readFileSync(path.join(vout, 'lighthouse-summary.json'), 'utf8'));
-      const worst = Math.max(...s.runs.map((x) => x.lcpMs));
-      return { pass: r.status === 0 && s.runs.length === 3 && worst <= 2500, evidence: [`${venue}/lighthouse-summary.json`, `${venue}/lighthouse.log`], note: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms, performance ${s.runs.map((x) => x.performance).join(' / ')} (target ≤ 2500, local estimate)` };
+      const worst = Math.max(...s.runs.map((x) => x.lcpMs)), worstTbt = Math.max(...s.runs.map((x) => x.tbtMs));
+      return { pass: r.status === 0 && s.runs.length === 3 && worst <= 2500 && worstTbt <= 50, evidence: [`${venue}/lighthouse-summary.json`, `${venue}/lighthouse.log`], note: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms, TBT ${s.runs.map((x) => x.tbtMs).join(' / ')} ms, performance ${s.runs.map((x) => x.performance).join(' / ')} (targets LCP ≤ 2500, TBT ≤ 50; local estimates)` };
     });
   }
   await step('admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route and section layout 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)', async () => {
@@ -205,13 +216,13 @@ try {
     const m = r.stdout.match(/visible on the public page (\d+) ms after Save/); const u = r.stdout.match(/shows \$[\d.]+ again (\d+) ms after the tap/);
     return { pass: r.status === 0, evidence: ['revalidation-log.txt'], note: m ? `${m[1]} ms after Enter${u ? `; Undo back on the page ${u[1]} ms after the tap` : ''}` : `exit ${r.status}` };
   });
-  await step('page editor drill (task targets with tap counts, preview ≤ 1 s, reorder on the public page, Undo on the public page, change record, no preview script, drag-and-drop of items and sections, tap-to-edit in the preview, photo upload, section delete with move or delete and Undo, items in no section in the Needs-attention bar)', async () => {
+  await step('page editor drill (task targets with tap counts, preview ≤ 1 s, reorder on the public page, Undo on the public page, change record, no preview script, the preview never shows the welcome screen after a save, drag-and-drop of items and sections, tap-to-edit in the preview, photo upload, section delete with move or delete and Undo, items in no section in the Needs-attention bar)', async () => {
     const r = await run('node', ['scripts/editor-drill.mjs', '--base', base, '--out', path.join(out, 'editor'), '--dist', DIST, '--jpeg'], { env: drillEnv, logFile: 'editor/editor-drill.log' });
     const m = (r.stdout.match(/EDITOR DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, evidence: ['editor/editor-drill.txt', 'editor/editor-drill.json', 'editor/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   });
-  await step('Style tab drill (day-one defaults = the pre-token look, task target with tap count, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, preview ↔ controls with the controls as the master through a save, section layout List/Grid on the public page and in the preview with Undo, Reset all with confirmation, Persian view)', async () => {
+  await step('Style tab drill (day-one defaults = the pre-token look, task target with tap count, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, preview ↔ controls with the controls as the master through a save, the Welcome group showing the welcome screen in the preview with its preview-only season switch and a saved colour, section layout List/Grid on the public page and in the preview with Undo, Reset all with confirmation, Persian view)', async () => {
     const r = await run('node', ['scripts/style-drill.mjs', '--base', base, '--out', path.join(out, 'style'), '--jpeg'], { env: drillEnv, logFile: 'style/style-drill.log' });
     const m = (r.stdout.match(/STYLE DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
@@ -254,7 +265,7 @@ try {
     const names = [...read(`server-${port}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]);
     processes.push({ process: app, source: `server-${port}.log`, databases: [...new Set(names)] });
   }
-  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['style-drill', 'style/style-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
+  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
     if (!fs.existsSync(path.join(out, file))) continue;
     processes.push({ process: `roses-check:${name}`, source: file, databases: [...new Set([...read(file).matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))] });
   }
@@ -269,7 +280,7 @@ try {
   const onWorking = (c) => c.endsWith(`→ ${workName}`);
   const wrongSample = samples.filter((x) => onWorking(x.connection) && !x.connection.startsWith('roses-check:suite-readonly →'));
   const otherRuns = samples.filter((x) => !onWorking(x.connection) && !x.connection.endsWith(`→ ${scratchName}`));
-  const mustSee = ['roses-check:server-3100', 'roses-check:server-3101', 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:style-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
+  const mustSee = ['roses-check:server-3100', 'roses-check:server-3101', 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:style-drill', 'roses-check:welcome-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
   const unseen = mustSee.filter((a) => !samples.some((x) => x.connection.startsWith(`${a} →`)));
   const passA = wrongProcess.length === 0 && wrongSample.length === 0 && processes.length >= 8 && unseen.length === 0;
   fs.writeFileSync(path.join(out, 'isolation.json'), JSON.stringify({ scratch: scratchName, working: workName, processes, pgStatActivitySamples: samples, otherRunsSeen: otherRuns, pass: passA }, null, 2));

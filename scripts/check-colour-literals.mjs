@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const DEFAULT_FILES = [
-  'src/components/menu-kit.tsx', 'src/components/Intro.tsx', 'src/components/LangToggle.tsx', 'src/components/Bi.tsx',
+  'src/components/menu-kit.tsx', 'src/components/Welcome.tsx', 'src/components/LangToggle.tsx', 'src/components/Bi.tsx', 'src/lib/welcome.ts',
   'src/venues/senso.tsx', 'src/venues/kebab-land.tsx', 'src/venues/default.tsx', 'src/venues/styles.ts',
   'src/pages/senso.tsx', 'src/pages/kebab-land.tsx', 'src/pages/[venue].tsx', 'src/pages/_app.tsx', 'src/pages/_document.tsx',
   'src/styles/public.css',
@@ -42,7 +42,7 @@ for (const file of list) {
       if (r.cssOnly && !isCss) continue;
       for (const m of line.matchAll(r.re)) {
         const text = m[0];
-        if (r.test && !r.test(text)) continue; // (an id selector such as #intro or #tabs never matches: those names are not hex digits)
+        if (r.test && !r.test(text)) continue; // (an id selector such as #welcome, #tabs or the scene symbols #wl1… never matches: those names are not hex digits)
         found.push({ file, line: i + 1, kind: r.kind, match: text, context: raw.trim().slice(0, 160) });
       }
     }

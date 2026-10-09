@@ -98,7 +98,7 @@ function LogoField({ venueId, logo, tile, onChange }: { venueId: string; logo: L
         </div>
         {logo && <p className="mt-1 text-xs text-ink-muted">{logo.width} × {logo.height} px{logo.key ? ', uploaded' : ', from the venue files'}</p>}
         {err && <p role="alert" className="mt-1 text-sm text-red-600">{err}</p>}
-        <p className="mt-1 text-xs text-ink-muted">A PNG or SVG with a transparent background looks best. It is used in the header, the intro and the admin.</p>
+        <p className="mt-1 text-xs text-ink-muted">A PNG or SVG with a transparent background looks best. It is used in the header, on the welcome screen and in the admin.</p>
       </div>
     </div>
   );

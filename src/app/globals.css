@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* The admin's stylesheet (App Router). The customers' pages load src/styles/public.css instead (Pages Router), which holds
-   the language switch, the logo intro and the menu kit; their colours are tokens (src/venues/tokens.ts). */
+   the language switch, the welcome screen and the menu kit; their colours are tokens (src/venues/tokens.ts). */
 :root { --font-persian: var(--font-vazirmatn), system-ui, sans-serif; }
 
 /* ---------- Admin (phone first, no client JavaScript). Tokens are Tailwind theme colours: bg-accent, text-ink, border-line, bg-fill… ---------- */

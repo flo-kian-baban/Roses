@@ -2,14 +2,14 @@ import type { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { getPublicMenu, getVenue } from '@/lib/menu';
 import type { Section, Venue } from '@/lib/types';
-import { Intro, headScript } from '@/components/Intro';
+import { Welcome, headScript } from '@/components/Welcome';
 import { KebabLandPage } from '@/venues/kebab-land';
 import { styleOf } from '@/venues/styles';
-import { colorCss, resolveColors } from '@/venues/tokens';
+import { colorCss, isLight, resolveColors } from '@/venues/tokens';
 
 // Roses Kebab Land: its own page template and styles (src/venues/kebab-land.tsx), functional only for the MVP
 // (Kian's decision after Checkpoint A2; the design comes with the post-MVP redesign). Shared with Senso: data access,
-// the language toggle and the intro logic. Pre-rendered at build time, plain HTML, no framework JavaScript.
+// the language toggle and the welcome screen. Pre-rendered at build time, plain HTML, no framework JavaScript.
 export const config = { unstable_runtimeJS: false, runtime: 'nodejs' };
 
 // Public kit fonts (Kian, 2026-10-07): the system sans on every device; the recorded brand fonts stay in the data.
@@ -27,8 +27,8 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 export default function KebabLand({ venue, sections }: Props) {
   const f = venue.brand.fonts ?? { heading: 'serif', body: 'system-ui', persian: 'system-ui' };
   // Colours: the venue's tokens (src/venues/tokens.ts; defaults = the white kit, the brand background on the logo tile and
-  // the brand red on the footer labels and phone links; the recorded dark-page colours stay in the brand record). The intro
-  // and the list photos are the Style tab's layout options.
+  // the brand red on the footer labels and phone links; the recorded dark-page colours stay in the brand record). The welcome
+  // screen and the list photos are the Style tab's switches.
   const style = styleOf(venue);
   const colors = resolveColors(venue);
   const css = `${colorCss(colors)}:root{--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:${f.persian}}`;
@@ -41,10 +41,10 @@ export default function KebabLand({ venue, sections }: Props) {
         <meta name="theme-color" content={colors['page.bg'].value} />
         {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
         {venue.brand.logo && <link rel="preload" as="image" href={venue.brand.logo.url} fetchPriority="high" />}
-        <script dangerouslySetInnerHTML={{ __html: headScript(style.intro !== false) }} />
+        <script dangerouslySetInnerHTML={{ __html: headScript(style.welcome !== false) }} />
       </Head>
       <style dangerouslySetInnerHTML={{ __html: css }} />
-      {style.intro !== false && <Intro logo={venue.brand.logo} alt={venue.name.en ?? ''} tile />}
+      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} tile={isLight(colors['welcome.bg'].value)} />}
       <KebabLandPage venue={venue} sections={sections} photos={style.photos !== false} />
     </>
   );

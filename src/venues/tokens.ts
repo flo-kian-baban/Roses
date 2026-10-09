@@ -12,9 +12,9 @@
 // literals are listed next to each token so the suite can prove the day-one defaults equal them.
 import type { Brand, StyleValues } from '@/lib/types';
 
-export type GroupId = 'page' | 'header' | 'tabs' | 'headings' | 'rows' | 'sheet' | 'footer' | 'intro';
+export type GroupId = 'page' | 'header' | 'tabs' | 'headings' | 'rows' | 'sheet' | 'footer' | 'welcome';
 export type Kind = 'bg' | 'text' | 'large' | 'indicator' | 'decor';
-export type Rule = 'ink' | 'text' | 'muted' | 'body' | 'band' | 'line' | 'soft' | 'same';
+export type Rule = 'ink' | 'text' | 'muted' | 'body' | 'band' | 'line' | 'soft' | 'same' | 'leaves' | 'snow' | 'blossoms' | 'light';
 export type TokenDef = { key: string; group: GroupId; label: string; kind: Kind; on?: string; rule?: Rule; note?: string };
 export type State = 'auto' | 'default' | 'custom';
 export type Resolved = Record<string, { value: string; state: State; why: string }>;
@@ -30,7 +30,7 @@ export const GROUPS: { id: GroupId; label: string; hint: string }[] = [
   { id: 'rows', label: 'Item rows', hint: 'Each menu item in the list.' },
   { id: 'sheet', label: 'Item popup', hint: 'The item details that open on tap, and the section list.' },
   { id: 'footer', label: 'Footer', hint: 'Locations, hours and phone numbers at the bottom.' },
-  { id: 'intro', label: 'Intro', hint: 'The logo animation while the page loads.' },
+  { id: 'welcome', label: 'Welcome', hint: 'The welcome screen before the menu: the logo, the greeting, the two language buttons and the season scene.' },
 ];
 
 // In dependency order: a token's base comes before it.
@@ -40,7 +40,7 @@ export const TOKENS: TokenDef[] = [
   { key: 'page.subtext', group: 'page', label: 'Secondary text', kind: 'text', on: 'page.bg', rule: 'muted', note: 'The tagline under the name.' },
   { key: 'page.band', group: 'page', label: 'Band between sections', kind: 'decor', on: 'page.bg', rule: 'band' },
   { key: 'header.bg', group: 'header', label: 'Background', kind: 'bg', on: 'page.bg', rule: 'same' },
-  { key: 'header.tile', group: 'header', label: 'Tile behind the logo', kind: 'bg', note: 'Also behind the logo in the intro.' },
+  { key: 'header.tile', group: 'header', label: 'Tile behind the logo', kind: 'bg', note: 'Also behind the logo on the welcome screen.' },
   { key: 'header.title', group: 'header', label: 'Venue name', kind: 'large', on: 'header.bg', rule: 'text' },
   { key: 'header.langBg', group: 'header', label: 'Language button', kind: 'bg', on: 'header.bg', rule: 'soft' },
   { key: 'header.langText', group: 'header', label: 'Language button text', kind: 'text', on: 'header.langBg', rule: 'text' },
@@ -75,7 +75,18 @@ export const TOKENS: TokenDef[] = [
   { key: 'footer.address', group: 'footer', label: 'Address', kind: 'text', on: 'footer.bg', rule: 'muted' },
   { key: 'footer.hours', group: 'footer', label: 'Hours', kind: 'text', on: 'footer.bg', rule: 'muted' },
   { key: 'footer.phone', group: 'footer', label: 'Phone link', kind: 'text', on: 'footer.bg', rule: 'text' },
-  { key: 'intro.bg', group: 'intro', label: 'Background behind the logo', kind: 'bg', on: 'page.bg', rule: 'same' },
+  // The welcome screen (Kian, 2026-10-09, replacing the logo intro): its background, the greeting, the two language buttons (the
+  // remembered one filled), and the colour of each season's scene (decoration: leaves, snow, blossoms, light; no readability rule).
+  { key: 'welcome.bg', group: 'welcome', label: 'Background', kind: 'bg' },
+  { key: 'welcome.text', group: 'welcome', label: 'Greeting', kind: 'large', on: 'welcome.bg', rule: 'ink' },
+  { key: 'welcome.btnBg', group: 'welcome', label: 'Language buttons', kind: 'bg', on: 'welcome.bg', rule: 'soft' },
+  { key: 'welcome.btnText', group: 'welcome', label: 'Language button text', kind: 'text', on: 'welcome.btnBg', rule: 'text' },
+  { key: 'welcome.activeBg', group: 'welcome', label: 'Remembered language button', kind: 'bg', on: 'welcome.bg', rule: 'ink', note: 'The language chosen last time.' },
+  { key: 'welcome.activeText', group: 'welcome', label: 'Remembered language button text', kind: 'text', on: 'welcome.activeBg', rule: 'ink' },
+  { key: 'welcome.leaves', group: 'welcome', label: 'Fall leaves', kind: 'decor', on: 'welcome.bg', rule: 'leaves', note: 'September to November.' },
+  { key: 'welcome.snow', group: 'welcome', label: 'Winter snow', kind: 'decor', on: 'welcome.bg', rule: 'snow', note: 'December to February.' },
+  { key: 'welcome.blossoms', group: 'welcome', label: 'Spring blossoms', kind: 'decor', on: 'welcome.bg', rule: 'blossoms', note: 'March to May.' },
+  { key: 'welcome.light', group: 'welcome', label: 'Summer light', kind: 'decor', on: 'welcome.bg', rule: 'light', note: 'June to August.' },
 ];
 export const TOKEN_BY_KEY: Record<string, TokenDef> = Object.fromEntries(TOKENS.map((t) => [t.key, t]));
 export const cssVar = (key: string) => `--c-${key.replace(/\./g, '-').replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`;
@@ -83,6 +94,9 @@ export const cssVar = (key: string) => `--c-${key.replace(/\./g, '-').replace(/[
 // The white kit's constants (Kian, 2026-10-07): ink and paper, the two greys for secondary text, the two for reading text.
 const INK = '#1d1d1f', PAPER = '#ffffff', WHITE = '#ffffff', BLACK = '#000000';
 const MUTED = ['#6b6b6b', '#a1a1a6'], BODY = ['#545454', '#c7c7cc'];
+// The welcome scenes' own constants (Kian, 2026-10-09): warm orange leaves, a cool blue to tint snow on a light background, soft pink
+// blossoms, warm yellow light. A template pins the venue's brand colours over them where it has fitting ones (see TEMPLATE_COLORS).
+const LEAVES = '#e0782f', SNOW_INK = '#7f98b5', BLOSSOM = '#f2a0b4', LIGHT = '#f5c35c';
 
 // Per template: which tokens the page uses, its base defaults, and the venue defaults pinned on linked tokens (computed
 // from the brand record; a legacy Style value "accent" or "tile" saved before the tokens still counts as the venue's choice).
@@ -90,20 +104,23 @@ type TemplateColors = { omit: string[]; bases: (b: Brand | null | undefined, leg
 const brandHex = (b: Brand | null | undefined, k: string, fallback: string) => { const v = String(b?.colors?.[k] ?? '').toLowerCase(); return HEX.test(v) ? v : fallback; };
 const legacyHex = (legacy: StyleValues, k: string) => { const v = legacy?.[k]; return typeof v === 'string' && HEX.test(v) ? v.toLowerCase() : null; };
 export const TEMPLATE_COLORS: Record<string, TemplateColors> = {
+  // Welcome screen defaults (Kian, 2026-10-09): Senso on its recorded cream with the navy on the remembered button and the brand gold
+  // as leaves and summer light, its site pink as blossoms; Kebab Land on its recorded dark background with the brand red on the
+  // remembered button, its site orange as leaves and its price yellow as light; both get Auto snow. The two screens never look alike.
   senso: {
     omit: ['page.subtext', 'header.tile', 'header.title'],
-    bases: () => ({ 'page.bg': WHITE, 'sheet.dim': BLACK }),
-    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', '#042c7c'); return { 'footer.phone': accent }; },
+    bases: (b) => ({ 'page.bg': WHITE, 'sheet.dim': BLACK, 'welcome.bg': brandHex(b, 'background', '#fff8ee') }),
+    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', '#042c7c'); const gold = brandHex(b, 'gold', '#cc9434'); return { 'footer.phone': accent, 'welcome.activeBg': accent, 'welcome.leaves': gold, 'welcome.light': gold, 'welcome.blossoms': brandHex(b, 'siteLink', BLOSSOM) }; },
   },
   'kebab-land': {
     omit: ['page.subtext', 'header.title'],
-    bases: (b, l) => ({ 'page.bg': WHITE, 'sheet.dim': BLACK, 'header.tile': legacyHex(l, 'tile') ?? brandHex(b, 'background', '#141414') }),
-    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', '#b92e2e'); return { 'footer.label': accent, 'footer.phone': accent, 'footer.address': INK }; },
+    bases: (b, l) => ({ 'page.bg': WHITE, 'sheet.dim': BLACK, 'header.tile': legacyHex(l, 'tile') ?? brandHex(b, 'background', '#141414'), 'welcome.bg': brandHex(b, 'background', '#141414') }),
+    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', '#b92e2e'); return { 'footer.label': accent, 'footer.phone': accent, 'footer.address': INK, 'welcome.activeBg': accent, 'welcome.leaves': brandHex(b, 'button', '#f8512f'), 'welcome.light': brandHex(b, 'price', '#ffc14d') }; },
   },
   default: {
     omit: [],
-    bases: (b, l) => ({ 'page.bg': WHITE, 'sheet.dim': BLACK, 'header.tile': legacyHex(l, 'tile') ?? brandHex(b, 'background', '#f5f5f7') }),
-    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', INK); return { 'header.title': accent, 'tabs.active': accent, 'tabs.indicator': accent, 'rows.price': accent, 'footer.phone': accent, 'footer.bg': '#f5f5f7' }; },
+    bases: (b, l) => ({ 'page.bg': WHITE, 'sheet.dim': BLACK, 'header.tile': legacyHex(l, 'tile') ?? brandHex(b, 'background', '#f5f5f7'), 'welcome.bg': WHITE }),
+    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', INK); return { 'header.title': accent, 'tabs.active': accent, 'tabs.indicator': accent, 'rows.price': accent, 'footer.phone': accent, 'footer.bg': '#f5f5f7', 'welcome.activeBg': accent }; },
   },
 };
 export const templateColors = (template: string | null | undefined) => TEMPLATE_COLORS[template ?? ''] ?? TEMPLATE_COLORS.default;
@@ -132,6 +149,10 @@ function derive(rule: Rule, base: string, page: { text: string; bg: string }): s
     case 'band': return isLight(base) ? mix(base, BLACK, 0.047) : mix(base, WHITE, 0.08);
     case 'line': return isLight(base) ? mix(base, BLACK, 0.1) : mix(base, WHITE, 0.14);
     case 'soft': return isLight(base) ? mix(base, BLACK, 0.05) : mix(base, WHITE, 0.1);
+    case 'leaves': return LEAVES;
+    case 'snow': return isLight(base) ? mix(base, SNOW_INK, 0.6) : mix(base, WHITE, 0.92);
+    case 'blossoms': return BLOSSOM;
+    case 'light': return LIGHT;
   }
 }
 const RULE_WHY: Record<Rule, (base: string, on: string) => string> = {
@@ -143,9 +164,13 @@ const RULE_WHY: Record<Rule, (base: string, on: string) => string> = {
   band: (_, on) => `a light shade of the ${on}`,
   line: (_, on) => `a hairline on the ${on}`,
   soft: (_, on) => `a soft tint of the ${on}`,
+  leaves: () => 'warm orange leaves',
+  snow: (b) => (isLight(b) ? 'pale blue snow for a light background' : 'white snow for a dark background'),
+  blossoms: () => 'soft pink blossoms',
+  light: () => 'warm yellow light',
 };
 // How a base is named inside a sentence ("same as the page background", "grey text for the row background").
-const BASE_NAME: Record<string, string> = { 'page.bg': 'page background', 'header.bg': 'header background', 'header.langBg': 'language button', 'tabs.bg': 'tab bar background', 'rows.bg': 'row background', 'rows.chipBg': '“Serves” chip', 'sheet.bg': 'popup background', 'sheet.closeBg': 'close button', 'footer.bg': 'footer background' };
+const BASE_NAME: Record<string, string> = { 'page.bg': 'page background', 'header.bg': 'header background', 'header.langBg': 'language button', 'tabs.bg': 'tab bar background', 'rows.bg': 'row background', 'rows.chipBg': '“Serves” chip', 'sheet.bg': 'popup background', 'sheet.closeBg': 'close button', 'footer.bg': 'footer background', 'welcome.bg': 'welcome background', 'welcome.btnBg': 'language buttons', 'welcome.activeBg': 'remembered language button' };
 export const baseName = (key: string): string => BASE_NAME[key] ?? TOKEN_BY_KEY[key].label.toLowerCase();
 const lowerLabel = baseName;
 
@@ -250,9 +275,10 @@ export function palette(brand: Brand | null | undefined): { label: string; value
 
 // The colours every element had before the tokens (the white kit of 2026-10-07), per template, for the suite's day-one check.
 // Three places had pure black (#000000) where the kit's ink (#1d1d1f) is now used, listed here so the difference is on record.
+// The welcome screen's tokens (2026-10-09) are new and have no pre-token look; the day-one check skips them.
 export const PRE_TOKEN_LOOK: Record<string, Record<string, string>> = {
-  senso: { 'page.bg': '#ffffff', 'page.text': '#1d1d1f', 'page.band': '#f3f3f3', 'header.bg': '#ffffff', 'header.langBg': '#f2f2f2', 'header.langText': '#1d1d1f', 'tabs.bg': '#ffffff', 'tabs.text': '#6b6b6b', 'tabs.active': '#000000', 'tabs.indicator': '#000000', 'tabs.list': '#000000', 'tabs.line': '#e6e6e6', 'headings.title': '#1d1d1f', 'headings.note': '#6b6b6b', 'rows.bg': '#ffffff', 'rows.name': '#1d1d1f', 'rows.desc': '#6b6b6b', 'rows.price': '#1d1d1f', 'rows.chipBg': '#f3f3f3', 'rows.chipText': '#1d1d1f', 'rows.photo': '#f3f3f3', 'rows.line': '#e6e6e6', 'sheet.bg': '#ffffff', 'sheet.title': '#000000', 'sheet.price': '#000000', 'sheet.body': '#545454', 'sheet.muted': '#6b6b6b', 'sheet.line': '#e6e6e6', 'sheet.hero': '#f3f3f3', 'sheet.closeBg': '#ffffff', 'sheet.closeIcon': '#000000', 'sheet.dim': '#000000', 'footer.bg': '#ffffff', 'footer.label': '#1d1d1f', 'footer.address': '#6b6b6b', 'footer.hours': '#6b6b6b', 'footer.phone': '#042c7c', 'intro.bg': '#ffffff' },
-  'kebab-land': { 'page.bg': '#ffffff', 'page.text': '#1d1d1f', 'page.band': '#f3f3f3', 'header.bg': '#ffffff', 'header.tile': '#141414', 'header.langBg': '#f2f2f2', 'header.langText': '#1d1d1f', 'tabs.bg': '#ffffff', 'tabs.text': '#6b6b6b', 'tabs.active': '#000000', 'tabs.indicator': '#000000', 'tabs.list': '#000000', 'tabs.line': '#e6e6e6', 'headings.title': '#1d1d1f', 'headings.note': '#6b6b6b', 'rows.bg': '#ffffff', 'rows.name': '#1d1d1f', 'rows.desc': '#6b6b6b', 'rows.price': '#1d1d1f', 'rows.chipBg': '#f3f3f3', 'rows.chipText': '#1d1d1f', 'rows.photo': '#f3f3f3', 'rows.line': '#e6e6e6', 'sheet.bg': '#ffffff', 'sheet.title': '#000000', 'sheet.price': '#000000', 'sheet.body': '#545454', 'sheet.muted': '#6b6b6b', 'sheet.line': '#e6e6e6', 'sheet.hero': '#f3f3f3', 'sheet.closeBg': '#ffffff', 'sheet.closeIcon': '#000000', 'sheet.dim': '#000000', 'footer.bg': '#ffffff', 'footer.label': '#b92e2e', 'footer.address': '#1d1d1f', 'footer.hours': '#6b6b6b', 'footer.phone': '#b92e2e', 'intro.bg': '#ffffff' },
+  senso: { 'page.bg': '#ffffff', 'page.text': '#1d1d1f', 'page.band': '#f3f3f3', 'header.bg': '#ffffff', 'header.langBg': '#f2f2f2', 'header.langText': '#1d1d1f', 'tabs.bg': '#ffffff', 'tabs.text': '#6b6b6b', 'tabs.active': '#000000', 'tabs.indicator': '#000000', 'tabs.list': '#000000', 'tabs.line': '#e6e6e6', 'headings.title': '#1d1d1f', 'headings.note': '#6b6b6b', 'rows.bg': '#ffffff', 'rows.name': '#1d1d1f', 'rows.desc': '#6b6b6b', 'rows.price': '#1d1d1f', 'rows.chipBg': '#f3f3f3', 'rows.chipText': '#1d1d1f', 'rows.photo': '#f3f3f3', 'rows.line': '#e6e6e6', 'sheet.bg': '#ffffff', 'sheet.title': '#000000', 'sheet.price': '#000000', 'sheet.body': '#545454', 'sheet.muted': '#6b6b6b', 'sheet.line': '#e6e6e6', 'sheet.hero': '#f3f3f3', 'sheet.closeBg': '#ffffff', 'sheet.closeIcon': '#000000', 'sheet.dim': '#000000', 'footer.bg': '#ffffff', 'footer.label': '#1d1d1f', 'footer.address': '#6b6b6b', 'footer.hours': '#6b6b6b', 'footer.phone': '#042c7c' },
+  'kebab-land': { 'page.bg': '#ffffff', 'page.text': '#1d1d1f', 'page.band': '#f3f3f3', 'header.bg': '#ffffff', 'header.tile': '#141414', 'header.langBg': '#f2f2f2', 'header.langText': '#1d1d1f', 'tabs.bg': '#ffffff', 'tabs.text': '#6b6b6b', 'tabs.active': '#000000', 'tabs.indicator': '#000000', 'tabs.list': '#000000', 'tabs.line': '#e6e6e6', 'headings.title': '#1d1d1f', 'headings.note': '#6b6b6b', 'rows.bg': '#ffffff', 'rows.name': '#1d1d1f', 'rows.desc': '#6b6b6b', 'rows.price': '#1d1d1f', 'rows.chipBg': '#f3f3f3', 'rows.chipText': '#1d1d1f', 'rows.photo': '#f3f3f3', 'rows.line': '#e6e6e6', 'sheet.bg': '#ffffff', 'sheet.title': '#000000', 'sheet.price': '#000000', 'sheet.body': '#545454', 'sheet.muted': '#6b6b6b', 'sheet.line': '#e6e6e6', 'sheet.hero': '#f3f3f3', 'sheet.closeBg': '#ffffff', 'sheet.closeIcon': '#000000', 'sheet.dim': '#000000', 'footer.bg': '#ffffff', 'footer.label': '#b92e2e', 'footer.address': '#1d1d1f', 'footer.hours': '#6b6b6b', 'footer.phone': '#b92e2e' },
 };
 // The tokens whose day-one default differs from the pre-token look, and why.
 export const DAY_ONE_DIFFERENCES: { keys: string[]; before: string; after: string; why: string }[] = [

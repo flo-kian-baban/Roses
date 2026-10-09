@@ -183,10 +183,10 @@ const ownerCookie = await cookieOf(ownerCtx);
   const row = (await db.query(`select tagline->>'en' as t from venues where id='senso'`)).rows[0].t;
   check('details-undo', back.ok && row === before, `Undo → tagline "${row}" again, back on the public page after ${back.ms} ms`); }
 // Style tab (rebuilt 2026-10-08, colours by page region): the owner loads the template's tokens and layout options, opens the
-// Footer group, picks a venue colour for the phone link, the colour reaches the public page, Undo puts it back; the intro switch too
+// Footer group, picks a venue colour for the phone link, the colour reaches the public page, Undo puts it back; the welcome screen's switch too (in its Welcome group)
 { const r = await fetch(`${base}/api/admin/style?venue=senso`, { headers: { cookie: ownerCookie } }); const j = await r.json().catch(() => null);
   const layout = (j?.layout || []).map((o) => o.key); const tokens = (j?.tokens || []).map((t) => t.key);
-  check('style-owner-options', r.status === 200 && j?.template?.id === 'senso' && tokens.includes('footer.phone') && tokens.includes('rows.price') && layout.includes('intro') && layout.includes('photos') && (j?.palette || []).length > 0, `owner GET /api/admin/style?venue=senso → ${r.status}; template ${j?.template?.id}, ${j?.groups?.length} groups, ${tokens.length} colour tokens, layout options ${layout.join(', ')}, ${j?.palette?.length} venue colours as swatches`);
+  check('style-owner-options', r.status === 200 && j?.template?.id === 'senso' && tokens.includes('footer.phone') && tokens.includes('rows.price') && layout.includes('welcome') && layout.includes('photos') && (j?.palette || []).length > 0, `owner GET /api/admin/style?venue=senso → ${r.status}; template ${j?.template?.id}, ${j?.groups?.length} groups, ${tokens.length} colour tokens, layout options ${layout.join(', ')}, ${j?.palette?.length} venue colours as swatches`);
   await opage.goto(`${base}/admin/senso?tab=style`); await opage.waitForSelector('[data-style-group="footer"]');
   let taps = 0; const tap = async (sel) => { taps++; await opage.click(sel); };
   await tap('[data-style-group="footer"] > button'); await opage.waitForSelector('[data-style-token="footer.phone"] > button');
@@ -211,12 +211,14 @@ const ownerCookie = await cookieOf(ownerCtx);
   const back = await waitPublic('senso', (h) => h.includes(`--c-footer-phone:${current}`));
   const after = (await db.query(`select coalesce(style->'colors', '{}'::jsonb) as c from venues where id='senso'`)).rows[0].c;
   check('style-undo', back.ok && !after['footer.phone'], `Undo → --c-footer-phone:${current} back on the public page after ${back.ms} ms; venues.style.colors now ${JSON.stringify(after)}`);
-  // the layout switches save too: intro off removes the intro from the page; Undo brings it back
-  await opage.click('[data-style-option="intro"] input[role=switch]');
-  const off = await waitPublic('senso', (h) => !/id="intro"/.test(h));
+  // the switches save too: the welcome screen's kill switch (at the top of the Welcome group) off removes the overlay and its head decision from the page; Undo brings it back
+  await opage.click('[data-style-group="welcome"] > button'); await opage.waitForSelector('[data-style-option="welcome"] input[role=switch]');
+  const hasWelcome = (h) => /id="welcome"/.test(h) && /dataset\.welcome='show'/.test(h);
+  await opage.click('[data-style-option="welcome"] input[role=switch]');
+  const off = await waitPublic('senso', (h) => !hasWelcome(h));
   await opage.click('[role=status] button:has-text("Undo")'); await opage.waitForSelector('[role=status]:has-text("Undone")');
-  const on = await waitPublic('senso', (h) => /id="intro"/.test(h));
-  check('style-intro-switch', off.ok && on.ok, `intro switch off → no intro in the public HTML after ${off.ms} ms; Undo → intro back after ${on.ms} ms`); }
+  const on = await waitPublic('senso', hasWelcome);
+  check('style-welcome-switch', off.ok && on.ok, `Welcome screen switch off → no overlay and no head decision in the public HTML after ${off.ms} ms; Undo → back after ${on.ms} ms`); }
 // "+ Add venue" (step 2): admin, from the venue dropdown, on the phone
 { const actx = await browser.newContext(DEVICE); const ap = await loginPage(actx, 'admin', { email, password }); await ap.waitForSelector('[data-item]');
   let taps = 0; const tap = async (sel) => { taps++; await ap.click(sel); };

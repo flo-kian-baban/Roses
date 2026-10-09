@@ -1,5 +1,5 @@
 // Language toggle without React on the client: a button plus one inline script.
-// The head script (Intro.tsx) restores the saved language before first paint. Colours: the Header group's
+// The head script (Welcome.tsx) restores the saved language before first paint; the welcome screen's buttons set it the same way. Colours: the Header group's
 // "Language button" and "Language button text" tokens (src/venues/tokens.ts).
 export function LangToggle() {
   return (

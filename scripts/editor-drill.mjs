@@ -131,9 +131,10 @@ await snap(l, 'editor-laptop');
   await snap(l, 'preview-updated');
   check('preview-1s', shownAt != null && shownAt <= 1000 && inView.top >= 0 && inView.top < inView.h && inView.focused, `preview shows the new price ${shownAt} ms after Enter (target ≤ 1000); the row is in the frame's view (top ${inView.top} px of ${inView.h}) and outlined: ${inView.focused}`);
   measure(`preview shows a saved change after ${shownAt} ms`);
-  // The logo intro plays on every load for customers (Kian, 2026-10-07); the admin hides it in the frame before the frame is shown, and stores nothing on the device.
-  const intro = await l.evaluate(() => { const d = document.querySelector('iframe[data-preview-frame]').contentDocument; const el = d.getElementById('intro'); let stored = null; try { stored = Object.keys(localStorage).filter((k) => k.startsWith('roses-intro')); } catch { stored = []; } const row = d.querySelector('main section li.item'); return { inHtml: !!el, state: d.documentElement.dataset.intro || null, display: el ? getComputedStyle(el).display : 'absent', stored, animations: d.getAnimations().length, rowOpacity: row ? Number(getComputedStyle(row).opacity) : null }; });
-  check('preview-no-intro', intro.inHtml && intro.state === 'done' && intro.display === 'none' && intro.stored.length === 0 && intro.animations === 0 && intro.rowOpacity === 1, `the fresh frame carries the intro (${intro.inHtml}) marked ${intro.state} by the admin, display ${intro.display}; no page-entrance animation in the frame (${intro.animations} running, first row opacity ${intro.rowOpacity}); intro keys in the admin's storage: ${intro.stored.length}`);
+  // The welcome screen shows on every load for customers (Kian, 2026-10-09); the admin switches it off in the frame before the frame is shown (a save or a reload never shows it), the menu behind is not inert, and nothing about it is stored.
+  const welcome = await l.evaluate(() => { const d = document.querySelector('iframe[data-preview-frame]').contentDocument; const el = d.getElementById('welcome'); let stored = null; try { stored = Object.keys(localStorage).filter((k) => k.startsWith('roses-welcome')); } catch { stored = []; } const row = d.querySelector('main section li.item'); const m = d.querySelector('main'); return { inHtml: !!el, state: d.documentElement.dataset.welcome || null, display: el ? getComputedStyle(el).display : 'absent', stored, animations: d.getAnimations().filter((a) => a.playState === 'running').map((a) => `${a.animationName || a.transitionProperty || 'animation'} on ${a.effect?.target?.tagName?.toLowerCase()}${a.effect?.target?.id ? `#${a.effect.target.id}` : ''}`), rowOpacity: row ? Number(getComputedStyle(row).opacity) : null, inert: m ? m.inert : null }; });
+  const welcomeAnims = welcome.animations.filter((a) => !/^roses-pf /.test(a)); // the admin's own 2.6 s outline on the item just saved may still be running
+  check('preview-no-welcome', welcome.inHtml && welcome.state === 'off' && welcome.display === 'none' && welcome.stored.length === 0 && welcomeAnims.length === 0 && welcome.rowOpacity === 1 && welcome.inert === false, `the fresh frame after a save carries the welcome screen (${welcome.inHtml}) switched off by the admin (data-welcome ${welcome.state}, display ${welcome.display}); no page animation running in the frame (${welcomeAnims.length}${welcome.animations.length ? `; running: ${welcome.animations.join(', ')}` : ''}), first row opacity ${welcome.rowOpacity}, the menu reachable (inert ${welcome.inert}); welcome keys in the admin's storage: ${welcome.stored.length}`);
 }
 { // reorder: Move up in the item panel, then the public page shows the same order
   await l.click(`[data-item="${itemId}"] button[aria-label^="Edit"]`); await l.click('[role=dialog] button:has-text("More")');
@@ -301,7 +302,7 @@ const listedIds = async () => new Set((await db.query('select id from items wher
     const preview = (html.match(/preview/gi) || []).length;
     const roses = (html.match(/roses-preview|data-preview-frame|contentDocument/g) || []).length;
     if (external || preview || roses || tags.length !== 4) ok = false;
-    notes.push(`${v}: ${tags.length} inline script tags (head decision, intro, language toggle, menu), ${external} external, "preview" ${preview}×, preview markers ${roses}×`);
+    notes.push(`${v}: ${tags.length} inline script tags (head decision, welcome screen, language toggle, menu), ${external} external, "preview" ${preview}×, preview markers ${roses}×`);
   }
   check('no-preview-script', ok, notes.join('; '));
 }

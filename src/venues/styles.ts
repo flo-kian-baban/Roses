@@ -11,17 +11,19 @@ export type StyleOption = { key: string; label: string; hint?: string } & (
   | { type: 'choice'; default: string; choices: { value: string; label: string }[] });
 export type Template = { id: string; name: string; options: (brand: Brand | null | undefined) => StyleOption[] };
 
-const intro: StyleOption = { key: 'intro', type: 'switch', label: 'Logo animation', default: true, hint: 'Plays while the menu loads, on every visit and refresh. Never when the phone has reduced motion on.' };
+// The welcome screen's kill switch (Kian, 2026-10-09, replacing the logo animation): the Style tab shows it at the top of its
+// Welcome group, not under Layout. A value stored under the old key "intro" is ignored (the welcome screen starts on).
+const welcome: StyleOption = { key: 'welcome', type: 'switch', label: 'Welcome screen', default: true, hint: 'Before the menu, on every visit and refresh: the logo, a greeting, the language buttons and the season scene. Off: the menu opens directly.' };
 const photos: StyleOption = { key: 'photos', type: 'switch', label: 'Photos in the list', default: true, hint: 'Off: the list shows text only; the photo still opens with the item.' };
 
 export const TEMPLATES: Record<string, Template> = {
-  senso: { id: 'senso', name: 'Senso Café & Bites', options: () => [intro, photos] },
-  'kebab-land': { id: 'kebab-land', name: 'Roses Kebab Land', options: () => [intro, photos] },
+  senso: { id: 'senso', name: 'Senso Café & Bites', options: () => [welcome, photos] },
+  'kebab-land': { id: 'kebab-land', name: 'Roses Kebab Land', options: () => [welcome, photos] },
   default: {
     id: 'default', name: 'Default',
     options: () => [
       { key: 'header', type: 'choice', label: 'Header shows', default: 'name', choices: [{ value: 'name', label: 'The venue name' }, { value: 'logo', label: 'The logo' }, { value: 'both', label: 'Logo and name' }], hint: 'Without an uploaded logo the name is shown.' },
-      intro, photos,
+      welcome, photos,
     ],
   },
 };

@@ -12,6 +12,7 @@ import { MenuTab } from './MenuTab';
 import { ItemPanel, PhotoField } from './ItemPanel';
 import { NO_REGION, Preview, type Focus, type Pick, type PreviewHandle, type Region, type RegionState } from './Preview';
 import { StyleTab, type Picked } from './StyleTab';
+import type { Season } from '@/lib/welcome';
 import { DetailsTab } from './DetailsTab';
 import { ConfirmSheet, MoneyField, Sheet, TextField, btnDanger, btnPrimary, btnSecondary, fieldCls } from './ui';
 
@@ -45,6 +46,7 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
   const previewA = useRef<PreviewHandle>(null), previewB = useRef<PreviewHandle>(null);
   const [picked, setPicked] = useState<Picked>(null);
   const [region, setRegion] = useState<RegionState>(NO_REGION);
+  const [season, setSeason] = useState<Season | null>(null); // the Style tab's preview-only season (Kian, 2026-10-09); never saved
   const previewLive = useCallback((vars: Record<string, string> | null) => { previewA.current?.setVars(vars); previewB.current?.setVars(vars); }, []);
   const previewRegion = useCallback((r: Region | null) => setRegion((s) => ({ region: r, n: s.n + 1 })), []);
   useEffect(() => { const mq = window.matchMedia('(min-width: 1366px)'); const f = () => setWide(mq.matches); f(); mq.addEventListener('change', f); return () => mq.removeEventListener('change', f); }, []);
@@ -154,19 +156,19 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
               onToggleItem={(id, listed) => itemUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onPrice={(id, price) => itemUpdate(id, { price })}
               onToggleSection={(id, listed) => sectionUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onRename={(id) => setRenaming(id)} onMoveSection={sectionMove}
               onDeleteSection={sectionDelete} onReorderSections={sectionReorder} onMoveItem={itemMove} />}
-        {tab === 'style' && me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onLive={previewLive} onRegion={previewRegion} picked={picked} sections={menu.sections} onLayout={sectionLayout} />}
+        {tab === 'style' && me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onLive={previewLive} onRegion={previewRegion} picked={picked} sections={menu.sections} onLayout={sectionLayout} season={season} onSeason={setSeason} />}
         {tab === 'details' && me.canManage && <DetailsTab venue={venue} version={reloadKey} onSaved={savedElsewhere} />}
       </div>
       {openItem && wide ? <div className="hidden lg:block">{panel}</div> : null}
       <aside className="hidden border-l border-line bg-fill lg:block">
-        <div className="sticky top-14 h-[calc(100dvh-3.5rem)]"><Preview ref={previewA} venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame onPick={onPick} styleMode={tab === 'style'} region={tab === 'style' ? region : NO_REGION} /></div>
+        <div className="sticky top-14 h-[calc(100dvh-3.5rem)]"><Preview ref={previewA} venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame onPick={onPick} styleMode={tab === 'style'} region={tab === 'style' ? region : NO_REGION} season={tab === 'style' ? season : null} /></div>
       </aside>
 
       {openItem && !wide && <>
         <button type="button" aria-label="Close the item" onClick={() => setOpen(null)} className="fixed inset-0 z-40 hidden bg-black/10 lg:block" />
         {panel}
       </>}
-      {previewOpen && <div className="fixed inset-0 z-[60] lg:hidden"><Preview ref={previewB} venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame={false} onClose={() => setPreviewOpen(false)} onPick={onPick} styleMode={tab === 'style'} region={tab === 'style' ? region : NO_REGION} /></div>}
+      {previewOpen && <div className="fixed inset-0 z-[60] lg:hidden"><Preview ref={previewB} venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame={false} onClose={() => setPreviewOpen(false)} onPick={onPick} styleMode={tab === 'style'} region={tab === 'style' ? region : NO_REGION} season={tab === 'style' ? season : null} /></div>}
       {adding && <AddItemSheet venueId={venue.id} sectionName={menu.sections.find((s) => s.id === adding)?.name.en ?? ''} onClose={() => setAdding(null)} onAdd={async (d) => { await itemCreate(adding, d); setAdding(null); }} />}
       {addingSection && <AddSectionSheet onClose={() => setAddingSection(false)} onAdd={sectionCreate} />}
       {renaming && menu.sections.some((s) => s.id === renaming) && <RenameSheet section={menu.sections.find((s) => s.id === renaming)!} onClose={() => setRenaming(null)} onPatch={(p) => sectionUpdate(renaming, p)} />}

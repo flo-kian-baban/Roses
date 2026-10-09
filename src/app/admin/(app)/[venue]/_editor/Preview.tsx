@@ -7,8 +7,12 @@
 // on a region reports it to the editor (onPick kind "region"), and a colour being picked is applied live to the frame's CSS
 // variables before it is saved (setVars). All of it is attached by the admin after the frame loads. The controls on the left
 // are the master: the frame only ever follows them; it never changes the open group by itself.
+// Welcome screen (Kian, 2026-10-09): customers get it on every load; the preview switches it off before the frame is shown, so a
+// save or a reload never shows it, and shows it only while the Style tab's Welcome group is open (the `region`). The `season` prop
+// is the tab's preview-only season switch: it sets the frame's scene and changes nothing for customers.
 import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import type { GroupId } from '@/venues/tokens';
+import { seasonOf, type Season } from '@/lib/welcome';
 import { Icon } from '../../../_ui/icons';
 
 export type Focus = { id: string; alt?: string | null } | null;
@@ -22,7 +26,7 @@ export type PreviewHandle = { setVars: (vars: Record<string, string> | null) => 
 // status bar with the live time, home indicator. The page itself is laid out at 440 points wide, as on the real phone.
 const W = 440, H = 956, RAIL = 5, BEZEL = 13, STATUS = 54, EDGE = RAIL + BEZEL, BTN = 4;
 
-export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: number; focus: Focus; lang: 'en' | 'fa'; onLang: (l: 'en' | 'fa') => void; frame: boolean; onClose?: () => void; onPick?: (p: Pick) => void; styleMode?: boolean; region?: RegionState }>(function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClose, onPick, styleMode = false, region = NO_REGION }, handle) {
+export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: number; focus: Focus; lang: 'en' | 'fa'; onLang: (l: 'en' | 'fa') => void; frame: boolean; onClose?: () => void; onPick?: (p: Pick) => void; styleMode?: boolean; region?: RegionState; season?: Season | null }>(function Preview({ venueId, reloadKey, focus, lang, onLang, frame, onClose, onPick, styleMode = false, region = NO_REGION, season = null }, handle) {
   const refA = useRef<HTMLIFrameElement>(null), refB = useRef<HTMLIFrameElement>(null);
   const frames = [refA, refB];
   const [active, setActive] = useState<0 | 1 | null>(null);
@@ -34,6 +38,7 @@ export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: n
   const pickRef = useRef(onPick); pickRef.current = onPick;
   const styleModeRef = useRef(styleMode); styleModeRef.current = styleMode;
   const regionRef = useRef(region); regionRef.current = region;
+  const seasonRef = useRef(season); seasonRef.current = season;
   const scrollRef = useRef(0);
   const isOurs = (d: Document | null | undefined): d is Document => !!d && d.location.pathname === `/${venueId}`;
   const activeDoc = () => { const a = activeRef.current; if (a === null) return null; const d = frames[a].current?.contentDocument; return isOurs(d) ? d : null; };
@@ -43,6 +48,8 @@ export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: n
   }));
   // The open group's region (or a re-assertion of it): outlined in the loaded frame, scrolled to when out of view.
   useEffect(() => { const d = activeDoc(); if (d) applyRegion(d, region.region, true); }, [region]); // eslint-disable-line react-hooks/exhaustive-deps
+  // The preview-only season: applied to the loaded frame (null = today's season, as the frame's own head script chose it).
+  useEffect(() => { const d = activeDoc(); if (d) applySeason(d, season); }, [season]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A save (reloadKey) loads the page into the hidden slot.
   useEffect(() => {
@@ -58,8 +65,10 @@ export const Preview = forwardRef<PreviewHandle, { venueId: string; reloadKey: n
     if (slot !== loadingSlot.current) return;
     const d = frames[slot].current?.contentDocument;
     if (!isOurs(d)) return;
-    d.documentElement.dataset.intro = 'done'; // the logo intro and the page entrance play on every load for customers; the preview hides both before the frame is shown (see previewStyle)
+    d.documentElement.dataset.welcome = 'off'; // the welcome screen shows on every load for customers; the preview switches it off before the frame is shown, and shows it only while the Welcome group is open (applyRegion)
+    const main = d.querySelector('main'); if (main) main.inert = false; // the page's script made the menu inert behind the overlay; the admin edits it
     applyLang(d, langRef.current);
+    if (seasonRef.current) applySeason(d, seasonRef.current);
     if (pickRef.current) attachPick(d, (p) => pickRef.current?.(p), () => styleModeRef.current);
     if (!showFocus(d, focusRef.current)) d.defaultView?.scrollTo({ top: scrollRef.current, behavior: 'auto' });
     if (regionRef.current.region) applyRegion(d, regionRef.current.region, activeRef.current === null); // the first load of this preview (the phone overlay opening) scrolls to the open group's region; a reload after a save keeps its place
@@ -143,18 +152,18 @@ function applyLang(d: Document, lang: 'en' | 'fa') {
   const h = d.documentElement; h.dataset.lang = lang; h.lang = lang; h.dir = lang === 'fa' ? 'rtl' : 'ltr';
 }
 
-// The admin's own style inside the frame: no intro and no page entrance (the frame is shown only once loaded, as the customers
-// see the page after the intro), the outline of the item just edited, the hover marks of tap-to-edit, the Style tab's region
-// outline and the frozen intro while the Intro group is open.
+// The admin's own style inside the frame: no welcome screen (the frame is shown only once loaded, as the customers see the page
+// after their choice), the outline of the item just edited, the hover marks of tap-to-edit, the Style tab's region outline and
+// the welcome screen, live, while the Welcome group is open.
 function previewStyle(d: Document) {
   if (d.getElementById('roses-preview-style')) return;
   const st = d.createElement('style'); st.id = 'roses-preview-style';
-  st.textContent = '#intro{display:none!important}main>header,#tabs,main section h2,li.item{animation:none!important}html{scrollbar-width:none}html::-webkit-scrollbar{display:none}.roses-preview-focus{box-shadow:inset 0 0 0 2px #ee6a3a;border-radius:12px;animation:roses-pf 2.6s ease-out forwards}@keyframes roses-pf{75%{box-shadow:inset 0 0 0 2px #ee6a3a}100%{box-shadow:inset 0 0 0 2px transparent}}'
+  st.textContent = '#welcome{display:none!important}html{scrollbar-width:none}html::-webkit-scrollbar{display:none}.roses-preview-focus{box-shadow:inset 0 0 0 2px #ee6a3a;border-radius:12px;animation:roses-pf 2.6s ease-out forwards}@keyframes roses-pf{75%{box-shadow:inset 0 0 0 2px #ee6a3a}100%{box-shadow:inset 0 0 0 2px transparent}}'
     + '.roses-pick:not(.roses-style) li.item:hover,.roses-pick:not(.roses-style) main section h2:hover,.roses-pick:not(.roses-style) main>header:hover{outline:2px dashed rgba(238,106,58,.55);outline-offset:3px;border-radius:10px;cursor:pointer}'
     + '.roses-style main>header,.roses-style #tabs,.roses-style main section h2,.roses-style main section ul,.roses-style main footer,.roses-style dialog{cursor:pointer}'
     + '.roses-region{outline:3px solid #ee6a3a!important;outline-offset:-3px;border-radius:10px;transition:outline-color .2s}dialog.roses-region{outline-offset:-3px}'
     + 'html.roses-region-page body{box-shadow:inset 0 0 0 3px #ee6a3a;min-height:100dvh}'
-    + 'html.roses-show-intro #intro{display:grid!important;animation:none!important;opacity:1!important;visibility:visible!important}html.roses-show-intro #intro>*,html.roses-show-intro #intro img{animation:none!important;opacity:1!important;transform:none!important}';
+    + 'html.roses-show-welcome #welcome{display:grid!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}';
   d.head.appendChild(st);
 }
 // Tap-to-edit: one capture-phase click listener on the loaded document. Menu tab: an item row, a section heading or the
@@ -180,7 +189,7 @@ function attachPick(d: Document, onPick: (p: Pick) => void, styleMode: () => boo
   }, true);
 }
 function regionOf(t: Element): Region {
-  if (t.closest('#intro')) return 'intro';
+  if (t.closest('#welcome')) return 'welcome';
   if (t.closest('dialog#sheet, dialog#sections-dialog')) return 'sheet';
   if (t.closest('#tabs')) return 'tabs';
   if (t.closest('main > header')) return 'header';
@@ -191,14 +200,14 @@ function regionOf(t: Element): Region {
   return 'page';
 }
 // What each region outlines inside the frame. The popup region opens the first item's sheet (and closes it again when another
-// region takes over); the intro region shows the logo overlay frozen at its final state.
-const REGION_SEL: Record<Region, string> = { page: '', header: 'main > header', tabs: '#tabs', headings: 'main section h2', rows: 'main section ul', sheet: 'dialog#sheet', footer: 'main footer', intro: '#intro' };
+// region takes over); the welcome region shows the welcome screen, live, with its scene running.
+const REGION_SEL: Record<Region, string> = { page: '', header: 'main > header', tabs: '#tabs', headings: 'main section h2', rows: 'main section ul', sheet: 'dialog#sheet', footer: 'main footer', welcome: '#welcome' };
 function applyRegion(d: Document, region: Region | null, scroll: boolean) {
   previewStyle(d);
   const h = d.documentElement;
   d.querySelectorAll('.roses-region').forEach((el) => el.classList.remove('roses-region'));
   h.classList.toggle('roses-region-page', region === 'page');
-  h.classList.toggle('roses-show-intro', region === 'intro');
+  h.classList.toggle('roses-show-welcome', region === 'welcome');
   const sheet = d.getElementById('sheet') as HTMLDialogElement | null;
   if (region === 'sheet') {
     if (sheet && !sheet.open) { const li = d.querySelector('li.item') as HTMLElement | null; if (li) { h.dataset.rosesSynthetic = '1'; li.click(); delete h.dataset.rosesSynthetic; } }
@@ -207,10 +216,13 @@ function applyRegion(d: Document, region: Region | null, scroll: boolean) {
   if (!region) return;
   const els = region === 'sheet' && sheet?.open ? [sheet] : [...d.querySelectorAll(REGION_SEL[region] || 'nothing')];
   els.forEach((el) => el.classList.add('roses-region'));
-  const w = d.defaultView; if (!scroll || !w || region === 'page' || region === 'intro' || region === 'sheet' || !els.length) return;
+  const w = d.defaultView; if (!scroll || !w || region === 'page' || region === 'welcome' || region === 'sheet' || !els.length) return;
   const visible = els.some((el) => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < w.innerHeight; });
   if (!visible) (els[0] as HTMLElement).scrollIntoView({ block: region === 'footer' ? 'end' : 'start', behavior: 'auto' });
 }
+// The Style tab's preview-only season switch (Kian, 2026-10-09): the frame shows the chosen scene; null puts it back on today's
+// season, the one the frame's own head script chose. Nothing is saved, so customers are never affected.
+function applySeason(d: Document, season: Season | null) { d.documentElement.dataset.season = season ?? seasonOf(new Date().getMonth()); }
 // A colour being picked, applied live to the frame's CSS variables (the page's :root values stay in its own <style>); null takes
 // every live value away again (a refused colour). The two rules that carry plain values (::backdrop, the close button's shadow)
 // are rewritten in a live <style>.

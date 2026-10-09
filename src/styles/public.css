@@ -1,5 +1,5 @@
 /* The customers' pages (Pages Router, loaded by src/pages/_app.tsx): Tailwind for the public sources only, the language
-   switch, the logo intro and the menu kit. Every colour is a token (src/venues/tokens.ts) rendered by the page as a CSS
+   switch, the welcome screen and the menu kit. Every colour is a token (src/venues/tokens.ts) rendered by the page as a CSS
    variable; no colour literal lives here (scripts/check-colour-literals.mjs). The admin has its own stylesheet (src/app/globals.css). */
 @import "tailwindcss" source(none);
 @source "../components";
@@ -24,37 +24,62 @@ html[data-lang="fa"] body { font-family: var(--font-persian); }
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-/* Logo intro overlay: visible at first paint, removed by script; skipped via html[data-intro="skip"].
-   Timeline (Kian, 2026-10-07: a smooth hand-over from the logo to the page): the logo settles over 900 ms; from 1000 ms the
-   overlay fades and the logo grows and dissolves (350 ms) while the page underneath slides in: header, tabs, the first
-   heading, then the first eight rows 60 ms apart (each 420 ms). The script hides the overlay at 1350 ms, when the fade has ended. */
-#intro { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: var(--c-intro-bg); animation: intro-fade 350ms ease-in-out 1000ms both; }
-#intro img { width: min(60vw, 260px); height: auto; animation: intro-logo 900ms cubic-bezier(.2,.8,.2,1) both; }
-#intro > * { animation: intro-out 350ms ease-in 1000ms both; } /* the logo itself, or its tile (Kebab Land) */
-#intro > img { animation: intro-logo 900ms cubic-bezier(.2,.8,.2,1) both, intro-out 350ms ease-in 1000ms both; }
-#intro .intro-tile { display: grid; place-items: center; padding: 20px 28px; border-radius: 28px; background: var(--c-header-tile); }
-html[data-intro="skip"] #intro, html[data-intro="done"] #intro { display: none; }
-@keyframes intro-logo { from { opacity: .35; transform: scale(.94); } to { opacity: 1; transform: scale(1); } } /* starts visible: the logo is then the largest contentful paint at first paint, not a late photo */
-@keyframes intro-out { to { opacity: 0; transform: scale(1.08); } }
-@keyframes intro-fade { to { opacity: 0; visibility: hidden; } }
-/* Page entrance behind the dissolving logo. Only when the page has the intro (#intro precedes <main>) and it is not skipped
-   (the selectors stop matching under html[data-intro="skip"], set before first paint for reduced motion); the admin preview
-   switches these off in the frame (Preview.tsx). The elements are all smaller than the intro logo, so the largest contentful
-   paint stays the logo at first paint. */
-html:not([data-intro="skip"]) #intro ~ main > header, html:not([data-intro="skip"]) #intro ~ main #tabs, html:not([data-intro="skip"]) #intro ~ main section:first-of-type h2, html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(-n+8) { animation: page-in 420ms cubic-bezier(.2,.8,.2,1) both; }
-html:not([data-intro="skip"]) #intro ~ main > header { animation-delay: 1000ms; }
-html:not([data-intro="skip"]) #intro ~ main #tabs { animation-delay: 1050ms; }
-html:not([data-intro="skip"]) #intro ~ main section:first-of-type h2 { animation-delay: 1100ms; }
-html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(1) { animation-delay: 1150ms; }
-html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(2) { animation-delay: 1210ms; }
-html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(3) { animation-delay: 1270ms; }
-html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(4) { animation-delay: 1330ms; }
-html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(5) { animation-delay: 1390ms; }
-html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(6) { animation-delay: 1450ms; }
-html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(7) { animation-delay: 1510ms; }
-html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(8) { animation-delay: 1570ms; }
-@keyframes page-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { #intro { display: none; } html:not([data-intro="skip"]) #intro ~ main > header, html:not([data-intro="skip"]) #intro ~ main #tabs, html:not([data-intro="skip"]) #intro ~ main section:first-of-type h2, html:not([data-intro="skip"]) #intro ~ main section:first-of-type li.item:nth-child(-n+8) { animation: none; } }
+/* ---------- Welcome screen (Kian, 2026-10-09, replacing the logo intro; markup and script in src/components/Welcome.tsx) ----------
+   A full-screen overlay in the same static page: the logo, a time-of-day greeting in both languages, the two language buttons
+   and the season's scene; the menu is laid out behind it. The head script decides before first paint: html[data-welcome="show"]
+   displays the overlay (with JavaScript off nothing sets it and the menu shows directly), data-greet picks the greeting by the
+   device clock, data-season the scene by the month, data-lang-saved fills the button of the language chosen last time. A tap on a
+   button sets and stores the language and fades the overlay out over 200 ms (data-welcome="done"); the script then sets "off"
+   (display none, so the scene's animations stop). Entrance: the logo settles (600 ms), the greeting lines rise and fade in after
+   it (from 350 ms), then the two buttons (from 620 ms). Reduced motion: no animation at all, the scene still, the fade instant.
+   Colours: the Welcome group's tokens. Scenes: inline SVG symbols (styled by presentation attributes: a class in this file never
+   reaches the content a <use> clones); every particle is an HTML element at (--x, --y), animated on transform and opacity only (its
+   own compositor layer): the outer part falls, the inner part sways and turns. */
+#welcome { display: none; position: fixed; inset: 0; z-index: 50; overflow: hidden; background: var(--c-welcome-bg); color: var(--c-welcome-text); touch-action: none; overscroll-behavior: contain; -webkit-tap-highlight-color: transparent; }
+html[data-welcome="show"] #welcome, html[data-welcome="done"] #welcome { display: grid; place-items: center; }
+html[data-welcome="show"] body { overflow: hidden; }
+html[data-welcome="done"] #welcome { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .2s ease-out, visibility 0s .2s; }
+#welcome [lang] { display: block; } /* both languages stay visible here until one is chosen (the page's language rules hide the other everywhere else) */
+.welcome-scene, .welcome-scene .scene { position: absolute; inset: 0; pointer-events: none; }
+.welcome-scene .scene { display: none; }
+html[data-season="fall"] .scene-fall, html[data-season="winter"] .scene-winter, html[data-season="spring"] .scene-spring, html[data-season="summer"] .scene-summer { display: block; }
+.welcome-scene .p { position: absolute; left: 0; top: 0; display: block; opacity: var(--o); transform: translate(var(--x), var(--y)); }
+.welcome-scene .y, .welcome-scene .w { display: block; will-change: transform; }
+.welcome-scene .y { animation: w-fall var(--d) linear var(--l) infinite; }
+.welcome-scene .w { animation: w-sway var(--w) ease-in-out var(--l) infinite alternate; fill: currentColor; }
+.scene-fall { color: var(--c-welcome-leaves); }
+.scene-winter { color: var(--c-welcome-snow); }
+.scene-spring { color: var(--c-welcome-blossoms); }
+.scene-summer, #wgrad { color: var(--c-welcome-light); }
+.scene-summer .y { animation-name: w-drift; animation-timing-function: ease-in-out; animation-direction: alternate; }
+.scene-summer .w { animation-name: w-pulse; }
+@keyframes w-fall { from { transform: translate3d(0, calc(-1 * var(--y) - 90px), 0); } to { transform: translate3d(var(--sx), calc(100vh - var(--y) + 90px), 0); } }
+@keyframes w-sway { from { transform: translateX(-12px) rotate(calc(-1 * var(--r))); } to { transform: translateX(12px) rotate(var(--r)); } }
+@keyframes w-drift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(var(--sx), -36px, 0); } }
+@keyframes w-pulse { from { transform: scale(.85); opacity: .7; } to { transform: scale(1.12); opacity: 1; } }
+.welcome-card { position: relative; display: grid; justify-items: center; gap: 24px; width: min(100% - 48px, 340px); padding-bottom: 4vh; text-align: center; }
+/* The logo is the largest contentful paint: wider than a grid card's photo in the first section behind the overlay (half the
+   screen less the gutters), so a late photo never takes the metric over. */
+.welcome-logo { width: min(70vw, 280px); height: auto; animation: welcome-logo .6s cubic-bezier(.2, .8, .2, 1) both; }
+.welcome-tile { display: grid; place-items: center; padding: 18px 26px; border-radius: 26px; background: var(--c-header-tile); animation: welcome-logo .6s cubic-bezier(.2, .8, .2, 1) both; }
+.welcome-tile img { width: min(60vw, 240px); height: auto; }
+.welcome-name { font-size: 28px; font-weight: 700; line-height: 1.15; animation: welcome-logo .6s cubic-bezier(.2, .8, .2, 1) both; }
+.welcome-greet { display: grid; gap: 6px; }
+.welcome-greet .g { display: none; gap: 6px; }
+html[data-greet="morning"] .welcome-greet .g[data-g="morning"], html[data-greet="afternoon"] .welcome-greet .g[data-g="afternoon"], html[data-greet="evening"] .welcome-greet .g[data-g="evening"] { display: grid; }
+.welcome-greet .g > span { font-size: 26px; font-weight: 600; line-height: 1.2; letter-spacing: -.01em; animation: welcome-rise .5s cubic-bezier(.2, .8, .2, 1) .35s both; }
+.welcome-greet .g > span[lang="fa"] { font-family: var(--font-persian); font-size: 24px; letter-spacing: 0; animation-delay: .47s; }
+html[data-lang="fa"] .welcome-greet .g > span[lang="fa"] { order: -1; animation-delay: .35s; } /* the remembered language reads first */
+html[data-lang="fa"] .welcome-greet .g > span[lang="en"] { animation-delay: .47s; }
+.welcome-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+.welcome-buttons button { min-height: 56px; padding: 0 16px; border-radius: 9999px; background: var(--c-welcome-btn-bg); color: var(--c-welcome-btn-text); font-size: 20px; font-weight: 600; line-height: 1.2; cursor: pointer; animation: welcome-rise .5s cubic-bezier(.2, .8, .2, 1) .62s both; transition: transform .12s ease; }
+.welcome-buttons button[lang="fa"] { font-family: var(--font-persian); animation-delay: .72s; }
+html[data-lang-saved="en"] .welcome-buttons button[data-lang="en"], html[data-lang-saved="fa"] .welcome-buttons button[data-lang="fa"] { background: var(--c-welcome-active-bg); color: var(--c-welcome-active-text); }
+.welcome-buttons button:active { transform: scale(.97); }
+.welcome-buttons button:focus-visible { outline: 3px solid var(--c-welcome-text); outline-offset: 3px; }
+@keyframes welcome-logo { from { opacity: .35; transform: scale(.94); } to { opacity: 1; transform: none; } } /* starts visible: the logo is the largest contentful paint at first paint, not a late photo */
+@keyframes welcome-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { #welcome, #welcome * { animation: none !important; transition: none !important; } }
 
 /* ---------- Menu kit (Uber Eats-style; Kian, 2026-10-07). Tabs, rows, item sheet, section list. Colours: the tokens of the
    Category tabs, Item rows and Item popup groups. ---------- */

@@ -2,7 +2,7 @@
 // tokens grouped by page region (src/venues/tokens.ts); the layout options stay template-declared (src/venues/styles.ts).
 //   GET  ?venue=<id>                                   the template, its tokens, the venue palette, the layout options and the stored style
 //   POST { action:'update', venue, patch }              patch.colors = { "<token>": "#rrggbb" | null (back to auto) }, plus layout keys
-//                                                      (intro, photos, header). Every colour goes through the readability guard: a pair
+//                                                      (welcome, photos, header). Every colour goes through the readability guard: a pair
 //                                                      below its WCAG threshold is refused (400) with one line and the nearest colour that passes.
 //   POST { action:'reset', venue, group? }              removes the colour choices of one group, or all of them (one record on the venue; Undo works)
 import { jsonRoute, ApiError, revalidateVenue, str, type JsonBody } from '@/lib/admin/api';

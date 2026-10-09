@@ -2,13 +2,13 @@ import type { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { getPublicMenu, getVenue } from '@/lib/menu';
 import type { Section, Venue } from '@/lib/types';
-import { Intro, headScript } from '@/components/Intro';
+import { Welcome, headScript } from '@/components/Welcome';
 import { SensoPage } from '@/venues/senso';
 import { styleOf } from '@/venues/styles';
 import { colorCss, resolveColors } from '@/venues/tokens';
 
 // Senso Café & Bites: its own page template and styles (src/venues/senso.tsx). Shared with the other venue:
-// data access (src/lib/menu.ts), the language toggle and the intro logic (src/components). PM build decision of
+// data access (src/lib/menu.ts), the language toggle and the welcome screen (src/components). PM build decision of
 // 2026-10-07: the venues are separate brands under the Roses parent brand and their pages must not look alike.
 // Pre-rendered at build time from the database and served as plain HTML with no framework JavaScript
 // (`runtime` is listed only because Next 16's type validator rejects a config object without one of its known keys).
@@ -29,7 +29,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 export default function Senso({ venue, sections }: Props) {
   const f = venue.brand.fonts ?? { heading: 'serif', body: 'system-ui', persian: 'system-ui' };
   // Colours: the venue's tokens (src/venues/tokens.ts; defaults = the white kit with the brand navy on phone links, Kian
-  // 2026-10-07; the Style tab's choices in venues.style). The intro and the list photos are the Style tab's layout options.
+  // 2026-10-07; the Style tab's choices in venues.style). The welcome screen and the list photos are the Style tab's switches.
   const style = styleOf(venue);
   const colors = resolveColors(venue);
   const css = `${colorCss(colors)}:root{--font-heading:${SYSTEM};--font-body:${SYSTEM};--font-persian:${f.persian}}`;
@@ -42,11 +42,11 @@ export default function Senso({ venue, sections }: Props) {
         <meta name="theme-color" content={colors['page.bg'].value} />
         {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
         {venue.brand.logo && <link rel="preload" as="image" href={venue.brand.logo.url} fetchPriority="high" />}
-        <script dangerouslySetInnerHTML={{ __html: headScript(style.intro !== false) }} />
+        <script dangerouslySetInnerHTML={{ __html: headScript(style.welcome !== false) }} />
       </Head>
       {/* In the body so it follows the stylesheet in cascade order. */}
       <style dangerouslySetInnerHTML={{ __html: css }} />
-      {style.intro !== false && <Intro logo={venue.brand.logo} alt={venue.name.en ?? ''} />}
+      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} />}
       <SensoPage venue={venue} sections={sections} photos={style.photos !== false} />
     </>
   );

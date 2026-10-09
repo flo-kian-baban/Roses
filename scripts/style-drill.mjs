@@ -7,7 +7,9 @@
 //   linked colours: a new row background re-derives its Auto text tokens, a Custom token stays as set; Reset group, then Undo;
 //   the readability guard, in the UI and on the route: gold on cream refused (≈2.5:1) with a one-tap nearest fix, navy on cream
 //     allowed (≈12:1), Kebab Land red on #141414 refused for body text (≈3.1:1) and allowed for a large heading;
-//   the preview and the controls point at each other: a tap on a region opens its group, an open group outlines its region;
+//   the preview and the controls point at each other: a tap on a region opens its group, an open group outlines its region; the
+//     Welcome group (Kian, 2026-10-09) shows the welcome screen live in the preview, its preview-only season switch changes the
+//     frame's scene and saves nothing, and a colour saved in it shows on the overlay within 1 s;
 //   the controls stay the master (Kian, 2026-10-08): after a tap in the preview, a colour saved in another group keeps that group
 //     open through the save, the data reload and the preview reload (the regression of the "jump" bug); a tap on the open group's
 //     region keeps the open colour;
@@ -58,7 +60,7 @@ const r1 = (n) => Math.round(n * 10) / 10;
 
 // The look of the two brand pages before the tokens (recorded from the code at commit 8cffa11, the white kit of 2026-10-07).
 const INK = '#1d1d1f', GREY = '#6b6b6b', LINE = '#e6e6e6', BAND = '#f3f3f3', WHITE = '#ffffff';
-const KIT = { 'page.bg': WHITE, 'page.text': INK, 'page.band': BAND, 'header.bg': WHITE, 'header.langBg': '#f2f2f2', 'header.langText': INK, 'tabs.bg': WHITE, 'tabs.text': GREY, 'tabs.active': '#000000', 'tabs.indicator': '#000000', 'tabs.list': '#000000', 'tabs.line': LINE, 'headings.title': INK, 'headings.note': GREY, 'rows.bg': WHITE, 'rows.name': INK, 'rows.desc': GREY, 'rows.price': INK, 'rows.chipBg': BAND, 'rows.chipText': INK, 'rows.photo': BAND, 'rows.line': LINE, 'sheet.bg': WHITE, 'sheet.title': '#000000', 'sheet.price': '#000000', 'sheet.body': '#545454', 'sheet.muted': GREY, 'sheet.line': LINE, 'sheet.hero': BAND, 'sheet.closeBg': WHITE, 'sheet.closeIcon': '#000000', 'sheet.dim': '#000000', 'footer.bg': WHITE, 'footer.address': GREY, 'footer.hours': GREY, 'intro.bg': WHITE };
+const KIT = { 'page.bg': WHITE, 'page.text': INK, 'page.band': BAND, 'header.bg': WHITE, 'header.langBg': '#f2f2f2', 'header.langText': INK, 'tabs.bg': WHITE, 'tabs.text': GREY, 'tabs.active': '#000000', 'tabs.indicator': '#000000', 'tabs.list': '#000000', 'tabs.line': LINE, 'headings.title': INK, 'headings.note': GREY, 'rows.bg': WHITE, 'rows.name': INK, 'rows.desc': GREY, 'rows.price': INK, 'rows.chipBg': BAND, 'rows.chipText': INK, 'rows.photo': BAND, 'rows.line': LINE, 'sheet.bg': WHITE, 'sheet.title': '#000000', 'sheet.price': '#000000', 'sheet.body': '#545454', 'sheet.muted': GREY, 'sheet.line': LINE, 'sheet.hero': BAND, 'sheet.closeBg': WHITE, 'sheet.closeIcon': '#000000', 'sheet.dim': '#000000', 'footer.bg': WHITE, 'footer.address': GREY, 'footer.hours': GREY };
 const BEFORE = {
   senso: { ...KIT, 'footer.label': INK, 'footer.phone': '#042c7c' },
   'kebab-land': { ...KIT, 'header.tile': '#141414', 'footer.label': '#b92e2e', 'footer.address': INK, 'footer.phone': '#b92e2e' },
@@ -77,7 +79,7 @@ for (const venue of ['senso', 'kebab-land']) {
   const html = await publicHtml(venue); const vars = varsOf(html);
   const expected = BEFORE[venue]; const same = [], diff = [], known = [], missing = [];
   for (const [k, v] of Object.entries(expected)) { const got = vars[cssVar(k)]; if (!got) missing.push(k); else if (got === v) same.push(k); else if (KNOWN_DIFF[k] === got) known.push(`${k} ${v}→${got}`); else diff.push(`${k} expected ${v} got ${got}`); }
-  const extra = Object.keys(vars).filter((n) => !Object.keys(expected).some((k) => cssVar(k) === n));
+  const extra = Object.keys(vars).filter((n) => !n.startsWith('--c-welcome-') && !Object.keys(expected).some((k) => cssVar(k) === n)); // the welcome screen's tokens (2026-10-09) are new and have no pre-token look; the welcome drill checks their defaults
   const g = await fetch(`${base}/api/admin/style?venue=${venue}`, { headers: { cookie } }); const j = await g.json().catch(() => null);
   const badLabels = (j?.tokens || []).filter((t) => !/^[A-Z“]/.test(t.label) || /[._-]{1}[a-z]/.test(t.label.replace(/-list/, '')) || t.label.includes('.'));
   check(`day-one-${venue}`, diff.length === 0 && missing.length === 0 && extra.length === 0 && known.length === 6 && j?.groups?.length === 8 && badLabels.length === 0, `${venue}: ${same.length} of ${Object.keys(expected).length} served colours equal the pre-token look; known differences (pure black → ink) ${known.length}: ${known.join(', ')}; unexpected ${diff.length}${diff.length ? ` (${diff.join('; ')})` : ''}; missing ${missing.length}; extra variables ${extra.length}; API: ${j?.groups?.length} groups, ${j?.tokens?.length} tokens with plain-words labels (${badLabels.length} not), palette of ${j?.palette?.length} venue colours, layout options ${(j?.layout || []).map((o) => o.key).join('+')}`);
@@ -241,13 +243,34 @@ await snap(l, 'style-laptop');
   await openGroup('sheet'); await sleep(300);
   const sheet = await frameEval((d) => { const s = d.getElementById('sheet'); return { open: s?.open, outlined: s?.classList.contains('roses-region') }; });
   await snap(l, 'region-sheet');
-  await openGroup('intro'); await sleep(300);
-  const intro = await frameEval((d) => { const i = d.getElementById('intro'); const s = d.getElementById('sheet'); return { display: i ? getComputedStyle(i).display : 'absent', sheetClosed: !s?.open }; });
-  await snap(l, 'region-intro');
+  await openGroup('welcome'); await sleep(400);
+  const welcome = await frameEval((d) => { const w = d.getElementById('welcome'); const s = d.getElementById('sheet'); return { display: w ? getComputedStyle(w).display : 'absent', visible: !!w && w.getClientRects().length > 0 && getComputedStyle(w).visibility === 'visible', sheetClosed: !s?.open, running: w ? w.getAnimations({ subtree: true }).filter((a) => a.playState === 'running').length : 0, season: d.documentElement.dataset.season, scene: [...d.querySelectorAll('#welcome .scene')].filter((e) => getComputedStyle(e).display !== 'none').map((e) => e.dataset.scene).join('+') }; });
+  await snap(l, 'region-welcome');
+  // the preview-only season switch: Winter shows the winter scene in the frame; nothing is saved; Now puts the frame back on today's season
+  const styleBefore = JSON.stringify((await db.query(`select style from venues where id='senso'`)).rows[0].style);
+  await l.click('[data-style-season] button[data-season="winter"]'); await sleep(250);
+  const winter = await frameEval((d) => ({ season: d.documentElement.dataset.season, scene: [...d.querySelectorAll('#welcome .scene')].filter((e) => getComputedStyle(e).display !== 'none').map((e) => e.dataset.scene).join('+'), flakes: d.querySelectorAll('#welcome .scene-winter .p').length, running: d.getElementById('welcome').getAnimations({ subtree: true }).filter((a) => a.playState === 'running').length }));
+  await snap(l, 'region-welcome-winter');
+  const styleAfter = JSON.stringify((await db.query(`select style from venues where id='senso'`)).rows[0].style);
+  await l.click('[data-style-season] button[data-season="now"]'); await sleep(250);
+  const now = await frameEval((d) => d.documentElement.dataset.season);
+  const thisSeason = ['winter', 'winter', 'spring', 'spring', 'spring', 'summer', 'summer', 'summer', 'fall', 'fall', 'fall', 'winter'][new Date().getMonth()];
+  check('welcome-season', welcome.display === 'grid' && welcome.visible && welcome.sheetClosed && welcome.running > 0 && welcome.scene === welcome.season && winter.season === 'winter' && winter.scene === 'winter' && winter.flakes > 0 && winter.flakes <= 20 && winter.running > 0 && styleAfter === styleBefore && now === thisSeason, `Welcome group open → the welcome screen shown live in the preview (display ${welcome.display}, visible ${welcome.visible}, ${welcome.running} animations running, today's scene ${welcome.scene}; the sheet closed again: ${welcome.sheetClosed}); Winter in the season switch → the frame shows the winter scene (${winter.scene}, ${winter.flakes} flakes, ${winter.running} animations) and venues.style is unchanged (${styleAfter === styleBefore}); Now → ${now} (today's season ${thisSeason})`);
+  // a colour saved in the Welcome group shows on the overlay in the preview within 1 s; the group and the overlay stay through the save
+  await openToken('welcome.bg'); const tBg = Date.now(); await setHex('welcome.bg', '#e8f0ff');
+  let bgAt = null; while (Date.now() - tBg < 6000) { if ((await frameEval((d) => { const w = d.getElementById('welcome'); return w && getComputedStyle(w).display !== 'none' ? getComputedStyle(w).backgroundColor : null; })) === 'rgb(232, 240, 255)') { bgAt = Date.now() - tBg; break; } await sleep(30); }
+  const pubBg = await waitPublic('senso', (h) => publicVar(h, 'welcome.bg') === '#e8f0ff');
+  await l.waitForSelector('[role=status]:has-text("Saved")'); await frameReady(); await sleep(900);
+  const stillOpen = (await l.$$eval('[data-style-group][data-open]', (els) => els.map((e) => e.getAttribute('data-style-group')))).join();
+  const stillShown = await frameEval((d) => { const w = d.getElementById('welcome'); return !!w && getComputedStyle(w).display !== 'none' && getComputedStyle(w).backgroundColor; });
+  await snap(l, 'welcome-colour');
+  check('welcome-colour', bgAt != null && bgAt <= 1000 && pubBg.ok && stillOpen === 'welcome' && stillShown === 'rgb(232, 240, 255)', `welcome background #e8f0ff shows on the overlay in the preview ${bgAt} ms after Enter (target ≤ 1000); on the public page after ${pubBg.ms} ms; after the save, the data reload and the preview reload the open group is still [${stillOpen}] and the overlay still shown in that colour (${stillShown})`);
+  measure(`welcome colour: on the overlay in the preview after ${bgAt} ms`);
+  await l.click('[role=status] button:has-text("Undo")'); await l.waitForSelector('[role=status]:has-text("Undone")'); await waitPublic('senso', (h) => publicVar(h, 'welcome.bg') !== '#e8f0ff');
   await frameEval((d) => { d.querySelector('li.item h3').click(); });
   await l.waitForSelector('[data-style-group="rows"][data-open]');
-  const rowsOutlined = await frameEval((d) => !!d.querySelector('main section ul.roses-region') && getComputedStyle(d.getElementById('intro')).display === 'none');
-  check('region-outline', tabsOutlined && sheet.open && sheet.outlined && intro.display !== 'none' && intro.sheetClosed && rowsOutlined, `opening a group outlines its region: Category tabs → #tabs outlined (${tabsOutlined}); Item popup → the first item's sheet opened and outlined (${sheet.open && sheet.outlined}); Intro → the logo overlay shown frozen (display ${intro.display}, sheet closed again: ${intro.sheetClosed}); a tap on an item row → Item rows open and its lists outlined (${rowsOutlined})`);
+  const rowsOutlined = await frameEval((d) => !!d.querySelector('main section ul.roses-region') && getComputedStyle(d.getElementById('welcome')).display === 'none');
+  check('region-outline', tabsOutlined && sheet.open && sheet.outlined && welcome.display !== 'none' && welcome.sheetClosed && rowsOutlined, `opening a group outlines its region: Category tabs → #tabs outlined (${tabsOutlined}); Item popup → the first item's sheet opened and outlined (${sheet.open && sheet.outlined}); Welcome → the welcome screen shown (display ${welcome.display}, sheet closed again: ${welcome.sheetClosed}); a tap on an item row → Item rows open and its lists outlined, the welcome screen gone again (${rowsOutlined})`);
   // the controls are the master: a preview tap, then a colour saved in another group; the group stays open through the save,
   // the data reload and the preview reload (before the fix of 2026-10-08 the tapped group reopened after every save)
   await frameEval((d) => { d.querySelector('main footer p').click(); }); await l.waitForSelector('[data-style-group="footer"][data-open]');
@@ -285,7 +308,7 @@ await snap(l, 'style-laptop');
     let shownAt = null; const tp = Date.now(); while (Date.now() - tp < 6000) { if (await frameEval((d, id) => !!d.querySelector(`section[data-id="${id}"] ul[data-layout="grid"]`), sec.id)) { shownAt = Date.now() - t0; break; } await sleep(40); }
     const frameGrid = await frameEval((d, id) => { const ul = d.querySelector(`section[data-id="${id}"] ul[data-layout="grid"]`); if (!ul) return null; const cs = getComputedStyle(ul); const cards = [...ul.querySelectorAll('li.item')]; const r = cards.slice(0, 2).map((c) => c.getBoundingClientRect()); return { display: cs.display, columns: cs.gridTemplateColumns.split(' ').length, cards: cards.length, sideBySide: r.length === 2 && Math.abs(r[0].top - r[1].top) < 2 && r[1].left > r[0].right, photoW: Math.round(cards[0].querySelector('img, div[aria-hidden]')?.getBoundingClientRect().width || 0) }; }, sec.id);
     // the popup opens from a card like from a row: on the customers' page (in the Style tab's preview every tap is intercepted by design: it picks a region)
-    const cust = await laptop.newPage(); await cust.goto(`${base}/senso`, { waitUntil: 'load' }); await cust.waitForFunction(() => document.documentElement.dataset.intro === 'done');
+    const cust = await laptop.newPage(); await cust.goto(`${base}/senso`, { waitUntil: 'load' }); await cust.waitForFunction(() => document.documentElement.dataset.welcome === 'show'); await cust.evaluate(() => document.querySelector('#welcome button[data-lang="en"]').click()); await cust.waitForFunction(() => document.documentElement.dataset.welcome === 'off');
     const sheet = await cust.evaluate((id) => { const card = document.querySelector(`section[data-id="${id}"] li.item.card`); card.click(); const s = document.getElementById('sheet'); const title = s.querySelector('h2 [lang=en]')?.textContent; const open = s.open; s.close(); return { open, title, cardTitle: card.querySelector('h3 [lang=en]')?.textContent }; }, sec.id);
     await cust.close();
     const control = await l.getAttribute(`[data-section-layout="${sec.id}"]`, 'data-layout');

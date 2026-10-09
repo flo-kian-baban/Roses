@@ -2,10 +2,10 @@ import type { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { getPublicMenu, getVenue, getVenues } from '@/lib/menu';
 import type { Section, Venue } from '@/lib/types';
-import { Intro, headScript } from '@/components/Intro';
+import { Welcome, headScript } from '@/components/Welcome';
 import { DefaultPage } from '@/venues/default';
 import { styleOf } from '@/venues/styles';
-import { colorCss, resolveColors } from '@/venues/tokens';
+import { colorCss, isLight, resolveColors } from '@/venues/tokens';
 
 // Venues added in the admin ("+ Add venue", step 2): their page on the default template (src/venues/default.tsx).
 // Senso and Kebab Land keep their own files (src/pages/senso.tsx, kebab-land.tsx); a static route always wins over
@@ -42,10 +42,10 @@ export default function VenuePage({ venue, sections }: Props) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content={colors['page.bg'].value} />
         {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
-        <script dangerouslySetInnerHTML={{ __html: headScript(style.intro !== false) }} />
+        <script dangerouslySetInnerHTML={{ __html: headScript(style.welcome !== false) }} />
       </Head>
       <style dangerouslySetInnerHTML={{ __html: css }} />
-      {style.intro !== false && venue.brand.logo && <Intro logo={venue.brand.logo} alt={venue.name.en ?? ''} tile />}
+      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} tile={isLight(colors['welcome.bg'].value)} />}
       <DefaultPage venue={venue} sections={sections} style={style} />
     </>
   );

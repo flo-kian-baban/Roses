@@ -176,17 +176,18 @@ const browser = await chromium.launch();
   await ctx.close();
 }
 
-// 3b. a link straight to a section (#id, the third one) opens with that tab active (the same rule as above: the section under the bar,
-//     the last one at the end of a page that has scrolled, as on a short page whose last section cannot reach the bar), fresh context
+// 3b. a link straight to a section (#id, the third one): the browser scrolls there behind the overlay, and the choice puts the page at the
+//     top with the first tab active (Kian, 2026-10-09, later: the menu always starts from the top; the earlier anchor rule is withdrawn), fresh context
 {
   const ctx = await browser.newContext(DEVICE);
   const page = await ctx.newPage();
   const target = log.checks.dom.sections[Math.min(2, log.checks.dom.sections.length - 1)]?.id ?? null;
   await page.goto(`${url}#${target}`, { waitUntil: 'load' });
-  await waitShow(page); await page.evaluate(tapLang, 'en'); await waitOff(page); // the choice first; the script then scrolls to the anchor
+  await waitShow(page); const behind = await page.evaluate(() => Math.round(scrollY)); await page.evaluate(tapLang, 'en'); await waitOff(page); // the choice puts the page at the top
   await page.waitForTimeout(600);
   const d = await page.evaluate(() => { const bar = document.getElementById('tabs').getBoundingClientRect(); const secs = [...document.querySelectorAll('main section[id]')]; let under = secs[0]?.id ?? null; for (const s of secs) if (s.getBoundingClientRect().top <= bar.bottom + 1) under = s.id; const atBottom = scrollY > 0 && scrollY >= document.documentElement.scrollHeight - innerHeight - 1; if (atBottom && secs.length) under = secs.at(-1).id; return { active: document.querySelector('#tabs a.active')?.dataset.tab ?? null, under, atBottom, y: Math.round(scrollY) }; });
-  log.checks.tabs.directLink = { target, ...d, ok: !!target && d.active === target && d.under === target };
+  const first = log.checks.dom.sections[0]?.id ?? null, y = await page.evaluate(() => Math.round(scrollY));
+  log.checks.tabs.directLink = { target, behindOverlayY: behind, ...d, y, ok: !!target && y === 0 && d.active === first && d.under === first };
   log.checks.tabs.ok = log.checks.tabs.ok && log.checks.tabs.directLink.ok;
   await ctx.close();
 }

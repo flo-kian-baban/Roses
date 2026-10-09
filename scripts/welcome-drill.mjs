@@ -8,7 +8,7 @@
 //     reduced motion: shown but still, the fade instant;
 //   the tap: the menu visible within 300 ms (measured in the page from the click to the overlay gone), the language set and stored,
 //     pre-highlighted on the next load (English, then Persian, whose greeting line then reads first);
-//   a section anchor in the URL: scrolled to under the category bar after the choice, with its tab active;
+//   a section anchor in the URL: the browser scrolls there behind the overlay, the choice puts the page at the top with the first tab active (Kian, 2026-10-09, later);
 //   keyboard and labels: Tab reaches the first button and Enter chooses it; role dialog, aria-modal, buttons ≥ 44 px tall with a name; the menu
 //     behind is inert while the overlay is up and reachable again after the choice;
 //   JavaScript off: the menu visible, no overlay; the kill switch on the Style route (owner): off → no overlay in the HTML and the menu shown
@@ -163,9 +163,9 @@ for (const venue of VENUES) {
   await page.goto(`${base}/senso#${target}`, { waitUntil: 'load' }); await settled(page);
   const before = await page.evaluate(PROBE);
   const tap = await page.evaluate(TAP, 'en'); await off(page); await sleep(400);
-  const a = await page.evaluate((id) => { const bar = document.getElementById('tabs').getBoundingClientRect(); const sec = document.getElementById(id).getBoundingClientRect(); return { y: Math.round(scrollY), gap: Math.round(sec.top - bar.bottom), active: document.querySelector('#tabs a.active')?.dataset.tab ?? null, hash: location.hash }; }, target);
+  const a = await page.evaluate(() => ({ y: Math.round(scrollY), active: document.querySelector('#tabs a.active')?.dataset.tab ?? null, hash: location.hash }));
   await shot(page, 'senso-anchor-after-choice');
-  check('anchor', before.welcome === 'show' && tap.gone && a.y > 0 && Math.abs(a.gap) <= 2 && a.active === target, `/senso#${target}: the welcome screen first (${before.welcome}); after the choice the page sits on that section (scrollY ${a.y}, the section ${a.gap} px under the category bar) with its tab active (${a.active})`);
+  check('anchor', before.welcome === 'show' && before.y > 0 && tap.gone && a.y === 0 && a.active === ids[0], `/senso#${target}: the welcome screen first (${before.welcome}) over the page the browser had scrolled to the anchor (scrollY ${before.y}); after the choice the page starts from the top (scrollY ${a.y}, first tab active: ${a.active}); the URL keeps its hash (${a.hash})`);
   // keyboard: Tab from the top of the page reaches the English button, Enter chooses it
   await page.goto(`${base}/senso`, { waitUntil: 'load' }); await settled(page);
   await page.keyboard.press('Tab');

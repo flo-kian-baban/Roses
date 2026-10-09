@@ -9,7 +9,7 @@
 // device's: the page is rendered for the current season in America/Toronto and regenerated hourly (the PM's build decision,
 // 2026-10-09, current season only: src/lib/welcome.ts seasonNow), so the HTML carries one scene, named on #welcome[data-season].
 // The script inside the overlay handles the tap: it sets the language like the header toggle, stores it, fades the overlay out
-// (data-welcome="done", then "off" once the 200 ms fade has ended, display none) and scrolls to the URL's section anchor if any.
+// (data-welcome="done", then "off" once the 200 ms fade has ended, display none) and puts the page at the top (Kian, 2026-10-09).
 // No framework JavaScript: inline script, CSS and inline SVG only (src/styles/public.css, the "Welcome screen" block).
 //
 // Scenes. Senso (Kian's picks of 2026-10-09, src/components/welcome-art.ts): the fall and winter scenes are the picked artwork
@@ -34,15 +34,16 @@ export function headScript(welcome = true): string {
 }
 
 // The tap: the language like the header toggle (src/components/LangToggle.tsx), stored; the menu behind made reachable again
-// (it is inert while the overlay is up); the fade (200 ms, none under reduced motion), then "off"; the section anchor, if any,
-// scrolled to under the category bar like a tap on a tab.
+// (it is inert while the overlay is up); the fade (200 ms, none under reduced motion), then "off"; the page put at the top (Kian,
+// 2026-10-09, later: after the choice the menu always starts from the top, even when the URL carries a section anchor, which the
+// browser had scrolled to behind the overlay; the earlier rule that scrolled to the anchor after the choice is withdrawn).
 const welcomeScript = `(function(){var h=document.documentElement,w=document.getElementById('welcome');if(!w||h.dataset.welcome!=='show')return;
 var s=h.dataset.langSaved;if(s){var b=w.querySelector('button[data-lang="'+s+'"]');if(b)b.setAttribute('aria-pressed','true')}
 var inert=function(v){var m=document.querySelector('main');if(m)m.inert=v};document.addEventListener('DOMContentLoaded',function(){if(h.dataset.welcome==='show')inert(true)});
 var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var choose=function(n){h.dataset.lang=n;h.lang=n;h.dir=n==='fa'?'rtl':'ltr';try{localStorage.setItem('roses-lang',n)}catch(e){}inert(false);h.dataset.welcome='done';
 var off=function(){if(h.dataset.welcome==='done')h.dataset.welcome='off'};if(reduced)off();else{w.addEventListener('transitionend',off,{once:true});setTimeout(off,320)}
-if(location.hash){var t=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(t){var nav=document.getElementById('tabs');window.scrollTo({top:window.scrollY+t.getBoundingClientRect().top-(nav?nav.offsetHeight:0),behavior:'auto'})}}};
+window.scrollTo(0,0)};
 w.querySelectorAll('button[data-lang]').forEach(function(b){b.addEventListener('click',function(){choose(b.getAttribute('data-lang'))})})})();`;
 
 // The artwork engine (Senso; the scene element names its kind, leaves or snow, and the picked designs). Three depth layers, each

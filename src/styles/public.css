@@ -96,8 +96,9 @@ html[data-greet="morning"] .welcome-greet .g[data-g="morning"], html[data-greet=
 .welcome-greet .g > span[lang="fa"] { font-family: var(--font-persian); font-size: 24px; letter-spacing: 0; animation-delay: .47s; }
 html[data-lang="fa"] .welcome-greet .g > span[lang="fa"] { order: -1; animation-delay: .35s; } /* the remembered language reads first */
 html[data-lang="fa"] .welcome-greet .g > span[lang="en"] { animation-delay: .47s; }
-.welcome-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-.welcome-buttons button { min-height: 56px; padding: 0 16px; border-radius: 9999px; background: var(--c-welcome-btn-bg); color: var(--c-welcome-btn-text); font-size: 20px; font-weight: 600; line-height: 1.2; cursor: pointer; animation: welcome-rise .5s cubic-bezier(.2, .8, .2, 1) .62s both; transition: transform .12s ease; }
+/* The two language buttons (Kian, 2026-10-09, later: a little smaller than the first version's 56 px / 20 px): 48 px tall, 17 px text, the pair at most 300 px wide; still a 44 px tap target. */
+.welcome-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: min(100%, 300px); }
+.welcome-buttons button { min-height: 48px; padding: 0 14px; border-radius: 9999px; background: var(--c-welcome-btn-bg); color: var(--c-welcome-btn-text); font-size: 17px; font-weight: 600; line-height: 1.2; cursor: pointer; animation: welcome-rise .5s cubic-bezier(.2, .8, .2, 1) .62s both; transition: transform .12s ease; }
 .welcome-buttons button[lang="fa"] { font-family: var(--font-persian); animation-delay: .72s; }
 html[data-lang-saved="en"] .welcome-buttons button[data-lang="en"], html[data-lang-saved="fa"] .welcome-buttons button[data-lang="fa"] { background: var(--c-welcome-active-bg); color: var(--c-welcome-active-text); }
 .welcome-buttons button:active { transform: scale(.97); }

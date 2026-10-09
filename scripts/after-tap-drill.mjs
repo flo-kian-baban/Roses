@@ -13,7 +13,9 @@
 // one in a List, the two cards of a Grid's first row; every other photo lazy). Photo sizes: a HEAD request per photo of the first
 // section (Content-Length, Content-Type) and the natural dimensions the page decoded against the rendered ones.
 // Target ≤ 2500 ms from the tap for the menu and for the photos in view, on the worse of the two repeats; a miss is reported as a
-// miss and fails the step (the PM: never change the design to pass).
+// miss and fails the step (the PM: never change the design to pass). Two checks per run (the PM, 2026-10-09, for the suite's known
+// misses): after-tap-<run>-menu (the menu visible, the page settled, no page error) and after-tap-<run>-photos (the photos in view),
+// with <run> senso-list, senso-grid or kebab-land; reports/checks/known-misses.json names the ones known to miss.
 //   DRILL_ADMIN_PIN=… node scripts/after-tap-drill.mjs --base http://127.0.0.1:3100 --out reports/checks/<stamp>/after-tap
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -113,7 +115,7 @@ async function setLayout(layout) {
   return waitPublic('senso', (h) => sectionLayoutOf(h, sec.id) === layout);
 }
 
-const RUNS = [{ venue: 'senso', layout: 'list', label: 'senso (first section as a List)' }, { venue: 'senso', layout: 'grid', label: 'senso ("Senso Signature" as a Grid)' }, { venue: 'kebab-land', layout: null, label: 'kebab-land (as it is)' }];
+const RUNS = [{ key: 'senso-list', venue: 'senso', layout: 'list', label: 'senso (first section as a List)' }, { key: 'senso-grid', venue: 'senso', layout: 'grid', label: 'senso ("Senso Signature" as a Grid)' }, { key: 'kebab-land', venue: 'kebab-land', layout: null, label: 'kebab-land (as it is)' }];
 const all = [];
 for (const run of RUNS) {
   if (run.layout) { const s = await setLayout(run.layout); log('layout', `${run.venue}: ${sec.name} → ${run.layout}: ${s.ok ? `on the public page after ${s.ms} ms` : `FAILED (${s.error})`}`); }
@@ -121,12 +123,14 @@ for (const run of RUNS) {
   const repeats = [];
   for (let n = 1; n <= REPEATS; n++) { const r = await runOnce(run.venue); repeats.push(r); log(run.label, `repeat ${n}: first paint ${r.firstPaintMs} ms, DOMContentLoaded ${r.domContentLoadedMs} ms, the tap at ${r.tapAtMs} ms with ${r.imageResourcesAtTap} image(s) of ${r.resourcesAtTap} resources down, settled ${r.settled}; after the tap: menu visible ${r.menuVisibleMs} ms, the ${r.eagerPhotos} eager photo(s) ${r.eagerPhotosMs} ms, the ${r.photosInView} in view ${r.photosInViewMs} ms, all ${r.photosAll} ${r.photosAllMs} ms; page errors ${r.errors.length}`); }
   const worst = (k) => repeats.reduce((m, r) => (r[k] == null ? Infinity : Math.max(m, r[k])), 0);
-  const ok = repeats.every((r) => r.settled && r.errors.length === 0) && worst('menuVisibleMs') <= TARGET && worst('photosInViewMs') <= TARGET;
+  const menuOk = repeats.every((r) => r.settled && r.errors.length === 0) && worst('menuVisibleMs') <= TARGET, photosOk = worst('photosInViewMs') <= TARGET, ok = menuOk && photosOk;
   const fmt = (k) => repeats.map((r) => (r[k] == null ? 'not within 25 s' : `${r[k]} ms`)).join(' / ');
   const abs = (k) => repeats.map((r) => (r[k] == null || r.tapAtMs == null ? '—' : s1(r.tapAtMs + r[k]))).join(' / ');
   const inView = repeats[0].photosInView, total = repeats[0].photosAll;
   const text = `${run.label}, served as a ${served.layout} with ${served.imgs.length} photos (${served.imgs.filter((i) => i.loading === 'eager').length} eager, ${served.eagerOnPage} eager on the whole page): menu visible ${fmt('menuVisibleMs')} after the tap; the ${repeats[0].eagerPhotos} eager photo(s) of the first row loaded ${fmt('eagerPhotosMs')} after the tap; the ${inView} photo(s) in view loaded ${fmt('photosInViewMs')} after the tap (${abs('photosInViewMs')} after navigation); all ${total} first-section photos ${fmt('photosAllMs')} after the tap (${abs('photosAllMs')} after navigation); the tap at ${repeats.map((r) => s1(r.tapAtMs)).join(' / ')} after navigation (first paint ${repeats.map((r) => s1(r.firstPaintMs)).join(' / ')}, ${repeats.map((r) => r.imageResourcesAtTap).join(' / ')} image(s) already down at the tap)`;
-  check(`after-tap-${run.venue}-${run.layout || served.layout}`, ok, `${ok ? 'within' : 'MISSES'} the ${TARGET} ms target: ${text}`);
+  log(run.label, text);
+  check(`after-tap-${run.key}-menu`, menuOk, `${menuOk ? 'within' : 'MISSES'} the ${TARGET} ms target: ${run.label}, the menu visible ${fmt('menuVisibleMs')} after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap ${repeats.map((r) => r.settled).join(' / ')}, page errors ${repeats.map((r) => r.errors.length).join(' / ')}`);
+  check(`after-tap-${run.key}-photos`, photosOk, `${photosOk ? 'within' : 'MISSES'} the ${TARGET} ms target: ${run.label}, the ${inView} photo(s) in view loaded ${fmt('photosInViewMs')} after the tap; the first row's ${repeats[0].eagerPhotos} eager photo(s) ${fmt('eagerPhotosMs')}, all ${total} first-section photos ${fmt('photosAllMs')}; served as a ${served.layout} with ${served.imgs.length} photos (${served.imgs.filter((i) => i.loading === 'eager').length} eager)`);
   measure(`${run.label}: menu visible ${fmt('menuVisibleMs')}, first-row photo(s) ${fmt('eagerPhotosMs')}, the ${inView} photos in view ${fmt('photosInViewMs')}, all ${total} ${fmt('photosAllMs')} after the tap (target ≤ ${TARGET} ms for the menu and the photos in view)${ok ? '' : ' — MISS'}`);
   all.push({ ...run, served, repeats, ok });
 }

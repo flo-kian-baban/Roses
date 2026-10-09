@@ -13,8 +13,10 @@
 // What changed (Kian, 2026-10-09): at the top, every colour that differs from the venue default as default swatch → current
 // swatch with a per-colour reset (through the readability guard, like any save); Compare (the venue's default colours in the
 // preview while held) sits in the preview bar. Discard this session's changes: a snapshot of the venue's style (colours, the
-// template's switches) and of every section's layout is taken when the tab opens; the button restores it in one step (one
-// change record for the style, one per section whose layout changed), with a confirmation and an Undo.
+// template's switches) and of every section's layout, taken the first time the Style tab opens and held by the editor for the whole
+// visit to the venue's editor (the PM, 2026-10-09: kept across tab switches; a reload, leaving the venue or a Discard starts it
+// again); the button restores it in one step (one change record for the style, one per section whose layout changed), with a
+// confirmation and an Undo.
 // Layout group (Kian, 2026-10-08): the template's switches, then the layout of every section: List or Grid.
 // Welcome group (Kian, 2026-10-09, replacing the Intro group): its on/off switch (the kill switch) at the top, then the welcome
 // screen's colours as tokens under the readability guard; the preview-only season and time of day are in the preview bar.
@@ -29,7 +31,7 @@ import { ConfirmSheet, Switch, btnSecondary, fieldCls } from './ui';
 
 type Data = { template: { id: string; name: string }; groups: typeof GROUPS; tokens: TokenDef[]; palette: { label: string; value: string }[]; layout: StyleOption[]; values: StyleValues; style: StyleValues; brand: Brand | null };
 type Fail = { key: string; error: string; suggestion: { key: string; value: string } | null; refused?: string };
-type Snapshot = { style: StyleValues; layouts: Record<string, SectionLayout> };
+export type StyleSnapshot = { style: StyleValues; layouts: Record<string, SectionLayout> };
 export type Picked = { region: Region; n: number } | null;
 const btnSmall = `${btnSecondary} min-h-9 px-3 text-sm`;
 const sameJson = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
@@ -43,9 +45,10 @@ function countStyleChanges(a: StyleValues, b: StyleValues): number {
   return n;
 }
 
-export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefaults, onRegion, onEditing, picked, sections, onLayout }: {
+export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefaults, onRegion, onEditing, picked, sections, onLayout, snapshot, onSnapshot }: {
   venueId: string; version: number; onSaved: (r: Resp, text?: string) => void; onApply: (r: Resp) => void; onLive: (vars: Record<string, string> | null) => void; onDefaults: (vars: Record<string, string>) => void;
   onRegion: (r: Region | null) => void; onEditing: (editing: boolean) => void; picked: Picked; sections: EditorSection[]; onLayout: (id: string, layout: SectionLayout) => Promise<void>;
+  snapshot: StyleSnapshot | null; onSnapshot: React.Dispatch<React.SetStateAction<StyleSnapshot | null>>; // the visit's snapshot, held by the editor
 }) {
   const [data, setData] = useState<Data | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -55,14 +58,13 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
   const [pending, setPending] = useState<Record<string, string>>({});
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
-  const [snapshot, setSnapshot] = useState<Snapshot | null>(null); // the venue's style when the tab opened (Discard this session's changes)
   const groupRefs = useRef<Partial<Record<GroupId, HTMLElement | null>>>({});
   const handledPick = useRef(0); // the preview tap already acted on (its `n`), so a later data reload never replays it
   const [layoutBusy, setLayoutBusy] = useState<string | null>(null);
   useEffect(() => {
     let live = true;
     fetch(`/api/admin/style?venue=${encodeURIComponent(venueId)}`, { credentials: 'same-origin' })
-      .then(async (r) => { const j = await r.json().catch(() => null); if (!r.ok || !j?.ok) throw new Error(j?.error || `Could not load the style options (${r.status})`); if (live) { setData(j as Data); setErr(null); setSnapshot((s) => s ?? { style: (j as Data).style, layouts: Object.fromEntries(sections.map((x) => [x.id, x.layout])) }); } })
+      .then(async (r) => { const j = await r.json().catch(() => null); if (!r.ok || !j?.ok) throw new Error(j?.error || `Could not load the style options (${r.status})`); if (live) { setData(j as Data); setErr(null); onSnapshot((s) => s ?? { style: (j as Data).style, layouts: Object.fromEntries(sections.map((x) => [x.id, x.layout])) }); } })
       .catch((e) => { if (live) setErr((e as Error).message); });
     return () => { live = false; };
   }, [venueId, version]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -118,7 +120,8 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
     catch (e) { setErr((e as Error).message); }
   };
   // Discard this session's changes: the style back to the snapshot in one record, then each section whose layout changed; one
-  // "Discarded · Undo" for all of it (the undo route restores every record together).
+  // "Discarded · Undo" for all of it (the undo route restores every record together). A Discard starts the session again from
+  // what it put back.
   const changedLayouts = snapshot ? sections.filter((s) => snapshot.layouts[s.id] && snapshot.layouts[s.id] !== s.layout) : [];
   const sessionChanges = snapshot && data ? countStyleChanges(snapshot.style, data.style) + changedLayouts.length : 0;
   const discard = async () => {
@@ -126,10 +129,11 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
     setFail(null);
     try {
       const revisions: number[] = [];
-      let last: Resp | null = null;
-      if (!sameJson(snapshot.style, data.style)) { const r = await call('/api/admin/style', { action: 'restore', venue: venueId, style: snapshot.style }); apply(r); revisions.push(...r.revisions); last = r; }
+      let last: Resp | null = null, style = data.style;
+      if (!sameJson(snapshot.style, data.style)) { const r = await call('/api/admin/style', { action: 'restore', venue: venueId, style: snapshot.style }); apply(r); revisions.push(...r.revisions); last = r; style = r.style as StyleValues; }
       for (const s of changedLayouts) { const r = await call('/api/admin/section', { action: 'update', id: s.id, patch: { layout: snapshot.layouts[s.id] } }); onApply(r); revisions.push(...r.revisions); last = r; }
       setConfirmDiscard(false);
+      onSnapshot({ style, layouts: { ...Object.fromEntries(sections.map((x) => [x.id, x.layout])), ...snapshot.layouts } });
       onSaved({ ...(last ?? { ok: true }), revisions }, 'Discarded');
     } catch (e) { setErr((e as Error).message); }
   };
@@ -174,7 +178,7 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
         {followed.length > 0 && <p className="px-4 pt-2 text-xs text-ink-muted" data-style-followed>Follow them (Auto): {followed.map((t) => label(t.key)).join(', ')}.</p>}
         <div className="flex flex-wrap items-center gap-2 px-4 py-3">
           <button type="button" className={btnSmall} disabled={sessionChanges === 0} onClick={() => setConfirmDiscard(true)} data-style-discard data-changes={sessionChanges}><Icon name="restore" className="h-4 w-4" />Discard this session&rsquo;s changes</button>
-          <span className="text-xs text-ink-muted">{sessionChanges === 0 ? 'Nothing changed since you opened the Style tab.' : `Back to how it was when you opened the Style tab (${sessionChanges} change${sessionChanges === 1 ? '' : 's'}).`}</span>
+          <span className="text-xs text-ink-muted">{sessionChanges === 0 ? 'Nothing changed since you first opened the Style tab.' : `Back to how it was when you first opened the Style tab (${sessionChanges} change${sessionChanges === 1 ? '' : 's'}).`}</span>
         </div>
       </section>
       <div className="mt-3 space-y-3">
@@ -252,7 +256,7 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
         <p className="mt-2 text-xs text-ink-muted">Back to the venue&rsquo;s own look: the recorded brand colours (logo, website) stay on file and are the swatches in every group.</p>
       </div>
       {confirmReset && <ConfirmSheet title="Reset all colours?" body={<>Every colour goes back to the venue&rsquo;s default look. You can undo for 10 seconds.</>} label="Reset all colours" onConfirm={() => reset()} onClose={() => setConfirmReset(false)} />}
-      {confirmDiscard && <ConfirmSheet title="Discard this session's changes?" body={<>Every colour, switch and section layout goes back to how it was when you opened the Style tab ({sessionChanges} change{sessionChanges === 1 ? '' : 's'}). You can undo for 10 seconds.</>} label="Discard changes" onConfirm={discard} onClose={() => setConfirmDiscard(false)} />}
+      {confirmDiscard && <ConfirmSheet title="Discard this session's changes?" body={<>Every colour, switch and section layout goes back to how it was when you first opened the Style tab ({sessionChanges} change{sessionChanges === 1 ? '' : 's'}). You can undo for 10 seconds.</>} label="Discard changes" onConfirm={discard} onClose={() => setConfirmDiscard(false)} />}
     </div>
   );
 }

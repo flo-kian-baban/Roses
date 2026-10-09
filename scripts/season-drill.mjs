@@ -3,7 +3,8 @@
 // artwork, chosen when the page is rendered from the date in America/Toronto, and the public pages are regenerated hourly
 // (revalidate 3600, time-based ISR), so the season flips within an hour of midnight on the 1st). Proven on a copy of the build
 // with its own server (the suite's servers and their cache are never touched):
-//   render tests with a fixed date: the server's clock is ROSES_NOW (the suite's hook; never set in production) at each boundary
+//   render tests with a fixed date: the server's clock is ROSES_NOW (the suite's hook, honoured only with the suite's own flag
+//     ROSES_CHECK_SUITE=1; neither is ever set in production) at each boundary
 //     instant in Toronto time, Aug 31 / Sep 1, Nov 30 / Dec 1, Feb 28 / Mar 1, May 31 / Jun 1 (23:30 and 00:30, an hour apart, plus
 //     Aug 31 22:30 EDT, which is already Sep 1 in UTC: the page must still say summer);
 //   the simulated hour: between two renders the cached page is aged by 3601 s (the build's seed under server/pages and the route-cache
@@ -16,13 +17,17 @@
 //     measured; randomness: two loads differ in designs and parameters; the reduced-motion still; recordings (webm, on disk only) and
 //     stills; the inline welcome code gzipped per season;
 //   Kebab Land and the default template: the served scene of every season and its symbols byte for byte as in the fixture captured
-//     from the previous commit (scripts/fixtures/welcome-scenes.json), and the stylesheet's motion rules verbatim.
+//     from the previous commit (scripts/fixtures/welcome-scenes.json), and the stylesheet's motion rules verbatim;
+//   the guard (the PM, 2026-10-09): a server started with ROSES_NOW alone (no ROSES_CHECK_SUITE) renders the real current season in
+//     Toronto, not the forged one, and logs that it ignored it; the same instant with the flag renders the forged season.
+// The drill's server is its own: the port must be free before it starts, and its listener must be the process it spawned (lsof).
 //   node scripts/season-drill.mjs --dist .next-check --copy .next-season --port 3102 --out reports/checks/<stamp>/season --venues senso,kebab-land[,<temp>] [--jpeg]
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import zlib from 'node:zlib';
-import { spawn, execFileSync } from 'node:child_process';
+import net from 'node:net';
+import { spawn, execFileSync, spawnSync } from 'node:child_process';
 import { chromium, devices } from 'playwright';
 import { loadEnv } from './load-env.mjs';
 import { compare, compareCss, extract } from './welcome-fixture.mjs';
@@ -55,17 +60,25 @@ const manifest = JSON.parse(fs.readFileSync(path.join(copy, 'prerender-manifest.
 const interval = Object.fromEntries(venues.map((v) => [v, manifest.routes[`/${v}`]?.initialRevalidateSeconds ?? (manifest.dynamicRoutes?.['/[venue]'] ? 'dynamic route' : null)]));
 const serverLog = fs.openSync(path.join(out, 'season-server.log'), 'a');
 let server = null;
-async function start(now) {
-  server = spawn('npx', ['next', 'start', '-p', String(port)], { env: { ...process.env, NEXT_DIST_DIR: copy, ROSES_NOW: now, ROSES_APP_NAME: 'roses-check:season-server' }, stdio: ['ignore', serverLog, serverLog] });
-  fs.writeSync(serverLog, `\n--- server started with ROSES_NOW=${now} at ${new Date().toISOString()}\n`);
+const portFree = (host) => new Promise((res) => { const s = net.createServer(); s.once('error', (e) => res(e.code !== 'EADDRINUSE')); s.listen(port, host, () => s.close(() => res(true))); });
+const listeners = () => spawnSync('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'], { encoding: 'utf8' }).stdout.split('\n').filter(Boolean).map(Number);
+// flag false: ROSES_NOW alone, without the suite's flag (the guard check below)
+async function start(now, { flag = true } = {}) {
+  if (!(await portFree('127.0.0.1')) || !(await portFree('::1'))) throw new Error(`port ${port} is in use by a process this drill did not start; it is left alone`);
+  server = spawn(process.execPath, [path.resolve('node_modules/next/dist/bin/next'), 'start', '-p', String(port)], { env: { ...process.env, NEXT_DIST_DIR: copy, ROSES_NOW: now, ...(flag ? { ROSES_CHECK_SUITE: '1' } : { ROSES_CHECK_SUITE: '' }), ROSES_APP_NAME: 'roses-check:season-server' }, stdio: ['ignore', serverLog, serverLog] });
+  fs.writeSync(serverLog, `\n--- server started with ROSES_NOW=${now}${flag ? ' and ROSES_CHECK_SUITE=1' : ' alone (ROSES_CHECK_SUITE not set)'} at ${new Date().toISOString()}\n`);
   const t = Date.now();
   // readiness is probed on the admin sign-in page, never on a public page (a probe there would read the cache and start the regeneration early)
-  while (Date.now() - t < 30000) { try { const r = await fetch(`${base}/admin`, { method: 'HEAD', redirect: 'manual' }); if (r.status < 500) return Date.now() - t; } catch { /* not yet */ } await sleep(150); }
+  while (Date.now() - t < 30000) {
+    try { const r = await fetch(`${base}/admin`, { method: 'HEAD', redirect: 'manual' }); if (r.status < 500) { const pids = listeners(); if (server.exitCode !== null || pids.length === 0 || pids.some((x) => x !== server.pid)) throw new Error(`port ${port}: listener ${pids.join(',') || 'none'} is not the drill's server (pid ${server.pid}, exit ${server.exitCode})`); return Date.now() - t; } }
+    catch (e) { if (/not the drill's server/.test(e.message)) throw e; /* not yet */ }
+    await sleep(150);
+  }
   throw new Error('season server did not come up');
 }
 async function stop() { if (!server) return; server.kill('SIGTERM'); await new Promise((r) => { server.once('exit', r); setTimeout(r, 3000); }); server = null; }
 // a fresh server at another instant: the cached pages aged by an hour and a second first, so its first request regenerates them
-async function restart(now) { await stop(); age(3601); return start(now); }
+async function restart(now, opts) { await stop(); age(3601); return start(now, opts); }
 // Where Next keeps a page: the build's seed (server/pages/<v>.html, .json, .meta) and, once read or regenerated, the route-cache entry
 // (server/route-cache/PAGES/<hash>/$/<v>.html, .json, .meta, whose .meta stamps routeCacheLastModified; that stamp, else the file time, is
 // the entry's age). The seed is also the pre-rendered page file.
@@ -207,6 +220,35 @@ for (const v of venues.filter((x) => ART_VENUES.includes(x))) {
 for (const season of ['fall', 'winter', 'spring', 'summer']) {
   await restart(SEASON_INSTANT[season]);
   for (const v of venues) { await waitFresh(v, season); const c = await browser.newContext(DEVICE); const p = await c.newPage(); await p.goto(`${base}/${v}`, { waitUntil: 'load' }); await sleep(1300); await shot(p, `${v}-${season}`); await c.close(); }
+}
+// ---- the guard (the PM, 2026-10-09): ROSES_NOW is honoured only together with the suite's flag ROSES_CHECK_SUITE=1. A server started with
+// ROSES_NOW alone must render the real current season (America/Toronto, from the machine's clock), and say in its log that it ignored it;
+// the same instant with the flag renders the forged season (the control). The forged season differs from the real one and from what the
+// cache holds, so a stale page, an honoured ROSES_NOW and the real clock all give different answers; the cache entry must be rewritten.
+{
+  const torontoMonth = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'numeric' }).format(new Date())) - 1;
+  const real = torontoMonth >= 8 && torontoMonth <= 10 ? 'fall' : torontoMonth === 11 || torontoMonth <= 1 ? 'winter' : torontoMonth <= 4 ? 'spring' : 'summer';
+  // what the server would serve before regenerating: its route-cache entry once there is one, else the build's seed
+  const cached = Object.fromEntries(venues.map((v) => { const f = cacheFiles(v).filter((x) => x.endsWith('.html')).sort((a, b) => Number(b.includes('route-cache')) - Number(a.includes('route-cache')))[0]; return [v, seasonOf(fs.readFileSync(f, 'utf8'))]; }));
+  const forged = ['winter', 'spring', 'summer', 'fall'].find((x) => x !== real && venues.every((v) => cached[v] !== x));
+  const logBefore = fs.statSync(path.join(out, 'season-server.log')).size;
+  await restart(SEASON_INSTANT[forged], { flag: false });
+  const alone = [];
+  for (const v of venues) {
+    const before = stamp(v); const first = await get(v);
+    let after = stamp(v); { const t = Date.now(); while (after === before && Date.now() - t < 15000) { await sleep(100); after = stamp(v); } }
+    await sleep(200); const fresh = await get(v);
+    alone.push({ venue: v, cached: cached[v], firstResponse: seasonOf(first.html), regenerated: after !== before, rendered: seasonOf(fresh.html) });
+  }
+  await sleep(300);
+  const logText = fs.readFileSync(path.join(out, 'season-server.log'), 'utf8').slice(logBefore);
+  const ignoredLogged = /ROSES_NOW is set without ROSES_CHECK_SUITE=1: ignored/.test(logText);
+  await restart(SEASON_INSTANT[forged], { flag: true });
+  const withFlag = [];
+  for (const v of venues) { await get(v); const f = await waitFresh(v, forged); withFlag.push({ venue: v, rendered: seasonOf(f.html), ms: f.ms }); }
+  const ok = !!forged && alone.every((a) => a.regenerated && a.rendered === real) && ignoredLogged && withFlag.every((w) => w.rendered === forged);
+  check('roses-now-guard', ok, `ROSES_NOW=${SEASON_INSTANT[forged]} (${forged} in Toronto) alone, without ROSES_CHECK_SUITE: ${alone.map((a) => `${a.venue}: the first request served the previous render (${a.firstResponse}; cache entry ${a.cached}), regenerated ${a.regenerated} → rendered ${a.rendered}`).join('; ')}; the real season in Toronto today is ${real}; the server logged that it ignored ROSES_NOW: ${ignoredLogged}; control, the same instant with ROSES_CHECK_SUITE=1: ${withFlag.map((w) => `${w.venue} → ${w.rendered}`).join('; ')}`);
+  measure(`ROSES_NOW guard: a server started with ROSES_NOW alone (set to ${forged}) rendered ${[...new Set(alone.map((a) => a.rendered))].join('/')} on ${alone.length} venues, the real season in Toronto (${real}); with the suite's flag the same instant rendered ${[...new Set(withFlag.map((w) => w.rendered))].join('/')}`);
 }
 await stop();
 await browser.close();

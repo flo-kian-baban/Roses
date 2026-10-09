@@ -21,7 +21,7 @@ import { NO_REGION, Preview, type Focus, type Pick, type PreviewHandle, type Reg
 import { PreviewBar } from './PreviewBar';
 import { BottomSheet, type Detent } from './BottomSheet';
 import type { PageNow, Screen, View, ViewPatch } from './view';
-import { StyleTab, type Picked } from './StyleTab';
+import { StyleTab, type Picked, type StyleSnapshot } from './StyleTab';
 import type { Season, Slot } from '@/lib/welcome';
 import { DetailsTab } from './DetailsTab';
 import { ConfirmSheet, MoneyField, Sheet, TextField, btnDanger, btnPrimary, btnSecondary, fieldCls } from './ui';
@@ -72,6 +72,9 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
   // the region is state here and flows down to both previews, so they always show the group that is open on the left.
   const previewA = useRef<PreviewHandle>(null), previewB = useRef<PreviewHandle>(null);
   const [picked, setPicked] = useState<Picked>(null);
+  // Discard this session's changes (the PM, 2026-10-09): the snapshot is taken the first time the Style tab opens and held here for the
+  // whole visit to the venue's editor, so switching tabs keeps it; a reload or another venue (both a page load) or a Discard starts it again.
+  const [styleSnapshot, setStyleSnapshot] = useState<StyleSnapshot | null>(null);
   const [region, setRegion] = useState<RegionState>(NO_REGION);
   const applyVars = (vars: Record<string, string> | null) => { previewA.current?.setVars(vars); previewB.current?.setVars(vars); };
   // Live colours: a colour being picked shows at once; while Compare is held the venue's default colours show instead and the live
@@ -188,7 +191,7 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
   const tabLink = (t: Tab, label: string) => <a href={TAB_HREF(venue.id, t)} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); go(t); }} aria-current={tab === t ? 'page' : undefined} className={`flex h-9 items-center rounded-full px-3.5 text-[15px] font-semibold ${tab === t ? 'bg-ink text-white' : 'text-ink-muted hover:bg-fill hover:text-ink'}`}>{label}</a>;
   const previewProps = { venueId: venue.id, reloadKey, focus, view, onView, now, onNow: setNow, onPick, styleMode: tab === 'style', region: tab === 'style' ? region : NO_REGION, compare: tab === 'style' ? { on: compare, set: setCompare } : null };
   const phoneStyle = !desktop && tab === 'style' && me.canManage; // the Style tab on a phone: the preview on top, the controls in a bottom sheet
-  const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} />;
+  const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} />;
 
   const panel = openItem && <ItemPanel item={openItem} venueId={venue.id} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} column={wide} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (

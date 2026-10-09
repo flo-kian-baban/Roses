@@ -1,0 +1,15 @@
+{
+  "about": "Known misses of npm run check (the PM, 2026-10-09). A listed check is still measured and printed, marked KNOWN MISS in report.md; the run fails only on a failure that is not listed here; a listed check that passes is reported as NOW PASSING, and its entry stays until its clearing condition is met. Entries are added or removed only on the PM's or Kian's word. This file decides PASS, so the suite refuses to start while it has uncommitted changes. Fields: id; title; step (the suite step's id); checks (the drill's check ids it covers); target; cause; clears (the condition that removes the entry); listed (when and by whom).",
+  "misses": [
+    {
+      "id": "after-tap-photos-senso",
+      "title": "after-tap photos, Senso",
+      "step": "after-tap",
+      "checks": ["after-tap-senso-list-photos", "after-tap-senso-grid-photos"],
+      "target": "the first section's photos in view loaded within 2500 ms of the language tap, under Slow 4G as DevTools applies it and CPU 4×, on the worse of two repeats (Senso with its first section as a List and as a Grid)",
+      "cause": "Senso's photos are linked at full size from the client's own hosts: the first section's 6 photos weigh 237–367 KB each, 1.70 MB in all (Kebab Land's 2 weigh 72–146 KB). Over Slow 4G the 4 in view loaded 4.7–8.3 s after the tap in the five runs of 2026-10-09 (16-28-47Z to 20-55-53Z); the menu itself was visible within 228–260 ms in every one, and Kebab Land's photos within 262–1062 ms.",
+      "clears": "when resized copies of the photos are served from our own storage (the go-live list; downloading the photos needs the owner's written permission first)",
+      "listed": "2026-10-09, the PM"
+    }
+  ]
+}

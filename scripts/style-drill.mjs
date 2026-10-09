@@ -23,6 +23,11 @@
 //     the snapshot taken when the tab opened back in one step (served variables compared) and Undo brings the discarded state back;
 //     on the phone the Style tab is a bottom sheet under the live preview and keeps at least 45 % of the viewport for the preview
 //     while a colour is being edited.
+//   The PM's review of the batch (2026-10-09): the Style snapshot lasts the whole visit to the venue's editor (kept across tab switches
+//     without a page load; Discard restores it and starts again from what it put back; a reload or leaving the venue starts it again);
+//     the phone layout measured on a small phone too, the iPhone SE (375 px wide at Safari's visible height, 548 px, and 553 px with
+//     the top address bar): the preview's share with a colour open (target ≥ 45 %), the room left to the controls, and the controls
+//     at the same heights as on the iPhone 13 (never shrunk below their touch size).
 // Needs the production server at --base and DRILL_ADMIN_PIN (an admin PIN valid on any venue).
 //   DRILL_ADMIN_PIN=… node scripts/style-drill.mjs --base http://127.0.0.1:3100 --out reports/checks/<stamp>/style --jpeg
 import fs from 'node:fs/promises';
@@ -57,6 +62,16 @@ const cookieOf = async (ctx) => (await ctx.cookies()).filter((c) => c.name === '
 async function api(p, body, cookie) { const r = await fetch(base + p, { method: 'POST', headers: { 'content-type': 'application/json', ...(cookie ? { cookie } : {}) }, body: JSON.stringify(body) }); return { status: r.status, json: await r.json().catch(() => null) }; }
 // the colour variables as served: --c-rows-name:#1d1d1f …
 const cssVar = (key) => `--c-${key.replace(/\./g, '-').replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`;
+// The Style tab's phone layout with a colour open: the preview's share of the viewport, the sheet's header and the room left to the
+// controls, and the size of every control of the open colour (its row, Auto, the swatches, the custom picker, the hex field, Back to auto).
+const sheetGeo = (page) => page.evaluate(() => {
+  const f = document.querySelector('iframe[data-preview-frame]')?.getBoundingClientRect(), sh = document.querySelector('[data-style-sheet]'); if (!f || !sh) return null;
+  const s = sh.getBoundingClientRect(), head = sh.firstElementChild.getBoundingClientRect(), body = sh.querySelector('[data-style-sheet-body]')?.getBoundingClientRect();
+  const tok = document.querySelector('[data-style-token] > button[aria-expanded="true"]')?.parentElement;
+  const controls = tok ? [...tok.querySelectorAll('button, input')].filter((e) => e.offsetParent !== null).map((e) => { const r = e.getBoundingClientRect(); return { label: (e.getAttribute('aria-label') || e.textContent || e.type || '').trim().slice(0, 40), w: Math.round(r.width), h: Math.round(r.height) }; }) : [];
+  const visible = Math.min(f.bottom, s.top) - f.top;
+  return { frameTop: Math.round(f.top), sheetTop: Math.round(s.top), visible: Math.round(visible), pct: Math.round((visible / innerHeight) * 1000) / 10, innerHeight, innerWidth, detent: sh.dataset.styleSheet, tokenOpen: !!tok, sheetH: Math.round(s.height), headH: Math.round(head.height), controlsH: body ? Math.round(body.height) : null, controls };
+});
 const varsOf = (html) => Object.fromEntries([...html.matchAll(/(--c-[a-z-]+):(#[0-9a-f]{6})/g)].map((m) => [m[1], m[2]]));
 const publicVar = (html, key) => varsOf(html)[cssVar(key)];
 const layoutOf = (html, sectionId) => { const m = html.match(new RegExp(`<section[^>]*data-id="${sectionId}"[\\s\\S]*?</section>`)); return m ? (m[0].match(/<ul class="[^"]*"[^>]*data-layout="([^"]+)"/) || [])[1] ?? null : null; };
@@ -96,6 +111,7 @@ for (const venue of ['senso', 'kebab-land']) {
 }
 
 // ---- 2. phone: the task target with the tap count
+let i13 = null; // the iPhone 13's sheet geometry with a colour open, compared with the small phone's below
 {
   const phone = await browser.newContext(DEVICE); const p = await phone.newPage();
   p.on('pageerror', (e) => log('pageerror', e.message));
@@ -116,8 +132,8 @@ for (const venue of ['senso', 'kebab-land']) {
   check('t-bar-bg', taps === 3 && firstOpen === 'true' && saved.ok && pub.ok && toast, `change the category bar background: ${taps} taps (Style tab, group, swatch "${pick.lab}"); the group opened with its first token ready (${firstOpen === 'true'}); saved ${saved.ms} ms after the tap, on the public page after ${pub.ms} ms (${Date.now() - tTap} ms after the tap); "Saved · Undo" shown: ${toast}`);
   measure(`change the category bar background: ${taps} taps (Style tab, group, swatch) + 0 extra; on the public page in ${pub.ms} ms`);
   { // the Style tab on a phone (Kian, 2026-10-09): the live preview on top, the controls in a bottom sheet; with a colour open the preview keeps ≥ 45 % of the viewport (the sheet offers collapsed and half only); Compare held on touch shows the default colours
-    const geo = () => p.evaluate(() => { const f = document.querySelector('iframe[data-preview-frame]')?.getBoundingClientRect(), sh = document.querySelector('[data-style-sheet]'); if (!f || !sh) return null; const s = sh.getBoundingClientRect(); const visible = Math.min(f.bottom, s.top) - f.top; return { frameTop: Math.round(f.top), sheetTop: Math.round(s.top), visible: Math.round(visible), pct: Math.round((visible / innerHeight) * 1000) / 10, innerHeight, detent: sh.dataset.styleSheet, tokenOpen: !!document.querySelector('[data-style-token] > button[aria-expanded="true"]') }; });
-    const gEditing = await geo();
+    const geo = () => sheetGeo(p);
+    const gEditing = await geo(); i13 = gEditing;
     await snap(p, 'style-phone-editing');
     await p.click('[data-style-sheet-handle]'); await sleep(350); const gTap = await geo();
     await snap(p, 'style-phone-collapsed');
@@ -143,6 +159,30 @@ for (const venue of ['senso', 'kebab-land']) {
   await p.click('[role=status] button:has-text("Undo")'); await p.waitForSelector('[role=status]:has-text("Undone")');
   await waitPublic('senso', (h) => publicVar(h, 'tabs.bg') === WHITE);
   await phone.close();
+}
+{ // a small phone (the PM, 2026-10-09): the iPhone SE (2nd/3rd gen), 375 px wide, at Safari's visible height: 548 px with iOS's bottom tab
+  // bar (the 667 px screen less the 20 px status bar and 99 px of address bar and toolbar; the same convention as the iPhone 13 viewport's
+  // 664 px), and 553 px with the top address bar. The same task state as above: the Style tab, the Category tabs group, its first colour open.
+  const rows = [];
+  for (const h of [548, 553]) {
+    const ctx = await browser.newContext({ ...devices['iPhone SE (3rd gen)'], viewport: { width: 375, height: h }, screen: { width: 375, height: 667 }, defaultBrowserType: 'chromium' }); const p = await ctx.newPage();
+    p.on('pageerror', (e) => log('pageerror', e.message));
+    await signin(p, 'senso');
+    await p.click('a[href="/admin/senso?tab=style"]'); await p.waitForSelector('[data-style-group="tabs"]');
+    await p.click('[data-style-group="tabs"] > button'); await p.waitForSelector('[data-style-token="tabs.bg"] input[type=color]'); await sleep(400);
+    const g = await sheetGeo(p); rows.push({ h, ...g });
+    if (h === 548) await snap(p, 'style-phone-se');
+    await ctx.close();
+  }
+  const se = rows[0], se2 = rows[1];
+  // controls matched by name (the colour row, Auto, each swatch, the custom picker, the hex field; Back to auto shows only for a custom colour)
+  const kind = (c) => c.label.replace(/^[^:]+: /, '').replace(/#[0-9a-f]{3,6}.*$/i, '').trim() || 'colour row';
+  const i13h = Object.fromEntries((i13?.controls ?? []).map((c) => [kind(c), c.h]));
+  const matched = se.controls.filter((c) => kind(c) in i13h);
+  const sameHeights = matched.length >= 10 && matched.every((c) => c.h === i13h[kind(c)]);
+  const sizes = (g) => [...new Set(g.controls.map((c) => `${kind(c)} ${c.w}×${c.h}`))].join(', ');
+  check('phone-style-layout-se', se.tokenOpen && se.detent === 'half' && se.pct >= 45 && se2.pct >= 45 && sameHeights, `Style tab on the iPhone SE at Safari's visible height (${se.innerWidth} × ${se.innerHeight}) with a colour open: the preview ${se.visible} of ${se.innerHeight} px = ${se.pct} % (target ≥ 45; at ${se2.innerWidth} × ${se2.innerHeight}: ${se2.visible} px = ${se2.pct} %); the sheet at "${se.detent}" is ${se.sheetH} px: its header (handle and preview bar) ${se.headH} px, the controls ${se.controlsH} px, scrolling inside (iPhone 13: ${i13?.sheetH} px, header ${i13?.headH}, controls ${i13?.controlsH}); every control of the open colour at the same height as on the iPhone 13 (${sameHeights}, ${matched.length} compared): ${sizes(se)}`);
+  measure(`Style tab on a small phone (iPhone SE, ${se.innerWidth} × ${se.innerHeight}, Safari's visible height): with a colour open the preview keeps ${se.pct} % of the viewport (${se.visible} of ${se.innerHeight} px; target ≥ 45 %; ${se2.pct} % at ${se2.innerHeight} px); the controls get ${se.controlsH} px of the sheet (${i13?.controlsH} px on the iPhone 13) at their full size`);
 }
 
 // ---- 3. laptop: the preview, linked colours, the guard, the regions, resets
@@ -462,6 +502,54 @@ await snap(l, 'style-laptop');
   measure(`Discard this session's changes: ${taps} taps (Discard, confirm); the opening snapshot back on the public page in ${pubD.ms} ms; Undo → the discarded state back in ${pubU.ms} ms`);
   await api('/api/admin/style', { action: 'reset', venue: 'senso' }, c); await api('/api/admin/style', { action: 'update', venue: 'senso', patch: { welcome: true } }, c); await api('/api/admin/section', { action: 'update', id: sec.id, patch: { layout: 'list' } }, c);
   await waitPublic('senso', (h) => publicVar(h, 'tabs.bg') === WHITE && /id="welcome"/.test(h) && layoutOf(h, sec.id) === 'list');
+}
+{ // The session lasts the whole visit to the venue's editor (the PM, 2026-10-09, replacing "switching tabs and back opens a new session"):
+  // the snapshot is taken the first time the Style tab opens and kept across tab switches (no page load); Discard restores it and the
+  // session starts again from what it put back; a reload starts it again, and so does leaving the venue (the venue menu: plain links)
+  const c = await cookieOf(laptop);
+  const sec = (await db.query(`select id, name->>'en' as name from sections where venue_id = 'senso' and listed and name->>'en' = 'Fresh Juice'`)).rows[0];
+  await api('/api/admin/style', { action: 'reset', venue: 'senso' }, c);
+  await api('/api/admin/style', { action: 'update', venue: 'senso', patch: { colors: { 'tabs.bg': '#fff8ee' }, welcome: true } }, c);
+  await api('/api/admin/section', { action: 'update', id: sec.id, patch: { layout: 'list' } }, c);
+  await waitPublic('senso', (h) => publicVar(h, 'tabs.bg') === '#fff8ee' && publicVar(h, 'rows.bg') === WHITE && /id="welcome"/.test(h) && layoutOf(h, sec.id) === 'list');
+  const vars0 = varsOf(await publicHtml('senso')); const style0 = await styleJson('senso');
+  const count = async () => { await sleep(500); return Number(await l.getAttribute('[data-style-discard]', 'data-changes')); };
+  const TAB = { menu: ['a[href="/admin/senso"]:has-text("Menu")', '[data-item]'], style: ['a[href="/admin/senso?tab=style"]:has-text("Style")', '[data-style-group="rows"]'], details: ['a[href="/admin/senso?tab=details"]:has-text("Details")', '[data-details-tab]'] };
+  const tabTo = async (t) => { await l.click(TAB[t][0]); await l.waitForSelector(TAB[t][1]); };
+  const venueTo = async (v) => { await l.click('summary[aria-label="Switch venue"]'); await l.click(`details[open] a[href="/admin/${v}"]`); await l.waitForURL(`${base}/admin/${v}`); await l.waitForSelector('[data-item]'); };
+  await l.goto(`${base}/admin/senso?tab=style`); await l.waitForSelector('[data-style-group="rows"]'); await frameReady();
+  await l.evaluate(() => { window.__visit = 'one'; }); // gone after any page load
+  const c0 = await count();
+  await openGroup('rows'); await setHex('rows.bg', '#141414'); await l.waitForSelector('[role=status]:has-text("Saved")'); await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === '#141414');
+  const c1 = await count();
+  await tabTo('menu'); await tabTo('details'); await tabTo('style');
+  const c1b = await count();
+  await l.evaluate((id) => document.querySelector(`[data-section-layout="${id}"]`)?.scrollIntoView({ block: 'center' }), sec.id);
+  await l.click(`[data-section-layout="${sec.id}"] button[role=radio]:has-text("Grid")`); await waitDb('select layout from sections where id = $1', [sec.id], (r) => r?.layout === 'grid');
+  await waitPublic('senso', (h) => layoutOf(h, sec.id) === 'grid');
+  const c2 = await count();
+  await tabTo('menu'); await tabTo('style');
+  const c2b = await count(); const sameVisit = await l.evaluate(() => window.__visit === 'one');
+  await snap(l, 'discard-visit-before');
+  await l.evaluate(() => document.querySelector('[data-style-discard]')?.scrollIntoView({ block: 'center' }));
+  await l.click('[data-style-discard]'); await l.waitForSelector('[role=dialog][aria-label="Discard this session\'s changes?"]'); await l.click('[role=dialog] button:has-text("Discard changes")');
+  await l.waitForSelector('[role=status]:has-text("Discarded")');
+  const pubD = await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === WHITE && layoutOf(h, sec.id) === 'list');
+  const varsD = varsOf(await publicHtml('senso')); const styleD = await styleJson('senso'); const layoutD = (await db.query('select layout from sections where id = $1', [sec.id])).rows[0].layout;
+  const sameD = JSON.stringify(varsD) === JSON.stringify(vars0); const diffD = Object.keys({ ...vars0, ...varsD }).filter((k) => vars0[k] !== varsD[k]);
+  const cD = await count();
+  await openGroup('rows'); await setHex('rows.bg', '#141414'); await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === '#141414');
+  const cAfter = await count();
+  await l.reload(); await l.waitForSelector('[data-style-group="rows"]'); await frameReady();
+  const cReload = await count(); const reloaded = await l.evaluate(() => window.__visit === undefined);
+  await openGroup('rows'); await setHex('rows.bg', '#262626'); await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === '#262626');
+  const cLeft = await count();
+  await venueTo('kebab-land'); await venueTo('senso'); await tabTo('style');
+  const cBack = await count();
+  check('discard-visit', c0 === 0 && c1 === 1 && c1b === 1 && c2 === 2 && c2b === 2 && sameVisit && pubD.ok && sameD && styleD === style0 && layoutD === 'list' && cD === 0 && cAfter === 1 && cReload === 0 && reloaded && cLeft === 1 && cBack === 0, `the snapshot lasts the whole visit: Style tab opened (the button counts ${c0}); rows #141414 → ${c1}; Menu, Details, back to Style without a page load → still ${c1b}; "${sec.name}" to Grid → ${c2}; Menu and back → ${c2b} (same page throughout: ${sameVisit}); Discard → the public page serves exactly the first snapshot's ${Object.keys(vars0).length} colour variables after ${pubD.ms} ms (identical: ${sameD}${diffD.length ? `; differ: ${diffD.join(', ')}` : ''}), venues.style equal to it (${styleD === style0}), layout ${layoutD}; the button counts ${cD} after the Discard and ${cAfter} after a new change (the session starts again from what the Discard put back); a reload → ${cReload} with the rows still #141414 (a new page: ${reloaded}); one change → ${cLeft}, then the venue menu to kebab-land and back to senso → ${cBack}`);
+  measure(`Discard this session's changes: the snapshot kept through 5 tab switches (the button counted ${c1b} then ${c2b}); a reload, leaving the venue and a Discard each start it again (${cReload} / ${cBack} / ${cD})`);
+  await api('/api/admin/style', { action: 'reset', venue: 'senso' }, c); await api('/api/admin/style', { action: 'update', venue: 'senso', patch: { welcome: true } }, c); await api('/api/admin/section', { action: 'update', id: sec.id, patch: { layout: 'list' } }, c);
+  await waitPublic('senso', (h) => publicVar(h, 'tabs.bg') === WHITE && publicVar(h, 'rows.bg') === WHITE && /id="welcome"/.test(h) && layoutOf(h, sec.id) === 'list');
 }
 await laptop.close();
 await browser.close(); await db.end();

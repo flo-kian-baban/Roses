@@ -24,12 +24,16 @@ export const seasonOf = (month: number): Season => (month >= 8 && month <= 10 ? 
 // from the date in America/Toronto (the venues' time zone, not the visitor's device and not UTC), and every public page is
 // regenerated at least hourly (REVALIDATE_SECONDS in its getStaticProps, standard time-based ISR), so the season flips within an
 // hour of midnight on the 1st; an admin save still regenerates at once. ROSES_NOW (an ISO instant) stands in for the clock in
-// the check suite's season drill only; it is never set in production.
+// the check suite's season drill only, and only together with the suite's own flag ROSES_CHECK_SUITE=1 (the PM, 2026-10-09): set
+// alone it is ignored (logged once) and the page carries the real season; neither is ever set in production (go-live checklist).
 export const TIME_ZONE = 'America/Toronto';
 export const REVALIDATE_SECONDS = 3600;
+let ignoredLogged = false;
 export function renderNow(): Date {
-  const o = typeof process !== 'undefined' ? process.env?.ROSES_NOW : undefined;
-  if (o) { const d = new Date(o); if (!Number.isNaN(d.getTime())) return d; }
+  const env = typeof process !== 'undefined' ? process.env : undefined;
+  const o = env?.ROSES_NOW;
+  if (o && env?.ROSES_CHECK_SUITE === '1') { const d = new Date(o); if (!Number.isNaN(d.getTime())) return d; }
+  if (o && !ignoredLogged) { ignoredLogged = true; console.warn('[welcome] ROSES_NOW is set without ROSES_CHECK_SUITE=1: ignored, the real clock decides the season'); }
   return new Date();
 }
 export const monthIn = (d: Date, timeZone = TIME_ZONE): number => Number(new Intl.DateTimeFormat('en-US', { timeZone, month: 'numeric' }).format(d)) - 1;

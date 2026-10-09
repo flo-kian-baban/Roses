@@ -3,6 +3,13 @@
 // left, the customers' page as a phone preview on the right (a Preview button on phones). Every change is saved at
 // once through the JSON API, answered with "Saved · Undo" for 10 seconds, and the preview reloads and scrolls to what
 // was edited. Tapping an item, a section heading or the header inside the preview opens the matching editor.
+// Preview control bar (Kian, 2026-10-09): the preview's view (screen, language, season, time of day, Replay) is state here, one for
+// the laptop frame and the phone overlay; the screen is remembered per tab and kept through a save (the fresh frame is put back on
+// it before it is shown); season, time of day and the per-tab screens survive a reload of the admin page (sessionStorage, the admin's
+// own storage, nothing on the customers' page). The tabs switch without a page load (the URL follows with ?tab=), so the preview
+// keeps its frame and its view across them. On a phone the Style tab shows the live preview at the top and its controls in a bottom
+// sheet (collapsed / half / full; half while a colour is being edited, so at least 45 % of the screen stays preview); the Menu and
+// Details tabs keep their layout with the Preview button. Compare (Style tab): the venue's default colours in the preview while held.
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import type { Bi, EditorItem, EditorSection, EditorVenue, Notes, Photo, SectionLayout } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
@@ -11,8 +18,11 @@ import { reduce, type Filter, type Menu } from './state';
 import { MenuTab } from './MenuTab';
 import { ItemPanel, PhotoField } from './ItemPanel';
 import { NO_REGION, Preview, type Focus, type Pick, type PreviewHandle, type Region, type RegionState } from './Preview';
+import { PreviewBar } from './PreviewBar';
+import { BottomSheet, type Detent } from './BottomSheet';
+import type { PageNow, Screen, View, ViewPatch } from './view';
 import { StyleTab, type Picked } from './StyleTab';
-import type { Season } from '@/lib/welcome';
+import type { Season, Slot } from '@/lib/welcome';
 import { DetailsTab } from './DetailsTab';
 import { ConfirmSheet, MoneyField, Sheet, TextField, btnDanger, btnPrimary, btnSecondary, fieldCls } from './ui';
 
@@ -23,8 +33,14 @@ type Toast = { text: string; revisions: number[]; key: number; error?: boolean }
 type Confirm = { title: string; body: React.ReactNode; label: string; action: () => Promise<void> };
 export type DeleteMode = { items: 'move'; target: string } | { items: 'delete' };
 
-export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; initial: Menu; tab: Tab }) {
+const PHONE_TOP = 100; // under the admin's top bar (56 px) and the tab row (44 px)
+const TAB_HREF = (venueId: string, t: Tab) => `/admin/${venueId}${t === 'menu' ? '' : `?tab=${t}`}`;
+const SCREEN_OF_REGION = (r: Region): Screen => (r === 'welcome' ? 'welcome' : r === 'sheet' ? 'sheet' : 'menu');
+
+export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueInfo; me: Me; initial: Menu; tab: Tab }) {
   const [menu, dispatch] = useReducer(reduce, initial);
+  const [tab, setTab] = useState<Tab>(initialTab);
+  const go = (t: Tab) => { setTab(t); setPreviewOpen(false); setCompare(false); try { history.replaceState(null, '', TAB_HREF(venue.id, t)); } catch { /* ignore */ } };
   const [open, setOpen] = useState<{ id: string; section: string | null } | null>(null);
   const [adding, setAdding] = useState<string | null>(null);
   const [addingSection, setAddingSection] = useState(false);
@@ -36,6 +52,17 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
   const [reloadKey, setReloadKey] = useState(0);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [lang, setLang] = useState<'en' | 'fa'>('en');
+  const [desktop, setDesktop] = useState(true); // ≥ 1024 px (Tailwind lg): the preview beside the editor; below it the phone layouts
+  // The preview's view (Kian, 2026-10-09): the screen per tab, the language, the preview-only season and time of day, Replay.
+  const [screens, setScreens] = useState<Record<Tab, Screen>>({ menu: 'menu', style: 'menu', details: 'menu' });
+  const [season, setSeason] = useState<Season | null>(null);
+  const [slot, setSlot] = useState<Slot | null>(null);
+  const [replay, setReplay] = useState(0);
+  const [now, setNow] = useState<PageNow>({ season: null, slot: null }); // the page's own season and greeting, read from the loaded frame
+  const [detent, setDetent] = useState<Detent>('half'); // the Style tab's bottom sheet on a phone
+  const [editing, setEditing] = useState(false); // a colour is open in the Style tab: the sheet stays at half, the preview in view
+  const [compare, setCompareState] = useState(false);
+  const compareRef = useRef(false), defaultVars = useRef<Record<string, string> | null>(null), liveVars = useRef<Record<string, string> | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
   const [query, setQuery] = useState('');
   const [highlight, setHighlight] = useState<string | null>(null);
@@ -46,10 +73,28 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
   const previewA = useRef<PreviewHandle>(null), previewB = useRef<PreviewHandle>(null);
   const [picked, setPicked] = useState<Picked>(null);
   const [region, setRegion] = useState<RegionState>(NO_REGION);
-  const [season, setSeason] = useState<Season | null>(null); // the Style tab's preview-only season (Kian, 2026-10-09); never saved
-  const previewLive = useCallback((vars: Record<string, string> | null) => { previewA.current?.setVars(vars); previewB.current?.setVars(vars); }, []);
-  const previewRegion = useCallback((r: Region | null) => setRegion((s) => ({ region: r, n: s.n + 1 })), []);
+  const applyVars = (vars: Record<string, string> | null) => { previewA.current?.setVars(vars); previewB.current?.setVars(vars); };
+  // Live colours: a colour being picked shows at once; while Compare is held the venue's default colours show instead and the live
+  // colour comes back on release.
+  const previewLive = useCallback((vars: Record<string, string> | null) => { liveVars.current = vars; if (!compareRef.current) applyVars(vars); }, []);
+  const setCompare = (on: boolean) => { if (on && !defaultVars.current) return; compareRef.current = on; setCompareState(on); applyVars(on ? defaultVars.current : liveVars.current); };
+  const previewDefaults = useCallback((vars: Record<string, string>) => { defaultVars.current = vars; if (compareRef.current) applyVars(vars); }, []);
+  // A Style group opening (or re-asserting itself) outlines its region and switches the preview to the screen where it is visible.
+  const previewRegion = useCallback((r: Region | null) => { setRegion((s) => ({ region: r, n: s.n + 1 })); if (r) setScreens((s) => (s.style === SCREEN_OF_REGION(r) ? s : { ...s, style: SCREEN_OF_REGION(r) })); }, []);
   useEffect(() => { const mq = window.matchMedia('(min-width: 1366px)'); const f = () => setWide(mq.matches); f(); mq.addEventListener('change', f); return () => mq.removeEventListener('change', f); }, []);
+  useEffect(() => { const mq = window.matchMedia('(min-width: 1024px)'); const f = () => setDesktop(mq.matches); f(); mq.addEventListener('change', f); return () => mq.removeEventListener('change', f); }, []);
+  // The preview's choices survive a reload of the admin page (the admin's own storage).
+  const storeKey = `roses-admin-preview:${venue.id}`;
+  useEffect(() => { try { const j = JSON.parse(sessionStorage.getItem(storeKey) || 'null'); if (j && typeof j === 'object') { if (j.screens) setScreens((s) => ({ ...s, ...j.screens })); if (j.season) setSeason(j.season); if (j.slot) setSlot(j.slot); } } catch { /* ignore */ } }, [storeKey]);
+  useEffect(() => { try { sessionStorage.setItem(storeKey, JSON.stringify({ screens, season, slot })); } catch { /* ignore */ } }, [storeKey, screens, season, slot]);
+  const view: View = { screen: screens[tab], lang, season, slot, item: tab === 'menu' ? open?.id ?? null : null, replay };
+  const onView = (p: ViewPatch) => {
+    if (p.screen) setScreens((s) => ({ ...s, [tab]: p.screen! }));
+    if (p.lang) chooseLang(p.lang);
+    if ('season' in p) setSeason(p.season ?? null);
+    if ('slot' in p) setSlot(p.slot ?? null);
+    if (p.replay) setReplay((n) => n + 1);
+  };
 
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), toast.error ? 6000 : 10000); return () => clearTimeout(t); }, [toast]);
   useEffect(() => { if (!highlight) return; const t = setTimeout(() => setHighlight(null), 2500); return () => clearTimeout(t); }, [highlight]);
@@ -128,17 +173,22 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
   // Section layout (Kian, 2026-10-08), chosen in the Style tab: list or grid; the preview scrolls to the section.
   const sectionLayout = (id: string, layout: SectionLayout) => sectionUpdate(id, { layout }, layout === 'grid' ? 'Grid' : 'List');
 
-  // Tap-to-edit in the preview: an item opens its editor, a section heading its rename sheet, the header the Details tab.
+  // Tap-to-edit in the preview: an item opens its editor, a section heading its rename sheet, the header the Details tab. A language
+  // button on the previewed welcome screen opens the menu in that language (what customers get), without leaving the preview.
   const onPick = (pk: Pick) => {
+    if (pk.kind === 'lang') { onView({ lang: pk.lang, screen: 'menu' }); return; }
     setPreviewOpen(false);
     if (pk.kind === 'region') { setPicked({ region: pk.region, n: Date.now() }); return; }
     if (pk.kind === 'item' && pk.id && menu.items[pk.id]) { setOpen({ id: pk.id, section: menu.items[pk.id].placements[0]?.section_id ?? null }); setHighlight(pk.id); if (tab !== 'menu') return; requestAnimationFrame(() => document.querySelector(`[data-item="${pk.id}"]`)?.scrollIntoView({ block: 'center' })); }
     else if (pk.kind === 'section' && pk.id && menu.sections.some((s) => s.id === pk.id)) setRenaming(pk.id);
-    else if (pk.kind === 'header' && me.canManage && tab !== 'details') window.location.href = `/admin/${venue.id}?tab=details`;
+    else if (pk.kind === 'header' && me.canManage && tab !== 'details') go('details');
   };
 
   const openItem = open ? menu.items[open.id] : null;
-  const tabLink = (t: Tab, label: string) => <a href={`/admin/${venue.id}${t === 'menu' ? '' : `?tab=${t}`}`} aria-current={tab === t ? 'page' : undefined} className={`flex h-9 items-center rounded-full px-3.5 text-[15px] font-semibold ${tab === t ? 'bg-ink text-white' : 'text-ink-muted hover:bg-fill hover:text-ink'}`}>{label}</a>;
+  const tabLink = (t: Tab, label: string) => <a href={TAB_HREF(venue.id, t)} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); go(t); }} aria-current={tab === t ? 'page' : undefined} className={`flex h-9 items-center rounded-full px-3.5 text-[15px] font-semibold ${tab === t ? 'bg-ink text-white' : 'text-ink-muted hover:bg-fill hover:text-ink'}`}>{label}</a>;
+  const previewProps = { venueId: venue.id, reloadKey, focus, view, onView, now, onNow: setNow, onPick, styleMode: tab === 'style', region: tab === 'style' ? region : NO_REGION, compare: tab === 'style' ? { on: compare, set: setCompare } : null };
+  const phoneStyle = !desktop && tab === 'style' && me.canManage; // the Style tab on a phone: the preview on top, the controls in a bottom sheet
+  const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} />;
 
   const panel = openItem && <ItemPanel item={openItem} venueId={venue.id} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} column={wide} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (
@@ -149,26 +199,35 @@ export function Editor({ venue, me, initial, tab }: { venue: VenueInfo; me: Me; 
           {me.canManage && tabLink('style', 'Style')}
           {me.canManage && tabLink('details', 'Details')}
           <span className="flex-1" />
-          <button type="button" onClick={() => setPreviewOpen(true)} className="flex h-9 items-center gap-1.5 rounded-full border border-line bg-white px-3 text-[14px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,.04)] lg:hidden"><Icon name="smartphone" className="h-4 w-4" />Preview</button>
+          {!phoneStyle && <button type="button" onClick={() => setPreviewOpen(true)} className="flex h-9 items-center gap-1.5 rounded-full border border-line bg-white px-3 text-[14px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,.04)] lg:hidden"><Icon name="smartphone" className="h-4 w-4" />Preview</button>}
         </div>
         {tab === 'menu' && <MenuTab menu={menu} filter={filter} setFilter={setFilter} query={query} setQuery={setQuery} highlightId={highlight}
               onOpen={(id, section) => setOpen({ id, section })} onAdd={(sid) => setAdding(sid)} onAddSection={() => setAddingSection(true)}
               onToggleItem={(id, listed) => itemUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onPrice={(id, price) => itemUpdate(id, { price })}
               onToggleSection={(id, listed) => sectionUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onRename={(id) => setRenaming(id)} onMoveSection={sectionMove}
               onDeleteSection={sectionDelete} onReorderSections={sectionReorder} onMoveItem={itemMove} />}
-        {tab === 'style' && me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onLive={previewLive} onRegion={previewRegion} picked={picked} sections={menu.sections} onLayout={sectionLayout} season={season} onSeason={setSeason} />}
+        {tab === 'style' && !phoneStyle && styleTab}
         {tab === 'details' && me.canManage && <DetailsTab venue={venue} version={reloadKey} onSaved={savedElsewhere} />}
       </div>
       {openItem && wide ? <div className="hidden lg:block">{panel}</div> : null}
       <aside className="hidden border-l border-line bg-fill lg:block">
-        <div className="sticky top-14 h-[calc(100dvh-3.5rem)]"><Preview ref={previewA} venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame onPick={onPick} styleMode={tab === 'style'} region={tab === 'style' ? region : NO_REGION} season={tab === 'style' ? season : null} /></div>
+        <div className="sticky top-14 h-[calc(100dvh-3.5rem)]">{desktop && <Preview ref={previewA} {...previewProps} frame />}</div>
       </aside>
+      {phoneStyle && (
+        <div className="fixed inset-x-0 bottom-0 z-30 bg-white" style={{ top: PHONE_TOP }} data-style-phone>
+          <Preview ref={previewB} {...previewProps} frame={false} bar={false} />
+          <BottomSheet detent={detent} onDetent={setDetent} max={editing ? 'half' : 'full'} top={PHONE_TOP} label="Style controls"
+            header={<PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone />}>
+            {styleTab}
+          </BottomSheet>
+        </div>
+      )}
 
       {openItem && !wide && <>
         <button type="button" aria-label="Close the item" onClick={() => setOpen(null)} className="fixed inset-0 z-40 hidden bg-black/10 lg:block" />
         {panel}
       </>}
-      {previewOpen && <div className="fixed inset-0 z-[60] lg:hidden"><Preview ref={previewB} venueId={venue.id} reloadKey={reloadKey} focus={focus} lang={lang} onLang={chooseLang} frame={false} onClose={() => setPreviewOpen(false)} onPick={onPick} styleMode={tab === 'style'} region={tab === 'style' ? region : NO_REGION} season={tab === 'style' ? season : null} /></div>}
+      {previewOpen && !phoneStyle && <div className="fixed inset-0 z-[60] lg:hidden"><Preview ref={previewB} {...previewProps} frame={false} onClose={() => setPreviewOpen(false)} /></div>}
       {adding && <AddItemSheet venueId={venue.id} sectionName={menu.sections.find((s) => s.id === adding)?.name.en ?? ''} onClose={() => setAdding(null)} onAdd={async (d) => { await itemCreate(adding, d); setAdding(null); }} />}
       {addingSection && <AddSectionSheet onClose={() => setAddingSection(false)} onAdd={sectionCreate} />}
       {renaming && menu.sections.some((s) => s.id === renaming) && <RenameSheet section={menu.sections.find((s) => s.id === renaming)!} onClose={() => setRenaming(null)} onPatch={(p) => sectionUpdate(renaming, p)} />}

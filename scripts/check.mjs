@@ -17,6 +17,9 @@
 // LCP now measures the welcome screen (its logo is the largest paint), so the after-tap drill (scripts/after-tap-drill.mjs) measures the
 // (2026-10-09, later: the season drill (scripts/season-drill.mjs) proves the render-time season and the hourly regeneration on a copy of the build.)
 // menu after the language tap under throttled mobile conditions, with a 2.5 s target reported as measured.
+// 2026-10-09, later: the preview control bar (scripts/preview-drill.mjs: the task target on the iPhone 13 viewport with its tap count, every
+// switch within 300 ms, the screen per tab and kept through a save) and, in the Style drill, groups → screens, Compare, What changed with
+// the per-colour reset through the guard, Discard this session's changes with Undo, position kept through a save, the phone's bottom sheet.
 import fs from 'node:fs';
 import path from 'node:path';
 import net from 'node:net';
@@ -29,7 +32,7 @@ import { loadEnv } from './load-env.mjs';
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
 const out = path.resolve('reports/checks', stamp);
-fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true }); fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.mkdirSync(path.join(out, 'season'), { recursive: true }); fs.mkdirSync(path.join(out, 'after-tap'), { recursive: true });
+fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true }); fs.mkdirSync(path.join(out, 'preview'), { recursive: true }); fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.mkdirSync(path.join(out, 'season'), { recursive: true }); fs.mkdirSync(path.join(out, 'after-tap'), { recursive: true });
 const DIST = '.next-check', PORT = Number(process.env.CHECK_PORT || 3100), PROXY_PORT = PORT + 1, SEASON_PORT = PORT + 2; // CHECK_PORT moves the suite's three ports when 3100 is taken by another project's server (2026-10-09)
 const base = `http://127.0.0.1:${PORT}`;
 const started = Date.now();
@@ -116,7 +119,7 @@ const adminPin = String(100000 + Math.floor(Math.random() * 900000));
 const pinSalt = randomBytes(16);
 const adminPinHash = ['$scrypt$N=16384,r=8,p=1', pinSalt.toString('base64'), scryptSync(adminPin, pinSalt, 32, { N: 16384, r: 8, p: 1 }).toString('base64')].join('$');
 const SUITE_ADMIN_NAME = 'Check suite', DRILL_PIN_NAMES = ['Drill staff', 'Drill owner', 'Lockout drill (valid PIN)', 'Lockout drill (to be revoked)'];
-const DRILL_ROW_NAMES = ['Drill editor item', 'Drill section', 'Drill section item 1', 'Drill section item 2', 'Drill venue', 'Drill default venue'];
+const DRILL_ROW_NAMES = ['Drill editor item', 'Drill preview item', 'Drill section', 'Drill section item 1', 'Drill section item 2', 'Drill venue', 'Drill default venue'];
 let newVenueId = null;
 scratchEnvRef = scratchEnv;
 const commit = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim();
@@ -243,7 +246,13 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, evidence: ['editor/editor-drill.txt', 'editor/editor-drill.json', 'editor/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   });
-  await step('Style tab drill (day-one defaults = the pre-token look, task target with tap count, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, preview ↔ controls with the controls as the master through a save, the Welcome group showing the welcome screen in the preview with its preview-only season switch and a saved colour, section layout List/Grid on the public page and in the preview with Undo, Reset all with confirmation, Persian view)', async () => {
+  await step('preview control bar drill (from the Menu tab on the iPhone 13 viewport: the welcome screen in another season, in the evening, in Persian in ≤ 4 taps with the customers\' page byte-identical; every switch of the bar within 300 ms on the phone and the laptop, Replay; the screen per tab with the frame kept across tabs; the section list and the item popup open again after a save; a language tap on the previewed welcome screen; the customers\' HTML without preview markup)', async () => {
+    const r = await run('node', ['scripts/preview-drill.mjs', '--base', base, '--out', path.join(out, 'preview'), '--jpeg'], { env: drillEnv, logFile: 'preview/preview-drill.log' });
+    const m = (r.stdout.match(/PREVIEW DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
+    return { pass: r.status === 0, evidence: ['preview/preview-drill.txt', 'preview/preview-drill.json', 'preview/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
+  });
+  await step('Style tab drill (day-one defaults = the pre-token look, task target with tap count, the phone\'s bottom sheet with ≥ 45 % of the viewport left to the preview while a colour is edited and Compare held on touch, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, every group switching the preview to its screen with its region outlined, preview ↔ controls with the controls as the master through a save, the Welcome group with the bar\'s season switch and a saved colour, Compare toggled on the laptop, What changed with the per-colour reset through the guard, section layout List/Grid on the public page and in the preview with Undo, position and screen kept through a colour save, Discard this session\'s changes restoring the opening snapshot with Undo, Reset all with confirmation, Persian view)', async () => {
     const r = await run('node', ['scripts/style-drill.mjs', '--base', base, '--out', path.join(out, 'style'), '--jpeg'], { env: drillEnv, logFile: 'style/style-drill.log' });
     const m = (r.stdout.match(/STYLE DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
@@ -286,7 +295,7 @@ try {
     const names = [...read(`server-${port}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]);
     processes.push({ process: app, source: `server-${port}.log`, databases: [...new Set(names)] });
   }
-  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['season-server', 'season/season-server.log'], ['after-tap-drill', 'after-tap/after-tap-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
+  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['preview-drill', 'preview/preview-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['season-server', 'season/season-server.log'], ['after-tap-drill', 'after-tap/after-tap-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
     if (!fs.existsSync(path.join(out, file))) continue;
     processes.push({ process: `roses-check:${name}`, source: file, databases: [...new Set([...read(file).matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))] });
   }
@@ -301,7 +310,7 @@ try {
   const onWorking = (c) => c.endsWith(`→ ${workName}`);
   const wrongSample = samples.filter((x) => onWorking(x.connection) && !x.connection.startsWith('roses-check:suite-readonly →'));
   const otherRuns = samples.filter((x) => !onWorking(x.connection) && !x.connection.endsWith(`→ ${scratchName}`));
-  const mustSee = [...Object.values(SERVER_APPS), 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:style-drill', 'roses-check:welcome-drill', 'roses-check:season-server', 'roses-check:after-tap-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
+  const mustSee = [...Object.values(SERVER_APPS), 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:preview-drill', 'roses-check:style-drill', 'roses-check:welcome-drill', 'roses-check:season-server', 'roses-check:after-tap-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
   const unseen = mustSee.filter((a) => !samples.some((x) => x.connection.startsWith(`${a} →`)));
   const passA = wrongProcess.length === 0 && wrongSample.length === 0 && processes.length >= 8 && unseen.length === 0;
   fs.writeFileSync(path.join(out, 'isolation.json'), JSON.stringify({ scratch: scratchName, working: workName, processes, pgStatActivitySamples: samples, otherRunsSeen: otherRuns, pass: passA }, null, 2));

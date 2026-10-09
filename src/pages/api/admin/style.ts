@@ -5,6 +5,9 @@
 //                                                      (welcome, photos, header). Every colour goes through the readability guard: a pair
 //                                                      below its WCAG threshold is refused (400) with one line and the nearest colour that passes.
 //   POST { action:'reset', venue, group? }              removes the colour choices of one group, or all of them (one record on the venue; Undo works)
+//   POST { action:'restore', venue, style }             puts the whole style back to a snapshot the Style tab took when it opened (Kian, 2026-10-09,
+//                                                      "Discard this session's changes"): layout keys and colours validated, every readable pair
+//                                                      checked by the guard, one record on the venue (Undo works)
 import { jsonRoute, ApiError, revalidateVenue, str, type JsonBody } from '@/lib/admin/api';
 import { canEditVenue, canManage } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
@@ -45,6 +48,27 @@ export default jsonRoute(async ({ req, res, session, body }) => {
     const merged = { ...customColors(current) };
     for (const [k, v] of Object.entries(colors)) { if (v === null) delete merged[k]; else merged[k] = v; }
     next = { ...current, ...read.values, colors: merged };
+  } else if (body.action === 'restore') {
+    const snap = body.style && typeof body.style === 'object' && !Array.isArray(body.style) ? (body.style as Record<string, unknown>) : null;
+    if (!snap) throw new ApiError(400, 'style must be an object');
+    const { colors: snapColors, ...rest } = snap;
+    const options = new Set(templateOf(venue).options(venue.brand).map((o) => o.key));
+    const layoutPart = Object.fromEntries(Object.entries(rest).filter(([k]) => options.has(k)));
+    const read = readStylePatch(venue, layoutPart);
+    if (!read.ok) throw new ApiError(400, read.error);
+    const known = new Set(tokensOf(venue.template).map((t) => t.key));
+    const colors: Record<string, string> = {};
+    if (snapColors !== undefined) {
+      if (!snapColors || typeof snapColors !== 'object') throw new ApiError(400, 'colors must be an object of token → colour');
+      for (const [k, v] of Object.entries(snapColors as Record<string, unknown>)) { if (!known.has(k)) throw new ApiError(400, `"${k}" is not a colour of this template`); const h = normHex(v); if (!h) throw new ApiError(400, `${TOKEN_BY_KEY[k].label}: not a colour (use #rrggbb)`); colors[k] = h; }
+    }
+    const restored: Record<string, unknown> = { ...read.values, colors };
+    for (const k of ['accent', 'tile']) { const h = normHex(rest[k]); if (h) restored[k] = h; } // the pre-token choices, kept as they were
+    for (const [k, v] of Object.entries(rest)) if (!options.has(k) && k !== 'accent' && k !== 'tile' && (typeof v === 'string' || typeof v === 'boolean')) restored[k] = v; // keys the app ignores (an old "intro"), kept as they were
+    const full: Record<string, string | null> = {}; for (const t of tokensOf(venue.template)) full[t.key] = colors[t.key] ?? null; // every token: the snapshot's colour or Auto
+    const g = guard({ template: venue.template, brand: venue.brand, style: restored as StyleValues }, full);
+    if (!g.ok) throw new ApiError(400, g.error, { guard: { key: g.key, on: g.on, ratio: g.ratio, threshold: g.threshold, suggestion: g.suggestion } });
+    next = restored;
   } else if (body.action === 'reset') {
     const group = str(body.group);
     if (group && !GROUPS.some((g) => g.id === group)) throw new ApiError(400, 'unknown group');

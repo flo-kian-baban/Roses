@@ -16,6 +16,13 @@
 //   section layout (Kian, 2026-10-08): a section switched to Grid in the Layout group renders two-column cards on the public page
 //     (same item popup), the preview shows it, Undo puts the list back; staff cannot set it (the admin drill checks the 403);
 //   Reset all colours with its confirmation, then Undo; the Persian view keeps the same colours.
+//   2026-10-09, later (the preview control bar): every group switches the preview to its screen (Welcome, the item popup, the menu
+//     scrolled to the region) with its region outlined; Compare (toggled on the laptop, held on the phone) shows the venue's default
+//     colours in the preview; What changed lists exactly the custom tokens as default → current, and its per-colour reset goes through
+//     the readability guard; the scroll position and the screen are kept through a colour save; Discard this session's changes puts
+//     the snapshot taken when the tab opened back in one step (served variables compared) and Undo brings the discarded state back;
+//     on the phone the Style tab is a bottom sheet under the live preview and keeps at least 45 % of the viewport for the preview
+//     while a colour is being edited.
 // Needs the production server at --base and DRILL_ADMIN_PIN (an admin PIN valid on any venue).
 //   DRILL_ADMIN_PIN=… node scripts/style-drill.mjs --base http://127.0.0.1:3100 --out reports/checks/<stamp>/style --jpeg
 import fs from 'node:fs/promises';
@@ -52,6 +59,8 @@ async function api(p, body, cookie) { const r = await fetch(base + p, { method: 
 const cssVar = (key) => `--c-${key.replace(/\./g, '-').replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`;
 const varsOf = (html) => Object.fromEntries([...html.matchAll(/(--c-[a-z-]+):(#[0-9a-f]{6})/g)].map((m) => [m[1], m[2]]));
 const publicVar = (html, key) => varsOf(html)[cssVar(key)];
+const layoutOf = (html, sectionId) => { const m = html.match(new RegExp(`<section[^>]*data-id="${sectionId}"[\\s\\S]*?</section>`)); return m ? (m[0].match(/<ul class="[^"]*"[^>]*data-layout="([^"]+)"/) || [])[1] ?? null : null; };
+const styleJson = async (venue) => JSON.stringify((await db.query(`select style from venues where id = $1`, [venue])).rows[0].style);
 // WCAG 2 contrast, the same maths as src/venues/tokens.ts
 const lin = (x) => { const s = x / 255; return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; };
 const lum = (h) => 0.2126 * lin(parseInt(h.slice(1, 3), 16)) + 0.7152 * lin(parseInt(h.slice(3, 5), 16)) + 0.0722 * lin(parseInt(h.slice(5, 7), 16));
@@ -106,6 +115,21 @@ for (const venue of ['senso', 'kebab-land']) {
   await snap(p, 'style-phone-saved');
   check('t-bar-bg', taps === 3 && firstOpen === 'true' && saved.ok && pub.ok && toast, `change the category bar background: ${taps} taps (Style tab, group, swatch "${pick.lab}"); the group opened with its first token ready (${firstOpen === 'true'}); saved ${saved.ms} ms after the tap, on the public page after ${pub.ms} ms (${Date.now() - tTap} ms after the tap); "Saved · Undo" shown: ${toast}`);
   measure(`change the category bar background: ${taps} taps (Style tab, group, swatch) + 0 extra; on the public page in ${pub.ms} ms`);
+  { // the Style tab on a phone (Kian, 2026-10-09): the live preview on top, the controls in a bottom sheet; with a colour open the preview keeps ≥ 45 % of the viewport (the sheet offers collapsed and half only); Compare held on touch shows the default colours
+    const geo = () => p.evaluate(() => { const f = document.querySelector('iframe[data-preview-frame]')?.getBoundingClientRect(), sh = document.querySelector('[data-style-sheet]'); if (!f || !sh) return null; const s = sh.getBoundingClientRect(); const visible = Math.min(f.bottom, s.top) - f.top; return { frameTop: Math.round(f.top), sheetTop: Math.round(s.top), visible: Math.round(visible), pct: Math.round((visible / innerHeight) * 1000) / 10, innerHeight, detent: sh.dataset.styleSheet, tokenOpen: !!document.querySelector('[data-style-token] > button[aria-expanded="true"]') }; });
+    const gEditing = await geo();
+    await snap(p, 'style-phone-editing');
+    await p.click('[data-style-sheet-handle]'); await sleep(350); const gTap = await geo();
+    await snap(p, 'style-phone-collapsed');
+    await p.click('[data-style-sheet-handle]'); await sleep(350); const gBack = await geo();
+    const frameVarP = (n) => p.evaluate((n) => { const d = document.querySelector('iframe[data-preview-frame]')?.contentDocument; return d ? getComputedStyle(d.documentElement).getPropertyValue(n).trim() : null; }, n);
+    const cmp = p.locator('[data-preview-compare]'); await cmp.scrollIntoViewIfNeeded();
+    await cmp.dispatchEvent('pointerdown', { pointerType: 'touch', pointerId: 1, isPrimary: true }); await sleep(150); const held = await frameVarP('--c-tabs-bg'); const heldPressed = await cmp.getAttribute('aria-pressed');
+    await snap(p, 'style-phone-compare-held');
+    await cmp.dispatchEvent('pointerup', { pointerType: 'touch', pointerId: 1, isPrimary: true }); await sleep(150); const released = await frameVarP('--c-tabs-bg');
+    check('phone-style-layout', !!gEditing && gEditing.tokenOpen && gEditing.detent === 'half' && gEditing.pct >= 45 && gTap?.detent === 'collapsed' && gTap.pct > gEditing.pct && gBack?.detent === 'half' && gBack.pct >= 45 && held === WHITE && heldPressed === 'true' && released === pick.c, `Style tab on the iPhone 13 viewport: the preview on top (frame from ${gEditing?.frameTop} px), the controls in a bottom sheet at "${gEditing?.detent}" with the colour open: ${gEditing?.visible} of ${gEditing?.innerHeight} px of preview = ${gEditing?.pct} % (target ≥ 45); the handle while a colour is open: ${gTap?.detent} (${gTap?.pct} %), then ${gBack?.detent} (${gBack?.pct} %), never full; Compare held on touch → the bar background shows the venue default ${held} (pressed ${heldPressed}), released → ${released} (the saved colour)`);
+    measure(`Style tab on a phone: with a colour open the preview keeps ${gEditing?.pct} % of the viewport (${gEditing?.visible} of ${gEditing?.innerHeight} px; target ≥ 45 %); Compare held → the default colours, released → the saved ones`);
+  }
   await p.click('[role=status] button:has-text("Undo")'); await p.waitForSelector('[role=status]:has-text("Undone")');
   const back = await waitPublic('senso', (h) => publicVar(h, 'tabs.bg') === WHITE);
   const dbBack = (await colorsOf('senso'))['tabs.bg'] ?? null;
@@ -166,6 +190,39 @@ await snap(l, 'style-laptop');
   await sleep(300); const price3 = await tokenState('rows.price'), name3 = await tokenState('rows.name');
   await snap(l, 'linked-custom-stays');
   check('linked-custom', pub2.ok && price2.state === 'custom' && pub3.ok && v3['--c-rows-price'] === '#ffc14d' && price3.state === 'custom' && v3['--c-rows-name'] === WHITE && name3.state === 'auto' && v3['--c-rows-line'] === '#484848', `price set to #ffc14d (${price2.state}; on the public page after ${pub2.ms} ms); row background → #2a2a2a: price stays ${v3['--c-rows-price']} (${price3.state}), item name re-derived ${v3['--c-rows-name']} (${name3.state}), line ${v3['--c-rows-line']}; on the public page after ${pub3.ms} ms`);
+  { // Compare (laptop: a toggle) shows the venue's default colours in the preview and the saved ones again; What changed lists exactly the custom tokens, default → current
+    const pressedBar = () => l.getAttribute('[data-preview-compare]', 'aria-pressed');
+    await l.click('[data-preview-compare]'); await sleep(250);
+    const on = { bg: await frameVar('--c-rows-bg'), price: await frameVar('--c-rows-price'), pressed: await pressedBar() };
+    await snap(l, 'compare-on');
+    await l.click('[data-preview-compare]'); await sleep(250);
+    const off = { bg: await frameVar('--c-rows-bg'), price: await frameVar('--c-rows-price'), pressed: await pressedBar() };
+    const list = await l.$$eval('[data-style-changed]', (els) => els.map((e) => ({ key: e.dataset.styleChanged, def: e.dataset.default, cur: e.dataset.current })));
+    const followed = (await l.textContent('[data-style-followed]').catch(() => '')) || '';
+    const dbCustom = Object.keys(await colorsOf('senso')).sort();
+    const bg = list.find((x) => x.key === 'rows.bg'), price = list.find((x) => x.key === 'rows.price');
+    await snap(l, 'what-changed');
+    check('compare-what-changed', on.bg === WHITE && on.price === INK && on.pressed === 'true' && off.bg === '#2a2a2a' && off.price === '#ffc14d' && off.pressed === 'false' && list.length === 2 && list.map((x) => x.key).sort().join() === dbCustom.join() && bg?.def === WHITE && bg?.cur === '#2a2a2a' && price?.def === INK && price?.cur === '#ffc14d' && /Item name/.test(followed), `Compare on → the preview shows the defaults (row background ${on.bg}, price ${on.price}; pressed ${on.pressed}); off → the saved colours again (${off.bg}, ${off.price}); What changed lists ${list.length} colours [${list.map((x) => `${x.key} ${x.def}→${x.cur}`).join(', ')}] = the custom tokens in the database [${dbCustom.join(', ')}]; the Auto colours that followed: "${followed.trim()}"`);
+    // the per-colour reset goes through the readability guard: Row background back to white with the yellow price kept is refused (nothing saved); the price reset first passes, then the background
+    await l.click('[data-style-changed-reset="rows.bg"]');
+    const refused = await l.waitForSelector('[data-style-changed="rows.bg"] [data-style-refused]', { timeout: 5000 }).then((e) => e.textContent()).catch(() => null);
+    await sleep(400); const stillBg = (await colorsOf('senso'))['rows.bg'] ?? null;
+    await snap(l, 'what-changed-refused');
+    let taps = 0; const tapL = async (sel) => { taps++; await l.click(sel); };
+    await tapL('[data-style-changed-reset="rows.price"]'); await l.waitForSelector('[role=status]:has-text("Reset")');
+    const priceGone = await waitDb(`select style->'colors'->>'rows.price' as c from venues where id='senso'`, [], (r) => r?.c == null);
+    const pubPrice = await waitPublic('senso', (h) => publicVar(h, 'rows.price') === WHITE && publicVar(h, 'rows.bg') === '#2a2a2a');
+    await sleep(500); const list2 = await l.$$eval('[data-style-changed]', (els) => els.map((e) => e.dataset.styleChanged));
+    await tapL('[data-style-changed-reset="rows.bg"]'); await l.waitForSelector('[role=status]:has-text("Reset")');
+    const bgGone = await waitDb(`select coalesce(style->'colors', '{}'::jsonb) as c from venues where id='senso'`, [], (r) => r && Object.keys(r.c).length === 0);
+    const pubBg = await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === WHITE && publicVar(h, 'rows.price') === INK);
+    await sleep(500); const list3 = await l.$$eval('[data-style-changed]', (els) => els.length);
+    check('changed-reset-guard', !!refused && /4\.5:1/.test(refused) && /Price/.test(refused) && stillBg === '#2a2a2a' && priceGone.ok && pubPrice.ok && list2.join() === 'rows.bg' && bgGone.ok && pubBg.ok && list3 === 0, `Reset on Row background (#2a2a2a → Auto white) while the price is #ffc14d: refused by the guard with "${(refused || '').trim()}", nothing saved (database still ${stillBg}); Reset on Price → Auto again (database ${priceGone.ok}, white on the dark rows on the public page after ${pubPrice.ms} ms), the list then [${list2.join(', ')}]; Reset on Row background → passes (database empty ${bgGone.ok}, white rows and ink price on the public page after ${pubBg.ms} ms), the list empty (${list3 === 0}); ${taps} taps for the two resets`);
+    measure(`per-colour reset from What changed: 1 tap each, through the readability guard (a refusal shown in the row); on the public page in ${pubPrice.ms} / ${pubBg.ms} ms`);
+    // the two custom colours again for the Reset group step
+    await setHex('rows.bg', '#2a2a2a'); await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === '#2a2a2a');
+    await setHex('rows.price', '#ffc14d'); await waitPublic('senso', (h) => publicVar(h, 'rows.price') === '#ffc14d');
+  }
   const colorsBefore = await colorsOf('senso');
   await l.click('[data-style-group="rows"] button:has-text("Reset group to venue default")'); await l.waitForSelector('[role=status]:has-text("Group reset")');
   const pub4 = await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === WHITE && publicVar(h, 'rows.price') === INK);
@@ -238,6 +295,25 @@ await snap(l, 'style-laptop');
   await snap(l, 'region-tapped');
   check('region-tap', footerOutlined && inView, `tapped the footer in the preview → the Footer group opened ${dt} ms later (1 tap), scrolled into view: ${inView}; the footer is outlined in the preview: ${footerOutlined}`);
   measure(`tap a region in the preview: 1 tap; its group open after ${dt} ms`);
+  { // every group switches the preview to the screen where it is visible and outlines its region (Kian, 2026-10-09)
+    const EXPECT = { page: 'menu', header: 'menu', tabs: 'menu', headings: 'menu', rows: 'menu', sheet: 'sheet', footer: 'menu', welcome: 'welcome' };
+    const SEL = { page: 'html.roses-region-page', header: 'main > header.roses-region', tabs: '#tabs.roses-region', headings: 'main section h2.roses-region', rows: 'main section ul.roses-region', sheet: 'dialog#sheet[open].roses-region', footer: 'main footer.roses-region', welcome: '#welcome.roses-region' };
+    const rows = [];
+    for (const g of Object.keys(EXPECT)) {
+      const t = Date.now(); await openGroup(g);
+      let st = null, ok = false;
+      while (Date.now() - t < 3000) {
+        st = await frameEval((d, sel) => { const w = d.getElementById('welcome'), s = d.getElementById('sheet'); const els = [...d.querySelectorAll(sel)]; const inView = els.some((e) => { const r = e.getBoundingClientRect(); return r.bottom > 0 && r.top < d.defaultView.innerHeight; }); return { welcome: getComputedStyle(w).display, sheet: !!s?.open, outlined: els.length, inView, y: Math.round(d.defaultView.scrollY) }; }, SEL[g]);
+        ok = (EXPECT[g] === 'welcome' ? st.welcome === 'grid' : EXPECT[g] === 'sheet' ? st.sheet && st.welcome === 'none' : st.welcome === 'none' && !st.sheet) && st.outlined > 0 && (g === 'page' || g === 'welcome' || st.inView);
+        if (ok) break; await sleep(30);
+      }
+      const bar = await l.$eval('[data-preview-screen][aria-pressed="true"]', (e) => e.dataset.previewScreen).catch(() => null);
+      rows.push({ g, ms: Date.now() - t, ...st, bar, ok: ok && bar === EXPECT[g] });
+    }
+    await snap(l, 'groups-screens');
+    check('groups-screens', rows.every((r) => r.ok), `opening each group switches the preview to its screen and outlines its region: ${rows.map((r) => `${r.g} → ${r.bar} (${r.ok ? 'ok' : 'WRONG'}: overlay ${r.welcome}, popup ${r.sheet}, ${r.outlined} outlined${r.g === 'page' || r.g === 'welcome' ? '' : `, in view ${r.inView}`}, scrollY ${r.y}) in ${r.ms} ms`).join('; ')}`);
+    measure(`opening a Style group switches the preview to its screen within ${Math.max(...rows.map((r) => r.ms))} ms (all 8 groups)`);
+  }
   await openGroup('tabs'); await sleep(150);
   const tabsOutlined = await frameEval((d) => d.querySelector('#tabs')?.classList.contains('roses-region') && !d.querySelector('main footer')?.classList.contains('roses-region'));
   await openGroup('sheet'); await sleep(300);
@@ -248,12 +324,12 @@ await snap(l, 'style-laptop');
   await snap(l, 'region-welcome');
   // the preview-only season switch: Winter shows the winter scene in the frame; nothing is saved; Now puts the frame back on today's season
   const styleBefore = JSON.stringify((await db.query(`select style from venues where id='senso'`)).rows[0].style);
-  await l.click('[data-style-season] button[data-season="winter"]');
+  await l.click('[data-preview-season="winter"]');
   { const t = Date.now(); while (Date.now() - t < 4000 && !(await frameEval((d) => !!d.querySelector('#welcome .scene-winter .p')))) await sleep(50); } // the scene is fetched from the admin API and swapped in (current season only, the PM 2026-10-09)
   const winter = await frameEval((d) => ({ season: d.getElementById('welcome')?.dataset.season, scene: [...d.querySelectorAll('#welcome .scene')].filter((e) => getComputedStyle(e).display !== 'none').map((e) => e.dataset.scene).join('+'), flakes: d.querySelectorAll('#welcome .scene-winter .p').length, running: d.getElementById('welcome').getAnimations({ subtree: true }).filter((a) => a.playState === 'running').length }));
   await snap(l, 'region-welcome-winter');
   const styleAfter = JSON.stringify((await db.query(`select style from venues where id='senso'`)).rows[0].style);
-  await l.click('[data-style-season] button[data-season="now"]'); await sleep(250);
+  await l.click(`[data-preview-season="${welcome.season}"]`); await sleep(250); // the page's own season again
   const now = await frameEval((d) => d.getElementById('welcome')?.dataset.season);
   const thisSeason = welcome.season; // the season the page was rendered for (America/Toronto; the PM, 2026-10-09)
   check('welcome-season', welcome.display === 'grid' && welcome.visible && welcome.sheetClosed && welcome.running > 0 && welcome.scene === welcome.season && winter.season === 'winter' && winter.scene === 'winter' && winter.flakes > 0 && winter.flakes <= 20 && winter.running > 0 && styleAfter === styleBefore && now === thisSeason, `Welcome group open → the welcome screen shown live in the preview (display ${welcome.display}, visible ${welcome.visible}, ${welcome.running} animations running, today's scene ${welcome.scene}; the sheet closed again: ${welcome.sheetClosed}); Winter in the season switch → the frame shows the winter scene (${winter.scene}, ${winter.flakes} flakes, ${winter.running} animations) and venues.style is unchanged (${styleAfter === styleBefore}); Now → ${now} (the page's own season ${thisSeason})`);
@@ -291,6 +367,24 @@ await snap(l, 'style-laptop');
   check('no-jump', openAfter.join() === 'tabs' && tokenAfter === 'true' && outlinedAfter.tabs && !outlinedAfter.footer && scrolledTo && tokenAfterTap === 'true' && openAfterTap.join() === 'tabs' && pubTabs.ok, `footer tapped in the preview, then Category tabs opened on the left and Tab text saved as #4a4a4a (on the public page after ${pubTabs.ms} ms): ${Date.now() - tSave} ms later the open group is still [${openAfter.join(', ')}] with Tab text open (${tokenAfter}), the preview outlines the tabs (${outlinedAfter.tabs}) and not the footer (${!outlinedAfter.footer}), the group is in view (${scrolledTo}); a tap on the tab bar in the preview keeps Tab text open (${tokenAfterTap}) and the group [${openAfterTap.join(', ')}]`);
   await l.click('[role=status] button:has-text("Undo")').catch(() => {}); await l.waitForSelector('[role=status]:has-text("Undone")', { timeout: 10000 }).catch(() => {}); await waitPublic('senso', (h) => publicVar(h, 'tabs.text') !== '#4a4a4a'); // wait for the undo's answer like every other Undo step: the route regenerates the public page before it answers
   await api('/api/admin/style', { action: 'reset', venue: 'senso' }, await cookieOf(laptop)); await waitPublic('senso', (h) => publicVar(h, 'tabs.text') === '#6b6b6b');
+  { // position and screen kept through a colour save (Kian, 2026-10-09): the footer in view on the Menu screen, a colour saved → the same scroll position, no welcome screen, no popup; the popup open (Item popup group), its colour saved → open again
+    const probe = () => frameEval((d) => ({ y: Math.round(d.defaultView.scrollY), welcome: getComputedStyle(d.getElementById('welcome')).display, sheet: !!d.getElementById('sheet')?.open, sheetOutlined: !!d.querySelector('dialog#sheet[open].roses-region') }));
+    const bar = () => l.$eval('[data-preview-screen][aria-pressed="true"]', (e) => e.dataset.previewScreen).catch(() => null);
+    await openGroup('footer'); await sleep(300);
+    const before = await probe();
+    await setHex('footer.address', '#333333'); await l.waitForSelector('[role=status]:has-text("Saved")'); await waitPublic('senso', (h) => publicVar(h, 'footer.address') === '#333333'); await frameReady(); await sleep(900);
+    const after = await probe(); const barAfter = await bar();
+    await snap(l, 'position-kept');
+    await l.click('[role=status] button:has-text("Undo")'); await l.waitForSelector('[role=status]:has-text("Undone")'); await waitPublic('senso', (h) => publicVar(h, 'footer.address') === '#6b6b6b');
+    await openGroup('sheet'); await sleep(400);
+    const sheetBefore = await probe();
+    await setHex('sheet.title', '#333333'); await l.waitForSelector('[role=status]:has-text("Saved")'); await waitPublic('senso', (h) => publicVar(h, 'sheet.title') === '#333333'); await frameReady(); await sleep(900);
+    const sheetAfter = await probe(); const barSheet = await bar();
+    await snap(l, 'popup-kept');
+    await l.click('[role=status] button:has-text("Undo")'); await l.waitForSelector('[role=status]:has-text("Undone")'); await waitPublic('senso', (h) => publicVar(h, 'sheet.title') === INK);
+    check('position-kept', before.y > 0 && Math.abs(after.y - before.y) <= 4 && after.welcome === 'none' && !after.sheet && barAfter === 'menu' && sheetBefore.sheet && sheetAfter.sheet && sheetAfter.sheetOutlined && sheetAfter.welcome === 'none' && barSheet === 'sheet', `Footer group open (the frame scrolled to the footer, scrollY ${before.y}), Address saved → after the save and the reload the frame is at scrollY ${after.y} (same place: ${Math.abs(after.y - before.y) <= 4}), screen ${barAfter}, overlay ${after.welcome}, popup ${after.sheet}; Item popup group open (popup ${sheetBefore.sheet}), Title saved → the popup open again (${sheetAfter.sheet}) and outlined (${sheetAfter.sheetOutlined}), screen ${barSheet}, overlay ${sheetAfter.welcome}`);
+    measure(`after a colour save the preview keeps its position (scrollY ${before.y} → ${after.y}) and its screen (the popup open again)`);
+  }
   // section layout: a section switched to Grid in the Layout group
   {
     const sec = (await db.query(`select s.id, s.name->>'en' as name, s.layout, (select count(*)::int from item_sections x join items i on i.id = x.item_id and i.listed where x.section_id = s.id) as n from sections s where s.venue_id = 'senso' and s.listed and s.name->>'en' = 'Fresh Juice'`)).rows[0];
@@ -331,6 +425,43 @@ await snap(l, 'style-laptop');
   const fa = await frameEval((d) => ({ dir: d.documentElement.dir, bg: getComputedStyle(d.documentElement).getPropertyValue('--c-page-bg').trim() }));
   check('persian-same', fa.dir === 'rtl' && fa.bg === en, `Persian view: dir=${fa.dir}, page background ${fa.bg} (English ${en})`);
   await l.click('[aria-label="Preview language"] button:has-text("EN")');
+}
+{ // Discard this session's changes (Kian, 2026-10-09): the snapshot taken when the Style tab opened (colours, the template's switches, every section's layout) back in one step; Undo brings the discarded state back
+  const c = await cookieOf(laptop);
+  const sec = (await db.query(`select id, name->>'en' as name from sections where venue_id = 'senso' and listed and name->>'en' = 'Fresh Juice'`)).rows[0];
+  await api('/api/admin/style', { action: 'reset', venue: 'senso' }, c);
+  await api('/api/admin/style', { action: 'update', venue: 'senso', patch: { colors: { 'tabs.bg': '#fff8ee' }, welcome: true } }, c);
+  await api('/api/admin/section', { action: 'update', id: sec.id, patch: { layout: 'list' } }, c);
+  const pub0 = await waitPublic('senso', (h) => publicVar(h, 'tabs.bg') === '#fff8ee' && /id="welcome"/.test(h) && layoutOf(h, sec.id) === 'list');
+  const vars0 = varsOf(pub0.html || await publicHtml('senso')); const style0 = await styleJson('senso');
+  await l.goto(`${base}/admin/senso?tab=style`); await l.waitForSelector('[data-style-group="rows"]'); await frameReady(); await sleep(400);
+  const disabledAtOpen = await l.$eval('[data-style-discard]', (e) => e.disabled);
+  // three changes in the session: a colour, the welcome switch, a section's layout
+  await openGroup('rows'); await setHex('rows.bg', '#141414'); await l.waitForSelector('[role=status]:has-text("Saved")'); await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === '#141414');
+  await openGroup('welcome'); await l.click('[data-style-option="welcome"] input[role=switch]'); await waitPublic('senso', (h) => !/id="welcome"/.test(h));
+  await l.evaluate((id) => document.querySelector(`[data-section-layout="${id}"]`)?.scrollIntoView({ block: 'center' }), sec.id);
+  await l.click(`[data-section-layout="${sec.id}"] button[role=radio]:has-text("Grid")`); await waitDb('select layout from sections where id = $1', [sec.id], (r) => r?.layout === 'grid');
+  const pub1 = await waitPublic('senso', (h) => layoutOf(h, sec.id) === 'grid' && publicVar(h, 'rows.bg') === '#141414' && !/id="welcome"/.test(h));
+  const vars1 = varsOf(pub1.html || await publicHtml('senso')); const style1 = await styleJson('senso');
+  await sleep(500); const changes = await l.getAttribute('[data-style-discard]', 'data-changes');
+  await l.evaluate(() => document.querySelector('[data-style-discard]')?.scrollIntoView({ block: 'center' })); await snap(l, 'discard-before');
+  let taps = 0; const tapL = async (sel) => { taps++; await l.click(sel); };
+  const tD = Date.now();
+  await tapL('[data-style-discard]'); await l.waitForSelector('[role=dialog][aria-label="Discard this session\'s changes?"]'); await tapL('[role=dialog] button:has-text("Discard changes")');
+  await l.waitForSelector('[role=status]:has-text("Discarded")');
+  const pubD = await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === WHITE && /id="welcome"/.test(h) && layoutOf(h, sec.id) === 'list');
+  const varsD = varsOf(pubD.html || await publicHtml('senso')); const styleD = await styleJson('senso'); const layoutD = (await db.query('select layout from sections where id = $1', [sec.id])).rows[0].layout;
+  await sleep(600); const listD = await l.$$eval('[data-style-changed]', (els) => els.map((e) => e.dataset.styleChanged)); const changesD = await l.getAttribute('[data-style-discard]', 'data-changes');
+  await snap(l, 'discard-after');
+  const tU = Date.now(); await l.click('[role=status] button:has-text("Undo")'); await l.waitForSelector('[role=status]:has-text("Undone")');
+  const pubU = await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === '#141414' && !/id="welcome"/.test(h) && layoutOf(h, sec.id) === 'grid');
+  const varsU = varsOf(pubU.html || await publicHtml('senso')); const styleU = await styleJson('senso'); const layoutU = (await db.query('select layout from sections where id = $1', [sec.id])).rows[0].layout;
+  const sameD = JSON.stringify(varsD) === JSON.stringify(vars0), sameU = JSON.stringify(varsU) === JSON.stringify(vars1);
+  const diffD = Object.keys({ ...vars0, ...varsD }).filter((k) => vars0[k] !== varsD[k]);
+  check('discard', disabledAtOpen === true && changes === '3' && pubD.ok && sameD && styleD === style0 && layoutD === 'list' && listD.join() === 'tabs.bg' && changesD === '0' && pubU.ok && sameU && styleU === style1 && layoutU === 'grid', `Style tab opened on a snapshot (bar background cream, welcome on, "${sec.name}" as a list; Discard disabled: ${disabledAtOpen}); then rows #141414, welcome off, "${sec.name}" to Grid (the button counts ${changes} changes); Discard (${taps} taps: Discard, confirm) → the public page serves exactly the snapshot's ${Object.keys(vars0).length} colour variables after ${pubD.ms} ms (identical: ${sameD}${diffD.length ? `; differ: ${diffD.join(', ')}` : ''}), welcome on, layout ${layoutD}, venues.style equal to the snapshot (${styleD === style0}), What changed back to [${listD.join(', ')}], the button counts ${changesD}; ${Date.now() - tD} ms after the first tap; Undo → the discarded state back after ${pubU.ms} ms (${Date.now() - tU} ms after the tap): variables identical (${sameU}), venues.style (${styleU === style1}), layout ${layoutU}`);
+  measure(`Discard this session's changes: ${taps} taps (Discard, confirm); the opening snapshot back on the public page in ${pubD.ms} ms; Undo → the discarded state back in ${pubU.ms} ms`);
+  await api('/api/admin/style', { action: 'reset', venue: 'senso' }, c); await api('/api/admin/style', { action: 'update', venue: 'senso', patch: { welcome: true } }, c); await api('/api/admin/section', { action: 'update', id: sec.id, patch: { layout: 'list' } }, c);
+  await waitPublic('senso', (h) => publicVar(h, 'tabs.bg') === WHITE && /id="welcome"/.test(h) && layoutOf(h, sec.id) === 'list');
 }
 await laptop.close();
 await browser.close(); await db.end();

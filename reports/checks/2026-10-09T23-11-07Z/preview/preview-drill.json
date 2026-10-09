@@ -1,0 +1,129 @@
+{
+  "base": "http://127.0.0.1:60802",
+  "at": "2026-10-09T23:19:07.118Z",
+  "pass": true,
+  "results": [
+    {
+      "step": "t-welcome-preview",
+      "ok": true,
+      "text": "from the Menu tab on the phone: 4 taps (Preview, Winter, Evening, FA) → the welcome screen (display grid, 62 animations running) with the winter scene (20 particles; the page's own season is fall) 51 ms after the season tap, the evening greeting (data-greet evening, shown: evening), Persian (lang fa, dir rtl); the bar reads {\"screen\":\"welcome\",\"lang\":\"fa\",\"season\":\"winter\",\"slot\":\"evening\"}; the customers' page byte-identical: true; venues.style unchanged: true; stills 01-preview-bar-phone.jpg, 02-preview-phone-welcome-winter-evening-fa.jpg"
+    },
+    {
+      "step": "bar-timing-phone",
+      "ok": true,
+      "text": "every switch shows within 300 ms on the phone (worst 61 ms): Menu 36 ms, Item popup 38 ms, Section list 46 ms, Welcome 36 ms, EN 41 ms, FA 52 ms, fall (the page's own) 41 ms, winter 61 ms, spring 49 ms, summer 51 ms, morning 36 ms, afternoon 33 ms, evening 34 ms, Replay 56 ms; Replay on the fall scene 1.5 s into the entrance: the logo's entrance animation back at 100 ms (restarted: true), a fresh artwork scene drawn (old particles gone: true, 20 particles)"
+    },
+    {
+      "step": "bar-timing-laptop",
+      "ok": true,
+      "text": "every switch shows within 300 ms on the laptop (worst 63 ms): Welcome 48 ms, winter 63 ms, morning 50 ms, FA 50 ms, EN 49 ms, Item popup 42 ms, Section list 45 ms, Menu 35 ms; the bar says \"Season and time of day change this preview only. Customers get the season and the time of their own visit.\"; still 03-preview-bar-laptop.jpg"
+    },
+    {
+      "step": "screen-per-tab",
+      "ok": true,
+      "text": "Menu tab on Welcome → Style tab shows its own screen (menu, overlay none) in the same frame (kept; URL http://127.0.0.1:60802/admin/senso?tab=style) → back to Menu: Welcome again (welcome, overlay grid), the frame still the same document (kept; URL http://127.0.0.1:60802/admin/senso)"
+    },
+    {
+      "step": "welcome-lang-tap",
+      "ok": true,
+      "text": "tap on فارسی inside the previewed welcome screen → the menu in Persian 28 ms later (overlay none, lang fa, dir rtl); the page's own handler did not run (data-welcome stays \"off\"); the bar follows: language fa, screen menu"
+    },
+    {
+      "step": "screen-kept-after-save",
+      "ok": true,
+      "text": "section list open, price saved → after the reload the list is open again (true; popup false, overlay none); item popup on \"Drill preview item\" ($5.25), price saved in its editor → the popup open again on it with $6.75 (overlay none); stills 04-list-kept-after-save.jpg, 05-popup-kept-after-save.jpg"
+    },
+    {
+      "step": "public-unchanged",
+      "ok": true,
+      "text": "the customers' HTML of both venues is byte-identical before and after the drill (true; senso 234765 B, kebab-land 178386 B) and carries no preview markup (0 markers)"
+    }
+  ],
+  "measures": [
+    "preview the welcome screen in winter, in the evening, in Persian from the Menu tab: 4 taps (Preview, season, time of day, language); the scene shown 51 ms after the season tap",
+    "preview bar on the phone: every switch within 61 ms (screens, languages, seasons fetched from the admin API, times of day, Replay)",
+    "preview bar on the laptop: every switch within 63 ms",
+    "switching tabs keeps the preview frame (no reload) and each tab's screen",
+    "after a save the preview is back on its screen (section list; item popup on the edited item with the new price)"
+  ],
+  "transcript": [
+    {
+      "at": "2026-10-09T23:18:55.837Z",
+      "ms": 12,
+      "step": "db",
+      "text": "connected to database \"roses_check_20261009t231107z\" as application \"roses-check:preview-drill\""
+    },
+    {
+      "at": "2026-10-09T23:18:57.055Z",
+      "ms": 1230,
+      "step": "shot",
+      "text": "01-preview-bar-phone.jpg"
+    },
+    {
+      "at": "2026-10-09T23:18:57.533Z",
+      "ms": 1708,
+      "step": "shot",
+      "text": "02-preview-phone-welcome-winter-evening-fa.jpg"
+    },
+    {
+      "at": "2026-10-09T23:18:57.534Z",
+      "ms": 1709,
+      "step": "t-welcome-preview",
+      "text": "PASS: from the Menu tab on the phone: 4 taps (Preview, Winter, Evening, FA) → the welcome screen (display grid, 62 animations running) with the winter scene (20 particles; the page's own season is fall) 51 ms after the season tap, the evening greeting (data-greet evening, shown: evening), Persian (lang fa, dir rtl); the bar reads {\"screen\":\"welcome\",\"lang\":\"fa\",\"season\":\"winter\",\"slot\":\"evening\"}; the customers' page byte-identical: true; venues.style unchanged: true; stills 01-preview-bar-phone.jpg, 02-preview-phone-welcome-winter-evening-fa.jpg"
+    },
+    {
+      "at": "2026-10-09T23:19:00.086Z",
+      "ms": 4261,
+      "step": "bar-timing-phone",
+      "text": "PASS: every switch shows within 300 ms on the phone (worst 61 ms): Menu 36 ms, Item popup 38 ms, Section list 46 ms, Welcome 36 ms, EN 41 ms, FA 52 ms, fall (the page's own) 41 ms, winter 61 ms, spring 49 ms, summer 51 ms, morning 36 ms, afternoon 33 ms, evening 34 ms, Replay 56 ms; Replay on the fall scene 1.5 s into the entrance: the logo's entrance animation back at 100 ms (restarted: true), a fresh artwork scene drawn (old particles gone: true, 20 particles)"
+    },
+    {
+      "at": "2026-10-09T23:19:02.376Z",
+      "ms": 6551,
+      "step": "shot",
+      "text": "03-preview-bar-laptop.jpg"
+    },
+    {
+      "at": "2026-10-09T23:19:02.550Z",
+      "ms": 6725,
+      "step": "bar-timing-laptop",
+      "text": "PASS: every switch shows within 300 ms on the laptop (worst 63 ms): Welcome 48 ms, winter 63 ms, morning 50 ms, FA 50 ms, EN 49 ms, Item popup 42 ms, Section list 45 ms, Menu 35 ms; the bar says \"Season and time of day change this preview only. Customers get the season and the time of their own visit.\"; still 03-preview-bar-laptop.jpg"
+    },
+    {
+      "at": "2026-10-09T23:19:03.493Z",
+      "ms": 7668,
+      "step": "screen-per-tab",
+      "text": "PASS: Menu tab on Welcome → Style tab shows its own screen (menu, overlay none) in the same frame (kept; URL http://127.0.0.1:60802/admin/senso?tab=style) → back to Menu: Welcome again (welcome, overlay grid), the frame still the same document (kept; URL http://127.0.0.1:60802/admin/senso)"
+    },
+    {
+      "at": "2026-10-09T23:19:03.521Z",
+      "ms": 7696,
+      "step": "welcome-lang-tap",
+      "text": "PASS: tap on فارسی inside the previewed welcome screen → the menu in Persian 28 ms later (overlay none, lang fa, dir rtl); the page's own handler did not run (data-welcome stays \"off\"); the bar follows: language fa, screen menu"
+    },
+    {
+      "at": "2026-10-09T23:19:05.438Z",
+      "ms": 9613,
+      "step": "shot",
+      "text": "04-list-kept-after-save.jpg"
+    },
+    {
+      "at": "2026-10-09T23:19:06.975Z",
+      "ms": 11150,
+      "step": "shot",
+      "text": "05-popup-kept-after-save.jpg"
+    },
+    {
+      "at": "2026-10-09T23:19:07.032Z",
+      "ms": 11207,
+      "step": "screen-kept-after-save",
+      "text": "PASS: section list open, price saved → after the reload the list is open again (true; popup false, overlay none); item popup on \"Drill preview item\" ($5.25), price saved in its editor → the popup open again on it with $6.75 (overlay none); stills 04-list-kept-after-save.jpg, 05-popup-kept-after-save.jpg"
+    },
+    {
+      "at": "2026-10-09T23:19:07.087Z",
+      "ms": 11262,
+      "step": "public-unchanged",
+      "text": "PASS: the customers' HTML of both venues is byte-identical before and after the drill (true; senso 234765 B, kebab-land 178386 B) and carries no preview markup (0 markers)"
+    }
+  ]
+}

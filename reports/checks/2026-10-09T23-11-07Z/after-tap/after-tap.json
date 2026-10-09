@@ -1,0 +1,799 @@
+{
+  "base": "http://127.0.0.1:60802",
+  "at": "2026-10-09T23:16:58.463Z",
+  "throttle": {
+    "latencyMs": 562.5,
+    "downloadBytesPerS": 188744,
+    "uploadBytesPerS": 86400,
+    "cpu": 4
+  },
+  "targetMs": 2500,
+  "pass": false,
+  "results": [
+    {
+      "step": "after-tap-senso-list-menu",
+      "ok": true,
+      "text": "within the 2500 ms target: senso (first section as a List), the menu visible 245 ms / 230 ms after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true, page errors 0 / 0"
+    },
+    {
+      "step": "after-tap-senso-list-photos",
+      "ok": false,
+      "text": "MISSES the 2500 ms target: senso (first section as a List), the 4 photo(s) in view loaded 8076 ms / 4761 ms after the tap; the first row's 1 eager photo(s) 3477 ms / 2013 ms, all 6 first-section photos 9009 ms / 15878 ms; served as a list with 6 photos (1 eager)"
+    },
+    {
+      "step": "after-tap-senso-grid-menu",
+      "ok": true,
+      "text": "within the 2500 ms target: senso (\"Senso Signature\" as a Grid), the menu visible 229 ms / 229 ms after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true, page errors 0 / 0"
+    },
+    {
+      "step": "after-tap-senso-grid-photos",
+      "ok": false,
+      "text": "MISSES the 2500 ms target: senso (\"Senso Signature\" as a Grid), the 4 photo(s) in view loaded 4745 ms / 4744 ms after the tap; the first row's 2 eager photo(s) 4628 ms / 4628 ms, all 6 first-section photos 16477 ms / 16310 ms; served as a grid with 6 photos (2 eager)"
+    },
+    {
+      "step": "after-tap-kebab-land-menu",
+      "ok": true,
+      "text": "within the 2500 ms target: kebab-land (as it is), the menu visible 214 ms / 227 ms after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true, page errors 0 / 0"
+    },
+    {
+      "step": "after-tap-kebab-land-photos",
+      "ok": true,
+      "text": "within the 2500 ms target: kebab-land (as it is), the 1 photo(s) in view loaded 1996 ms / 477 ms after the tap; the first row's 1 eager photo(s) 1996 ms / 477 ms, all 2 first-section photos 1996 ms / 993 ms; served as a list with 2 photos (1 eager)"
+    },
+    {
+      "step": "eager-rule",
+      "ok": true,
+      "text": "first row only, high fetch priority, everything else lazy: senso (first section as a List): 1 eager of 6 (1 eager on the whole page); senso (\"Senso Signature\" as a Grid): 2 eager of 6 (2 eager on the whole page); kebab-land (as it is): 1 eager of 2 (1 eager on the whole page)"
+    },
+    {
+      "step": "photo-sizes",
+      "ok": true,
+      "text": "first-section photos as linked from the venues' hosts (HEAD): senso: 6 photos, 237 KB–367 KB, 1.70 MB in all; natural 500×333 px, shown at 96×96 in a list, 173×173 in a grid; kebab-land: 2 photos, 72 KB–146 KB, 218 KB in all; natural 882×736, 785×1024 px, shown at 96×96 in a list"
+    },
+    {
+      "step": "restore-layout",
+      "ok": true,
+      "text": "\"Senso Signature\" is a grid again, as found"
+    }
+  ],
+  "measures": [
+    "senso (first section as a List): menu visible 245 ms / 230 ms, first-row photo(s) 3477 ms / 2013 ms, the 4 photos in view 8076 ms / 4761 ms, all 6 9009 ms / 15878 ms after the tap (target ≤ 2500 ms for the menu and the photos in view) — MISS",
+    "senso (\"Senso Signature\" as a Grid): menu visible 229 ms / 229 ms, first-row photo(s) 4628 ms / 4628 ms, the 4 photos in view 4745 ms / 4744 ms, all 6 16477 ms / 16310 ms after the tap (target ≤ 2500 ms for the menu and the photos in view) — MISS",
+    "kebab-land (as it is): menu visible 214 ms / 227 ms, first-row photo(s) 1996 ms / 477 ms, the 1 photos in view 1996 ms / 477 ms, all 2 1996 ms / 993 ms after the tap (target ≤ 2500 ms for the menu and the photos in view)",
+    "photo bytes: senso 6 photos 237 KB–367 KB (1.70 MB), kebab-land 2 photos 72 KB–146 KB (218 KB)"
+  ],
+  "runs": [
+    {
+      "key": "senso-list",
+      "venue": "senso",
+      "layout": "list",
+      "label": "senso (first section as a List)",
+      "served": {
+        "id": "838e6d99-745d-453a-b1af-9d17386814c1",
+        "layout": "list",
+        "imgs": [
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d25667a3-be20-4384-844b-bc2f3cfc7b45-En.png?9/23/2026%201:59:23%20AM",
+            "loading": "eager",
+            "fetchPriority": "high"
+          },
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/df5ed810-3036-430b-9baa-778500f41ae4.jpg?5/14/2024%207:08:39%20PM",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4b64f1dd-f4a0-4bc0-a2c2-b6760731e9a8-En.png?8/17/2026%201:16:56%20AM",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f07f6b98-d22c-4c26-8ca2-5879f67ba436.jpg?2/6/2024%207:22:57%20PM",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7279b0f5-7771-4119-85b8-fa44f7bd8f6c.jpg?5/14/2024%207:03:06%20PM",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8b86e393-ace4-436f-ac27-e3555f84990c-En.png?9/25/2026%202:37:53%20AM",
+            "loading": "lazy",
+            "fetchPriority": null
+          }
+        ],
+        "eagerOnPage": 1
+      },
+      "repeats": [
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2605,
+          "firstPaintMs": 1260,
+          "domContentLoadedMs": 1392,
+          "loadEventMs": null,
+          "resourcesAtTap": 3,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 245,
+          "eagerPhotos": 1,
+          "eagerPhotosMs": 3477,
+          "photosInView": 4,
+          "photosInViewMs": 8076,
+          "photosAll": 6,
+          "photosAllMs": 9009,
+          "photos": [
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d25667a3-be20-4384-844b-bc2f3cfc7b45-En.png?9/23/2026%201:59:23%20AM",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 6072
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/df5ed810-3036-430b-9baa-778500f41ae4.jpg?5/14/2024%207:08:39%20PM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 10672
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4b64f1dd-f4a0-4bc0-a2c2-b6760731e9a8-En.png?8/17/2026%201:16:56%20AM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 10123
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f07f6b98-d22c-4c26-8ca2-5879f67ba436.jpg?2/6/2024%207:22:57%20PM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 9711
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7279b0f5-7771-4119-85b8-fa44f7bd8f6c.jpg?5/14/2024%207:03:06%20PM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 11610
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8b86e393-ace4-436f-ac27-e3555f84990c-En.png?9/25/2026%202:37:53%20AM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 10347
+            }
+          ],
+          "section": "senso-signature"
+        },
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2602,
+          "firstPaintMs": 1260,
+          "domContentLoadedMs": 1392,
+          "loadEventMs": 7352,
+          "resourcesAtTap": 3,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 230,
+          "eagerPhotos": 1,
+          "eagerPhotosMs": 2013,
+          "photosInView": 4,
+          "photosInViewMs": 4761,
+          "photosAll": 6,
+          "photosAllMs": 15878,
+          "photos": [
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d25667a3-be20-4384-844b-bc2f3cfc7b45-En.png?9/23/2026%201:59:23%20AM",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 4610
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/df5ed810-3036-430b-9baa-778500f41ae4.jpg?5/14/2024%207:08:39%20PM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 7351
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4b64f1dd-f4a0-4bc0-a2c2-b6760731e9a8-En.png?8/17/2026%201:16:56%20AM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 7112
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f07f6b98-d22c-4c26-8ca2-5879f67ba436.jpg?2/6/2024%207:22:57%20PM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 6890
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7279b0f5-7771-4119-85b8-fa44f7bd8f6c.jpg?5/14/2024%207:03:06%20PM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 18469
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8b86e393-ace4-436f-ac27-e3555f84990c-En.png?9/25/2026%202:37:53%20AM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "96×96",
+              "responseEndMs": 16474
+            }
+          ],
+          "section": "senso-signature"
+        }
+      ],
+      "ok": false
+    },
+    {
+      "key": "senso-grid",
+      "venue": "senso",
+      "layout": "grid",
+      "label": "senso (\"Senso Signature\" as a Grid)",
+      "served": {
+        "id": "838e6d99-745d-453a-b1af-9d17386814c1",
+        "layout": "grid",
+        "imgs": [
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d25667a3-be20-4384-844b-bc2f3cfc7b45-En.png?9/23/2026%201:59:23%20AM",
+            "loading": "eager",
+            "fetchPriority": "high"
+          },
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/df5ed810-3036-430b-9baa-778500f41ae4.jpg?5/14/2024%207:08:39%20PM",
+            "loading": "eager",
+            "fetchPriority": "high"
+          },
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4b64f1dd-f4a0-4bc0-a2c2-b6760731e9a8-En.png?8/17/2026%201:16:56%20AM",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f07f6b98-d22c-4c26-8ca2-5879f67ba436.jpg?2/6/2024%207:22:57%20PM",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7279b0f5-7771-4119-85b8-fa44f7bd8f6c.jpg?5/14/2024%207:03:06%20PM",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8b86e393-ace4-436f-ac27-e3555f84990c-En.png?9/25/2026%202:37:53%20AM",
+            "loading": "lazy",
+            "fetchPriority": null
+          }
+        ],
+        "eagerOnPage": 2
+      },
+      "repeats": [
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2620,
+          "firstPaintMs": 1392,
+          "domContentLoadedMs": 1395,
+          "loadEventMs": 7352,
+          "resourcesAtTap": 3,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 229,
+          "eagerPhotos": 2,
+          "eagerPhotosMs": 4628,
+          "photosInView": 4,
+          "photosInViewMs": 4745,
+          "photosAll": 6,
+          "photosAllMs": 16477,
+          "photos": [
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d25667a3-be20-4384-844b-bc2f3cfc7b45-En.png?9/23/2026%201:59:23%20AM",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 5897
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/df5ed810-3036-430b-9baa-778500f41ae4.jpg?5/14/2024%207:08:39%20PM",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 7231
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4b64f1dd-f4a0-4bc0-a2c2-b6760731e9a8-En.png?8/17/2026%201:16:56%20AM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 7351
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f07f6b98-d22c-4c26-8ca2-5879f67ba436.jpg?2/6/2024%207:22:57%20PM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 7239
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7279b0f5-7771-4119-85b8-fa44f7bd8f6c.jpg?5/14/2024%207:03:06%20PM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 19081
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8b86e393-ace4-436f-ac27-e3555f84990c-En.png?9/25/2026%202:37:53%20AM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 17238
+            }
+          ],
+          "section": "senso-signature"
+        },
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2622,
+          "firstPaintMs": 1260,
+          "domContentLoadedMs": 1392,
+          "loadEventMs": 7352,
+          "resourcesAtTap": 3,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 229,
+          "eagerPhotos": 2,
+          "eagerPhotosMs": 4628,
+          "photosInView": 4,
+          "photosInViewMs": 4744,
+          "photosAll": 6,
+          "photosAllMs": 16310,
+          "photos": [
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d25667a3-be20-4384-844b-bc2f3cfc7b45-En.png?9/23/2026%201:59:23%20AM",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 5905
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/df5ed810-3036-430b-9baa-778500f41ae4.jpg?5/14/2024%207:08:39%20PM",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 7232
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4b64f1dd-f4a0-4bc0-a2c2-b6760731e9a8-En.png?8/17/2026%201:16:56%20AM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 7351
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f07f6b98-d22c-4c26-8ca2-5879f67ba436.jpg?2/6/2024%207:22:57%20PM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 7240
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7279b0f5-7771-4119-85b8-fa44f7bd8f6c.jpg?5/14/2024%207:03:06%20PM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 18929
+            },
+            {
+              "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8b86e393-ace4-436f-ac27-e3555f84990c-En.png?9/25/2026%202:37:53%20AM",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "500×333",
+              "rendered": "173×173",
+              "responseEndMs": 17206
+            }
+          ],
+          "section": "senso-signature"
+        }
+      ],
+      "ok": false
+    },
+    {
+      "key": "kebab-land",
+      "venue": "kebab-land",
+      "layout": null,
+      "label": "kebab-land (as it is)",
+      "served": {
+        "id": "62271c0e-ebc2-4379-9223-beb1408a7333",
+        "layout": "list",
+        "imgs": [
+          {
+            "src": "https://roseskebablands.com/wp-content/uploads/2025/06/garden-salad.webp",
+            "loading": "eager",
+            "fetchPriority": "high"
+          },
+          {
+            "src": "https://roseskebablands.com/wp-content/uploads/2025/06/Mixed-Appetizer-Platter-copy-785x1024.webp",
+            "loading": "lazy",
+            "fetchPriority": null
+          }
+        ],
+        "eagerOnPage": 1
+      },
+      "repeats": [
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2520,
+          "firstPaintMs": 1292,
+          "domContentLoadedMs": 1378,
+          "loadEventMs": null,
+          "resourcesAtTap": 3,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 214,
+          "eagerPhotos": 1,
+          "eagerPhotosMs": 1996,
+          "photosInView": 1,
+          "photosInViewMs": 1996,
+          "photosAll": 2,
+          "photosAllMs": 1996,
+          "photos": [
+            {
+              "src": "https://roseskebablands.com/wp-content/uploads/2025/06/garden-salad.webp",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "882×736",
+              "rendered": "96×96",
+              "responseEndMs": 4507
+            },
+            {
+              "src": "https://roseskebablands.com/wp-content/uploads/2025/06/Mixed-Appetizer-Platter-copy-785x1024.webp",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "785×1024",
+              "rendered": "96×96",
+              "responseEndMs": 3608
+            }
+          ],
+          "section": "appetizers"
+        },
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2522,
+          "firstPaintMs": 1288,
+          "domContentLoadedMs": 1374,
+          "loadEventMs": null,
+          "resourcesAtTap": 3,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 227,
+          "eagerPhotos": 1,
+          "eagerPhotosMs": 477,
+          "photosInView": 1,
+          "photosInViewMs": 477,
+          "photosAll": 2,
+          "photosAllMs": 993,
+          "photos": [
+            {
+              "src": "https://roseskebablands.com/wp-content/uploads/2025/06/garden-salad.webp",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "882×736",
+              "rendered": "96×96",
+              "responseEndMs": 2996
+            },
+            {
+              "src": "https://roseskebablands.com/wp-content/uploads/2025/06/Mixed-Appetizer-Platter-copy-785x1024.webp",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "785×1024",
+              "rendered": "96×96",
+              "responseEndMs": 3513
+            }
+          ],
+          "section": "appetizers"
+        }
+      ],
+      "ok": true
+    }
+  ],
+  "sizes": [
+    {
+      "venue": "senso",
+      "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/d25667a3-be20-4384-844b-bc2f3cfc7b45-En.png?9/23/2026%201:59:23%20AM",
+      "status": 200,
+      "bytes": 243151,
+      "type": "image/png",
+      "natural": "500×333",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "senso",
+      "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/df5ed810-3036-430b-9baa-778500f41ae4.jpg?5/14/2024%207:08:39%20PM",
+      "status": 200,
+      "bytes": 326149,
+      "type": "image/jpeg",
+      "natural": "500×333",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "senso",
+      "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/4b64f1dd-f4a0-4bc0-a2c2-b6760731e9a8-En.png?8/17/2026%201:16:56%20AM",
+      "status": 200,
+      "bytes": 280199,
+      "type": "image/png",
+      "natural": "500×333",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "senso",
+      "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/f07f6b98-d22c-4c26-8ca2-5879f67ba436.jpg?2/6/2024%207:22:57%20PM",
+      "status": 200,
+      "bytes": 260719,
+      "type": "image/jpeg",
+      "natural": "500×333",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "senso",
+      "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/7279b0f5-7771-4119-85b8-fa44f7bd8f6c.jpg?5/14/2024%207:03:06%20PM",
+      "status": 200,
+      "bytes": 375432,
+      "type": "image/jpeg",
+      "natural": "500×333",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "senso",
+      "src": "https://mealsymedia.s3.amazonaws.com/SensoCafe/MenuPhotos/8b86e393-ace4-436f-ac27-e3555f84990c-En.png?9/25/2026%202:37:53%20AM",
+      "status": 200,
+      "bytes": 294012,
+      "type": "image/png",
+      "natural": "500×333",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "kebab-land",
+      "src": "https://roseskebablands.com/wp-content/uploads/2025/06/garden-salad.webp",
+      "status": 200,
+      "bytes": 149182,
+      "type": "image/webp",
+      "natural": "882×736",
+      "rendered": "96×96 in a list"
+    },
+    {
+      "venue": "kebab-land",
+      "src": "https://roseskebablands.com/wp-content/uploads/2025/06/Mixed-Appetizer-Platter-copy-785x1024.webp",
+      "status": 200,
+      "bytes": 73998,
+      "type": "image/webp",
+      "natural": "785×1024",
+      "rendered": "96×96 in a list"
+    }
+  ],
+  "transcript": [
+    {
+      "at": "2026-10-09T23:15:39.809Z",
+      "ms": 11,
+      "step": "db",
+      "text": "connected to database \"roses_check_20261009t231107z\" as application \"roses-check:after-tap-drill\""
+    },
+    {
+      "at": "2026-10-09T23:15:40.007Z",
+      "ms": 209,
+      "step": "setup",
+      "text": "senso section \"Senso Signature\" (838e6d99-745d-453a-b1af-9d17386814c1) is a grid as found; the runs set it to List, then Grid, and put it back"
+    },
+    {
+      "at": "2026-10-09T23:15:40.064Z",
+      "ms": 266,
+      "step": "layout",
+      "text": "senso: Senso Signature → list: on the public page after 6 ms"
+    },
+    {
+      "at": "2026-10-09T23:15:51.742Z",
+      "ms": 11944,
+      "step": "senso (first section as a List)",
+      "text": "repeat 1: first paint 1260 ms, DOMContentLoaded 1392 ms, the tap at 2605 ms with 0 image(s) of 3 resources down, settled true; after the tap: menu visible 245 ms, the 1 eager photo(s) 3477 ms, the 4 in view 8076 ms, all 6 9009 ms; page errors 0"
+    },
+    {
+      "at": "2026-10-09T23:16:10.266Z",
+      "ms": 30468,
+      "step": "senso (first section as a List)",
+      "text": "repeat 2: first paint 1260 ms, DOMContentLoaded 1392 ms, the tap at 2602 ms with 0 image(s) of 3 resources down, settled true; after the tap: menu visible 230 ms, the 1 eager photo(s) 2013 ms, the 4 in view 4761 ms, all 6 15878 ms; page errors 0"
+    },
+    {
+      "at": "2026-10-09T23:16:10.266Z",
+      "ms": 30468,
+      "step": "senso (first section as a List)",
+      "text": "senso (first section as a List), served as a list with 6 photos (1 eager, 1 eager on the whole page): menu visible 245 ms / 230 ms after the tap; the 1 eager photo(s) of the first row loaded 3477 ms / 2013 ms after the tap; the 4 photo(s) in view loaded 8076 ms / 4761 ms after the tap (10.7 s / 7.4 s after navigation); all 6 first-section photos 9009 ms / 15878 ms after the tap (11.6 s / 18.5 s after navigation); the tap at 2.6 s / 2.6 s after navigation (first paint 1.3 s / 1.3 s, 0 / 0 image(s) already down at the tap)"
+    },
+    {
+      "at": "2026-10-09T23:16:10.266Z",
+      "ms": 30468,
+      "step": "after-tap-senso-list-menu",
+      "text": "PASS: within the 2500 ms target: senso (first section as a List), the menu visible 245 ms / 230 ms after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true, page errors 0 / 0"
+    },
+    {
+      "at": "2026-10-09T23:16:10.266Z",
+      "ms": 30468,
+      "step": "after-tap-senso-list-photos",
+      "text": "FAIL: MISSES the 2500 ms target: senso (first section as a List), the 4 photo(s) in view loaded 8076 ms / 4761 ms after the tap; the first row's 1 eager photo(s) 3477 ms / 2013 ms, all 6 first-section photos 9009 ms / 15878 ms; served as a list with 6 photos (1 eager)"
+    },
+    {
+      "at": "2026-10-09T23:16:10.322Z",
+      "ms": 30524,
+      "step": "layout",
+      "text": "senso: Senso Signature → grid: on the public page after 6 ms"
+    },
+    {
+      "at": "2026-10-09T23:16:29.467Z",
+      "ms": 49669,
+      "step": "senso (\"Senso Signature\" as a Grid)",
+      "text": "repeat 1: first paint 1392 ms, DOMContentLoaded 1395 ms, the tap at 2620 ms with 0 image(s) of 3 resources down, settled true; after the tap: menu visible 229 ms, the 2 eager photo(s) 4628 ms, the 4 in view 4745 ms, all 6 16477 ms; page errors 0"
+    },
+    {
+      "at": "2026-10-09T23:16:48.444Z",
+      "ms": 68646,
+      "step": "senso (\"Senso Signature\" as a Grid)",
+      "text": "repeat 2: first paint 1260 ms, DOMContentLoaded 1392 ms, the tap at 2622 ms with 0 image(s) of 3 resources down, settled true; after the tap: menu visible 229 ms, the 2 eager photo(s) 4628 ms, the 4 in view 4744 ms, all 6 16310 ms; page errors 0"
+    },
+    {
+      "at": "2026-10-09T23:16:48.444Z",
+      "ms": 68646,
+      "step": "senso (\"Senso Signature\" as a Grid)",
+      "text": "senso (\"Senso Signature\" as a Grid), served as a grid with 6 photos (2 eager, 2 eager on the whole page): menu visible 229 ms / 229 ms after the tap; the 2 eager photo(s) of the first row loaded 4628 ms / 4628 ms after the tap; the 4 photo(s) in view loaded 4745 ms / 4744 ms after the tap (7.4 s / 7.4 s after navigation); all 6 first-section photos 16477 ms / 16310 ms after the tap (19.1 s / 18.9 s after navigation); the tap at 2.6 s / 2.6 s after navigation (first paint 1.4 s / 1.3 s, 0 / 0 image(s) already down at the tap)"
+    },
+    {
+      "at": "2026-10-09T23:16:48.444Z",
+      "ms": 68646,
+      "step": "after-tap-senso-grid-menu",
+      "text": "PASS: within the 2500 ms target: senso (\"Senso Signature\" as a Grid), the menu visible 229 ms / 229 ms after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true, page errors 0 / 0"
+    },
+    {
+      "at": "2026-10-09T23:16:48.444Z",
+      "ms": 68646,
+      "step": "after-tap-senso-grid-photos",
+      "text": "FAIL: MISSES the 2500 ms target: senso (\"Senso Signature\" as a Grid), the 4 photo(s) in view loaded 4745 ms / 4744 ms after the tap; the first row's 2 eager photo(s) 4628 ms / 4628 ms, all 6 first-section photos 16477 ms / 16310 ms; served as a grid with 6 photos (2 eager)"
+    },
+    {
+      "at": "2026-10-09T23:16:53.006Z",
+      "ms": 73208,
+      "step": "kebab-land (as it is)",
+      "text": "repeat 1: first paint 1292 ms, DOMContentLoaded 1378 ms, the tap at 2520 ms with 0 image(s) of 3 resources down, settled true; after the tap: menu visible 214 ms, the 1 eager photo(s) 1996 ms, the 1 in view 1996 ms, all 2 1996 ms; page errors 0"
+    },
+    {
+      "at": "2026-10-09T23:16:56.567Z",
+      "ms": 76769,
+      "step": "kebab-land (as it is)",
+      "text": "repeat 2: first paint 1288 ms, DOMContentLoaded 1374 ms, the tap at 2522 ms with 0 image(s) of 3 resources down, settled true; after the tap: menu visible 227 ms, the 1 eager photo(s) 477 ms, the 1 in view 477 ms, all 2 993 ms; page errors 0"
+    },
+    {
+      "at": "2026-10-09T23:16:56.568Z",
+      "ms": 76770,
+      "step": "kebab-land (as it is)",
+      "text": "kebab-land (as it is), served as a list with 2 photos (1 eager, 1 eager on the whole page): menu visible 214 ms / 227 ms after the tap; the 1 eager photo(s) of the first row loaded 1996 ms / 477 ms after the tap; the 1 photo(s) in view loaded 1996 ms / 477 ms after the tap (4.5 s / 3.0 s after navigation); all 2 first-section photos 1996 ms / 993 ms after the tap (4.5 s / 3.5 s after navigation); the tap at 2.5 s / 2.5 s after navigation (first paint 1.3 s / 1.3 s, 0 / 0 image(s) already down at the tap)"
+    },
+    {
+      "at": "2026-10-09T23:16:56.568Z",
+      "ms": 76770,
+      "step": "after-tap-kebab-land-menu",
+      "text": "PASS: within the 2500 ms target: kebab-land (as it is), the menu visible 214 ms / 227 ms after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true, page errors 0 / 0"
+    },
+    {
+      "at": "2026-10-09T23:16:56.568Z",
+      "ms": 76770,
+      "step": "after-tap-kebab-land-photos",
+      "text": "PASS: within the 2500 ms target: kebab-land (as it is), the 1 photo(s) in view loaded 1996 ms / 477 ms after the tap; the first row's 1 eager photo(s) 1996 ms / 477 ms, all 2 first-section photos 1996 ms / 993 ms; served as a list with 2 photos (1 eager)"
+    },
+    {
+      "at": "2026-10-09T23:16:56.568Z",
+      "ms": 76770,
+      "step": "eager-rule",
+      "text": "PASS: first row only, high fetch priority, everything else lazy: senso (first section as a List): 1 eager of 6 (1 eager on the whole page); senso (\"Senso Signature\" as a Grid): 2 eager of 6 (2 eager on the whole page); kebab-land (as it is): 1 eager of 2 (1 eager on the whole page)"
+    },
+    {
+      "at": "2026-10-09T23:16:58.412Z",
+      "ms": 78614,
+      "step": "photo-sizes",
+      "text": "PASS: first-section photos as linked from the venues' hosts (HEAD): senso: 6 photos, 237 KB–367 KB, 1.70 MB in all; natural 500×333 px, shown at 96×96 in a list, 173×173 in a grid; kebab-land: 2 photos, 72 KB–146 KB, 218 KB in all; natural 882×736, 785×1024 px, shown at 96×96 in a list"
+    },
+    {
+      "at": "2026-10-09T23:16:58.426Z",
+      "ms": 78628,
+      "step": "restore",
+      "text": "Senso Signature → grid again: done"
+    },
+    {
+      "at": "2026-10-09T23:16:58.426Z",
+      "ms": 78628,
+      "step": "restore-layout",
+      "text": "PASS: \"Senso Signature\" is a grid again, as found"
+    }
+  ]
+}

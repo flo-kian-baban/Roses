@@ -301,8 +301,9 @@ const listedIds = async () => new Set((await db.query('select id from items wher
     const external = tags.filter((t) => /\bsrc=/.test(t)).length;
     const preview = (html.match(/preview/gi) || []).length;
     const roses = (html.match(/roses-preview|data-preview-frame|contentDocument/g) || []).length;
-    if (external || preview || roses || tags.length !== 4) ok = false;
-    notes.push(`${v}: ${tags.length} inline script tags (head decision, welcome screen, language toggle, menu), ${external} external, "preview" ${preview}×, preview markers ${roses}×`);
+    const want = /data-engine=/.test(html) ? 5 : 4; // senso's welcome artwork engine is its own inline script (2026-10-09)
+    if (external || preview || roses || tags.length !== want) ok = false;
+    notes.push(`${v}: ${tags.length} inline script tags (head decision, ${want === 5 ? 'artwork engine, ' : ''}welcome screen, language toggle, menu; wanted ${want}), ${external} external, "preview" ${preview}×, preview markers ${roses}×`);
   }
   check('no-preview-script', ok, notes.join('; '));
 }

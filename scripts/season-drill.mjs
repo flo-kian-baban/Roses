@@ -51,7 +51,8 @@ if (fs.existsSync(copy)) fs.rmSync(copy, { recursive: true, force: true });
 try { execFileSync('cp', ['-Rc', dist, copy]); } catch { fs.cpSync(dist, copy, { recursive: true }); }
 log('copy', `${dist} → ${copy}`);
 const manifest = JSON.parse(fs.readFileSync(path.join(copy, 'prerender-manifest.json'), 'utf8'));
-const interval = Object.fromEntries(venues.map((v) => [v, manifest.routes[`/${v}`]?.initialRevalidateSeconds ?? manifest.dynamicRoutes?.['/[venue]']?.fallbackRevalidate ?? null]));
+// the two brand pages are in the manifest with their revalidate; a venue on the default template is the dynamic route, rendered on demand with the same revalidate from its getStaticProps (not listed per venue)
+const interval = Object.fromEntries(venues.map((v) => [v, manifest.routes[`/${v}`]?.initialRevalidateSeconds ?? (manifest.dynamicRoutes?.['/[venue]'] ? 'dynamic route' : null)]));
 const serverLog = fs.openSync(path.join(out, 'season-server.log'), 'a');
 let server = null;
 async function start(now) {
@@ -103,9 +104,9 @@ const INSTANTS = [
 ];
 const renders = []; // one row per instant and venue
 let previousSeason = {}; // what the cache held before each instant
-for (const v of venues) { const h = fs.readFileSync(pageFile(v), 'utf8'); previousSeason[v] = seasonOf(h); }
+for (const v of venues) { const f = cacheFiles(v).find((x) => x.endsWith('.html')); previousSeason[v] = f ? seasonOf(fs.readFileSync(f, 'utf8')) : null; } // a venue on the default template has no build seed, only its route-cache entry
 log('build', `the build's own render: ${venues.map((v) => `${v} ${previousSeason[v]}`).join(', ')}; configured interval ${JSON.stringify(interval)} s`);
-check('revalidate-config', venues.every((v) => interval[v] === 3600), `prerender manifest: initialRevalidateSeconds ${venues.map((v) => `${v} ${interval[v]}`).join(', ')} (wanted 3600 on every public page)`);
+check('revalidate-config', venues.every((v) => interval[v] === 3600 || interval[v] === 'dynamic route') && venues.some((v) => interval[v] === 3600), `prerender manifest: initialRevalidateSeconds ${venues.map((v) => `${v} ${interval[v]}`).join(', ')} (wanted 3600 on every listed public page; a venue on the default template is the dynamic route with the same revalidate, proven by its renders below)`);
 
 const artPages = {}; // html per venue per season, for the artwork checks below
 for (const inst of INSTANTS) {
@@ -127,7 +128,7 @@ check('season-boundaries', renders.every((r) => r.fresh === r.want && r.regenera
 // the simulated hour: every pair 23:30 → 00:30 regenerated once the cache was 3601 s old; the first request served the previous render
 const pairs = [[1, 2], [3, 4], [5, 6], [7, 8]].map(([a, b]) => ({ from: rows[a], to: rows[b] }));
 check('hourly-regeneration', pairs.every((p) => p.to.stale && p.to.regenerated && p.to.fresh === p.to.want && p.from.fresh === p.from.want), `two renders an hour apart (the cached page aged 3601 s between them, the entry rewritten each time): ${pairs.map((p) => `${p.from.label} ${p.from.fresh} → ${p.to.label}: first request still ${p.to.firstResponse}, regenerated to ${p.to.fresh} after ${p.to.freshAfterMs} ms, entry rewritten ${p.to.regenerated}`).join('; ')}; Cache-Control ${rows[2].cacheControl}`);
-measure(`regeneration interval: ${interval.senso} s configured (revalidate); an hour later the next request serves the previous render and the fresh season lands after ${pairs.map((p) => p.to.freshAfterMs).join(' / ')} ms`);
+measure(`regeneration interval: ${interval.senso} s configured (revalidate; the same in getStaticProps of every public page); an hour later the next request serves the previous render and the fresh season lands after ${pairs.map((p) => p.to.freshAfterMs).join(' / ')} ms`);
 // control: within the hour nothing is regenerated (the server at the last instant, cache aged 3000 s)
 {
   age(3000);

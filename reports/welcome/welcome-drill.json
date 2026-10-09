@@ -1,0 +1,398 @@
+{
+  "base": "http://127.0.0.1:3002",
+  "at": "2026-10-09T14:32:09.773Z",
+  "pass": true,
+  "results": [
+    {
+      "step": "greeting-boundaries",
+      "ok": true,
+      "text": "senso, device clock mocked (UTC): 04:59 → evening \"Good evening\" / \"عصر بخیر\"; 05:00 → morning \"Good morning\" / \"صبح بخیر\"; 11:59 → morning \"Good morning\" / \"صبح بخیر\"; 12:00 → afternoon \"Good afternoon\" / \"ظهر بخیر\"; 16:59 → afternoon \"Good afternoon\" / \"ظهر بخیر\"; 17:00 → evening \"Good evening\" / \"عصر بخیر\"; both languages shown and the other two greetings hidden in every case: true"
+    },
+    {
+      "step": "season-boundaries-senso",
+      "ok": true,
+      "text": "senso, date mocked: 2026-08-31 → summer (summer, 16 particles); 2026-09-01 → fall (fall, 18 particles); 2026-11-30 → fall (fall, 18 particles); 2026-12-01 → winter (winter, 20 particles); 2027-02-28 → winter (winter, 20 particles); 2027-03-01 → spring (spring, 16 particles); 2027-05-31 → spring (spring, 16 particles); 2027-06-01 → summer (summer, 16 particles)"
+    },
+    {
+      "step": "season-boundaries-kebab-land",
+      "ok": true,
+      "text": "kebab-land, date mocked: 2026-08-31 → summer (summer, 16 particles); 2026-09-01 → fall (fall, 18 particles); 2026-11-30 → fall (fall, 18 particles); 2026-12-01 → winter (winter, 20 particles); 2027-02-28 → winter (winter, 20 particles); 2027-03-01 → spring (spring, 16 particles); 2027-05-31 → spring (spring, 16 particles); 2027-06-01 → summer (summer, 16 particles)"
+    },
+    {
+      "step": "scene-senso",
+      "ok": true,
+      "text": "senso fall scene: 18 particles (≤ 20), 37 animations running, properties animated: transform, opacity (transform and opacity only: true); logo visible: true; role dialog, aria-modal true; page errors: 0"
+    },
+    {
+      "step": "reduced-motion-senso",
+      "ok": true,
+      "text": "senso with reduced motion: the welcome screen shown (display grid) with 0 animations running, 18 particles of the 18 standing still in view, greeting and buttons fully visible at once (opacities 1, 1, 1/1), the page behind visible (true); a tap removes it without a fade in 0 ms"
+    },
+    {
+      "step": "scene-kebab-land",
+      "ok": true,
+      "text": "kebab-land fall scene: 18 particles (≤ 20), 36 animations running, properties animated: transform (transform and opacity only: true); logo visible: true; role dialog, aria-modal true; page errors: 0"
+    },
+    {
+      "step": "reduced-motion-kebab-land",
+      "ok": true,
+      "text": "kebab-land with reduced motion: the welcome screen shown (display grid) with 0 animations running, 18 particles of the 18 standing still in view, greeting and buttons fully visible at once (opacities 1, 1, 1/1), the page behind visible (true); a tap removes it without a fade in 0 ms"
+    },
+    {
+      "step": "tap-senso",
+      "ok": true,
+      "text": "senso first visit: no language pre-highlighted (saved null, pressed /), the menu inert behind the overlay (true); tap English → the overlay gone and the menu visible after 214 ms (target ≤ 300; lang en, first row visible true), then display none, the menu reachable again (inert false); stored: roses-lang=en"
+    },
+    {
+      "step": "remembered-senso",
+      "ok": true,
+      "text": "senso reload: the welcome screen again with English pre-highlighted (saved en; English pressed true, filled rgb(4, 44, 124) = remembered-button colour rgb(4, 44, 124): true; Persian plain rgb(242, 236, 226)); tap فارسی → Persian page after 217 ms (dir rtl, a Persian heading visible true); reload: فارسی pre-highlighted (true), the Persian greeting line first (330 px above the English at 365); stored keys: roses-lang=fa"
+    },
+    {
+      "step": "tap-kebab-land",
+      "ok": true,
+      "text": "kebab-land first visit: no language pre-highlighted (saved null, pressed /), the menu inert behind the overlay (true); tap English → the overlay gone and the menu visible after 229 ms (target ≤ 300; lang en, first row visible true), then display none, the menu reachable again (inert false); stored: roses-lang=en"
+    },
+    {
+      "step": "remembered-kebab-land",
+      "ok": true,
+      "text": "kebab-land reload: the welcome screen again with English pre-highlighted (saved en; English pressed true, filled rgb(185, 46, 46) = remembered-button colour rgb(185, 46, 46): true; Persian plain rgb(44, 44, 44)); tap فارسی → Persian page after 230 ms (dir rtl, a Persian heading visible true); reload: فارسی pre-highlighted (true), the Persian greeting line first (359 px above the English at 394); stored keys: roses-lang=fa"
+    },
+    {
+      "step": "anchor",
+      "ok": true,
+      "text": "/senso#tea-herbal-tea: the welcome screen first (show); after the choice the page sits on that section (scrollY 3060, the section 0 px under the category bar) with its tab active (tea-herbal-tea)"
+    },
+    {
+      "step": "keyboard-labels",
+      "ok": true,
+      "text": "Tab focuses button[data-lang=en], Enter chooses it (overlay off: true, lang en); buttons en: \"English\" 164×56 px, fa: \"فارسی\" 164×56 px (≥ 44 px tall, named); role dialog, aria-modal true"
+    },
+    {
+      "step": "javascript-off-senso",
+      "ok": true,
+      "text": "senso with JavaScript off: no data-welcome (null) and no greeting decided (null); the overlay markup is in the page (true) but display none; header and first row visible: true, true"
+    },
+    {
+      "step": "javascript-off-kebab-land",
+      "ok": true,
+      "text": "kebab-land with JavaScript off: no data-welcome (null) and no greeting decided (null); the overlay markup is in the page (true) but display none; header and first row visible: true, true"
+    },
+    {
+      "step": "kill-switch",
+      "ok": true,
+      "text": "Welcome screen off (Style route, owner) → the public HTML carries no overlay after 6 ms (venues.style.welcome false); the menu shows directly (overlay absent, first row visible true); on again → back after 6 ms (true); 4 inline script tags with it on (head decision, welcome, language toggle, menu)"
+    },
+    {
+      "step": "defaults-senso",
+      "ok": true,
+      "text": "senso served defaults: background #fff8ee; welcome.text on welcome.bg #1d1d1f / #fff8ee = 16:1 (needs 3); welcome.btnText on welcome.btnBg #1d1d1f / #f2ece2 = 14.3:1 (needs 4.5); welcome.activeText on welcome.activeBg #ffffff / #042c7c = 12.7:1 (needs 4.5); scene colours: leaves #cc9434, snow #b2becc, blossoms #cc3366, light #cc9434"
+    },
+    {
+      "step": "defaults-kebab-land",
+      "ok": true,
+      "text": "kebab-land served defaults: background #141414; welcome.text on welcome.bg #ffffff / #141414 = 18.4:1 (needs 3); welcome.btnText on welcome.btnBg #ffffff / #2c2c2c = 14:1 (needs 4.5); welcome.activeText on welcome.activeBg #ffffff / #b92e2e = 6:1 (needs 4.5); scene colours: leaves #f8512f, snow #ececec, blossoms #f2a0b4, light #ffc14d"
+    },
+    {
+      "step": "budget",
+      "ok": true,
+      "text": "inline code added to the page (the overlay with its scenes and script 20889 B, the head decision script 536 B): 21425 B raw, 4280 B gzipped (≤ 10 240); the welcome block of the stylesheet: 6751 B raw, 2291 B gzipped"
+    },
+    {
+      "step": "recording-senso",
+      "ok": true,
+      "text": "senso: reports/welcome/senso-fall.webm (444 KB) and stills senso-fall.jpg, senso-winter.jpg, senso-spring.jpg, senso-summer.jpg"
+    },
+    {
+      "step": "recording-kebab-land",
+      "ok": true,
+      "text": "kebab-land: reports/welcome/kebab-land-fall.webm (412 KB) and stills kebab-land-fall.jpg, kebab-land-winter.jpg, kebab-land-spring.jpg, kebab-land-summer.jpg"
+    }
+  ],
+  "measures": [
+    "senso: tap a language → menu visible in 214 ms",
+    "senso: tap فارسی → Persian menu visible in 217 ms",
+    "kebab-land: tap a language → menu visible in 229 ms",
+    "kebab-land: tap فارسی → Persian menu visible in 230 ms",
+    "kill switch: off → the menu shows directly after 6 ms; on → the welcome screen back after 6 ms",
+    "inline code for the welcome screen: 4.2 KB gzipped (20.9 KB raw); its stylesheet block 2.2 KB gzipped"
+  ],
+  "transcript": [
+    {
+      "at": "2026-10-09T14:31:13.699Z",
+      "ms": 10,
+      "step": "db",
+      "text": "connected to database \"roses_welcome\" as application \"roses-check:welcome-drill\""
+    },
+    {
+      "at": "2026-10-09T14:31:21.790Z",
+      "ms": 8101,
+      "step": "greeting-boundaries",
+      "text": "PASS: senso, device clock mocked (UTC): 04:59 → evening \"Good evening\" / \"عصر بخیر\"; 05:00 → morning \"Good morning\" / \"صبح بخیر\"; 11:59 → morning \"Good morning\" / \"صبح بخیر\"; 12:00 → afternoon \"Good afternoon\" / \"ظهر بخیر\"; 16:59 → afternoon \"Good afternoon\" / \"ظهر بخیر\"; 17:00 → evening \"Good evening\" / \"عصر بخیر\"; both languages shown and the other two greetings hidden in every case: true"
+    },
+    {
+      "at": "2026-10-09T14:31:22.668Z",
+      "ms": 8979,
+      "step": "season-boundaries-senso",
+      "text": "PASS: senso, date mocked: 2026-08-31 → summer (summer, 16 particles); 2026-09-01 → fall (fall, 18 particles); 2026-11-30 → fall (fall, 18 particles); 2026-12-01 → winter (winter, 20 particles); 2027-02-28 → winter (winter, 20 particles); 2027-03-01 → spring (spring, 16 particles); 2027-05-31 → spring (spring, 16 particles); 2027-06-01 → summer (summer, 16 particles)"
+    },
+    {
+      "at": "2026-10-09T14:31:23.811Z",
+      "ms": 10122,
+      "step": "season-boundaries-kebab-land",
+      "text": "PASS: kebab-land, date mocked: 2026-08-31 → summer (summer, 16 particles); 2026-09-01 → fall (fall, 18 particles); 2026-11-30 → fall (fall, 18 particles); 2026-12-01 → winter (winter, 20 particles); 2027-02-28 → winter (winter, 20 particles); 2027-03-01 → spring (spring, 16 particles); 2027-05-31 → spring (spring, 16 particles); 2027-06-01 → summer (summer, 16 particles)"
+    },
+    {
+      "at": "2026-10-09T14:31:25.034Z",
+      "ms": 11345,
+      "step": "scene-senso",
+      "text": "PASS: senso fall scene: 18 particles (≤ 20), 37 animations running, properties animated: transform, opacity (transform and opacity only: true); logo visible: true; role dialog, aria-modal true; page errors: 0"
+    },
+    {
+      "at": "2026-10-09T14:31:25.723Z",
+      "ms": 12034,
+      "step": "shot",
+      "text": "senso-reduced-motion.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:25.728Z",
+      "ms": 12039,
+      "step": "reduced-motion-senso",
+      "text": "PASS: senso with reduced motion: the welcome screen shown (display grid) with 0 animations running, 18 particles of the 18 standing still in view, greeting and buttons fully visible at once (opacities 1, 1, 1/1), the page behind visible (true); a tap removes it without a fade in 0 ms"
+    },
+    {
+      "at": "2026-10-09T14:31:27.116Z",
+      "ms": 13427,
+      "step": "scene-kebab-land",
+      "text": "PASS: kebab-land fall scene: 18 particles (≤ 20), 36 animations running, properties animated: transform (transform and opacity only: true); logo visible: true; role dialog, aria-modal true; page errors: 0"
+    },
+    {
+      "at": "2026-10-09T14:31:27.786Z",
+      "ms": 14097,
+      "step": "shot",
+      "text": "kebab-land-reduced-motion.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:27.790Z",
+      "ms": 14101,
+      "step": "reduced-motion-kebab-land",
+      "text": "PASS: kebab-land with reduced motion: the welcome screen shown (display grid) with 0 animations running, 18 particles of the 18 standing still in view, greeting and buttons fully visible at once (opacities 1, 1, 1/1), the page behind visible (true); a tap removes it without a fade in 0 ms"
+    },
+    {
+      "at": "2026-10-09T14:31:29.171Z",
+      "ms": 15482,
+      "step": "shot",
+      "text": "senso-first-visit.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:29.553Z",
+      "ms": 15864,
+      "step": "shot",
+      "text": "senso-after-english.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:29.553Z",
+      "ms": 15864,
+      "step": "tap-senso",
+      "text": "PASS: senso first visit: no language pre-highlighted (saved null, pressed /), the menu inert behind the overlay (true); tap English → the overlay gone and the menu visible after 214 ms (target ≤ 300; lang en, first row visible true), then display none, the menu reachable again (inert false); stored: roses-lang=en"
+    },
+    {
+      "at": "2026-10-09T14:31:30.894Z",
+      "ms": 17205,
+      "step": "shot",
+      "text": "senso-reload-english-remembered.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:32.546Z",
+      "ms": 18857,
+      "step": "shot",
+      "text": "senso-reload-persian-remembered.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:32.546Z",
+      "ms": 18857,
+      "step": "remembered-senso",
+      "text": "PASS: senso reload: the welcome screen again with English pre-highlighted (saved en; English pressed true, filled rgb(4, 44, 124) = remembered-button colour rgb(4, 44, 124): true; Persian plain rgb(242, 236, 226)); tap فارسی → Persian page after 217 ms (dir rtl, a Persian heading visible true); reload: فارسی pre-highlighted (true), the Persian greeting line first (330 px above the English at 365); stored keys: roses-lang=fa"
+    },
+    {
+      "at": "2026-10-09T14:31:33.914Z",
+      "ms": 20225,
+      "step": "shot",
+      "text": "kebab-land-first-visit.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:34.310Z",
+      "ms": 20621,
+      "step": "shot",
+      "text": "kebab-land-after-english.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:34.310Z",
+      "ms": 20621,
+      "step": "tap-kebab-land",
+      "text": "PASS: kebab-land first visit: no language pre-highlighted (saved null, pressed /), the menu inert behind the overlay (true); tap English → the overlay gone and the menu visible after 229 ms (target ≤ 300; lang en, first row visible true), then display none, the menu reachable again (inert false); stored: roses-lang=en"
+    },
+    {
+      "at": "2026-10-09T14:31:35.620Z",
+      "ms": 21931,
+      "step": "shot",
+      "text": "kebab-land-reload-english-remembered.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:37.292Z",
+      "ms": 23603,
+      "step": "shot",
+      "text": "kebab-land-reload-persian-remembered.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:37.292Z",
+      "ms": 23603,
+      "step": "remembered-kebab-land",
+      "text": "PASS: kebab-land reload: the welcome screen again with English pre-highlighted (saved en; English pressed true, filled rgb(185, 46, 46) = remembered-button colour rgb(185, 46, 46): true; Persian plain rgb(44, 44, 44)); tap فارسی → Persian page after 230 ms (dir rtl, a Persian heading visible true); reload: فارسی pre-highlighted (true), the Persian greeting line first (359 px above the English at 394); stored keys: roses-lang=fa"
+    },
+    {
+      "at": "2026-10-09T14:31:39.291Z",
+      "ms": 25602,
+      "step": "shot",
+      "text": "senso-anchor-after-choice.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:39.291Z",
+      "ms": 25602,
+      "step": "anchor",
+      "text": "PASS: /senso#tea-herbal-tea: the welcome screen first (show); after the choice the page sits on that section (scrollY 3060, the section 0 px under the category bar) with its tab active (tea-herbal-tea)"
+    },
+    {
+      "at": "2026-10-09T14:31:40.809Z",
+      "ms": 27120,
+      "step": "keyboard-labels",
+      "text": "PASS: Tab focuses button[data-lang=en], Enter chooses it (overlay off: true, lang en); buttons en: \"English\" 164×56 px, fa: \"فارسی\" 164×56 px (≥ 44 px tall, named); role dialog, aria-modal true"
+    },
+    {
+      "at": "2026-10-09T14:31:43.105Z",
+      "ms": 29416,
+      "step": "shot",
+      "text": "senso-javascript-off.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:43.105Z",
+      "ms": 29416,
+      "step": "javascript-off-senso",
+      "text": "PASS: senso with JavaScript off: no data-welcome (null) and no greeting decided (null); the overlay markup is in the page (true) but display none; header and first row visible: true, true"
+    },
+    {
+      "at": "2026-10-09T14:31:44.354Z",
+      "ms": 30665,
+      "step": "shot",
+      "text": "kebab-land-javascript-off.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:44.355Z",
+      "ms": 30666,
+      "step": "javascript-off-kebab-land",
+      "text": "PASS: kebab-land with JavaScript off: no data-welcome (null) and no greeting decided (null); the overlay markup is in the page (true) but display none; header and first row visible: true, true"
+    },
+    {
+      "at": "2026-10-09T14:31:45.228Z",
+      "ms": 31539,
+      "step": "shot",
+      "text": "senso-welcome-off.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:45.282Z",
+      "ms": 31593,
+      "step": "kill-switch",
+      "text": "PASS: Welcome screen off (Style route, owner) → the public HTML carries no overlay after 6 ms (venues.style.welcome false); the menu shows directly (overlay absent, first row visible true); on again → back after 6 ms (true); 4 inline script tags with it on (head decision, welcome, language toggle, menu)"
+    },
+    {
+      "at": "2026-10-09T14:31:45.287Z",
+      "ms": 31598,
+      "step": "defaults-senso",
+      "text": "PASS: senso served defaults: background #fff8ee; welcome.text on welcome.bg #1d1d1f / #fff8ee = 16:1 (needs 3); welcome.btnText on welcome.btnBg #1d1d1f / #f2ece2 = 14.3:1 (needs 4.5); welcome.activeText on welcome.activeBg #ffffff / #042c7c = 12.7:1 (needs 4.5); scene colours: leaves #cc9434, snow #b2becc, blossoms #cc3366, light #cc9434"
+    },
+    {
+      "at": "2026-10-09T14:31:45.291Z",
+      "ms": 31602,
+      "step": "defaults-kebab-land",
+      "text": "PASS: kebab-land served defaults: background #141414; welcome.text on welcome.bg #ffffff / #141414 = 18.4:1 (needs 3); welcome.btnText on welcome.btnBg #ffffff / #2c2c2c = 14:1 (needs 4.5); welcome.activeText on welcome.activeBg #ffffff / #b92e2e = 6:1 (needs 4.5); scene colours: leaves #f8512f, snow #ececec, blossoms #f2a0b4, light #ffc14d"
+    },
+    {
+      "at": "2026-10-09T14:31:45.293Z",
+      "ms": 31604,
+      "step": "budget",
+      "text": "PASS: inline code added to the page (the overlay with its scenes and script 20889 B, the head decision script 536 B): 21425 B raw, 4280 B gzipped (≤ 10 240); the welcome block of the stylesheet: 6751 B raw, 2291 B gzipped"
+    },
+    {
+      "at": "2026-10-09T14:31:50.471Z",
+      "ms": 36782,
+      "step": "video",
+      "text": "senso-fall.webm (454354 bytes; gitignored, on disk only)"
+    },
+    {
+      "at": "2026-10-09T14:31:52.206Z",
+      "ms": 38517,
+      "step": "shot",
+      "text": "senso-fall.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:53.992Z",
+      "ms": 40303,
+      "step": "shot",
+      "text": "senso-winter.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:55.779Z",
+      "ms": 42090,
+      "step": "shot",
+      "text": "senso-spring.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:57.509Z",
+      "ms": 43820,
+      "step": "shot",
+      "text": "senso-summer.jpg"
+    },
+    {
+      "at": "2026-10-09T14:31:57.511Z",
+      "ms": 43822,
+      "step": "recording-senso",
+      "text": "PASS: senso: reports/welcome/senso-fall.webm (444 KB) and stills senso-fall.jpg, senso-winter.jpg, senso-spring.jpg, senso-summer.jpg"
+    },
+    {
+      "at": "2026-10-09T14:32:02.747Z",
+      "ms": 49058,
+      "step": "video",
+      "text": "kebab-land-fall.webm (421521 bytes; gitignored, on disk only)"
+    },
+    {
+      "at": "2026-10-09T14:32:04.445Z",
+      "ms": 50756,
+      "step": "shot",
+      "text": "kebab-land-fall.jpg"
+    },
+    {
+      "at": "2026-10-09T14:32:06.234Z",
+      "ms": 52545,
+      "step": "shot",
+      "text": "kebab-land-winter.jpg"
+    },
+    {
+      "at": "2026-10-09T14:32:08.022Z",
+      "ms": 54333,
+      "step": "shot",
+      "text": "kebab-land-spring.jpg"
+    },
+    {
+      "at": "2026-10-09T14:32:09.749Z",
+      "ms": 56060,
+      "step": "shot",
+      "text": "kebab-land-summer.jpg"
+    },
+    {
+      "at": "2026-10-09T14:32:09.751Z",
+      "ms": 56062,
+      "step": "recording-kebab-land",
+      "text": "PASS: kebab-land: reports/welcome/kebab-land-fall.webm (412 KB) and stills kebab-land-fall.jpg, kebab-land-winter.jpg, kebab-land-spring.jpg, kebab-land-summer.jpg"
+    }
+  ]
+}

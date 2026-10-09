@@ -1,0 +1,79 @@
+Welcome drill PASS (21/21 checks)
+
+Measurements:
+- senso: tap a language → menu visible in 232 ms
+- senso: tap فارسی → Persian menu visible in 233 ms
+- kebab-land: tap a language → menu visible in 213 ms
+- kebab-land: tap فارسی → Persian menu visible in 215 ms
+- kill switch: off → the menu shows directly after 6 ms; on → the welcome screen back after 6 ms
+- inline code for the welcome screen: 4.2 KB gzipped (20.9 KB raw); its stylesheet block 2.2 KB gzipped
+
+PASS greeting-boundaries: senso, device clock mocked (UTC): 04:59 → evening "Good evening" / "عصر بخیر"; 05:00 → morning "Good morning" / "صبح بخیر"; 11:59 → morning "Good morning" / "صبح بخیر"; 12:00 → afternoon "Good afternoon" / "ظهر بخیر"; 16:59 → afternoon "Good afternoon" / "ظهر بخیر"; 17:00 → evening "Good evening" / "عصر بخیر"; both languages shown and the other two greetings hidden in every case: true
+PASS season-boundaries-senso: senso, date mocked: 2026-08-31 → summer (summer, 16 particles); 2026-09-01 → fall (fall, 18 particles); 2026-11-30 → fall (fall, 18 particles); 2026-12-01 → winter (winter, 20 particles); 2027-02-28 → winter (winter, 20 particles); 2027-03-01 → spring (spring, 16 particles); 2027-05-31 → spring (spring, 16 particles); 2027-06-01 → summer (summer, 16 particles)
+PASS season-boundaries-kebab-land: kebab-land, date mocked: 2026-08-31 → summer (summer, 16 particles); 2026-09-01 → fall (fall, 18 particles); 2026-11-30 → fall (fall, 18 particles); 2026-12-01 → winter (winter, 20 particles); 2027-02-28 → winter (winter, 20 particles); 2027-03-01 → spring (spring, 16 particles); 2027-05-31 → spring (spring, 16 particles); 2027-06-01 → summer (summer, 16 particles)
+PASS scene-senso: senso fall scene: 18 particles (≤ 20), 37 animations running, properties animated: transform, opacity (transform and opacity only: true); logo visible: true; role dialog, aria-modal true; page errors: 0
+PASS reduced-motion-senso: senso with reduced motion: the welcome screen shown (display grid) with 0 animations running, 18 particles of the 18 standing still in view, greeting and buttons fully visible at once (opacities 1, 1, 1/1), the page behind visible (true); a tap removes it without a fade in 0 ms
+PASS scene-kebab-land: kebab-land fall scene: 18 particles (≤ 20), 36 animations running, properties animated: transform (transform and opacity only: true); logo visible: true; role dialog, aria-modal true; page errors: 0
+PASS reduced-motion-kebab-land: kebab-land with reduced motion: the welcome screen shown (display grid) with 0 animations running, 18 particles of the 18 standing still in view, greeting and buttons fully visible at once (opacities 1, 1, 1/1), the page behind visible (true); a tap removes it without a fade in 1 ms
+PASS tap-senso: senso first visit: no language pre-highlighted (saved null, pressed /), the menu inert behind the overlay (true); tap English → the overlay gone and the menu visible after 232 ms (target ≤ 300; lang en, first row visible true), then display none, the menu reachable again (inert false); stored: roses-lang=en
+PASS remembered-senso: senso reload: the welcome screen again with English pre-highlighted (saved en; English pressed true, filled rgb(4, 44, 124) = remembered-button colour rgb(4, 44, 124): true; Persian plain rgb(242, 236, 226)); tap فارسی → Persian page after 233 ms (dir rtl, a Persian heading visible true); reload: فارسی pre-highlighted (true), the Persian greeting line first (330 px above the English at 365); stored keys: roses-lang=fa
+PASS tap-kebab-land: kebab-land first visit: no language pre-highlighted (saved null, pressed /), the menu inert behind the overlay (true); tap English → the overlay gone and the menu visible after 213 ms (target ≤ 300; lang en, first row visible true), then display none, the menu reachable again (inert false); stored: roses-lang=en
+PASS remembered-kebab-land: kebab-land reload: the welcome screen again with English pre-highlighted (saved en; English pressed true, filled rgb(185, 46, 46) = remembered-button colour rgb(185, 46, 46): true; Persian plain rgb(44, 44, 44)); tap فارسی → Persian page after 215 ms (dir rtl, a Persian heading visible true); reload: فارسی pre-highlighted (true), the Persian greeting line first (359 px above the English at 394); stored keys: roses-lang=fa
+PASS anchor: /senso#tea-herbal-tea: the welcome screen first (show); after the choice the page sits on that section (scrollY 3060, the section 0 px under the category bar) with its tab active (tea-herbal-tea)
+PASS keyboard-labels: Tab focuses button[data-lang=en], Enter chooses it (overlay off: true, lang en); buttons en: "English" 164×56 px, fa: "فارسی" 164×56 px (≥ 44 px tall, named); role dialog, aria-modal true
+PASS javascript-off-senso: senso with JavaScript off: no data-welcome (null) and no greeting decided (null); the overlay markup is in the page (true) but display none; header and first row visible: true, true
+PASS javascript-off-kebab-land: kebab-land with JavaScript off: no data-welcome (null) and no greeting decided (null); the overlay markup is in the page (true) but display none; header and first row visible: true, true
+PASS kill-switch: Welcome screen off (Style route, owner) → the public HTML carries no overlay after 6 ms (venues.style.welcome false); the menu shows directly (overlay absent, first row visible true); on again → back after 6 ms (true); 4 inline script tags with it on (head decision, welcome, language toggle, menu)
+PASS defaults-senso: senso served defaults: background #fff8ee; welcome.text on welcome.bg #1d1d1f / #fff8ee = 16:1 (needs 3); welcome.btnText on welcome.btnBg #1d1d1f / #f2ece2 = 14.3:1 (needs 4.5); welcome.activeText on welcome.activeBg #ffffff / #042c7c = 12.7:1 (needs 4.5); scene colours: leaves #cc9434, snow #b2becc, blossoms #cc3366, light #cc9434
+PASS defaults-kebab-land: kebab-land served defaults: background #141414; welcome.text on welcome.bg #ffffff / #141414 = 18.4:1 (needs 3); welcome.btnText on welcome.btnBg #ffffff / #2c2c2c = 14:1 (needs 4.5); welcome.activeText on welcome.activeBg #ffffff / #b92e2e = 6:1 (needs 4.5); scene colours: leaves #f8512f, snow #ececec, blossoms #f2a0b4, light #ffc14d
+PASS budget: inline code added to the page (the overlay with its scenes and script 20889 B, the head decision script 536 B): 21425 B raw, 4280 B gzipped (≤ 10 240); the welcome block of the stylesheet: 6751 B raw, 2291 B gzipped
+PASS recording-senso: senso: reports/checks/2026-10-09T14-24-26Z/welcome/senso-fall.webm (450 KB) and stills senso-fall.jpg, senso-winter.jpg, senso-spring.jpg, senso-summer.jpg
+PASS recording-kebab-land: kebab-land: reports/checks/2026-10-09T14-24-26Z/welcome/kebab-land-fall.webm (420 KB) and stills kebab-land-fall.jpg, kebab-land-winter.jpg, kebab-land-spring.jpg, kebab-land-summer.jpg
+
+Transcript:
+2026-10-09T14:27:16.717Z [db] connected to database "roses_check_20261009t142426z" as application "roses-check:welcome-drill"
+2026-10-09T14:27:24.822Z [greeting-boundaries] PASS: senso, device clock mocked (UTC): 04:59 → evening "Good evening" / "عصر بخیر"; 05:00 → morning "Good morning" / "صبح بخیر"; 11:59 → morning "Good morning" / "صبح بخیر"; 12:00 → afternoon "Good afternoon" / "ظهر بخیر"; 16:59 → afternoon "Good afternoon" / "ظهر بخیر"; 17:00 → evening "Good evening" / "عصر بخیر"; both languages shown and the other two greetings hidden in every case: true
+2026-10-09T14:27:25.699Z [season-boundaries-senso] PASS: senso, date mocked: 2026-08-31 → summer (summer, 16 particles); 2026-09-01 → fall (fall, 18 particles); 2026-11-30 → fall (fall, 18 particles); 2026-12-01 → winter (winter, 20 particles); 2027-02-28 → winter (winter, 20 particles); 2027-03-01 → spring (spring, 16 particles); 2027-05-31 → spring (spring, 16 particles); 2027-06-01 → summer (summer, 16 particles)
+2026-10-09T14:27:26.857Z [season-boundaries-kebab-land] PASS: kebab-land, date mocked: 2026-08-31 → summer (summer, 16 particles); 2026-09-01 → fall (fall, 18 particles); 2026-11-30 → fall (fall, 18 particles); 2026-12-01 → winter (winter, 20 particles); 2027-02-28 → winter (winter, 20 particles); 2027-03-01 → spring (spring, 16 particles); 2027-05-31 → spring (spring, 16 particles); 2027-06-01 → summer (summer, 16 particles)
+2026-10-09T14:27:28.083Z [scene-senso] PASS: senso fall scene: 18 particles (≤ 20), 37 animations running, properties animated: transform, opacity (transform and opacity only: true); logo visible: true; role dialog, aria-modal true; page errors: 0
+2026-10-09T14:27:28.854Z [shot] senso-reduced-motion.jpg
+2026-10-09T14:27:28.858Z [reduced-motion-senso] PASS: senso with reduced motion: the welcome screen shown (display grid) with 0 animations running, 18 particles of the 18 standing still in view, greeting and buttons fully visible at once (opacities 1, 1, 1/1), the page behind visible (true); a tap removes it without a fade in 0 ms
+2026-10-09T14:27:30.329Z [scene-kebab-land] PASS: kebab-land fall scene: 18 particles (≤ 20), 36 animations running, properties animated: transform (transform and opacity only: true); logo visible: true; role dialog, aria-modal true; page errors: 0
+2026-10-09T14:27:30.948Z [shot] kebab-land-reduced-motion.jpg
+2026-10-09T14:27:30.951Z [reduced-motion-kebab-land] PASS: kebab-land with reduced motion: the welcome screen shown (display grid) with 0 animations running, 18 particles of the 18 standing still in view, greeting and buttons fully visible at once (opacities 1, 1, 1/1), the page behind visible (true); a tap removes it without a fade in 1 ms
+2026-10-09T14:27:32.314Z [shot] senso-first-visit.jpg
+2026-10-09T14:27:32.708Z [shot] senso-after-english.jpg
+2026-10-09T14:27:32.708Z [tap-senso] PASS: senso first visit: no language pre-highlighted (saved null, pressed /), the menu inert behind the overlay (true); tap English → the overlay gone and the menu visible after 232 ms (target ≤ 300; lang en, first row visible true), then display none, the menu reachable again (inert false); stored: roses-lang=en
+2026-10-09T14:27:34.049Z [shot] senso-reload-english-remembered.jpg
+2026-10-09T14:27:35.720Z [shot] senso-reload-persian-remembered.jpg
+2026-10-09T14:27:35.720Z [remembered-senso] PASS: senso reload: the welcome screen again with English pre-highlighted (saved en; English pressed true, filled rgb(4, 44, 124) = remembered-button colour rgb(4, 44, 124): true; Persian plain rgb(242, 236, 226)); tap فارسی → Persian page after 233 ms (dir rtl, a Persian heading visible true); reload: فارسی pre-highlighted (true), the Persian greeting line first (330 px above the English at 365); stored keys: roses-lang=fa
+2026-10-09T14:27:37.087Z [shot] kebab-land-first-visit.jpg
+2026-10-09T14:27:37.460Z [shot] kebab-land-after-english.jpg
+2026-10-09T14:27:37.460Z [tap-kebab-land] PASS: kebab-land first visit: no language pre-highlighted (saved null, pressed /), the menu inert behind the overlay (true); tap English → the overlay gone and the menu visible after 213 ms (target ≤ 300; lang en, first row visible true), then display none, the menu reachable again (inert false); stored: roses-lang=en
+2026-10-09T14:27:38.770Z [shot] kebab-land-reload-english-remembered.jpg
+2026-10-09T14:27:40.419Z [shot] kebab-land-reload-persian-remembered.jpg
+2026-10-09T14:27:40.419Z [remembered-kebab-land] PASS: kebab-land reload: the welcome screen again with English pre-highlighted (saved en; English pressed true, filled rgb(185, 46, 46) = remembered-button colour rgb(185, 46, 46): true; Persian plain rgb(44, 44, 44)); tap فارسی → Persian page after 215 ms (dir rtl, a Persian heading visible true); reload: فارسی pre-highlighted (true), the Persian greeting line first (359 px above the English at 394); stored keys: roses-lang=fa
+2026-10-09T14:27:42.435Z [shot] senso-anchor-after-choice.jpg
+2026-10-09T14:27:42.435Z [anchor] PASS: /senso#tea-herbal-tea: the welcome screen first (show); after the choice the page sits on that section (scrollY 3060, the section 0 px under the category bar) with its tab active (tea-herbal-tea)
+2026-10-09T14:27:43.935Z [keyboard-labels] PASS: Tab focuses button[data-lang=en], Enter chooses it (overlay off: true, lang en); buttons en: "English" 164×56 px, fa: "فارسی" 164×56 px (≥ 44 px tall, named); role dialog, aria-modal true
+2026-10-09T14:27:46.111Z [shot] senso-javascript-off.jpg
+2026-10-09T14:27:46.111Z [javascript-off-senso] PASS: senso with JavaScript off: no data-welcome (null) and no greeting decided (null); the overlay markup is in the page (true) but display none; header and first row visible: true, true
+2026-10-09T14:27:52.549Z [shot] kebab-land-javascript-off.jpg
+2026-10-09T14:27:52.549Z [javascript-off-kebab-land] PASS: kebab-land with JavaScript off: no data-welcome (null) and no greeting decided (null); the overlay markup is in the page (true) but display none; header and first row visible: true, true
+2026-10-09T14:27:53.189Z [shot] senso-welcome-off.jpg
+2026-10-09T14:27:53.240Z [kill-switch] PASS: Welcome screen off (Style route, owner) → the public HTML carries no overlay after 6 ms (venues.style.welcome false); the menu shows directly (overlay absent, first row visible true); on again → back after 6 ms (true); 4 inline script tags with it on (head decision, welcome, language toggle, menu)
+2026-10-09T14:27:53.245Z [defaults-senso] PASS: senso served defaults: background #fff8ee; welcome.text on welcome.bg #1d1d1f / #fff8ee = 16:1 (needs 3); welcome.btnText on welcome.btnBg #1d1d1f / #f2ece2 = 14.3:1 (needs 4.5); welcome.activeText on welcome.activeBg #ffffff / #042c7c = 12.7:1 (needs 4.5); scene colours: leaves #cc9434, snow #b2becc, blossoms #cc3366, light #cc9434
+2026-10-09T14:27:53.251Z [defaults-kebab-land] PASS: kebab-land served defaults: background #141414; welcome.text on welcome.bg #ffffff / #141414 = 18.4:1 (needs 3); welcome.btnText on welcome.btnBg #ffffff / #2c2c2c = 14:1 (needs 4.5); welcome.activeText on welcome.activeBg #ffffff / #b92e2e = 6:1 (needs 4.5); scene colours: leaves #f8512f, snow #ececec, blossoms #f2a0b4, light #ffc14d
+2026-10-09T14:27:53.252Z [budget] PASS: inline code added to the page (the overlay with its scenes and script 20889 B, the head decision script 536 B): 21425 B raw, 4280 B gzipped (≤ 10 240); the welcome block of the stylesheet: 6751 B raw, 2291 B gzipped
+2026-10-09T14:27:58.467Z [video] senso-fall.webm (460699 bytes; gitignored, on disk only)
+2026-10-09T14:28:00.127Z [shot] senso-fall.jpg
+2026-10-09T14:28:01.892Z [shot] senso-winter.jpg
+2026-10-09T14:28:03.632Z [shot] senso-spring.jpg
+2026-10-09T14:28:05.323Z [shot] senso-summer.jpg
+2026-10-09T14:28:05.325Z [recording-senso] PASS: senso: reports/checks/2026-10-09T14-24-26Z/welcome/senso-fall.webm (450 KB) and stills senso-fall.jpg, senso-winter.jpg, senso-spring.jpg, senso-summer.jpg
+2026-10-09T14:28:10.596Z [video] kebab-land-fall.webm (430384 bytes; gitignored, on disk only)
+2026-10-09T14:28:12.312Z [shot] kebab-land-fall.jpg
+2026-10-09T14:28:14.180Z [shot] kebab-land-winter.jpg
+2026-10-09T14:28:16.067Z [shot] kebab-land-spring.jpg
+2026-10-09T14:28:17.942Z [shot] kebab-land-summer.jpg
+2026-10-09T14:28:17.945Z [recording-kebab-land] PASS: kebab-land: reports/checks/2026-10-09T14-24-26Z/welcome/kebab-land-fall.webm (420 KB) and stills kebab-land-fall.jpg, kebab-land-winter.jpg, kebab-land-spring.jpg, kebab-land-summer.jpg

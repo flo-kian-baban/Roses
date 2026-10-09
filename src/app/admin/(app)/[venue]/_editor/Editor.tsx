@@ -33,7 +33,7 @@ type Toast = { text: string; revisions: number[]; key: number; error?: boolean }
 type Confirm = { title: string; body: React.ReactNode; label: string; action: () => Promise<void> };
 export type DeleteMode = { items: 'move'; target: string } | { items: 'delete' };
 
-const PHONE_TOP = 100; // under the admin's top bar (56 px) and the tab row (44 px)
+const PHONE_TOP = 100; // where the phone Style layout's preview starts: under the admin's top bar (56 px) and the layout's own tab row (44 px)
 const TAB_HREF = (venueId: string, t: Tab) => `/admin/${venueId}${t === 'menu' ? '' : `?tab=${t}`}`;
 const SCREEN_OF_REGION = (r: Region): Screen => (r === 'welcome' ? 'welcome' : r === 'sheet' ? 'sheet' : 'menu');
 
@@ -194,7 +194,7 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
   return (
     <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
       <div className="relative min-w-0">
-        <div className="glass sticky top-14 z-30 flex h-11 items-center gap-1 border-b border-line px-3 sm:px-5">
+        <div className={`glass sticky top-14 z-30 flex h-11 items-center gap-1 border-b border-line px-3 sm:px-5 ${phoneStyle ? 'hidden' : ''}`}>
           {tabLink('menu', 'Menu')}
           {me.canManage && tabLink('style', 'Style')}
           {me.canManage && tabLink('details', 'Details')}
@@ -214,8 +214,10 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
         <div className="sticky top-14 h-[calc(100dvh-3.5rem)]">{desktop && <Preview ref={previewA} {...previewProps} frame />}</div>
       </aside>
       {phoneStyle && (
-        <div className="fixed inset-x-0 bottom-0 z-30 bg-white" style={{ top: PHONE_TOP }} data-style-phone>
-          <Preview ref={previewB} {...previewProps} frame={false} bar={false} />
+        // Under the admin's top bar, with its own tab row (whatever sits above the editor in the page, an Alerts card for one, stays behind it): the tab row, the preview, the sheet.
+        <div className="fixed inset-x-0 bottom-0 top-14 z-30 flex flex-col bg-white" data-style-phone>
+          <div className="glass flex h-11 shrink-0 items-center gap-1 border-b border-line px-3">{tabLink('menu', 'Menu')}{tabLink('style', 'Style')}{tabLink('details', 'Details')}</div>
+          <div className="relative min-h-0 flex-1"><div className="absolute inset-0"><Preview ref={previewB} {...previewProps} frame={false} bar={false} /></div></div>
           <BottomSheet detent={detent} onDetent={setDetent} max={editing ? 'half' : 'full'} top={PHONE_TOP} label="Style controls"
             header={<PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone />}>
             {styleTab}

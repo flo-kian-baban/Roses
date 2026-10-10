@@ -13,25 +13,24 @@ Ruling: every interactive element of the admin on a phone viewport meets the fin
   - the item editor for an item with add-ons (Senso), and on Kebab Land's Menu tab for an item with sizes and one with combo parts, plus the delete confirmation;
   - the Style tab's bottom sheet (its default with the Layout group, a colour open, the Welcome group, the sheet at full height);
   - the Details tab, Team and + Add venue.
-- **Tap area:** each visible interactive element is scrolled into view. `document.elementFromPoint` is then probed from its centre outwards along both axes, one whole CSS pixel at a time. A point counts when it lands on the element, on something inside it, or on its `<label>`. So an invisible pad counts, and anything lying over the element does not.
-- **Why whole pixels:** Chromium resolves a fractional point to a whole pixel, so a probe at half-pixel positions reads a 44 px box as 43.
+- **Tap area:** each visible interactive element is scrolled into view. Along the two lines through its centre, its extent is its own box joined with its labels' boxes (a label taps its input) and its `::before` / `::after` pads (an invisible pad counts).
+- **Verified unobstructed:** that extent counts only if `document.elementFromPoint` lands on the element, on something inside it or on its label at every whole pixel at least 1 px inside its edges. If anything lies over it, the drill counts the hits from the centre instead.
+- **Why the edge pixel is skipped:** Chromium rounds a hit-test point to a whole pixel, so a 44 px box at a fractional position can answer for 43 rows while its neighbour answers for 45. Seen in run `2026-10-10T01-46-59Z` and reproduced by hand by moving a menu by 0.25–0.75 px. A 1 px strip laid over a control's last row is still caught (measured 42), and a 2 px strip across it measures 29.
 - **Exempt and covered:** an inline text link inside a sentence is listed as exempt. An element whose centre lies under something else is listed as covered and measured on the screen where it is uncovered.
 - **Counting:** each element is measured once per phone, on the first screen where it is visible.
 
 ## Result
 
-Same drill and same 25 screens. Before is the code of `2259552`; after is this batch. Both ran on a scratch copy of the working database.
+Same drill, same 25 screens and the same scratch copy of the working database. Before is the code of `2259552`; after is this batch.
 
 | Phone | Measured before | Under 44 × 44 before | Measured after | Under 44 × 44 after | Smallest tap area after |
 | --- | --- | --- | --- | --- | --- |
-| iPhone 13 (390 × 664) | 1,745 | **696** | 1,762 | **0** | 44 × 44 px |
-| iPhone SE (375 × 548) | 1,745 | **696** | 1,762 | **0** | 44 × 44 px |
-
-The two counts differ by 17 because of the data, not the code. The "after" run used the scratch copy while it still carried Kian's 8 custom colours: the Style tab's *What changed* listed them with their Reset buttons, and *Back to auto* buttons showed. The "before" run came after a drill had reset those colours.
+| iPhone 13 (390 × 664) | 1,762 | **698** | 1,762 | **0** | 44 × 44 px |
+| iPhone SE (375 × 548) | 1,762 | **698** | 1,762 | **0** | 44 × 44 px |
 
 Every element is listed in `before.csv` and `after.csv` (phone, screen, element, label, box, tap area, status).
 
-### The 696 (iPhone 13; the SE had the same 696), by kind, and how each was fixed
+### The 698 (iPhone 13; the SE had the same 698), by kind, and how each was fixed
 
 | Under 44 before | Kind | Was | Fix |
 | --- | --- | --- | --- |
@@ -52,6 +51,7 @@ Every element is listed in `before.csv` and `after.csv` (phone, screen, element,
 | 2 | Sheet Close | 36 × 36 | 44 × 44 |
 | 2 | "Required" (add-on) | 23 tall through its label | Label 44 tall |
 | 2 | Custom-colour picker | 40 tall through its label | Label 44 tall |
+| 2 | Hex field of an open colour | 43 tall | 44 tall |
 | 9 | Remove size (2) / add-on (2) / combo part (5) | 36 × 36 | 44 × 44 |
 | 1 each | Toast Undo, preview Edit, Auto, Remove location, Add the first item, the bottom sheet's handle | 20–40 tall | 44 tall; the handle keeps its 20 px look and its tap area reaches 24 px above the sheet's edge |
 

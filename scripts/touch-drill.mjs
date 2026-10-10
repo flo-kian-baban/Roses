@@ -7,11 +7,12 @@
 // the item editor again for an item with add-ons on Senso, and on Kebab Land's Menu tab for an item with sizes and one with combo
 // parts, chosen from the database so their row buttons are on screen; the delete confirmation), the Style tab (the phone's bottom sheet: its
 // default with the Layout group, a colour open, the Welcome group, the sheet at full height), the Details tab, Team and + Add venue.
-// The tap area is measured the way a finger meets it, by hit-testing: each element is scrolled into view, then
-// document.elementFromPoint is probed from its centre outwards along both axes at whole CSS pixels (Chromium resolves a fractional point to a
-// whole pixel, so the tap area is counted in whole pixel rows and columns: a 44 px box anywhere covers 44 of them); a point counts when it lands on the
-// element, on something inside it, or on a <label> of it (a label taps its input), so an invisible pad (a pseudo-element) counts and
-// anything lying over the element does not. An element whose centre lands on something else is "covered" (behind a sheet or an
+// The tap area is measured the way a finger meets it: each element is scrolled into view; along the two lines through its centre its extent
+// is its own box joined with its labels' boxes (a label taps its input) and its ::before/::after pads (an invisible pad counts), and that
+// extent counts only if document.elementFromPoint at every whole pixel at least 1 px inside its edges lands on the element, on something
+// inside it or on its label, so anything lying over it fails; otherwise the hits are counted from the centre outwards, pixel by pixel. The
+// outermost pixel row is left out of the check because Chromium rounds a point to a whole pixel: a 44 px box at a fractional position (a
+// menu at top 309.75) answers for 43 rows while its neighbour answers for 45 (run 2026-10-10T01-46-59Z; reproduced by hand). An element whose centre lands on something else is "covered" (behind a sheet or an
 // overlay: not visible to the finger on that screen); it is listed, not failed, and measured on the screen where it is uncovered.
 // An inline text link is an <a> laid out inline whose block holds other words; it is listed as exempt. Each element is measured once
 // per viewport, on the first screen where it is visible (after a page load, what was measured already is marked seen). The drill changes
@@ -90,10 +91,30 @@ const MEASURE = ({ min, SEL }) => {
     // whole pixels that still land on the element, counted from the centre outwards along one direction (capped at 80)
     const reach = (dx, dy) => { let k = 0; while (k < 80 && hit(cx + dx * (k + 1), cy + dy * (k + 1))) k++; return k; };
     const l = reach(-1, 0), rt = reach(1, 0), up = reach(0, -1), dn = reach(0, 1);
-    const w = l + rt + 1, h = up + dn + 1;
+    // the extent along one line through the centre: the boxes of the element, its labels and its pads, merged; null when a whole pixel at
+    // least 1 px inside it does not land on the element (something lies over it) or when the centre is outside them
+    const padRects = (n) => ['::before', '::after'].map((pe) => {
+      const cs = getComputedStyle(n, pe); if (!cs.content || cs.content === 'none' || cs.content === 'normal' || cs.position !== 'absolute') return null;
+      const pw = parseFloat(cs.width), ph = parseFloat(cs.height); if (!(pw > 0 && ph > 0)) return null;
+      const nr = n.getBoundingClientRect(), ns = getComputedStyle(n), m = cs.transform && cs.transform !== 'none' ? new DOMMatrix(cs.transform) : null;
+      const left = nr.left + parseFloat(ns.borderLeftWidth) + parseFloat(cs.left) + (m ? m.m41 : 0), top = nr.top + parseFloat(ns.borderTopWidth) + parseFloat(cs.top) + (m ? m.m42 : 0);
+      return { left, top, right: left + pw, bottom: top + ph };
+    }).filter(Boolean);
+    const boxes = [...(own && !tiny ? [el.getBoundingClientRect()] : []), ...labels.map((x) => x.getBoundingClientRect()), ...padRects(el)];
+    const along = (vertical) => {
+      const c = vertical ? cy : cx, o = vertical ? cx : cy;
+      const iv = boxes.filter((b) => (vertical ? b.left <= o && o < b.right : b.top <= o && o < b.bottom)).map((b) => (vertical ? [b.top, b.bottom] : [b.left, b.right])).sort((x, y) => x[0] - y[0]);
+      const merged = []; for (const [a0, z0] of iv) { const last = merged[merged.length - 1]; if (last && a0 <= last[1] + 0.01) last[1] = Math.max(last[1], z0); else merged.push([a0, z0]); }
+      const span = merged.find(([a0, z0]) => a0 <= c && c < z0); if (!span) return null;
+      const lo = Math.max(span[0], c - 80, 0), hi = Math.min(span[1], c + 81, vertical ? innerHeight : innerWidth);
+      for (let q = Math.ceil(lo + 1); q <= Math.floor(hi - 1); q++) if (!(vertical ? hit(cx, q) : hit(q, cy))) return null;
+      return Math.min(span[1] - span[0], 161);
+    };
+    const gw = along(false), gh = along(true);
+    const w = Math.round((gw ?? l + rt + 1) * 10) / 10, h = Math.round((gh ?? up + dn + 1) * 10) / 10;
     // under 44: what the finger meets just past each edge, so a failure explains itself
-    const past = w >= min && h >= min ? null : { left: describe(document.elementFromPoint(cx - l - 1, cy)), right: describe(document.elementFromPoint(cx + rt + 1, cy)), above: describe(document.elementFromPoint(cx, cy - up - 1)), below: describe(document.elementFromPoint(cx, cy + dn + 1)), rect: `${r.left.toFixed(2)},${r.top.toFixed(2)} ${r.width.toFixed(2)}×${r.height.toFixed(2)}` };
-    rows.push({ ...row, tapW: w, tapH: h, status: w >= min && h >= min ? 'ok' : 'UNDER', ...(past ? { past } : {}) });
+    const past = w >= min - 0.01 && h >= min - 0.01 ? null : { left: describe(document.elementFromPoint(cx - l - 1, cy)), right: describe(document.elementFromPoint(cx + rt + 1, cy)), above: describe(document.elementFromPoint(cx, cy - up - 1)), below: describe(document.elementFromPoint(cx, cy + dn + 1)), rect: `${r.left.toFixed(2)},${r.top.toFixed(2)} ${r.width.toFixed(2)}×${r.height.toFixed(2)}` };
+    rows.push({ ...row, tapW: w, tapH: h, measuredBy: gw != null && gh != null ? 'box' : 'hits', status: w >= min - 0.01 && h >= min - 0.01 ? 'ok' : 'UNDER', ...(past ? { past } : {}) });
     T.seen.add(el);
   }
   return rows;

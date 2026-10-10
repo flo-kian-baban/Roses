@@ -312,7 +312,7 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, checks: drillChecks('style/style-drill.json', !!(m && m.length)), evidence: ['style/style-drill.txt', 'style/style-drill.json', 'style/day-one-senso.json', 'style/day-one-kebab-land.json', 'style/guard-route.json', 'style/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   }, 'style');
-  await step('touch targets in the admin on a phone (the iPhone 13 and the iPhone SE at Safari\'s visible height): every visible interactive element of the sign-in screens, the Menu tab and what opens from it, the item editor with sizes, add-ons and combo parts, the Style tab\'s bottom sheet, the Details tab, Team and + Add venue, its tap area hit-tested from its centre; none under 44 × 44 CSS px except inline text links; the list printed', async () => {
+  await step('touch targets in the admin on a phone (the iPhone 13 and the iPhone SE at Safari\'s visible height): every visible interactive element of the sign-in screens, the Menu tab and what opens from it, the item editor with sizes, add-ons and combo parts, the Style tab\'s bottom sheet, the Details tab, Team and + Add venue, its tap area measured as its box joined with its labels and pads and verified unobstructed by hit tests; none under 44 × 44 CSS px except inline text links; the list printed', async () => {
     const r = await run('node', ['scripts/touch-drill.mjs', '--base', base, '--out', path.join(out, 'touch'), '--jpeg'], { env: drillEnv, logFile: 'touch/touch-drill.log' });
     const m = (r.stdout.match(/TOUCH DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);

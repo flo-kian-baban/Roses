@@ -30,8 +30,8 @@ export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column
 
   return (
     <div className={`item-panel panel-in flex flex-col bg-white ${column ? 'sticky top-14 h-[calc(100dvh-3.5rem)] border-l border-line' : 'fixed inset-0 z-50 lg:inset-auto lg:bottom-0 lg:right-[520px] lg:top-14 lg:w-[440px] lg:border-l lg:border-line lg:shadow-[-12px_0_32px_-24px_rgba(0,0,0,.3)]'}`} role="dialog" aria-modal={column ? undefined : true} aria-label={`Edit ${item.name.en ?? 'item'}`}>
-      <div className="glass flex h-11 shrink-0 items-center gap-2 border-b border-line px-2">
-        <button type="button" onClick={onClose} className="flex h-10 items-center gap-1 rounded-full px-2.5 text-[15px] font-semibold"><Icon name="back" className="h-5 w-5" /><span className="lg:hidden">Done</span><span className="hidden lg:inline">Close</span></button>
+      <div className="glass flex h-11 shrink-0 items-center gap-2 px-2 shadow-[inset_0_-1px_0_var(--color-line)]">
+        <button type="button" onClick={onClose} className="flex h-11 items-center gap-1 rounded-full px-2.5 text-[15px] font-semibold"><Icon name="back" className="h-5 w-5" /><span className="lg:hidden">Done</span><span className="hidden lg:inline">Close</span></button>
         <span className="min-w-0 flex-1 truncate text-center text-[15px] font-semibold">{item.name.en}</span>
         <span className="hidden shrink-0 whitespace-nowrap text-xs text-ink-muted sm:block">Saves as you go</span>
       </div>
@@ -79,8 +79,8 @@ export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column
                 <div key={s.id} className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-medium">Order in {s.name.en}: <span className="text-ink-muted">{i + 1} of {s.item_ids.length}</span></span>
                   <span className="ml-auto flex gap-1">
-                    <button type="button" className={`${btnSecondary} min-h-9 px-3 text-sm`} disabled={i <= 0} onClick={() => { void onMove(s.id, item.id, i - 1).catch((e) => setErr(e.message)); }}><Icon name="up" className="h-4 w-4" />Move up</button>
-                    <button type="button" className={`${btnSecondary} min-h-9 px-3 text-sm`} disabled={i < 0 || i >= s.item_ids.length - 1} onClick={() => { void onMove(s.id, item.id, i + 1).catch((e) => setErr(e.message)); }}><Icon name="down" className="h-4 w-4" />Move down</button>
+                    <button type="button" className={`${btnSecondary} min-h-11 px-3 text-sm`} disabled={i <= 0} onClick={() => { void onMove(s.id, item.id, i - 1).catch((e) => setErr(e.message)); }}><Icon name="up" className="h-4 w-4" />Move up</button>
+                    <button type="button" className={`${btnSecondary} min-h-11 px-3 text-sm`} disabled={i < 0 || i >= s.item_ids.length - 1} onClick={() => { void onMove(s.id, item.id, i + 1).catch((e) => setErr(e.message)); }}><Icon name="down" className="h-4 w-4" />Move down</button>
                   </span>
                 </div>
               );
@@ -153,12 +153,12 @@ function Sizes({ item, onPatch }: { item: EditorItem; onPatch: (p: Record<string
               <TextField compact value={v.label.en} placeholder="Size" label={`Size ${i + 1}`} onCommit={(x) => set(i, { ...v, label: { ...v.label, en: x } })} />
               <TextField compact value={v.label.fa} placeholder="فارسی" dir="rtl" lang="fa" label={`Size ${i + 1} (Persian)`} onCommit={(x) => set(i, { ...v, label: { ...v.label, fa: x } })} />
               <MoneyField compact value={v.price} label={`Size ${i + 1} price`} onCommit={(x) => set(i, { ...v, price: x })} />
-              <button type="button" aria-label={`Remove size ${v.label.en || i + 1}`} onClick={() => save(rows.filter((_, k) => k !== i), v.price)} className="flex h-9 w-9 items-center justify-center rounded-full text-ink-muted hover:bg-fill hover:text-red-600"><Icon name="close" className="h-4 w-4" /></button>
+              <button type="button" aria-label={`Remove size ${v.label.en || i + 1}`} onClick={() => save(rows.filter((_, k) => k !== i), v.price)} className="flex h-11 w-11 items-center justify-center rounded-full text-ink-muted hover:bg-fill hover:text-red-600"><Icon name="close" className="h-4 w-4" /></button>
             </div>
           ))}
         </div>
       )}
-      <button type="button" className={`${btnGhost} mt-2 min-h-9 px-3 text-sm text-accent-strong`} onClick={() => (rows.length ? setRows([...rows, { label: { en: null, fa: null }, price: null }]) : save([{ label: { en: 'Regular', fa: null }, price: item.price }, { label: { en: null, fa: null }, price: null }]))}><Icon name="plus" className="h-4 w-4" />Add size</button>
+      <button type="button" className={`${btnGhost} mt-2 min-h-11 px-3 text-sm text-accent-strong`} onClick={() => (rows.length ? setRows([...rows, { label: { en: null, fa: null }, price: null }]) : save([{ label: { en: 'Regular', fa: null }, price: item.price }, { label: { en: null, fa: null }, price: null }]))}><Icon name="plus" className="h-4 w-4" />Add size</button>
       {rows.length > 0 && rows.some((v) => !v.label.en || v.price == null) && <p className="mt-1 text-xs text-ink-muted">A size is saved once it has a name and a price.</p>}
     </div>
   );
@@ -185,13 +185,13 @@ function AddOns({ item, onPatch }: { item: EditorItem; onPatch: (p: Record<strin
             </div>
             <div className="mt-1.5 flex items-center gap-2">
               <MoneyField compact value={a.price} label={`Add-on ${i + 1} extra price`} className="w-28" onCommit={(x) => set(i, { ...a, price: x ?? 0 })} />
-              <label className="flex items-center gap-2 text-sm"><input type="checkbox" className="check" checked={a.required} onChange={(e) => set(i, { ...a, required: e.target.checked })} />Required</label>
-              <button type="button" aria-label={`Remove add-on ${a.label.en || i + 1}`} onClick={() => save(rows.filter((_, k) => k !== i))} className="ml-auto flex h-9 w-9 items-center justify-center rounded-full text-ink-muted hover:bg-white hover:text-red-600"><Icon name="close" className="h-4 w-4" /></button>
+              <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" className="check" checked={a.required} onChange={(e) => set(i, { ...a, required: e.target.checked })} />Required</label>
+              <button type="button" aria-label={`Remove add-on ${a.label.en || i + 1}`} onClick={() => save(rows.filter((_, k) => k !== i))} className="ml-auto flex h-11 w-11 items-center justify-center rounded-full text-ink-muted hover:bg-white hover:text-red-600"><Icon name="close" className="h-4 w-4" /></button>
             </div>
           </div>
         ))}
       </div>
-      <button type="button" className={`${btnGhost} mt-2 min-h-9 px-3 text-sm text-accent-strong`} onClick={() => setRows([...rows, { group: { en: null, fa: null }, label: { en: null, fa: null }, price: 0, required: false }])}><Icon name="plus" className="h-4 w-4" />Add a choice</button>
+      <button type="button" className={`${btnGhost} mt-2 min-h-11 px-3 text-sm text-accent-strong`} onClick={() => setRows([...rows, { group: { en: null, fa: null }, label: { en: null, fa: null }, price: 0, required: false }])}><Icon name="plus" className="h-4 w-4" />Add a choice</button>
     </div>
   );
 }
@@ -212,11 +212,11 @@ function Parts({ item, onPatch }: { item: EditorItem; onPatch: (p: Record<string
             <TextField compact value={String(c.qty)} inputMode="numeric" placeholder="Qty" label={`Part ${i + 1} quantity`} onCommit={(x) => set(i, { ...c, qty: Math.max(1, Math.trunc(Number(x) || 1)) })} />
             <TextField compact value={c.label.en} placeholder="Part" label={`Part ${i + 1}`} onCommit={(x) => set(i, { ...c, label: { ...c.label, en: x } })} />
             <TextField compact value={c.label.fa} placeholder="فارسی" dir="rtl" lang="fa" label={`Part ${i + 1} (Persian)`} onCommit={(x) => set(i, { ...c, label: { ...c.label, fa: x } })} />
-            <button type="button" aria-label={`Remove part ${c.label.en || i + 1}`} onClick={() => save(rows.filter((_, k) => k !== i))} className="flex h-9 w-9 items-center justify-center rounded-full text-ink-muted hover:bg-fill hover:text-red-600"><Icon name="close" className="h-4 w-4" /></button>
+            <button type="button" aria-label={`Remove part ${c.label.en || i + 1}`} onClick={() => save(rows.filter((_, k) => k !== i))} className="flex h-11 w-11 items-center justify-center rounded-full text-ink-muted hover:bg-fill hover:text-red-600"><Icon name="close" className="h-4 w-4" /></button>
           </div>
         ))}
       </div>
-      <button type="button" className={`${btnGhost} mt-2 min-h-9 px-3 text-sm text-accent-strong`} onClick={() => setRows([...rows, { item_id: null, label: { en: null, fa: null }, qty: 1 }])}><Icon name="plus" className="h-4 w-4" />Add a part</button>
+      <button type="button" className={`${btnGhost} mt-2 min-h-11 px-3 text-sm text-accent-strong`} onClick={() => setRows([...rows, { item_id: null, label: { en: null, fa: null }, qty: 1 }])}><Icon name="plus" className="h-4 w-4" />Add a part</button>
     </div>
   );
 }

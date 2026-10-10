@@ -23,7 +23,7 @@ export const input = 'mt-1 block w-full rounded-xl border border-[#d2d2d7] bg-wh
 export const button = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2 text-base font-semibold whitespace-nowrap transition active:scale-[.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
 export const primary = `${button} bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.28),0_8px_20px_-8px_rgba(238,106,58,.7)] hover:brightness-105`;
 export const secondary = `${button} border border-line bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.04)] hover:bg-fill`;
-export const sm = 'min-h-9 px-3.5 py-1.5 text-sm';
+export const sm = 'min-h-11 px-3.5 py-1.5 text-sm';
 
 export function Card({ id, title, description, actions, children, className = '', tone = 'default', icon }: { id?: string; title?: React.ReactNode; description?: React.ReactNode; actions?: React.ReactNode; children?: React.ReactNode; className?: string; tone?: 'default' | 'danger' | 'warn'; icon?: IconName }) {
   const tones = { default: 'border-line bg-white', danger: 'border-red-200 bg-white', warn: 'border-amber-200 bg-amber-50/70' };

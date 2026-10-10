@@ -33,7 +33,7 @@ type Data = { template: { id: string; name: string }; groups: typeof GROUPS; tok
 type Fail = { key: string; error: string; suggestion: { key: string; value: string } | null; refused?: string };
 export type StyleSnapshot = { style: StyleValues; layouts: Record<string, SectionLayout> };
 export type Picked = { region: Region; n: number } | null;
-const btnSmall = `${btnSecondary} min-h-9 px-3 text-sm`;
+const btnSmall = `${btnSecondary} min-h-11 px-3 text-sm`;
 const sameJson = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 // How many things differ between two style records: each colour that differs (set, changed or removed) and each other key (the
 // template's switches, the pre-token choices).
@@ -83,8 +83,21 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
 
   const open = (g: GroupId | null, token?: string | null) => {
     setOpenGroup(g); setOpenToken(g ? token ?? tokensOfGroup(g)[0]?.key ?? null : null); onRegion(g);
-    if (g) requestAnimationFrame(() => groupRefs.current[g]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+    if (g) requestAnimationFrame(() => { const el = groupRefs.current[g]; if (el && !el.closest('[data-style-sheet-body]')) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }); // in the phone's sheet the swatches are revealed instead (below)
   };
+  // On a phone (the controls in the bottom sheet), opening a colour scrolls the sheet so its swatches (Auto, the venue's colours, Custom) are in
+  // view (the PM, 2026-10-09); the sheet stays at half while a colour is open, so the preview keeps its share. After the sheet's height settles.
+  useEffect(() => {
+    if (!openToken) return;
+    const t = setTimeout(() => {
+      const el = document.querySelector<HTMLElement>(`[data-style-token="${openToken}"] [data-style-swatches]`), box = el?.closest<HTMLElement>('[data-style-sheet-body]');
+      if (!el || !box) return;
+      const b = box.getBoundingClientRect(), r = el.getBoundingClientRect(), pad = Math.max(0, Math.min(6, (b.height - r.height) / 2)); // a margin only where it still fits (a small phone's sheet has room for the swatches alone)
+      const delta = r.bottom + pad > b.bottom ? Math.min(r.bottom + pad - b.bottom, r.top - pad - b.top) : r.top - pad < b.top ? r.top - pad - b.top : 0;
+      if (delta) box.scrollTo({ top: box.scrollTop + delta, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }, 260);
+    return () => clearTimeout(t);
+  }, [openToken]);
   // A tap on a region in the preview opens its group here and scrolls to it, once per tap (never again when the data or the
   // preview reload after a save). A tap on the group that is already open only re-outlines it: the open colour stays.
   useEffect(() => {
@@ -166,7 +179,7 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
                       <Icon name="right" className="h-4 w-4 text-ink-muted" />
                       <span className="h-6 w-6 rounded-full border border-black/10" style={{ background: resolved[t.key]?.value }} title={`Now ${resolved[t.key]?.value}`} />
                     </span>
-                    <button type="button" className="min-w-0 flex-1 text-left" onClick={() => open(t.group, t.key)}><span className="block truncate text-[15px] font-medium">{label(t.key)}</span><span className="block text-xs text-ink-muted">{groupLabel(t.group)} · {defaults[t.key]?.value} → {resolved[t.key]?.value}</span></button>
+                    <button type="button" className="min-h-11 min-w-0 flex-1 text-left" onClick={() => open(t.group, t.key)}><span className="block truncate text-[15px] font-medium">{label(t.key)}</span><span className="block text-xs text-ink-muted">{groupLabel(t.group)} · {defaults[t.key]?.value} → {resolved[t.key]?.value}</span></button>
                     <button type="button" className={btnSmall} onClick={() => { void setColor(t.key, null, 'Reset'); }} aria-label={`Reset ${label(t.key)} to ${t.on ? 'auto' : 'the venue default'}`} data-style-changed-reset={t.key}><Icon name="undo" className="h-4 w-4" />Reset</button>
                   </div>
                   {f && <p role="alert" className="mt-2 flex flex-wrap items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-[14px] text-red-900" data-style-refused>{f.error}{f.suggestion && <button type="button" className={`${btnSmall} border-red-300`} onClick={() => { void setColor(f.suggestion!.key, f.suggestion!.value); }} data-style-suggestion={f.suggestion.value}><span className="h-4 w-4 rounded-full border border-black/10" style={{ background: f.suggestion.value }} />Use {f.suggestion.value}</button>}</p>}
@@ -220,7 +233,7 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
                     <span className="block font-medium">{o.label}</span>
                     {o.hint && <p className="mt-0.5 text-xs text-ink-muted">{o.hint}</p>}
                     <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label={o.label}>
-                      {o.choices.map((c) => <button key={c.value} type="button" role="radio" aria-checked={data.values[o.key] === c.value} onClick={() => setLayout(o.key, c.value)} className={`min-h-10 rounded-full border px-4 text-[15px] font-medium transition active:scale-[.97] ${data.values[o.key] === c.value ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:bg-fill'}`}>{c.label}</button>)}
+                      {o.choices.map((c) => <button key={c.value} type="button" role="radio" aria-checked={data.values[o.key] === c.value} onClick={() => setLayout(o.key, c.value)} className={`min-h-11 rounded-full border px-4 text-[15px] font-medium transition active:scale-[.97] ${data.values[o.key] === c.value ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:bg-fill'}`}>{c.label}</button>)}
                     </div>
                   </div>
                 )}
@@ -239,7 +252,7 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
                         <span className="flex shrink-0 rounded-full bg-fill p-0.5" role="radiogroup" aria-label={`${s.name.en}: layout`}>
                           {(['list', 'grid'] as const).map((v) => {
                             const on = (v === 'grid') === grid;
-                            return <button key={v} type="button" role="radio" aria-checked={on} disabled={busy} onClick={() => { if (!on) void setSectionLayout(s.id, v); }} className={`flex h-9 items-center gap-1.5 rounded-full px-3 text-[14px] font-semibold transition ${on ? 'bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,.12)]' : 'text-ink-muted hover:text-ink'}`}><Icon name={v} className="h-4 w-4" />{v === 'grid' ? 'Grid' : 'List'}</button>;
+                            return <button key={v} type="button" role="radio" aria-checked={on} disabled={busy} onClick={() => { if (!on) void setSectionLayout(s.id, v); }} className={`flex h-11 items-center gap-1.5 rounded-full px-3 text-[14px] font-semibold transition ${on ? 'bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,.12)]' : 'text-ink-muted hover:text-ink'}`}><Icon name={v} className="h-4 w-4" />{v === 'grid' ? 'Grid' : 'List'}</button>;
                           })}
                         </span>
                       </li>
@@ -280,19 +293,19 @@ function TokenRow({ token: t, res, base, baseLabel, open, palette, fail, onOpen,
       </button>
       {open && (
         <div className="px-3 pb-3">
-          <div className="flex flex-wrap items-center gap-2" role="group" aria-label={`${t.label}: venue colours`}>
-            {t.on && <button type="button" aria-pressed={state === 'auto'} onClick={() => { void onSet(null, 'Back to auto'); }} className={`flex h-10 items-center gap-1.5 rounded-full border px-3 text-[14px] font-medium ${state === 'auto' ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:bg-fill'}`}><Icon name="sparkle" className="h-4 w-4" />Auto</button>}
+          <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label={`${t.label}: venue colours`} data-style-swatches>
+            {t.on && <button type="button" aria-pressed={state === 'auto'} onClick={() => { void onSet(null, 'Back to auto'); }} className={`flex h-11 items-center gap-1.5 rounded-full border px-3 text-[14px] font-medium ${state === 'auto' ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:bg-fill'}`}><Icon name="sparkle" className="h-4 w-4" />Auto</button>}
             {palette.map((p) => {
               const on = value === p.value;
-              return <button key={p.value} type="button" onClick={() => { void onSet(p.value); }} aria-label={`${t.label}: ${p.label} ${p.value}`} aria-pressed={on} title={p.label} className={`relative h-10 w-10 rounded-full border border-black/10 transition active:scale-95 ${on ? 'ring-[3px] ring-accent/40 ring-offset-2' : ''}`} style={{ background: p.value, color: isLight(p.value) ? '#000' : '#fff' }}>{on && <Icon name="check" className="absolute inset-0 m-auto h-5 w-5" strokeWidth={2.6} />}</button>;
+              return <button key={p.value} type="button" onClick={() => { void onSet(p.value); }} aria-label={`${t.label}: ${p.label} ${p.value}`} aria-pressed={on} title={p.label} className={`relative h-11 w-11 rounded-full border border-black/10 transition active:scale-95 ${on ? 'ring-[3px] ring-accent/40 ring-offset-2' : ''}`} style={{ background: p.value, color: isLight(p.value) ? '#000' : '#fff' }}>{on && <Icon name="check" className="absolute inset-0 m-auto h-5 w-5" strokeWidth={2.6} />}</button>;
             })}
-            <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line bg-white px-3 text-[14px] font-medium hover:bg-fill">
+            <label className="flex h-11 cursor-pointer items-center gap-2 rounded-full border border-line bg-white px-3 text-[14px] font-medium hover:bg-fill">
               <input type="color" value={value} aria-label={`${t.label}: custom colour`} onInput={(e) => onLive((e.target as HTMLInputElement).value)} onChange={(e) => { void onSet(e.target.value); }} className="h-6 w-6 cursor-pointer appearance-none rounded-full border-0 bg-transparent p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0" />
               Custom
             </label>
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <input type="text" inputMode="text" value={hex} aria-label={`${t.label}: hex`} spellCheck={false} onChange={(e) => setHex(e.target.value)} onBlur={() => { void commitHex(); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void commitHex(); } }} className={`${fieldCls} w-32 py-2 font-mono text-[14px] uppercase`} />
+            <input type="text" inputMode="text" value={hex} aria-label={`${t.label}: hex`} spellCheck={false} onChange={(e) => setHex(e.target.value)} onBlur={() => { void commitHex(); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void commitHex(); } }} className={`${fieldCls} min-h-11 w-32 py-2 font-mono text-[14px] uppercase`} />
             {state === 'custom' && <button type="button" className={btnSmall} onClick={() => { void onSet(null, backLabel); }}><Icon name="undo" className="h-4 w-4" />{backLabel}</button>}
             {base && baseLabel && <span className="text-xs text-ink-muted">Sits on the {baseLabel} ({base.value}).</span>}
           </div>

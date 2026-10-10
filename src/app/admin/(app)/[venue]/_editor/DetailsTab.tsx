@@ -47,7 +47,7 @@ export function DetailsTab({ venue, version, onSaved }: { venue: EditorVenue; ve
           const confirm = new Set(l.confirm ?? []);
           return (
             <div key={i} className="space-y-3 rounded-2xl border border-line p-3" data-location={i}>
-              <div className="flex items-center justify-between gap-2"><span className="text-sm font-semibold">{l.label.en || `Location ${i + 1}`}</span>{confirm.size > 0 && <button type="button" className={`${btnSecondary} min-h-9 px-3 text-sm`} onClick={() => locPatch(i, { confirmed: true })}><Icon name="check" className="h-4 w-4" />Mark confirmed</button>}</div>
+              <div className="flex items-center justify-between gap-2"><span className="text-sm font-semibold">{l.label.en || `Location ${i + 1}`}</span>{confirm.size > 0 && <button type="button" className={`${btnSecondary} min-h-11 px-3 text-sm`} onClick={() => locPatch(i, { confirmed: true })}><Icon name="check" className="h-4 w-4" />Mark confirmed</button>}</div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <TextField label="Label" value={l.label.en} placeholder="Dine-in, Take-out…" onCommit={(x) => locPatch(i, { label: { ...l.label, en: x } })} />
                 <TextField label="Label (فارسی)" value={l.label.fa} dir="rtl" lang="fa" onCommit={(x) => locPatch(i, { label: { ...l.label, fa: x } })} />
@@ -59,8 +59,8 @@ export function DetailsTab({ venue, version, onSaved }: { venue: EditorVenue; ve
                 <TextField label="Hours (فارسی)" value={l.hours.fa} dir="rtl" lang="fa" onCommit={(x) => locPatch(i, { hours: { ...l.hours, fa: x } })} />
               </div>
               {confirmRemove === i
-                ? <div className="flex flex-wrap items-center gap-2 text-sm"><span>Remove this location?</span><button type="button" className={`${btnDanger} min-h-9 px-3 text-sm`} onClick={() => { setConfirmRemove(null); void removeLocation(i); }}>Remove</button><button type="button" className={`${btnSecondary} min-h-9 px-3 text-sm`} onClick={() => setConfirmRemove(null)}>Cancel</button></div>
-                : <button type="button" className="text-sm font-medium text-red-600 underline-offset-4 hover:underline" onClick={() => setConfirmRemove(i)}>Remove location</button>}
+                ? <div className="flex flex-wrap items-center gap-2 text-sm"><span>Remove this location?</span><button type="button" className={`${btnDanger} min-h-11 px-3 text-sm`} onClick={() => { setConfirmRemove(null); void removeLocation(i); }}>Remove</button><button type="button" className={`${btnSecondary} min-h-11 px-3 text-sm`} onClick={() => setConfirmRemove(null)}>Cancel</button></div>
+                : <button type="button" className="inline-flex min-h-11 items-center text-sm font-medium text-red-600 underline-offset-4 hover:underline" onClick={() => setConfirmRemove(i)}>Remove location</button>}
             </div>
           );
         })}

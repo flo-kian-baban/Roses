@@ -4,7 +4,9 @@
 // viewport to the preview (its height is computed from that: 55 % of the viewport less the space above the preview); full covers
 // the preview. While a colour is being edited the sheet is capped at half (`max`), so the live colour stays in view. Drag the handle
 // (or the header) to the nearest detent, or tap the handle to step to the next one. Transform and opacity are not needed: the
-// height animates, 200 ms, none under reduced motion.
+// height animates, 200 ms, none under reduced motion. Touch target (the PM, 2026-10-09): the handle looks 20 px tall and its tap area reaches
+// 24 px above the sheet's edge (over the bottom of the preview, which stays visible), so it meets the finger over 44 px without making the
+// header taller: on a small phone every pixel of the header comes out of the controls' room at half.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 export type Detent = 'collapsed' | 'half' | 'full';
@@ -33,7 +35,7 @@ export function BottomSheet({ detent, onDetent, max = 'full', top, header, child
     <div role="region" aria-label={label} data-style-sheet={detent} className="fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-[20px] bg-white shadow-[0_-8px_30px_-12px_rgba(0,0,0,.25)]"
       style={{ height, transition: dragging == null ? 'height .2s cubic-bezier(.2,.8,.2,1)' : 'none' }}>
       <div ref={headRef} className="shrink-0 touch-none select-none" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
-        <button type="button" className="flex h-6 w-full items-center justify-center" aria-label={`Controls: ${detent}. Tap to ${detent === 'full' || detent === max ? 'collapse' : 'expand'}`} data-style-sheet-handle><span className="h-1.5 w-10 rounded-full bg-neutral-300" aria-hidden="true" /></button>
+        <button type="button" className="relative flex h-5 w-full items-center justify-center before:absolute before:inset-x-0 before:-top-6 before:bottom-0 before:content-['']" aria-label={`Controls: ${detent}. Tap to ${detent === 'full' || detent === max ? 'collapse' : 'expand'}`} data-style-sheet-handle><span className="h-1.5 w-10 rounded-full bg-neutral-300" aria-hidden="true" /></button>
         {header}
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain border-t border-line" data-style-sheet-body>{children}</div>

@@ -6,6 +6,8 @@
 // season and the time of their own visit, and the bar says so in one line. Choosing a season, a time of day or Replay shows the
 // welcome screen (that is where they show), so from the Menu tab a phone reaches the welcome screen in Winter, in the evening, in
 // Persian in four taps: Preview, Winter, Evening, FA.
+// Touch targets (the PM, 2026-10-09): on a phone the chips keep their 36 px look and get a 44 × 44 tap area from an invisible pad (.tap),
+// which fits inside the row's own padding, so the bottom sheet's header stays short and the controls keep their room on a small phone.
 import { useRef } from 'react';
 import { SEASONS } from '@/lib/welcome';
 import { Icon } from '../../../_ui/icons';
@@ -16,14 +18,14 @@ export type Compare = { on: boolean; set: (on: boolean) => void } | null;
 function Seg<T extends string>({ label, items, value, onPick, attr, phone }: { label: string; items: { id: T; label: string }[]; value: T | null; onPick: (id: T) => void; attr: string; phone: boolean }) {
   return (
     <div role="group" aria-label={label} className="flex shrink-0 rounded-full bg-black/[.06] p-0.5">
-      {items.map((i) => <button key={i.id} type="button" aria-pressed={value === i.id} {...{ [attr]: i.id }} onClick={() => onPick(i.id)} className={`${phone ? 'h-9 px-3 text-[13px]' : 'h-7 px-2.5 text-[12px]'} rounded-full font-semibold whitespace-nowrap transition ${value === i.id ? 'bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,.12)]' : 'text-ink-muted hover:text-ink'}`}>{i.label}</button>)}
+      {items.map((i) => <button key={i.id} type="button" aria-pressed={value === i.id} {...{ [attr]: i.id }} onClick={() => onPick(i.id)} className={`${phone ? 'tap h-9 min-w-11 px-3 text-[13px]' : 'h-7 px-2.5 text-[12px]'} rounded-full font-semibold whitespace-nowrap transition ${value === i.id ? 'bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,.12)]' : 'text-ink-muted hover:text-ink'}`}>{i.label}</button>)}
     </div>
   );
 }
 
 export function PreviewBar({ view, onView, now, compare, status, phone = false }: { view: View; onView: (p: ViewPatch) => void; now: PageNow; compare: Compare; status?: React.ReactNode; phone?: boolean }) {
   const held = useRef(false);
-  const btn = `flex shrink-0 items-center gap-1 rounded-full border border-line bg-white font-semibold whitespace-nowrap shadow-[0_1px_2px_rgba(0,0,0,.04)] transition active:scale-[.97] ${phone ? 'h-9 px-3 text-[13px]' : 'h-7 px-2.5 text-[12px]'}`;
+  const btn = `flex shrink-0 items-center gap-1 rounded-full border border-line bg-white font-semibold whitespace-nowrap shadow-[0_1px_2px_rgba(0,0,0,.04)] transition active:scale-[.97] ${phone ? 'tap h-9 min-w-11 px-3 text-[13px]' : 'h-7 px-2.5 text-[12px]'}`;
   const groups = (
     <>
       <Seg label="Preview screen" attr="data-preview-screen" phone={phone} items={SCREENS} value={view.screen} onPick={(screen) => onView({ screen })} />
@@ -46,8 +48,8 @@ export function PreviewBar({ view, onView, now, compare, status, phone = false }
   if (phone) {
     return (
       <div className="w-full" data-preview-bar="phone">
-        <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto px-3 py-1.5">{groups}</div>
-        <div className="flex items-center justify-between gap-2 px-3 pb-1.5">{note}{status}</div>
+        <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto px-3 py-1">{groups}</div>
+        <div className="flex items-center justify-between gap-2 px-3 pb-1">{note}{status}</div>
       </div>
     );
   }

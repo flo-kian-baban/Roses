@@ -28,6 +28,7 @@
 //     the phone layout measured on a small phone too, the iPhone SE (375 px wide at Safari's visible height, 548 px, and 553 px with
 //     the top address bar): the preview's share with a colour open (target ≥ 45 %), the room left to the controls, and the controls
 //     at the same heights as on the iPhone 13 (never shrunk below their touch size).
+//   Touch targets (the PM, 2026-10-09): on both phones, opening a colour scrolls the sheet so its swatches are in view (checked).
 // Needs the production server at --base and DRILL_ADMIN_PIN (an admin PIN valid on any venue).
 //   DRILL_ADMIN_PIN=… node scripts/style-drill.mjs --base http://127.0.0.1:3100 --out reports/checks/<stamp>/style --jpeg
 import fs from 'node:fs/promises';
@@ -70,7 +71,10 @@ const sheetGeo = (page) => page.evaluate(() => {
   const tok = document.querySelector('[data-style-token] > button[aria-expanded="true"]')?.parentElement;
   const controls = tok ? [...tok.querySelectorAll('button, input')].filter((e) => e.offsetParent !== null).map((e) => { const r = e.getBoundingClientRect(); return { label: (e.getAttribute('aria-label') || e.textContent || e.type || '').trim().slice(0, 40), w: Math.round(r.width), h: Math.round(r.height) }; }) : [];
   const visible = Math.min(f.bottom, s.top) - f.top;
-  return { frameTop: Math.round(f.top), sheetTop: Math.round(s.top), visible: Math.round(visible), pct: Math.round((visible / innerHeight) * 1000) / 10, innerHeight, innerWidth, detent: sh.dataset.styleSheet, tokenOpen: !!tok, sheetH: Math.round(s.height), headH: Math.round(head.height), controlsH: body ? Math.round(body.height) : null, controls };
+  // the open colour's swatches (Auto, the venue's colours, Custom) fully inside the visible part of the sheet's controls (the PM, 2026-10-09)
+  const sw = tok?.querySelector('[data-style-swatches]')?.getBoundingClientRect();
+  const swatchesInView = !!sw && !!body && sw.top >= body.top - 0.5 && sw.bottom <= body.bottom + 0.5;
+  return { swatchesInView, swatchesH: sw ? Math.round(sw.height) : null, frameTop: Math.round(f.top), sheetTop: Math.round(s.top), visible: Math.round(visible), pct: Math.round((visible / innerHeight) * 1000) / 10, innerHeight, innerWidth, detent: sh.dataset.styleSheet, tokenOpen: !!tok, sheetH: Math.round(s.height), headH: Math.round(head.height), controlsH: body ? Math.round(body.height) : null, controls };
 });
 const varsOf = (html) => Object.fromEntries([...html.matchAll(/(--c-[a-z-]+):(#[0-9a-f]{6})/g)].map((m) => [m[1], m[2]]));
 const publicVar = (html, key) => varsOf(html)[cssVar(key)];
@@ -133,6 +137,7 @@ let i13 = null; // the iPhone 13's sheet geometry with a colour open, compared w
   measure(`change the category bar background: ${taps} taps (Style tab, group, swatch) + 0 extra; on the public page in ${pub.ms} ms`);
   { // the Style tab on a phone (Kian, 2026-10-09): the live preview on top, the controls in a bottom sheet; with a colour open the preview keeps ≥ 45 % of the viewport (the sheet offers collapsed and half only); Compare held on touch shows the default colours
     const geo = () => sheetGeo(p);
+    await sleep(900); // the sheet reveals the open colour's swatches 260 ms after it opens, with a smooth scroll
     const gEditing = await geo(); i13 = gEditing;
     await snap(p, 'style-phone-editing');
     await p.click('[data-style-sheet-handle]'); await sleep(350); const gTap = await geo();
@@ -143,7 +148,7 @@ let i13 = null; // the iPhone 13's sheet geometry with a colour open, compared w
     await cmp.dispatchEvent('pointerdown', { pointerType: 'touch', pointerId: 1, isPrimary: true }); await sleep(150); const held = await frameVarP('--c-tabs-bg'); const heldPressed = await cmp.getAttribute('aria-pressed');
     await snap(p, 'style-phone-compare-held');
     await cmp.dispatchEvent('pointerup', { pointerType: 'touch', pointerId: 1, isPrimary: true }); await sleep(150); const released = await frameVarP('--c-tabs-bg');
-    check('phone-style-layout', !!gEditing && gEditing.tokenOpen && gEditing.detent === 'half' && gEditing.pct >= 45 && gTap?.detent === 'collapsed' && gTap.pct > gEditing.pct && gBack?.detent === 'half' && gBack.pct >= 45 && held === WHITE && heldPressed === 'true' && released === pick.c, `Style tab on the iPhone 13 viewport: the preview on top (frame from ${gEditing?.frameTop} px), the controls in a bottom sheet at "${gEditing?.detent}" with the colour open: ${gEditing?.visible} of ${gEditing?.innerHeight} px of preview = ${gEditing?.pct} % (target ≥ 45); the handle while a colour is open: ${gTap?.detent} (${gTap?.pct} %), then ${gBack?.detent} (${gBack?.pct} %), never full; Compare held on touch → the bar background shows the venue default ${held} (pressed ${heldPressed}), released → ${released} (the saved colour)`);
+    check('phone-style-layout', !!gEditing && gEditing.tokenOpen && gEditing.detent === 'half' && gEditing.pct >= 45 && gEditing.swatchesInView && gTap?.detent === 'collapsed' && gTap.pct > gEditing.pct && gBack?.detent === 'half' && gBack.pct >= 45 && held === WHITE && heldPressed === 'true' && released === pick.c, `Style tab on the iPhone 13 viewport: the preview on top (frame from ${gEditing?.frameTop} px), the controls in a bottom sheet at "${gEditing?.detent}" with the colour open: ${gEditing?.visible} of ${gEditing?.innerHeight} px of preview = ${gEditing?.pct} % (target ≥ 45), the open colour's swatches in view in the sheet: ${gEditing?.swatchesInView} (${gEditing?.swatchesH} px in ${gEditing?.controlsH} px of controls); the handle while a colour is open: ${gTap?.detent} (${gTap?.pct} %), then ${gBack?.detent} (${gBack?.pct} %), never full; Compare held on touch → the bar background shows the venue default ${held} (pressed ${heldPressed}), released → ${released} (the saved colour)`);
     measure(`Style tab on a phone: with a colour open the preview keeps ${gEditing?.pct} % of the viewport (${gEditing?.visible} of ${gEditing?.innerHeight} px; target ≥ 45 %); Compare held → the default colours, released → the saved ones`);
   }
   await p.click('[role=status] button:has-text("Undo")'); await p.waitForSelector('[role=status]:has-text("Undone")');
@@ -169,7 +174,7 @@ let i13 = null; // the iPhone 13's sheet geometry with a colour open, compared w
     p.on('pageerror', (e) => log('pageerror', e.message));
     await signin(p, 'senso');
     await p.click('a[href="/admin/senso?tab=style"]'); await p.waitForSelector('[data-style-group="tabs"]');
-    await p.click('[data-style-group="tabs"] > button'); await p.waitForSelector('[data-style-token="tabs.bg"] input[type=color]'); await sleep(400);
+    await p.click('[data-style-group="tabs"] > button'); await p.waitForSelector('[data-style-token="tabs.bg"] input[type=color]'); await sleep(900); // after the swatches' reveal
     const g = await sheetGeo(p); rows.push({ h, ...g });
     if (h === 548) await snap(p, 'style-phone-se');
     await ctx.close();
@@ -181,8 +186,8 @@ let i13 = null; // the iPhone 13's sheet geometry with a colour open, compared w
   const matched = se.controls.filter((c) => kind(c) in i13h);
   const sameHeights = matched.length >= 10 && matched.every((c) => c.h === i13h[kind(c)]);
   const sizes = (g) => [...new Set(g.controls.map((c) => `${kind(c)} ${c.w}×${c.h}`))].join(', ');
-  check('phone-style-layout-se', se.tokenOpen && se.detent === 'half' && se.pct >= 45 && se2.pct >= 45 && sameHeights, `Style tab on the iPhone SE at Safari's visible height (${se.innerWidth} × ${se.innerHeight}) with a colour open: the preview ${se.visible} of ${se.innerHeight} px = ${se.pct} % (target ≥ 45; at ${se2.innerWidth} × ${se2.innerHeight}: ${se2.visible} px = ${se2.pct} %); the sheet at "${se.detent}" is ${se.sheetH} px: its header (handle and preview bar) ${se.headH} px, the controls ${se.controlsH} px, scrolling inside (iPhone 13: ${i13?.sheetH} px, header ${i13?.headH}, controls ${i13?.controlsH}); every control of the open colour at the same height as on the iPhone 13 (${sameHeights}, ${matched.length} compared): ${sizes(se)}`);
-  measure(`Style tab on a small phone (iPhone SE, ${se.innerWidth} × ${se.innerHeight}, Safari's visible height): with a colour open the preview keeps ${se.pct} % of the viewport (${se.visible} of ${se.innerHeight} px; target ≥ 45 %; ${se2.pct} % at ${se2.innerHeight} px); the controls get ${se.controlsH} px of the sheet (${i13?.controlsH} px on the iPhone 13) at their full size`);
+  check('phone-style-layout-se', se.tokenOpen && se.detent === 'half' && se.pct >= 45 && se2.pct >= 45 && se.swatchesInView && se2.swatchesInView && sameHeights, `Style tab on the iPhone SE at Safari's visible height (${se.innerWidth} × ${se.innerHeight}) with a colour open: the preview ${se.visible} of ${se.innerHeight} px = ${se.pct} % (target ≥ 45; at ${se2.innerWidth} × ${se2.innerHeight}: ${se2.visible} px = ${se2.pct} %); the sheet at "${se.detent}" is ${se.sheetH} px: its header (handle and preview bar) ${se.headH} px, the controls ${se.controlsH} px, scrolling inside, with the open colour's swatches (${se.swatchesH} px) scrolled into view: ${se.swatchesInView} (at ${se2.innerHeight} px: ${se2.swatchesInView}) (iPhone 13: ${i13?.sheetH} px, header ${i13?.headH}, controls ${i13?.controlsH}); every control of the open colour at the same height as on the iPhone 13 (${sameHeights}, ${matched.length} compared): ${sizes(se)}`);
+  measure(`Style tab on a small phone (iPhone SE, ${se.innerWidth} × ${se.innerHeight}, Safari's visible height): with a colour open the preview keeps ${se.pct} % of the viewport (${se.visible} of ${se.innerHeight} px; target ≥ 45 %; ${se2.pct} % at ${se2.innerHeight} px); the controls get ${se.controlsH} px of the sheet (${i13?.controlsH} px on the iPhone 13) at their full size, the open colour's ${se.swatchesH} px of swatches in view: ${se.swatchesInView}`);
 }
 
 // ---- 3. laptop: the preview, linked colours, the guard, the regions, resets

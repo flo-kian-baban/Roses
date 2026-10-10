@@ -74,7 +74,7 @@ export function MenuTab(p: MenuTabProps) {
         <div className="mt-3 flex flex-wrap items-center gap-1.5 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2" aria-label="Needs attention">
           <span className="mr-1 flex items-center gap-1 text-sm font-semibold text-amber-900"><Icon name="alert" className="h-4 w-4" />Needs attention</span>
           {(Object.keys(counts) as Exclude<Filter, 'all'>[]).filter((k) => counts[k] > 0).map((k) => (
-            <button key={k} type="button" onClick={() => setFilter(filter === k ? 'all' : k)} aria-pressed={filter === k} className={`rounded-full px-2.5 py-1 text-[13px] font-medium ${filter === k ? 'bg-amber-900 text-white' : 'bg-white text-amber-900 shadow-[0_1px_2px_rgba(0,0,0,.06)]'}`}>{LABEL[k](counts[k])}</button>
+            <button key={k} type="button" onClick={() => setFilter(filter === k ? 'all' : k)} aria-pressed={filter === k} className={`min-h-11 rounded-full px-3 py-1 text-[13px] font-medium ${filter === k ? 'bg-amber-900 text-white' : 'bg-white text-amber-900 shadow-[0_1px_2px_rgba(0,0,0,.06)]'}`}>{LABEL[k](counts[k])}</button>
           ))}
         </div>
       )}
@@ -83,7 +83,7 @@ export function MenuTab(p: MenuTabProps) {
           <label className="relative min-w-0 flex-1">
             <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
             <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search items" aria-label="Search items" autoComplete="off" className="h-11 w-full rounded-full border-0 bg-fill pl-10 pr-9 text-base placeholder:text-neutral-500 focus:bg-white focus:outline-none focus:ring-[3px] focus:ring-accent/25" />
-            {query && <button type="button" onClick={() => setQuery('')} className="absolute right-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-ink-muted" aria-label="Clear search"><Icon name="close" className="h-4 w-4" /></button>}
+            {query && <button type="button" onClick={() => setQuery('')} className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-ink-muted" aria-label="Clear search"><Icon name="close" className="h-4 w-4" /></button>}
           </label>
           <label className="relative shrink-0">
             <span className="sr-only">Jump to section</span>
@@ -101,17 +101,18 @@ export function MenuTab(p: MenuTabProps) {
         <section key={s.id} id={`sec-${s.id}`} className={`relative mt-3 scroll-mt-40 rounded-2xl border border-line bg-white shadow-card ${dropCls(s.id)}`}
           onDragOver={dnd.overRow('section', s.id)} onDrop={dnd.drop('section', s.id)}>
           <header className={`flex items-center gap-1 py-1.5 pl-1 pr-2 ${s.listed ? '' : 'opacity-70'}`} draggable={fine} onDragStart={dnd.start({ kind: 'section', id: s.id })} onDragEnd={dnd.end}>
-            <button type="button" onClick={() => toggle(s.id)} aria-expanded={!collapsed.has(s.id)} aria-label={collapsed.has(s.id) ? `Expand ${s.name.en}` : `Collapse ${s.name.en}`} className="flex h-10 w-9 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-fill"><Icon name="down" className={`h-5 w-5 transition ${collapsed.has(s.id) ? '-rotate-90' : ''}`} /></button>
-            <button type="button" onClick={() => toggle(s.id)} className="flex min-w-0 flex-1 items-center gap-x-2 text-left">
+            <button type="button" onClick={() => toggle(s.id)} aria-expanded={!collapsed.has(s.id)} aria-label={collapsed.has(s.id) ? `Expand ${s.name.en}` : `Collapse ${s.name.en}`} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-fill"><Icon name="down" className={`h-5 w-5 transition ${collapsed.has(s.id) ? '-rotate-90' : ''}`} /></button>
+            <button type="button" onClick={() => toggle(s.id)} className="flex min-h-11 min-w-0 flex-1 items-center gap-x-2 text-left">
               <span className="truncate text-[17px] font-semibold leading-6">{s.name.en}</span>
               <span className="shrink-0 text-sm leading-6 tabular-nums text-ink-muted">{s.item_ids.length}</span>
               {s.name.fa && <span lang="fa" dir="rtl" className="hidden min-w-0 truncate text-[14px] leading-6 text-ink-muted sm:inline">{s.name.fa}</span>}
-            </button>
-            <span className="flex shrink-0 items-center gap-0.5">
+              {/* the badges sit inside the name button, so on a small phone they do not squeeze its tap area below 44 px (the PM, 2026-10-09) */}
               {!s.listed && <Badge>Hidden</Badge>}
               {s.listed && s.item_ids.length > 0 && !s.item_ids.some((id) => menu.items[id]?.listed) && <Badge tone="amber">No item shown</Badge>}
               {s.fa_draft.length > 0 && <Badge tone="blue">Persian draft</Badge>}
-              <button type="button" onClick={() => p.onAdd(s.id)} className="ml-1 flex h-10 items-center gap-1 rounded-full px-2.5 text-[14px] font-semibold text-accent-strong hover:bg-accent-soft" aria-label={`Add item to ${s.name.en}`}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} /><span className="hidden sm:inline">Add item</span><span className="sm:hidden">Add</span></button>
+            </button>
+            <span className="flex shrink-0 items-center gap-0.5">
+              <button type="button" onClick={() => p.onAdd(s.id)} className="ml-1 flex h-11 min-w-11 items-center gap-1 rounded-full px-2.5 text-[14px] font-semibold text-accent-strong hover:bg-accent-soft" aria-label={`Add item to ${s.name.en}`}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} /><span className="hidden sm:inline">Add item</span><span className="sm:hidden">Add</span></button>
               <Menu label={`Section menu: ${s.name.en}`} items={[
                 { text: 'Rename', onClick: () => p.onRename(s.id) },
                 { text: 'Move up', disabled: n === 0, onClick: () => { void p.onMoveSection(s.id, 'up'); } },
@@ -123,7 +124,7 @@ export function MenuTab(p: MenuTabProps) {
           </header>
           {!collapsed.has(s.id) && (
             ids.length === 0
-              ? <p className="border-t border-line px-4 py-4 text-sm text-ink-muted">{narrowing ? 'No matching item here.' : <>No items yet. <button type="button" onClick={() => p.onAdd(s.id)} className="font-medium text-accent-strong underline-offset-4 hover:underline">Add the first item</button></>}</p>
+              ? <p className="border-t border-line px-4 py-4 text-sm text-ink-muted">{narrowing ? 'No matching item here.' : <>No items yet. <button type="button" onClick={() => p.onAdd(s.id)} className="inline-flex min-h-11 items-center font-medium text-accent-strong underline-offset-4 hover:underline">Add the first item</button></>}</p>
               : <ul className="border-t border-line px-1 pb-1">{ids.map((id) => <Row key={id} item={menu.items[id]} sectionId={s.id} fine={fine} dropCls={dropCls(id)} highlighted={p.highlightId === id} onOpen={p.onOpen} onToggle={p.onToggleItem} onPrice={p.onPrice}
                   dragProps={{ draggable: fine, onDragStart: dnd.start({ kind: 'item', id, section: s.id }), onDragOver: dnd.overRow('item', id, s.id), onDrop: dnd.drop('item', id, s.id), onDragEnd: dnd.end }} />)}</ul>
           )}

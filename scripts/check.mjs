@@ -25,6 +25,9 @@
 // listed; a listed check that passes is reported as NOW PASSING. The file decides PASS, so the suite refuses to start while it has
 // uncommitted changes, like the code. (2) Ports: picked free at start (none fixed), recorded in report.md; before any check uses a server
 // the suite proves the port's listener is the process it spawned (lsof), and it only ever stops the servers it started.
+// Touch targets (the PM, 2026-10-09): scripts/touch-drill.mjs measures the tap area of every visible interactive element of the admin on the
+// iPhone 13 and iPhone SE viewports (sign-in, Menu, Style, Details, Team, + Add venue and what opens from them) and fails on any under 44 × 44
+// CSS px that is not an inline text link; the list is printed in touch/touch-drill.txt.
 import fs from 'node:fs';
 import path from 'node:path';
 import net from 'node:net';
@@ -37,7 +40,7 @@ import { loadEnv } from './load-env.mjs';
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
 const out = path.resolve('reports/checks', stamp);
-fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true }); fs.mkdirSync(path.join(out, 'preview'), { recursive: true }); fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.mkdirSync(path.join(out, 'season'), { recursive: true }); fs.mkdirSync(path.join(out, 'after-tap'), { recursive: true });
+fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true }); fs.mkdirSync(path.join(out, 'preview'), { recursive: true }); fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.mkdirSync(path.join(out, 'season'), { recursive: true }); fs.mkdirSync(path.join(out, 'after-tap'), { recursive: true }); fs.mkdirSync(path.join(out, 'touch'), { recursive: true });
 const DIST = '.next-check';
 // Free ports, picked at start (the PM, 2026-10-09; 3100 had been taken by another project's server): the system hands out a free port for
 // each of the suite's three servers, and each is checked free on 127.0.0.1 and ::1 (the lockout drill reaches the server over IPv6).
@@ -309,6 +312,12 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, checks: drillChecks('style/style-drill.json', !!(m && m.length)), evidence: ['style/style-drill.txt', 'style/style-drill.json', 'style/day-one-senso.json', 'style/day-one-kebab-land.json', 'style/guard-route.json', 'style/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   }, 'style');
+  await step('touch targets in the admin on a phone (the iPhone 13 and the iPhone SE at Safari\'s visible height): every visible interactive element of the sign-in screens, the Menu tab and what opens from it, the item editor with sizes, add-ons and combo parts, the Style tab\'s bottom sheet, the Details tab, Team and + Add venue, its tap area hit-tested from its centre; none under 44 × 44 CSS px except inline text links; the list printed', async () => {
+    const r = await run('node', ['scripts/touch-drill.mjs', '--base', base, '--out', path.join(out, 'touch'), '--jpeg'], { env: drillEnv, logFile: 'touch/touch-drill.log' });
+    const m = (r.stdout.match(/TOUCH DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
+    return { pass: r.status === 0, checks: drillChecks('touch/touch-drill.json', !!m), evidence: ['touch/touch-drill.txt', 'touch/touch-drill.json', 'touch/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
+  }, 'touch');
   await step('backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)', async () => {
     const r = await run('bash', ['scripts/backup-drill.sh', path.join(out, 'backup-drill.txt')], { logFile: 'backup-drill.log' }); // drills the scratch copy (ROSES_DB), dump into the run folder
     const t = fs.existsSync(path.join(out, 'backup-drill.txt')) ? fs.readFileSync(path.join(out, 'backup-drill.txt'), 'utf8') : '';
@@ -346,7 +355,7 @@ try {
     const names = [...read(`server-${port}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]);
     processes.push({ process: app, source: `server-${port}.log`, databases: [...new Set(names)] });
   }
-  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['preview-drill', 'preview/preview-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['season-server', 'season/season-server.log'], ['after-tap-drill', 'after-tap/after-tap-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
+  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['preview-drill', 'preview/preview-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['season-server', 'season/season-server.log'], ['after-tap-drill', 'after-tap/after-tap-drill.log'], ['touch-drill', 'touch/touch-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
     if (!fs.existsSync(path.join(out, file))) continue;
     processes.push({ process: `roses-check:${name}`, source: file, databases: [...new Set([...read(file).matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))] });
   }

@@ -188,7 +188,7 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
   };
 
   const openItem = open ? menu.items[open.id] : null;
-  const tabLink = (t: Tab, label: string) => <a href={TAB_HREF(venue.id, t)} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); go(t); }} aria-current={tab === t ? 'page' : undefined} className={`flex h-9 items-center rounded-full px-3.5 text-[15px] font-semibold ${tab === t ? 'bg-ink text-white' : 'text-ink-muted hover:bg-fill hover:text-ink'}`}>{label}</a>;
+  const tabLink = (t: Tab, label: string) => <a href={TAB_HREF(venue.id, t)} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); go(t); }} aria-current={tab === t ? 'page' : undefined} className={`tap flex h-9 items-center rounded-full px-3.5 text-[15px] font-semibold ${tab === t ? 'bg-ink text-white' : 'text-ink-muted hover:bg-fill hover:text-ink'}`}>{label}</a>;
   const previewProps = { venueId: venue.id, reloadKey, focus, view, onView, now, onNow: setNow, onPick, styleMode: tab === 'style', region: tab === 'style' ? region : NO_REGION, compare: tab === 'style' ? { on: compare, set: setCompare } : null };
   const phoneStyle = !desktop && tab === 'style' && me.canManage; // the Style tab on a phone: the preview on top, the controls in a bottom sheet
   const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} />;
@@ -197,12 +197,13 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
   return (
     <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
       <div className="relative min-w-0">
-        <div className={`glass sticky top-14 z-30 flex h-11 items-center gap-1 border-b border-line px-3 sm:px-5 ${phoneStyle ? 'hidden' : ''}`}>
+        {/* The rows' bottom line is drawn inside (an inset shadow), so a 44 px row holds a 44 px button and the tabs' 44 px tap areas (the PM, 2026-10-09). */}
+        <div className={`glass sticky top-14 z-30 flex h-11 items-center gap-1 px-3 sm:px-5 shadow-[inset_0_-1px_0_var(--color-line)] ${phoneStyle ? 'hidden' : ''}`}>
           {tabLink('menu', 'Menu')}
           {me.canManage && tabLink('style', 'Style')}
           {me.canManage && tabLink('details', 'Details')}
           <span className="flex-1" />
-          {!phoneStyle && <button type="button" onClick={() => setPreviewOpen(true)} className="flex h-9 items-center gap-1.5 rounded-full border border-line bg-white px-3 text-[14px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,.04)] lg:hidden"><Icon name="smartphone" className="h-4 w-4" />Preview</button>}
+          {!phoneStyle && <button type="button" onClick={() => setPreviewOpen(true)} className="flex h-11 items-center gap-1.5 rounded-full border border-line bg-white px-3 text-[14px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,.04)] lg:hidden"><Icon name="smartphone" className="h-4 w-4" />Preview</button>}
         </div>
         {tab === 'menu' && <MenuTab menu={menu} filter={filter} setFilter={setFilter} query={query} setQuery={setQuery} highlightId={highlight}
               onOpen={(id, section) => setOpen({ id, section })} onAdd={(sid) => setAdding(sid)} onAddSection={() => setAddingSection(true)}
@@ -219,7 +220,7 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
       {phoneStyle && (
         // Under the admin's top bar, with its own tab row (whatever sits above the editor in the page, an Alerts card for one, stays behind it): the tab row, the preview, the sheet.
         <div className="fixed inset-x-0 bottom-0 top-14 z-30 flex flex-col bg-white" data-style-phone>
-          <div className="glass flex h-11 shrink-0 items-center gap-1 border-b border-line px-3">{tabLink('menu', 'Menu')}{tabLink('style', 'Style')}{tabLink('details', 'Details')}</div>
+          <div className="glass flex h-11 shrink-0 items-center gap-1 px-3 shadow-[inset_0_-1px_0_var(--color-line)]">{tabLink('menu', 'Menu')}{tabLink('style', 'Style')}{tabLink('details', 'Details')}</div>
           <div className="relative min-h-0 flex-1"><div className="absolute inset-0"><Preview ref={previewB} {...previewProps} frame={false} bar={false} /></div></div>
           <BottomSheet detent={detent} onDetent={setDetent} max={editing ? 'half' : 'full'} top={PHONE_TOP} label="Style controls"
             header={<PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone />}>
@@ -241,7 +242,7 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
       {toast && (
         <div className={`toast fixed bottom-5 left-1/2 z-[80] flex -translate-x-1/2 items-center gap-1 rounded-full py-1.5 pl-4 pr-1.5 text-[15px] font-medium text-white shadow-pop ${toast.error ? 'bg-red-600' : 'bg-ink'}`} role="status" style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}>
           <span>{toast.text}</span>
-          {toast.revisions.length > 0 && <><span className="text-white/50">·</span><button type="button" onClick={() => { void undo(); }} className="flex h-9 items-center gap-1 rounded-full px-3 font-semibold hover:bg-white/15"><Icon name="undo" className="h-4 w-4" />Undo</button></>}
+          {toast.revisions.length > 0 && <><span className="text-white/50">·</span><button type="button" onClick={() => { void undo(); }} className="flex h-11 items-center gap-1 rounded-full px-3 font-semibold hover:bg-white/15"><Icon name="undo" className="h-4 w-4" />Undo</button></>}
         </div>
       )}
     </div>
@@ -316,7 +317,7 @@ function DeleteSectionSheet({ section: s, others, items, onClose, onDelete }: { 
         <label className={`flex min-h-12 items-center gap-3 rounded-2xl border px-3 py-2 ${mode === 'move' ? 'border-accent bg-accent-soft' : 'border-line'} ${others.length ? '' : 'opacity-50'}`}>
           <input type="radio" className="check" name="section-items" value="move" checked={mode === 'move'} disabled={!others.length} onChange={() => setMode('move')} />
           <span className="flex min-w-0 flex-1 flex-wrap items-center gap-2 text-[15px]"><span className="font-medium">Move {n === 1 ? 'it' : 'them'} to</span>
-            <select value={target} onChange={(e) => { setTarget(e.target.value); setMode('move'); }} disabled={!others.length} aria-label="Section to move the items to" className="h-9 min-w-0 max-w-full appearance-none rounded-full bg-white px-3 pr-8 text-[15px] font-medium shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:outline-none focus:ring-[3px] focus:ring-accent/25" style={{ backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%236e6e73%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27><path d=%27m6 9 6 6 6-6%27/></svg>")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center', backgroundSize: '14px' }}>
+            <select value={target} onChange={(e) => { setTarget(e.target.value); setMode('move'); }} disabled={!others.length} aria-label="Section to move the items to" className="h-11 min-w-0 max-w-full appearance-none rounded-full bg-white px-3 pr-8 text-[15px] font-medium shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:outline-none focus:ring-[3px] focus:ring-accent/25" style={{ backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%236e6e73%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27><path d=%27m6 9 6 6 6-6%27/></svg>")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center', backgroundSize: '14px' }}>
               {others.map((o) => <option key={o.id} value={o.id}>{o.name.en}</option>)}
             </select>
           </span>

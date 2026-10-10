@@ -54,9 +54,9 @@ export function SignIn({ venues, venue, sp, path }: { venues: Venue[]; venue?: V
           </form>
         )}
 
-        <div className="mt-5 flex flex-col items-center gap-2 text-sm text-ink-muted">
-          {adminMode ? <a className="font-medium text-ink underline-offset-4 hover:underline" href={path}>Sign in with a PIN instead</a> : <a className="font-medium text-ink underline-offset-4 hover:underline" href={`${path}?mode=admin`}>Admin with email and password instead</a>}
-          {venue && !adminMode && <a className="underline-offset-4 hover:underline" href="/admin">Other venue</a>}
+        <div className="mt-4 flex flex-col items-center gap-0 text-sm text-ink-muted">
+          {adminMode ? <a className="inline-flex min-h-11 items-center px-2 font-medium text-ink underline-offset-4 hover:underline" href={path}>Sign in with a PIN instead</a> : <a className="inline-flex min-h-11 items-center px-2 font-medium text-ink underline-offset-4 hover:underline" href={`${path}?mode=admin`}>Admin with email and password instead</a>}
+          {venue && !adminMode && <a className="inline-flex min-h-11 items-center px-2 underline-offset-4 hover:underline" href="/admin">Other venue</a>}
         </div>
       </div>
     </main>

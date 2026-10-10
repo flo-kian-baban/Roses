@@ -124,8 +124,8 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
     return (
       <div className="flex h-full flex-col bg-white">
         {onClose && (
-          <div className="glass flex h-11 shrink-0 items-center gap-2 border-b border-line px-2">
-            <button type="button" onClick={onClose} className="flex h-10 items-center gap-1 rounded-full px-2.5 text-[15px] font-semibold"><Icon name="back" className="h-5 w-5" />Edit</button>
+          <div className="glass flex h-11 shrink-0 items-center gap-2 px-2 shadow-[inset_0_-1px_0_var(--color-line)]">
+            <button type="button" onClick={onClose} className="flex h-11 items-center gap-1 rounded-full px-2.5 text-[15px] font-semibold"><Icon name="back" className="h-5 w-5" />Edit</button>
             <span className="flex-1 text-center text-[13px] font-medium text-ink-muted">Preview</span>
           </div>
         )}

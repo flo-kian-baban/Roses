@@ -83,6 +83,35 @@ html[data-welcome="done"] #welcome { opacity: 0; visibility: hidden; pointer-eve
   100% { transform: perspective(260px) rotateX(calc(var(--rx) * .6)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
 @keyframes wa-spin { to { transform: rotate(360deg); } }
+/* Summer artwork (Senso, Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: S5 the Persian sun as the main scene,
+   mixed with S1's dandelion seeds, lighter; the particles drawn on every load by sunEngineScript in src/components/Welcome.tsx).
+   The sun sits in the top corner (.sun, its own size --s, raised by --y): its straight rays (.sr) turn one way, 140 s a turn, its
+   flame rays the other, 190 s, while breathing (.sf, 7 s); all three started --l earlier, at a random point of their cycle. The
+   sparkles (.tw at --x, --y) twinkle (.k: grow, turn a quarter and fade over --d); the motes of light (.mo) rise (.u) over --d,
+   drifting by --dr; the dandelion seeds (.sd) are carried across from the left on the breeze (.u, from height --y0 to --y1 over
+   --d), bob (.v, --sw over --sp) and tilt (.t, --rz over --fp). Transform and opacity only, no blur. Reduced motion (.still): the
+   sun, the sparkles at their own scale --k and three seeds resting at (--x, --y) turned by --rs, nothing moving. */
+.scene[data-engine="sun"] .sun { left: auto; right: calc(var(--s) * -.3); top: var(--y); margin: 0; }
+.scene[data-engine="sun"] .sun > *, .scene[data-engine="sun"] .sf svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; will-change: transform; }
+.scene[data-engine="sun"] .sr { animation: wa-spin 140s linear var(--l) infinite; }
+.scene[data-engine="sun"] .sf { animation: wa-breathe 7s ease-in-out var(--l) infinite alternate; }
+.scene[data-engine="sun"] .sf svg { animation: wa-spin 190s linear var(--l) infinite reverse; }
+.scene[data-engine="sun"] .tw { top: var(--y); }
+.scene[data-engine="sun"] .k, .scene[data-engine="sun"] .u, .scene[data-engine="sun"] .v, .scene[data-engine="sun"] .t { display: block; width: 100%; height: 100%; will-change: transform; }
+.scene[data-engine="sun"] svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.scene[data-engine="sun"] .k { animation: wa-twinkle var(--d) ease-in-out var(--l) infinite; }
+.scene[data-engine="sun"] .mo .u { animation: wa-rise var(--d) linear var(--l) infinite; }
+.scene[data-engine="sun"] .sd .u { animation: wa-breeze var(--d) linear var(--l) infinite; }
+.scene[data-engine="sun"] .sd .v { animation: wa-bob var(--sp) ease-in-out var(--l) infinite alternate; }
+.scene[data-engine="sun"] .sd .t { animation: wa-tilt var(--fp) ease-in-out var(--l) infinite alternate; }
+.scene[data-engine="sun"].still .sr, .scene[data-engine="sun"].still .sf, .scene[data-engine="sun"].still .sf svg, .scene[data-engine="sun"].still .u, .scene[data-engine="sun"].still .v, .scene[data-engine="sun"].still .t { animation: none; }
+.scene[data-engine="sun"].still .k { animation: none; transform: scale(var(--k)); }
+@keyframes wa-breathe { from { transform: scale(.96); } to { transform: scale(1.04); } }
+@keyframes wa-twinkle { 0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; } 45% { transform: scale(1) rotate(45deg); opacity: 1; } 60% { transform: scale(.9) rotate(55deg); opacity: .9; } 85% { transform: scale(0) rotate(90deg); opacity: 0; } }
+@keyframes wa-rise { from { transform: translate3d(0, calc(100vh + var(--s)), 0); } to { transform: translate3d(var(--dr), calc(var(--s) * -1.5), 0); } }
+@keyframes wa-breeze { from { transform: translate3d(calc(var(--s) * -.6), var(--y0), 0); } to { transform: translate3d(calc(100vw + var(--s) * .6), var(--y1), 0); } }
+@keyframes wa-bob { from { transform: translateY(calc(var(--sw) * -1)); } to { transform: translateY(var(--sw)); } }
+@keyframes wa-tilt { from { transform: rotate(calc(var(--rz) * -1)); } to { transform: rotate(var(--rz)); } }
 .welcome-card { position: relative; display: grid; justify-items: center; gap: 24px; width: min(100% - 48px, 340px); padding-bottom: 4vh; text-align: center; }
 /* The logo is the largest contentful paint: wider than a grid card's photo in the first section behind the overlay (half the
    screen less the gutters), so a late photo never takes the metric over. */

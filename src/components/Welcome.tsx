@@ -15,14 +15,16 @@
 // Scenes. Senso (Kian's picks of 2026-10-09, src/components/welcome-art.ts): the fall and winter scenes are the picked artwork
 // with a per-load engine (engineScript): the HTML carries the symbols and an empty scene, and the inline script draws 20 particles
 // (2 near, 9 middle, 9 far) with random designs, columns, sizes, timings, sway and flutter angles, started mid-flight by negative
-// delays, so no two loads look alike; under reduced motion a still composition of designs resting. Every other scene (Kebab Land,
-// the default template, Senso's spring and summer until their batch) is the engine of 2026-10-09, unchanged: particles generated
+// delays, so no two loads look alike; under reduced motion a still composition of designs resting. Senso's summer (Kian's pick of
+// 2026-10-10: the Persian sun with a few dandelion seeds) is artwork too, with its own engine (sunEngineScript), so the fall and
+// winter pages are untouched by it. Every other scene (Kebab Land, the default template, Senso's spring until its batch) is the
+// engine of 2026-10-09, unchanged: particles generated
 // at build time from a fixed seed, each an HTML element at (--x, --y) animated on transform and opacity only, symbols below.
 // At most 20 particles per scene. Colours are the Welcome group's tokens (the artwork carries its own palette, src/venues/tokens.ts).
 import type { CSSProperties, ReactNode } from 'react';
 import type { Bi as BiText, Logo } from '@/lib/types';
 import { GREETINGS, type Season } from '@/lib/welcome';
-import { artScene } from './welcome-art';
+import { artScene, type ArtScene } from './welcome-art';
 import { Bi } from './Bi';
 export { usesArtwork } from './welcome-art';
 
@@ -65,18 +67,38 @@ if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){s.
 else{for(var k in L)if(k!=='b')for(var j=0;j<L[k][0];j++)one(k,R(.02,.98))}
 s.innerHTML=h})();`;
 
+// The summer engine (Senso, Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: S5 the Persian sun as the main scene,
+// mixed with S1's dandelion seeds, lighter). 20 particles on every load: the sun in the top corner (its size random, 72–80 % of the
+// width up to 440 px, and never so big that its rays reach the card: on a short phone it is smaller; its rays and flames started at
+// a random point of their slow turns), 10 sparkles twinkling (5 near the sun, 5 above or below the card, never on it; size, place,
+// period and phase random), 4 motes of light rising, and 5 dandelion seeds (3 far, 2 middle; no near ones,
+// small and faint: lighter than the S1 candidate's 18) carried across from the left on a breeze at a random height, bobbing and
+// tilting, each a random design of the scene's data-designs. Negative delays: everything is mid-flight on the first frame. Reduced
+// motion: the sun, the sparkles at their own sizes and three seeds resting low and on the left, nothing moving (no motes). The
+// stylesheet does the rest (the "Summer artwork" rules in src/styles/public.css). Nothing is stored.
+export const sunEngineScript = `(function(){var w=document.getElementById('welcome'),s=w&&w.querySelector('.scene[data-engine="sun"]');if(!s||!s.getAttribute('data-designs'))return;
+var D=s.getAttribute('data-designs').split(','),R=function(a,b){return a+Math.random()*(b-a)},r1=function(n){return Math.round(n*10)/10},st=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,W=Math.min(innerWidth||390,440),H=innerHeight||844,h='',i;
+var g=function(id,b,c){return '<svg'+(c?' class="'+c+'"':'')+' viewBox="0 0 '+b+' '+b+'" focusable="false"><use href="#'+id+'"/></svg>'};
+var z=Math.round(Math.min(W*R(.72,.8),Math.max(150,(H/2-175)/.68)));h+='<i class="p sun" style="--s:'+z+'px;--o:1;--y:'+Math.round(-.3*z)+'px;--rs:0deg;--l:'+r1(-R(1,140))+'s"><b class="sf">'+g('Uflames',200)+'</b>'+g('Urays',200,'sr')+g('Udisc',200)+'</i>';
+for(i=0;i<10;i++){var n=i<5,d=r1(R(2.6,5.2));h+='<i class="p tw" style="--x:'+r1(n?R(45,95):R(4,92))+'vw;--y:'+r1(n?R(2,20):Math.random()<.5?R(4,18):R(80,96))+'vh;--s:'+Math.round(R(n?13:11,n?22:20))+'px;--d:'+d+'s;--l:'+r1(-R(.1,d))+'s;--o:'+Math.round(R(.7,1)*100)/100+';--k:'+r1(R(.6,1))+';--rs:'+Math.round(R(0,90))+'deg"><b class="k">'+g('Uspark',24)+'</b></i>'}
+if(!st)for(i=0;i<4;i++){var e=r1(R(14,22));h+='<i class="p mo" style="--x:'+r1(R(4,96))+'vw;--s:'+Math.round(R(5,9))+'px;--d:'+e+'s;--l:'+r1(-R(.5,e))+'s;--o:'+Math.round(R(.5,.8)*100)/100+';--dr:'+r1(R(-4,4))+'vw"><b class="u">'+g('Umote',24)+'</b></i>'}
+var P=[[.1,.86],[.84,.9],[.06,.6]];for(i=0;i<(st?3:5);i++){var f=i<3,t=r1(R(f?28:22,f?38:28)),y=R(4,92);h+='<i class="p sd '+(f?'far':'mid')+'" style="--x:'+(st?r1(P[i][0]*100)+'vw':'0px')+';--y:'+(st?r1(P[i][1]*100)+'vh':'0px')+';--rs:'+Math.round(R(-40,40))+'deg;--s:'+Math.round(64*R(f?.45:.65,f?.6:.8))+'px;--d:'+t+'s;--l:'+r1(-R(.5,t))+'s;--o:'+Math.round(R(f?.35:.55,f?.5:.7)*100)/100+';--y0:'+r1(y)+'vh;--y1:'+r1(y-R(-6,22))+'vh;--sw:'+Math.round(R(f?5:8,f?9:12))+'px;--sp:'+r1(R(f?3.5:3,f?5.5:4.5))+'s;--rz:'+Math.round(R(6,18))+'deg;--fp:'+r1(R(f?5:4,f?8:6.5))+'s"><b class="u"><b class="v">'+g(D[Math.floor(Math.random()*D.length)],64,'t')+'</b></b></i>'}
+if(st)s.className+=' still';s.innerHTML=h})();`;
+// The engine for a kind of artwork scene (the page and the admin API's preview of another season both use it).
+export const engineFor = (kind: ArtScene['kind']) => (kind === 'sun' ? sunEngineScript : engineScript);
+
 // `tile`: the logo on the venue's tile (the Header group's token), for a white-on-transparent logo on a light welcome background;
 // the page passes it only when the welcome background is light (on a dark one the logo sits straight on it, so nothing cuts the scene).
 // `season`: the one the page was rendered for; `art`: the venue uses the picked artwork (Senso only until Kian confirms it).
 export function Welcome({ logo, name, tile, season, art = false }: { logo: Logo | null; name: BiText; tile?: boolean; season: Season; art?: boolean }) {
   const alt = name.en ?? '';
   const img = logo && <img src={logo.url} width={logo.width} height={logo.height} alt={alt} decoding="async" fetchPriority="high" className={tile ? undefined : 'welcome-logo'} />;
-  const engine = !!artScene(season, art);
+  const a = artScene(season, art);
   return (
     <div id="welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-greet" data-season={season}>
       <Scene season={season} art={art} />
       {/* The engine runs right after the scene, before the card is parsed: the particles are in the DOM before anything of the overlay is painted (negative delays start them mid-flight). */}
-      {engine && <script dangerouslySetInnerHTML={{ __html: engineScript }} />}
+      {a && <script dangerouslySetInnerHTML={{ __html: engineFor(a.kind) }} />}
       <div className="welcome-card">
         {logo ? (tile ? <span className="welcome-tile">{img}</span> : img) : <Bi as="p" text={name} className="welcome-name" />}
         {/* All three greetings are in the HTML, in both languages; CSS shows the one html[data-greet] names. */}

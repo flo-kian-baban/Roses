@@ -3,13 +3,13 @@
 // swaps it into the frame (src/app/admin/(app)/[venue]/_editor/Preview.tsx). Anyone who can edit the venue (the preview bar's season
 // switch is on every tab since 2026-10-09, staff included; the answer is the public page's own markup); nothing is saved.
 //   GET ?venue=<id>&season=<fall|winter|spring|summer> → { season, html: the scene's markup as the page renders it,
-//                                                          script: the artwork engine to run on it (Senso's fall and winter), else null }
+//                                                          script: the artwork engine to run on it (Senso's fall, winter and summer), else null }
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { jsonRoute, ApiError, str } from '@/lib/admin/api';
 import { canEditVenue } from '@/lib/admin/auth';
 import { getVenueRow } from '@/lib/admin/venue';
-import { Scene, engineScript, usesArtwork } from '@/components/Welcome';
+import { Scene, engineFor, usesArtwork } from '@/components/Welcome';
 import { artScene } from '@/components/welcome-art';
 import { SEASONS, type Season } from '@/lib/welcome';
 
@@ -21,5 +21,6 @@ export default jsonRoute(async ({ session, body }) => {
   if (!SEASONS.some((s) => s.id === season)) throw new ApiError(400, 'unknown season');
   const art = usesArtwork(venue.template);
   const html = renderToStaticMarkup(createElement(Scene, { season: season as Season, art }));
-  return { season, html, script: artScene(season as Season, art) ? engineScript : null };
+  const a = artScene(season as Season, art);
+  return { season, html, script: a ? engineFor(a.kind) : null };
 }, { get: true });

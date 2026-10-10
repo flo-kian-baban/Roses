@@ -259,7 +259,7 @@ try {
     const r = await run('node', ['scripts/season-drill.mjs', '--dist', DIST, '--copy', '.next-season', '--port', String(SEASON_PORT), '--out', path.join(out, 'season'), '--venues', pageVenues.join(','), '--jpeg'], { logFile: 'season/season-drill.log' });
     const m = (r.stdout.match(/SEASON DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
-    return { pass: r.status === 0, checks: drillChecks('season/season-drill.json', !!(m && m.length)), evidence: ['season/season-drill.txt', 'season/season-drill.json', 'season/season-server.log', 'season/*.jpg', 'season/senso-fall.webm and senso-winter.webm (on disk only)'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
+    return { pass: r.status === 0, checks: drillChecks('season/season-drill.json', !!(m && m.length)), evidence: ['season/season-drill.txt', 'season/season-drill.json', 'season/season-server.log', 'season/*.jpg', 'season/senso-fall.webm, senso-winter.webm and senso-summer.webm (on disk only)'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   }, 'season');
   // The menu after the tap (the PM, 2026-10-09): the overlay covers the menu, so Lighthouse's LCP measures the welcome screen; what the
   // customer waits for after the language tap is measured here, under throttled mobile conditions, and reported as measured.

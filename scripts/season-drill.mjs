@@ -11,11 +11,12 @@
 //     entry under server/route-cache: file times and the routeCacheLastModified stamp in its .meta, which Next's cache reads on a fresh
 //     server), the first request serves the previous render and starts the regeneration, the next one carries the new season; a
 //     control ages it by 3000 s and must not regenerate; the interval comes from the prerender manifest (initialRevalidateSeconds);
-//   Senso's artwork (Kian's picks): on the fall and winter servers, 20 particles of the picked designs at most 2 near, present and
+//   Senso's artwork (Kian's picks): on the fall, winter and summer servers (summer since 2026-10-10: the Persian sun with sparkles,
+//     motes and a few dandelion seeds, its own engine), 20 particles of the picked designs at most 2 near, present and
 //     mid-flight on the first sample (negative delays), transform and opacity only, no other season in the HTML; smoothness on the
 //     iPhone 13 viewport with CPU throttled 4×: 5 s of requestAnimationFrame, median ≥ 50 fps and no long task > 50 ms, reported as
 //     measured; randomness: two loads differ in designs and parameters; the reduced-motion still; recordings (webm, on disk only) and
-//     stills; the inline welcome code gzipped per season;
+//     stills; the inline welcome code gzipped per season, at most 15 KB on summer (the welcome drill checks the season of the day);
 //   Kebab Land and the default template: the served scene of every season and its symbols byte for byte as in the fixture captured
 //     from the previous commit (scripts/fixtures/welcome-scenes.json), and the stylesheet's motion rules verbatim;
 //   the guard (the PM, 2026-10-09): a server started with ROSES_NOW alone (no ROSES_CHECK_SUITE) renders the real current season in
@@ -168,14 +169,15 @@ const PROBE = () => {
   return { season: w ? w.dataset.season : null, engine: s ? s.dataset.engine : null, designs: s ? s.dataset.designs : null, particles: ps.length, near: ps.filter((p) => p.classList.contains('near')).length, still: s ? s.classList.contains('still') : null, styles: ps.map((p) => p.getAttribute('style')), used: [...new Set(ps.map((p) => (p.querySelector('use') || {}).getAttribute ? p.querySelector('use').getAttribute('href') : ''))], running: anims.filter((a) => a.playState === 'running').length, midFlight: anims.length > 0 && anims.every((a) => a.currentTime > 0), props, inView: ps.filter((p) => { const r = p.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth; }).length };
 };
 for (const v of venues.filter((x) => ART_VENUES.includes(x))) {
-  for (const season of ['fall', 'winter']) {
+  for (const season of ['fall', 'winter', 'summer']) {
     await restart(SEASON_INSTANT[season]);
     const html = (await waitFresh(v, season)).html;
     const ph = probeHtml(html);
     const overlay = html.slice(html.indexOf('<div id="welcome"'), html.indexOf('<main'));
     const head = (html.match(/<script[^>]*>\(function\(\)\{var h=document\.documentElement,l=null;[\s\S]*?<\/script>/) || [''])[0];
     const inlineGz = gz(overlay + head);
-    measure(`${v} ${season}: inline welcome code with the picked artwork ${(inlineGz / 1024).toFixed(1)} KB gzipped (${((overlay.length + head.length) / 1024).toFixed(1)} KB raw), symbols ${ph.symbols.filter((s) => /^[FW]\d+$/.test(s)).join(', ')}`);
+    measure(`${v} ${season}: inline welcome code with the picked artwork ${(inlineGz / 1024).toFixed(1)} KB gzipped (${((overlay.length + head.length) / 1024).toFixed(1)} KB raw), symbols ${ph.symbols.filter((s) => /^([FWD]\d+|U[a-z]+)$/.test(s)).join(', ')}`);
+    if (season === 'summer') check(`budget-${v}-summer`, inlineGz <= 15360, `${v} summer: inline welcome code with the sun, its sparkles, motes and seeds ${inlineGz} B gzipped (≤ 15 360; the welcome drill measures the season of the day)`);
     // first sample after navigation: the scene already full and every animation mid-flight; two loads differ
     const ctx = await browser.newContext(DEVICE); const page = await ctx.newPage();
     const errors = []; page.on('pageerror', (e) => errors.push(e.message));
@@ -184,8 +186,8 @@ for (const v of venues.filter((x) => ART_VENUES.includes(x))) {
     await sleep(600);
     const a = await page.evaluate(PROBE);
     const onlyTO = a.props.every((x) => x === 'transform' || x === 'opacity');
-    const picked = ph.designs[season] || [];
-    check(`artwork-${v}-${season}`, ph.scenes.join() === season && ph.engine[season] === (season === 'fall' ? 'leaves' : 'snow') && a.particles === 20 && a.near <= 2 && a.used.every((u) => picked.includes(u.slice(1))) && first.particles === 20 && first.midFlight && a.running > 0 && onlyTO && errors.length === 0, `${v} ${season} (server clock ${SEASON_INSTANT[season]}): the HTML carries the ${ph.scenes.join('+')} scene only (engine ${ph.engine[season]}, designs ${picked.join(', ')}); on the first frame that shows the card (${first.t} ms after navigation; the engine runs before the card is parsed) the scene already holds ${first.particles} particles with every one of its ${first.animations} animations mid-flight (${first.midFlight}; the earliest ${first.minCurrent} ms into its cycle); ${a.particles} particles (${a.near} near), designs used ${a.used.join(', ')}, ${a.running} animations on ${a.props.join(', ') || 'nothing'} (transform and opacity only: ${onlyTO}); page errors ${errors.length}`);
+    const picked = ph.designs[season] || [], fixed = season === 'summer' ? ['Uflames', 'Uspark', 'Umote'] : []; // summer: the sun, sparkles and motes are fixed parts of the scene, the seeds are picked
+    check(`artwork-${v}-${season}`, ph.scenes.join() === season && ph.engine[season] === { fall: 'leaves', winter: 'snow', summer: 'sun' }[season] && a.particles === 20 && a.near <= 2 && a.used.every((u) => picked.includes(u.slice(1)) || fixed.includes(u.slice(1))) && first.particles === 20 && first.midFlight && a.running > 0 && onlyTO && errors.length === 0, `${v} ${season} (server clock ${SEASON_INSTANT[season]}): the HTML carries the ${ph.scenes.join('+')} scene only (engine ${ph.engine[season]}, designs ${picked.join(', ')}); on the first frame that shows the card (${first.t} ms after navigation; the engine runs before the card is parsed) the scene already holds ${first.particles} particles with every one of its ${first.animations} animations mid-flight (${first.midFlight}; the earliest ${first.minCurrent} ms into its cycle); ${a.particles} particles (${a.near} near), designs used ${a.used.join(', ')}, ${a.running} animations on ${a.props.join(', ') || 'nothing'} (transform and opacity only: ${onlyTO}); page errors ${errors.length}`);
     const page2 = await ctx.newPage(); await page2.goto(`${base}/${v}`, { waitUntil: 'load' }); await sleep(300);
     const b = await page2.evaluate(PROBE);
     const sameStyles = a.styles.filter((s, i) => s === b.styles[i]).length;

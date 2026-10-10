@@ -103,6 +103,10 @@ const LEAVES = '#e0782f', SNOW_INK = '#7f98b5', BLOSSOM = '#f2a0b4', LIGHT = '#f
 // gradient from the tip (`tip`) through the blade (`mid`) to the stem end (`base`), the shadow side (`dark`), the veins (`vein`),
 // the pale underside and fold of a curled edge (`under`, `fold`), the petiole (`stem`), and a turning patch where the species has one.
 // The brown spots are shared. Snow is drawn in the "Winter snow" token (currentColor) with white plates (WHITE).
+// Summer (Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: S5 the Persian sun, mixed lightly with S1's dandelion
+// seeds): the sun's disc gradient (`disc` light → `disc2` → `disc3` at the rim), its outer ring, dotted inner ring and shine, the
+// straight rays with their light centre lines, the flame rays, the sparkles (`spark` with a `sparkCore`) and the motes of light;
+// the seed's pappus filaments and barbs, its beak, the seed body's gradient (`achene` dark → `achene2` light) and its ridges.
 export const ARTWORK = {
   spot: '#5a2d0c',
   maple: { tip: '#f4b43e', mid: '#ec7a2c', base: '#c43a1c', dark: '#7a1e0c', vein: '#8c2714', under: '#f6c58a', fold: '#8a2a12', stem: '#8c3a1c' },
@@ -110,6 +114,8 @@ export const ARTWORK = {
   aspen: { tip: '#fbd54a', mid: '#f3b92a', base: '#e89a22', dark: '#9a4a0a', vein: '#a8720f', stem: '#a06a16', blush: '#f28a2c', blushEdge: '#e8702a' },
   sweetgum: { tip: '#ef8a2a', mid: '#d8402c', base: '#7c1a3a', dark: '#3a0410', vein: '#4a0a1a', stem: '#5a1a22' },
   beech: { tip: '#d99a3c', mid: '#c27a2a', base: '#9a5a1e', dark: '#4a2208', vein: '#5a2e0a', under: '#e8c08a', fold: '#5a2e0a', stem: '#6b3a12' },
+  sun: { disc: '#ffe08a', disc2: '#f6bf45', disc3: '#e9a531', ring: '#d99a2b', dots: '#fff3cf', rays: '#e9a93a', rayLine: '#fbe3a0', flames: '#f2c14e', spark: '#e2a334', sparkCore: '#fff6d6', mote: '#e8b552', moteCore: '#fff4cf' },
+  seed: { filament: '#968a75', barb: '#a89c86', beak: '#b8aa8e', achene: '#5d432c', achene2: '#a07c55', ridge: '#4e3825' },
   white: WHITE, black: BLACK,
 } as const;
 
@@ -124,10 +130,11 @@ export const TEMPLATE_COLORS: Record<string, TemplateColors> = {
   // remembered button, its site orange as leaves and its price yellow as light; both get Auto snow. The two screens never look alike.
   // Senso's fall leaves are the picked artwork with its own palette (ARTWORK; the PM, 2026-10-09), so its Welcome group has no
   // "Fall leaves" tint; the tint stays on the templates that keep the tinted leaves (Kebab Land until its own artwork, the default template).
+  // Likewise its summer is the picked Persian sun with its own palette (Kian, 2026-10-10), so no "Summer light" tint either.
   senso: {
-    omit: ['page.subtext', 'header.tile', 'header.title', 'welcome.leaves'],
+    omit: ['page.subtext', 'header.tile', 'header.title', 'welcome.leaves', 'welcome.light'],
     bases: (b) => ({ 'page.bg': WHITE, 'sheet.dim': BLACK, 'welcome.bg': brandHex(b, 'background', '#fff8ee') }),
-    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', '#042c7c'); const gold = brandHex(b, 'gold', '#cc9434'); return { 'footer.phone': accent, 'welcome.activeBg': accent, 'welcome.light': gold, 'welcome.blossoms': brandHex(b, 'siteLink', BLOSSOM) }; },
+    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', '#042c7c'); return { 'footer.phone': accent, 'welcome.activeBg': accent, 'welcome.blossoms': brandHex(b, 'siteLink', BLOSSOM) }; },
   },
   'kebab-land': {
     omit: ['page.subtext', 'header.title'],

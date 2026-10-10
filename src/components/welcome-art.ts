@@ -10,6 +10,7 @@
 // species has one, veins, a petiole, on three of them a curled edge (the pale underside, the fold's shadow) and on three a few
 // brown spots. A snowflake: one arm reused six times around a centre plate (six-fold symmetry by construction, round caps and
 // joins), drawn in currentColor so the venue's "Winter snow" token colours it; W10 is a soft round flake for depth.
+// Summer (Kian's pick of 2026-10-10): the Persian sun with sparkles and motes of light, and a few dandelion seeds (see below).
 // Colours: the named artwork palette in src/venues/tokens.ts (the PM, 2026-10-09: the only public file with colour literals; this
 // file holds none). Styling inside a symbol is by presentation attributes only: a stylesheet class never reaches the content a
 // <use> clones. Jitter comes from a fixed seed, so every build renders the same leaf.
@@ -18,7 +19,7 @@ import type { Season } from '@/lib/welcome';
 
 export const ARTWORK_TEMPLATES = ['senso'];
 export const usesArtwork = (template: string | null | undefined): boolean => ARTWORK_TEMPLATES.includes(template ?? '');
-export type ArtScene = { kind: 'leaves' | 'snow'; designs: string[]; defs: string };
+export type ArtScene = { kind: 'leaves' | 'snow' | 'sun'; designs: string[]; defs: string };
 
 type Pt = { x: number; y: number; c?: boolean };
 const f = (n: number) => String(Math.round(n * 10) / 10);
@@ -182,9 +183,54 @@ const W7 = () => flake('W7', '<path d="M32 32V6M32 14l-3.5-2M32 14l3.5-2"/><path
 // W10 soft round flake with a bright core: its gradient reads its colour from its own element, the Winter snow token
 const W10 = () => rad('W10g', [[0, ARTWORK.white, 1], [0.3, 'currentColor', 0.9], [0.7, 'currentColor', 0.35], [1, 'currentColor', 0]], 0.5, 0.5, 0.5, 'color:var(--c-welcome-snow)') + '<symbol id="W10" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="url(#W10g)"/></symbol>';
 
+// ---- summer (Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: S5 the Persian sun as the main scene, mixed with
+// S1's dandelion seeds, lighter) ----
+// The sun, after the khorshid of Persian tiles (no face), in three layers so each can turn at its own speed (200 × 200): the disc
+// (a crisp gradient, a fine outer ring, a dotted inner ring, a shine), twelve straight tapered rays with light centre lines, and
+// twelve flame rays between them (a centre line waving across the radius, tapering to a point). A four-point sparkle with a light
+// core and a mote of light (24 × 24). No blur and no glow anywhere.
+const SUN = ARTWORK.sun;
+const sunDisc = () => rad('Udg', [[0, SUN.disc], [0.7, SUN.disc2], [1, SUN.disc3]], 0.42, 0.4, 0.62) + `<symbol id="Udisc" viewBox="0 0 200 200"><circle cx="100" cy="100" r="40" fill="url(#Udg)"/><circle cx="100" cy="100" r="44" fill="none" stroke="${SUN.ring}" stroke-width="1.6"/><circle cx="100" cy="100" r="34" fill="none" stroke="${SUN.dots}" stroke-width="1.2" stroke-dasharray="1.5 4.8" stroke-linecap="round"/><path d="M74 84A30 30 0 0 1 96 70" fill="none" stroke="${ARTWORK.white}" stroke-width="3" stroke-linecap="round" stroke-opacity=".45"/></symbol>`;
+const sunRays = () => {
+  let rays = '', lines = '';
+  for (let i = 0; i < 12; i++) { const a = i * 30, b0 = pol(100, 100, a - 4.2, 50), tip = pol(100, 100, a, 96), b1 = pol(100, 100, a + 4.2, 50), l0 = pol(100, 100, a, 54), l1 = pol(100, 100, a, 88); rays += `M${f(b0.x)} ${f(b0.y)}L${f(tip.x)} ${f(tip.y)}L${f(b1.x)} ${f(b1.y)}Z`; lines += `M${f(l0.x)} ${f(l0.y)}L${f(l1.x)} ${f(l1.y)}`; }
+  return `<symbol id="Urays" viewBox="0 0 200 200"><path d="${rays}" fill="${SUN.rays}"/><path d="${lines}" stroke="${SUN.rayLine}" stroke-width="1" stroke-linecap="round"/></symbol>`;
+};
+const sunFlames = () => {
+  let d = '';
+  for (let i = 0; i < 12; i++) {
+    const a = i * 30 + 15, L: Pt[] = [], R: Pt[] = [];
+    for (let k = 0; k <= 12; k++) { const t = k / 12, wav = a + 5.5 * Math.sin(t * Math.PI * 2.2), c = pol(100, 100, wav, 49 + 34 * t), n = pol(0, 0, wav + 90, 1), w = 3.6 * Math.pow(1 - t, 0.9) + 0.2; L.push({ x: c.x + n.x * w, y: c.y + n.y * w }); R.push({ x: c.x - n.x * w, y: c.y - n.y * w }); }
+    d += 'M' + [...L, ...R.reverse()].map((p) => `${f(p.x)} ${f(p.y)}`).join('L') + 'Z';
+  }
+  return `<symbol id="Uflames" viewBox="0 0 200 200"><path d="${d}" fill="${SUN.flames}" stroke="${SUN.flames}" stroke-width=".6" stroke-linejoin="round"/></symbol>`;
+};
+const spark = () => `<symbol id="Uspark" viewBox="0 0 24 24"><path d="M12 1.5C12.6 8.5 15.5 11.4 22.5 12 15.5 12.6 12.6 15.5 12 22.5 11.4 15.5 8.5 12.6 1.5 12 8.5 11.4 11.4 8.5 12 1.5Z" fill="${SUN.spark}"/><path d="M12 6.5C12.3 10.2 13.8 11.7 17.5 12 13.8 12.3 12.3 13.8 12 17.5 11.7 13.8 10.2 12.3 6.5 12 10.2 11.7 11.7 10.2 12 6.5Z" fill="${SUN.sparkCore}"/></symbol>`;
+const mote = () => `<symbol id="Umote" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="${SUN.mote}"/><circle cx="10.5" cy="10.5" r="1.6" fill="${SUN.moteCore}"/></symbol>`;
+// A dandelion seed (قاصدک, the bringer of good news; 64 × 64): the seed body with its ridges, the beak, and the pappus: fine filaments
+// radiating like an umbrella from the beak's tip, the outer ones drooping, each with tiny barbs on its outer half. D2 has lost a few
+// filaments on one side; D3 is young and compact.
+const qAt = (a: Pt, c: Pt, e: Pt, t: number): Pt => { const u = 1 - t; return { x: u * u * a.x + 2 * u * t * c.x + t * t * e.x, y: u * u * a.y + 2 * u * t * c.y + t * t * e.y }; };
+const qDir = (a: Pt, c: Pt, e: Pt, t: number) => { const dx = 2 * (1 - t) * (c.x - a.x) + 2 * t * (e.x - c.x), dy = 2 * (1 - t) * (c.y - a.y) + 2 * t * (e.y - c.y); return (Math.atan2(dx, -dy) * 180) / Math.PI; };
+function dandelion(id: string, seed: number, { n, spread, len, tilt = 0, gap = null, lean = 0 }: { n: number; spread: number; len: [number, number]; tilt?: number; gap?: [number, number] | null; lean?: number }): string {
+  const r = rng(seed), k = ARTWORK.seed, A = { x: 32 + lean, y: 19 }, fil: string[] = [], barbs: string[] = [];
+  for (let i = 0; i < n; i++) {
+    const a = -spread / 2 + (spread * i) / (n - 1) + (r() - 0.5) * 7 + tilt;
+    if (gap && a > gap[0] && a < gap[1]) continue;
+    const L = len[0] + r() * (len[1] - len[0]), e = pol(A.x, A.y, a, L), c = pol(A.x, A.y, a * 0.72, L * 0.52);
+    e.y += Math.max(0, Math.abs(a) - 52) * 0.07;
+    fil.push(`M${f(A.x)} ${f(A.y)}Q${f(c.x)} ${f(c.y)} ${f(e.x)} ${f(e.y)}`);
+    for (let j = 0; j < 3; j++) { const t = 0.56 + j * 0.14, p = qAt(A, c, e, t), dir = qDir(A, c, e, t); for (const s of [-1, 1]) { const b = pol(p.x, p.y, dir + s * 30, 1.4 + r() * 1.1); barbs.push(`M${f(p.x)} ${f(p.y)}L${f(b.x)} ${f(b.y)}`); } }
+  }
+  const bc = { x: 32 + lean * 0.4 + (r() - 0.5) * 2, y: 32 };
+  return lin(`${id}a`, [[0, k.achene], [0.5, k.achene2], [1, k.achene]], 0, 0, 1, 0) + `<symbol id="${id}" viewBox="0 0 64 64"><path d="M32 45Q${f(bc.x)} ${f(bc.y)} ${f(A.x)} ${f(A.y + 1)}" fill="none" stroke="${k.beak}" stroke-width=".7" stroke-linecap="round"/><path d="M32 44.2C33.4 47.4 33.5 52.2 32 58C30.5 52.2 30.6 47.4 32 44.2Z" fill="url(#${id}a)"/><path d="M31.4 47.5 32 50.5 32.6 47.5M31.3 51.5 32 54.5 32.7 51.5" fill="none" stroke="${k.ridge}" stroke-width=".35" stroke-opacity=".55"/><path d="${fil.join('')}" fill="none" stroke="${k.filament}" stroke-width=".45" stroke-linecap="round" stroke-opacity=".9"/><path d="${barbs.join('')}" fill="none" stroke="${k.barb}" stroke-width=".3" stroke-linecap="round" stroke-opacity=".75"/><circle cx="${f(A.x)}" cy="${f(A.y)}" r=".9" fill="${k.filament}"/></symbol>`;
+}
+
 // Built once per process; the markup is the same on every build (fixed seeds).
+// `designs`: the designs the engine picks from at random (summer: the seeds; the sun, sparkles and motes are fixed parts of its scene).
 export const ART_SCENES: Partial<Record<Season, ArtScene>> = {
   fall: { kind: 'leaves', designs: ['F1', 'F2', 'F4', 'F8', 'F9'], defs: SHARED + sugarMaple() + redOak() + aspen() + sweetgum() + beech() },
   winter: { kind: 'snow', designs: ['W1', 'W3', 'W5', 'W7', 'W10'], defs: W1() + W3() + W5() + W7() + W10() },
+  summer: { kind: 'sun', designs: ['D1', 'D2', 'D3'], defs: sunDisc() + sunRays() + sunFlames() + spark() + mote() + dandelion('D1', 3, { n: 19, spread: 158, len: [15, 18.5] }) + dandelion('D2', 5, { n: 17, spread: 150, len: [14, 18], tilt: 10, gap: [28, 52], lean: 1.5 }) + dandelion('D3', 9, { n: 23, spread: 140, len: [12, 15] }) },
 };
 export const artScene = (season: Season, art: boolean): ArtScene | undefined => (art ? ART_SCENES[season] : undefined);

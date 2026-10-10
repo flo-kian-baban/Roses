@@ -89,8 +89,11 @@ const MEASURE = ({ min, SEL }) => {
     if (!hit(cx, cy)) { rows.push({ ...row, status: 'covered', coveredBy: describe(document.elementFromPoint(cx, cy)), tapW: null, tapH: null }); continue; }
     // whole pixels that still land on the element, counted from the centre outwards along one direction (capped at 80)
     const reach = (dx, dy) => { let k = 0; while (k < 80 && hit(cx + dx * (k + 1), cy + dy * (k + 1))) k++; return k; };
-    const w = reach(-1, 0) + reach(1, 0) + 1, h = reach(0, -1) + reach(0, 1) + 1;
-    rows.push({ ...row, tapW: w, tapH: h, status: w >= min && h >= min ? 'ok' : 'UNDER' });
+    const l = reach(-1, 0), rt = reach(1, 0), up = reach(0, -1), dn = reach(0, 1);
+    const w = l + rt + 1, h = up + dn + 1;
+    // under 44: what the finger meets just past each edge, so a failure explains itself
+    const past = w >= min && h >= min ? null : { left: describe(document.elementFromPoint(cx - l - 1, cy)), right: describe(document.elementFromPoint(cx + rt + 1, cy)), above: describe(document.elementFromPoint(cx, cy - up - 1)), below: describe(document.elementFromPoint(cx, cy + dn + 1)), rect: `${r.left.toFixed(2)},${r.top.toFixed(2)} ${r.width.toFixed(2)}×${r.height.toFixed(2)}` };
+    rows.push({ ...row, tapW: w, tapH: h, status: w >= min && h >= min ? 'ok' : 'UNDER', ...(past ? { past } : {}) });
     T.seen.add(el);
   }
   return rows;
@@ -186,7 +189,7 @@ const exempt = all.filter((r) => r.status === 'exempt');
 const coveredOnly = [...lastStatus.values()].filter((r) => r.status === 'covered' && !measured.some((m) => m.viewport === r.viewport && m.id === r.id));
 for (const vp of VIEWPORTS) {
   const m = measured.filter((r) => r.viewport === vp.id), u = under.filter((r) => r.viewport === vp.id);
-  check(`touch-${vp.id}`, m.length > 0 && u.length === 0, `${vp.label}: ${m.length} interactive elements measured on ${screens.filter((s) => s.viewport === vp.id && s.reached).length} screens, ${u.length} with a tap area under ${MIN} × ${MIN}${u.length ? `: ${u.map((x) => `${x.screen}: ${x.tag}${x.role ? `[${x.role}]` : ''} "${x.label}" ${x.tapW}×${x.tapH} (box ${x.box})`).join('; ')}` : ''}; ${exempt.filter((r) => r.viewport === vp.id).length} inline text links exempt; ${coveredOnly.filter((r) => r.viewport === vp.id).length} covered on every screen they appeared on (listed)`);
+  check(`touch-${vp.id}`, m.length > 0 && u.length === 0, `${vp.label}: ${m.length} interactive elements measured on ${screens.filter((s) => s.viewport === vp.id && s.reached).length} screens, ${u.length} with a tap area under ${MIN} × ${MIN}${u.length ? `: ${u.map((x) => `${x.screen}: ${x.tag}${x.role ? `[${x.role}]` : ''} "${x.label}" ${x.tapW}×${x.tapH} (box ${x.box}; at ${x.past?.rect}: above ${x.past?.above}, below ${x.past?.below}, left ${x.past?.left}, right ${x.past?.right})`).join('; ')}` : ''}; ${exempt.filter((r) => r.viewport === vp.id).length} inline text links exempt; ${coveredOnly.filter((r) => r.viewport === vp.id).length} covered on every screen they appeared on (listed)`);
   measure(`touch targets, ${vp.label}: ${m.length} measured, ${u.length} under ${MIN} × ${MIN}, smallest tap area ${m.length ? `${Math.min(...m.map((x) => x.tapW))} px wide, ${Math.min(...m.map((x) => x.tapH))} px tall` : '—'}; ${exempt.filter((r) => r.viewport === vp.id).length} inline links exempt`);
 }
 check('touch-toast-undo', undone.length === VIEWPORTS.length && undone.every((u) => u.was && u.back === u.was), `the price changed for the toast is back after Undo: ${undone.map((u) => `${u.viewport} ${u.was} → ${u.back}`).join('; ')}`);
@@ -194,7 +197,7 @@ const missing = screens.filter((s) => !s.reached);
 check('touch-screens', missing.length === 0, `${screens.length - missing.length} of ${screens.length} screens reached (${VIEWPORTS.length} viewports × ${screens.length / VIEWPORTS.length})${missing.length ? `; not reached: ${missing.map((s) => `${s.viewport} ${s.screen} (${s.error})`).join('; ')}` : ''}`);
 await browser.close();
 const pass = results.every((r) => r.ok);
-const line = (r) => `  ${r.status === 'UNDER' ? 'UNDER ' : r.status === 'ok' ? 'ok    ' : r.status === 'exempt' ? 'exempt' : 'covered'} ${r.tapW != null ? `${r.tapW}×${r.tapH}`.padEnd(9) : ''.padEnd(9)} ${r.tag}${r.role ? `[${r.role}]` : ''}${r.type && r.tag === 'input' ? `[${r.type}]` : ''} "${r.label}" (box ${r.box}${r.via ? ', tapped through its label' : ''}${r.coveredBy ? `, covered by ${r.coveredBy}` : ''})`;
+const line = (r) => `  ${r.status === 'UNDER' ? 'UNDER ' : r.status === 'ok' ? 'ok    ' : r.status === 'exempt' ? 'exempt' : 'covered'} ${r.tapW != null ? `${r.tapW}×${r.tapH}`.padEnd(9) : ''.padEnd(9)} ${r.tag}${r.role ? `[${r.role}]` : ''}${r.type && r.tag === 'input' ? `[${r.type}]` : ''} "${r.label}" (box ${r.box}${r.via ? ', tapped through its label' : ''}${r.coveredBy ? `, covered by ${r.coveredBy}` : ''}${r.past ? `; at ${r.past.rect}, just past its edges: above ${r.past.above}, below ${r.past.below}, left ${r.past.left}, right ${r.past.right}` : ''})`;
 await fs.writeFile(path.join(out, 'touch-drill.json'), JSON.stringify({ base, at: new Date().toISOString(), min: MIN, pass, results, measures, viewports: VIEWPORTS.map((v) => ({ id: v.id, label: v.label })), screens, transcript }, null, 2));
 await fs.writeFile(path.join(out, 'touch-drill.txt'), [
   `Touch-target drill ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length} checks): every visible interactive element of the admin on a phone, its tap area (hit-tested from its centre) against ${MIN} × ${MIN} CSS px; inline text links exempt.`, '',

@@ -152,6 +152,10 @@ If you see a material problem with this stack for these requirements, raise it u
 - Bug fixed on the way: in the phone Style sheet, a tap on a chip of the bar stepped the sheet instead of pressing the chip (the sheet's header captured the pointer for dragging); the header now leaves taps on its controls to them, and drags from the handle or its empty space.
 - Acceptance in `npm run check`: the preview drill (the bar in the Style tab only: at its top and in view after scrolling on the laptop, in the sheet on the phone, none on the Menu tab or in its phone preview; the 4-tap task from the Menu tab; every switch ≤ 300 ms on both; the frame kept across tabs with the Style tab's screen back on return; the section list and the item popup open again after a save in the Style tab); the Style drill (Compare from the bar at the top of the tab; a colour's own reset refused, then passing, through the guard; Discard unchanged). No public markup, data-model or dependency change.
 
+## Summer welcome scene (Kian, 2026-10-10, candidates built, awaiting his pick)
+
+- Kian does not like the summer scene of 2026-10-09 (the soft blurred light) and likes the other seasons. Six candidates for Senso, each a whole scene live behind a replica of the welcome card, are in `reports/welcome/summer-gallery.html` (built by `reports/welcome/summer/build.mjs` from `art.mjs`): S1 dandelion seeds, S2 butterflies, S3 summer fruit, S4 sparkling lemonade, S5 Persian sun, S6 rose petals; same rules as the fall and winter artwork (original geometry, ≤ 20 elements, random per load, transform and opacity only, no blur). Nothing public changes until he picks; then the pick is built like the fall and winter artwork (Senso first; Kebab Land and the default template after he confirms Senso's).
+
 ## Milestone 1 rules (Kian and the PM, 2026-10-07)
 
 - Separate templates per venue; the pages must not look alike.

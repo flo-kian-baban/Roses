@@ -143,3 +143,18 @@ The served scene of every season (fall 18 particles with wl1, wl2, wl3; winter 2
 ### Existing checks on every venue (the same run)
 
 Tap → menu visible: senso 213 ms (English) / 232 ms (Persian), kebab-land 227 / 216 ms (target ≤ 300). Lighthouse mobile ×3: LCP 1203 / 1203 / 1204 ms (senso), 1204 / 1204 / 1204 ms (kebab-land), 1055 / 1055 / 1055 ms (the temporary venue), TBT 0 throughout; the LCP element is the welcome logo, so these measure the welcome screen. Reduced motion still, JavaScript off showing the menu directly, the kill switch (off → menu after 5 ms, on → back after 5 ms; 5 inline script tags on senso with the engine, 4 elsewhere), the Style tab's season switch through `/api/admin/welcome-scene` (Winter → 20 flakes in the preview, nothing saved, Now → the page's own season) all pass. The after-tap step keeps its known miss on senso (photos over Slow 4G: the 4 photos in view 8010 / 8277 ms as a List, 4778 / 4862 ms as a Grid; the menu itself 244 / 245 ms; kebab-land within target), unchanged by this batch and reported as measured, as the PM asked. The suite ran on ports 3110–3112 (`CHECK_PORT=3110`) because port 3100 was taken by another project's server.
+
+## Summer candidates for Senso (Kian, 2026-10-10: the summer scene of 2026-10-09, soft blurred light, is not liked; the other seasons are)
+
+`summer-gallery.html` (our tool, one self-contained file; rebuilt by `node reports/welcome/summer/build.mjs` from `summer/art.mjs`) runs six whole-scene ideas live behind a replica of Senso's welcome card at iPhone 13 size, each with **Replay** (a new random scene) and **Still** (the reduced-motion composition), and each concept's designs shown large:
+
+| No. | Idea | Designs | Motion | Artwork gzipped |
+| --- | --- | --- | --- | --- |
+| S1 | Dandelion seeds (قاصدک, the bringer of good news) | 3 seeds (full, lopsided, young) | across from the left on a breeze, bobbing and tilting; 18 in three depths | 2.9 KB |
+| S2 | Butterflies | monarch, tiger swallowtail, spring azure, painted lady | 6 on wandering paths, wings flapping in 3D about the body with an uneven beat | 2.0 KB |
+| S3 | Summer fruit | orange, lemon, lime wheels, cherries (گیلاس), strawberry, watermelon wedge (هندوانه), mint | the fall leaves' motion: down, pendulum sway, 3D tumble; 20 | 4.3 KB |
+| S4 | Sparkling lemonade | 3 bubble designs, lemon wheel, mint | rising with a wobble and a slight squash; lemon and mint tumbling up among them; 18 | 2.1 KB |
+| S5 | Persian sun (خورشید) | disc, straight rays, flame rays (no face), sparkle, mote | the two rings of rays turning slowly in opposite directions, the flames breathing; 12 sparkles twinkling, 6 motes rising | 2.1 KB |
+| S6 | Rose petals (for the Roses name) | red, pink and blush petals, two curled | the fall leaves' motion, slower; 20 | 2.4 KB |
+
+Same rules as fall and winter: original drawings built from geometry (no stock or traced art), at most 20 moving elements, random per load and full on the first frame, transform and opacity only, no blur. Rendered headlessly before handing over (six live frames, six stills, every design tile, no script error). Senso only; Kebab Land and the default template keep their summer until Kian confirms Senso's. Nothing on the customers' pages changes until he picks.

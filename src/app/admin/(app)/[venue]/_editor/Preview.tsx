@@ -4,8 +4,8 @@
 // just edited, outlined) are set while it is still hidden, then it is faded in. No flash, no jump. The customers' page carries
 // no preview code: everything here is attached by the admin after the frame loads.
 // The view (Kian, 2026-10-09, the preview control bar; src/app/admin/(app)/[venue]/_editor/view.ts) is owned by the editor and
-// flows to both previews: the screen (Welcome: the overlay shown live with its scene running; Menu; Item popup: the first item's
-// or the open item's popup; Section list), the language, the season (another season's scene is fetched from the admin API and
+// flows to both previews; the bar itself sits in the Style tab (Kian, 2026-10-10), not here. The screen (Welcome: the overlay shown
+// live with its scene running; Menu; Item popup: the first item's popup; Section list), the language, the season (another season's scene is fetched from the admin API and
 // swapped into the frame, since the customers' page carries only the current season) and the time of day (the greeting), each
 // preview-only, plus Replay. After a save the fresh frame is put back on the same screen and position before it is shown.
 // Style tab (Kian, 2026-10-08): the open group's region is outlined in the frame (the `region` prop, owned by the editor; a new
@@ -16,8 +16,7 @@ import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, us
 import type { GroupId } from '@/venues/tokens';
 import { slotOf, type Season, type Slot } from '@/lib/welcome';
 import { Icon } from '../../../_ui/icons';
-import { PreviewBar, type Compare } from './PreviewBar';
-import type { PageNow, View, ViewPatch } from './view';
+import type { PageNow, View } from './view';
 
 export type Focus = { id: string; alt?: string | null } | null;
 export type Region = GroupId;
@@ -32,10 +31,10 @@ export type PreviewHandle = { setVars: (vars: Record<string, string> | null) => 
 const W = 440, H = 956, RAIL = 5, BEZEL = 13, STATUS = 54, EDGE = RAIL + BEZEL, BTN = 4;
 
 type Props = {
-  venueId: string; reloadKey: number; focus: Focus; view: View; onView: (p: ViewPatch) => void; onNow: (now: PageNow) => void; now: PageNow;
-  frame: boolean; bar?: boolean; onClose?: () => void; onPick?: (p: Pick) => void; styleMode?: boolean; region?: RegionState; compare?: Compare;
+  venueId: string; reloadKey: number; focus: Focus; view: View; onNow: (now: PageNow) => void;
+  frame: boolean; onClose?: () => void; onPick?: (p: Pick) => void; styleMode?: boolean; region?: RegionState;
 };
-export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venueId, reloadKey, focus, view, onView, onNow, now, frame, bar = true, onClose, onPick, styleMode = false, region = NO_REGION, compare = null }, handle) {
+export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venueId, reloadKey, focus, view, onNow, frame, onClose, onPick, styleMode = false, region = NO_REGION }, handle) {
   const refA = useRef<HTMLIFrameElement>(null), refB = useRef<HTMLIFrameElement>(null);
   const frames = [refA, refB];
   const [active, setActive] = useState<0 | 1 | null>(null);
@@ -57,7 +56,7 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
     setVars: (vars) => { varsRef.current = vars; const d = activeDoc(); if (d) applyVars(d, vars); },
   }));
   // The view, applied to the loaded frame as it changes (each part on its own, so a season switch never re-opens a popup).
-  useEffect(() => { const d = activeDoc(); if (d) applyScreen(d, view); }, [view.screen, view.item]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const d = activeDoc(); if (d) applyScreen(d, view); }, [view.screen]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (!view.replay) return; const d = activeDoc(); if (d) replayWelcome(d); }, [view.replay]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { const d = activeDoc(); if (d) applyLang(d, view.lang); }, [view.lang]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { const d = activeDoc(); if (d) applyGreet(d, view.slot); }, [view.slot]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -117,8 +116,7 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
       className={`absolute inset-0 h-full w-full border-0 bg-white transition-opacity duration-200 ${active === slot ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
       data-preview-frame={active === slot ? venueId : undefined} data-preview-slot={slot} />
   ));
-  const status = <span className="shrink-0 text-[11px] font-medium text-ink-muted" aria-live="polite" data-preview-status>{onPick ? (styleMode ? 'Tap a part of the page to colour it' : 'Tap anything to edit it') : 'Customers see'}{loading && <span className="text-neutral-400"> · updating…</span>}</span>;
-  const controls = bar ? <PreviewBar view={view} onView={onView} now={now} compare={compare} status={status} phone={!frame} /> : null;
+  const status = <span className="text-[13px] font-medium text-ink-muted" aria-live="polite" data-preview-status>{onPick ? (styleMode ? 'Tap a part of the page to colour it' : 'Tap anything to edit it') : 'Customers see'}{loading && <span className="text-neutral-400"> · updating…</span>}</span>;
 
   if (!frame) {
     return (
@@ -126,17 +124,16 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
         {onClose && (
           <div className="glass flex h-11 shrink-0 items-center gap-2 px-2 shadow-[inset_0_-1px_0_var(--color-line)]">
             <button type="button" onClick={onClose} className="flex h-11 items-center gap-1 rounded-full px-2.5 text-[15px] font-semibold"><Icon name="back" className="h-5 w-5" />Edit</button>
-            <span className="flex-1 text-center text-[13px] font-medium text-ink-muted">Preview</span>
+            <span className="flex-1 text-center">{status}</span>
           </div>
         )}
-        {controls && <div className="shrink-0 border-b border-line">{controls}</div>}
         <div className="relative min-h-0 flex-1" data-preview-area>{iframes}</div>
       </div>
     );
   }
   return (
     <div className="flex h-full flex-col items-center">
-      {controls}
+      <div className="flex h-11 w-full shrink-0 items-center justify-center border-b border-line px-4"><div className="w-full max-w-[440px]">{status}</div></div>
       <div ref={box} className="flex min-h-0 w-full flex-1 items-start justify-center p-4">
         <div style={{ width: outerW * scale, height: outerH * scale }}>
           <div className="iphone" style={{ width: W, height: H, padding: EDGE, margin: `0 ${BTN}px`, transform: `scale(${scale})`, transformOrigin: 'top left' }} aria-label="iPhone 17 Pro Max preview">
@@ -174,8 +171,7 @@ function applyGreet(d: Document, slot: Slot | null) {
 }
 // The page's own handlers must not see a click the admin makes inside the frame (opening the popup or the list for a screen).
 function synthetic(d: Document, fn: () => void) { const h = d.documentElement; h.dataset.rosesSynthetic = '1'; try { fn(); } finally { delete h.dataset.rosesSynthetic; } }
-// The screen: the welcome overlay shown or not, the item popup (the asked item, else the first on the page) and the section list
-// open or closed. Closing uses the dialogs' close() (instant; the customers' slide-out is for them).
+// The screen: the welcome overlay shown or not, the item popup (the first item on the page) and the section list open or closed. Closing uses the dialogs' close() (instant; the customers' slide-out is for them).
 function applyScreen(d: Document, v: View) {
   previewStyle(d);
   const h = d.documentElement;
@@ -184,7 +180,7 @@ function applyScreen(d: Document, v: View) {
   if (v.screen !== 'sheet' && sheet?.open) synthetic(d, () => sheet.close());
   if (v.screen !== 'list' && list?.open) synthetic(d, () => list.close());
   if (v.screen === 'sheet' && sheet) {
-    const li = ((v.item && d.querySelector(`li.item[data-id="${v.item}"]`)) || d.querySelector('li.item')) as HTMLElement | null;
+    const li = d.querySelector('li.item') as HTMLElement | null;
     if (li && (!sheet.open || h.dataset.rosesSheetItem !== li.dataset.id)) { synthetic(d, () => li.click()); h.dataset.rosesSheetItem = li.dataset.id ?? ''; }
   }
   if (v.screen === 'list' && list && !list.open) { const btn = d.getElementById('tabs-list'); if (btn) synthetic(d, () => btn.click()); }

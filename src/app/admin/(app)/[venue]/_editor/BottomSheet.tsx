@@ -3,7 +3,9 @@
 // the controls live inside. Collapsed shows the handle and the header (the preview control bar); half leaves at least 45 % of the
 // viewport to the preview (its height is computed from that: 55 % of the viewport less the space above the preview); full covers
 // the preview. While a colour is being edited the sheet is capped at half (`max`), so the live colour stays in view. Drag the handle
-// (or the header) to the nearest detent, or tap the handle to step to the next one. Transform and opacity are not needed: the
+// (or the header's empty space) to the nearest detent, or tap the handle to step to the next one. A tap on a control in the header
+// (the preview bar's chips) belongs to that control: the header no longer captures it, which had made such a tap step the sheet
+// instead (found 2026-10-10, when the bar became the Style tab's only one). Transform and opacity are not needed: the
 // height animates, 200 ms, none under reduced motion. Touch target (the PM, 2026-10-09): the handle looks 20 px tall and its tap area reaches
 // 24 px above the sheet's edge (over the bottom of the preview, which stays visible), so it meets the finger over 44 px without making the
 // header taller: on a small phone every pixel of the header comes out of the controls' room at half.
@@ -28,7 +30,7 @@ export function BottomSheet({ detent, onDetent, max = 'full', top, header, child
   useEffect(() => { if (!allowed.includes(detent)) onDetent(max); }, [max]); // eslint-disable-line react-hooks/exhaustive-deps
   const height = dragging ?? heights[allowed.includes(detent) ? detent : max];
   const nearest = (h: number) => allowed.reduce((a, b) => (Math.abs(heights[b] - h) < Math.abs(heights[a] - h) ? b : a));
-  const onPointerDown = (e: React.PointerEvent) => { drag.current = { y0: e.clientY, h0: height, moved: false }; (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); };
+  const onPointerDown = (e: React.PointerEvent) => { if ((e.target as Element).closest('button:not([data-style-sheet-handle]), a, input, select, label')) return; drag.current = { y0: e.clientY, h0: height, moved: false }; (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); };
   const onPointerMove = (e: React.PointerEvent) => { const d = drag.current; if (!d) return; const dy = d.y0 - e.clientY; if (Math.abs(dy) > 4) d.moved = true; if (d.moved) setDragging(Math.max(heights.collapsed, Math.min(heights[max], d.h0 + dy))); };
   const onPointerUp = () => { const d = drag.current; drag.current = null; if (!d) return; if (d.moved && dragging != null) onDetent(nearest(dragging)); else onDetent(allowed[(allowed.indexOf(detent) + 1) % allowed.length]); setDragging(null); };
   return (

@@ -10,9 +10,9 @@
 // menu scrolled to the region); a tap on a region in the preview opens its group here. The controls here are the master
 // (Kian, 2026-10-08): a preview tap is acted on once, when it happens; nothing that follows (a save, the data reloading, the
 // preview reloading) ever changes the open group or the open colour again.
-// What changed (Kian, 2026-10-09): at the top, every colour that differs from the venue default as default swatch → current
-// swatch with a per-colour reset (through the readability guard, like any save); Compare (the venue's default colours in the
-// preview while held) sits in the preview bar. Discard this session's changes: a snapshot of the venue's style (colours, the
+// Compare (the venue's default colours in the preview while held) sits in the preview bar, which the editor puts at the top of this
+// tab (Kian, 2026-10-10; the "What changed" list that was here is removed, same day: not needed). Discard this session's changes,
+// at the top of the tab: a snapshot of the venue's style (colours, the
 // template's switches) and of every section's layout, taken the first time the Style tab opens and held by the editor for the whole
 // visit to the venue's editor (the PM, 2026-10-09: kept across tab switches; a reload, leaving the venue or a Discard starts it
 // again); the button restores it in one step (one change record for the style, one per section whose layout changed), with a
@@ -77,7 +77,6 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
   const warnings = useMemo(() => (venue ? unreadable(resolved, venue.template) : []), [venue, resolved]);
   const tokensOfGroup = (g: GroupId) => (data?.tokens ?? []).filter((t) => t.group === g);
   const label = (key: string) => data?.tokens.find((t) => t.key === key)?.label ?? key;
-  const groupLabel = (g: GroupId) => data?.groups.find((x) => x.id === g)?.label ?? g;
   const varsOf = (res: Resolved) => Object.fromEntries(Object.entries(res).map(([k, r]) => [cssVar(k), r.value]));
   useEffect(() => { if (venue) onDefaults(varsOf(defaults)); }, [defaults]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -156,50 +155,21 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
   const customKeys = Object.keys(((data.style as Record<string, unknown>).colors as Record<string, string> | undefined) ?? {});
   const anyCustom = customKeys.length > 0 || 'accent' in data.style || 'tile' in data.style;
   const groups = data.groups.filter((g) => tokensOfGroup(g.id).length > 0);
-  const changed = data.tokens.filter((t) => resolved[t.key]?.state === 'custom');
-  const followed = data.tokens.filter((t) => resolved[t.key]?.state !== 'custom' && resolved[t.key]?.value !== defaults[t.key]?.value); // Auto colours re-derived because a background changed
   return (
     <div className="mx-auto w-full max-w-3xl px-3 pb-32 pt-4 sm:px-5" data-style-tab>
       <p className="px-1 text-sm text-ink-muted">Colours by part of the page, top to bottom. Tap a part in the preview, or open a group. Each change saves itself and shows in the preview.</p>
       {err && <p role="alert" className="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900">{err}</p>}
       {warnings.length > 0 && <p role="status" className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[14px] text-amber-900" data-style-warnings>Hard to read: {warnings.map((w) => `${label(w.key)} on the ${baseName(w.on)} (${w.ratio.toFixed(1)}:1, needs ${w.threshold}:1)`).join('; ')}.</p>}
-      <section className="mt-3 rounded-2xl border border-line bg-white shadow-card" data-style-changed-list data-count={changed.length}>
-        <div className="flex items-start justify-between gap-3 px-4 pt-3">
-          <div><h2 className="text-[17px] font-semibold">What changed</h2><p className="text-xs text-ink-muted">{changed.length === 0 ? 'Nothing differs from the venue’s default look.' : `${changed.length} colour${changed.length === 1 ? '' : 's'} differ${changed.length === 1 ? 's' : ''} from the venue default: default → current. Compare, above the preview, shows the default look.`}</p></div>
-        </div>
-        {changed.length > 0 && (
-          <ul className="mt-1 divide-y divide-line px-1">
-            {changed.map((t) => {
-              const f = fail?.key === t.key ? fail : null;
-              return (
-                <li key={t.key} className="px-3 py-2" data-style-changed={t.key} data-default={defaults[t.key]?.value} data-current={resolved[t.key]?.value}>
-                  <div className="flex items-center gap-3">
-                    <span className="flex shrink-0 items-center gap-1" aria-label={`${label(t.key)}: default ${defaults[t.key]?.value}, now ${resolved[t.key]?.value}`}>
-                      <span className="h-6 w-6 rounded-full border border-black/10" style={{ background: defaults[t.key]?.value }} title={`Default ${defaults[t.key]?.value}`} />
-                      <Icon name="right" className="h-4 w-4 text-ink-muted" />
-                      <span className="h-6 w-6 rounded-full border border-black/10" style={{ background: resolved[t.key]?.value }} title={`Now ${resolved[t.key]?.value}`} />
-                    </span>
-                    <button type="button" className="min-h-11 min-w-0 flex-1 text-left" onClick={() => open(t.group, t.key)}><span className="block truncate text-[15px] font-medium">{label(t.key)}</span><span className="block text-xs text-ink-muted">{groupLabel(t.group)} · {defaults[t.key]?.value} → {resolved[t.key]?.value}</span></button>
-                    <button type="button" className={btnSmall} onClick={() => { void setColor(t.key, null, 'Reset'); }} aria-label={`Reset ${label(t.key)} to ${t.on ? 'auto' : 'the venue default'}`} data-style-changed-reset={t.key}><Icon name="undo" className="h-4 w-4" />Reset</button>
-                  </div>
-                  {f && <p role="alert" className="mt-2 flex flex-wrap items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-[14px] text-red-900" data-style-refused>{f.error}{f.suggestion && <button type="button" className={`${btnSmall} border-red-300`} onClick={() => { void setColor(f.suggestion!.key, f.suggestion!.value); }} data-style-suggestion={f.suggestion.value}><span className="h-4 w-4 rounded-full border border-black/10" style={{ background: f.suggestion.value }} />Use {f.suggestion.value}</button>}</p>}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-        {followed.length > 0 && <p className="px-4 pt-2 text-xs text-ink-muted" data-style-followed>Follow them (Auto): {followed.map((t) => label(t.key)).join(', ')}.</p>}
-        <div className="flex flex-wrap items-center gap-2 px-4 py-3">
-          <button type="button" className={btnSmall} disabled={sessionChanges === 0} onClick={() => setConfirmDiscard(true)} data-style-discard data-changes={sessionChanges}><Icon name="restore" className="h-4 w-4" />Discard this session&rsquo;s changes</button>
-          <span className="text-xs text-ink-muted">{sessionChanges === 0 ? 'Nothing changed since you first opened the Style tab.' : `Back to how it was when you first opened the Style tab (${sessionChanges} change${sessionChanges === 1 ? '' : 's'}).`}</span>
-        </div>
-      </section>
+      <div className="mt-3 flex flex-wrap items-center gap-2 px-1">
+        <button type="button" className={btnSmall} disabled={sessionChanges === 0} onClick={() => setConfirmDiscard(true)} data-style-discard data-changes={sessionChanges}><Icon name="restore" className="h-4 w-4" />Discard this session&rsquo;s changes</button>
+        <span className="text-xs text-ink-muted">{sessionChanges === 0 ? 'Nothing changed since you first opened the Style tab.' : `Back to how it was when you first opened the Style tab (${sessionChanges} change${sessionChanges === 1 ? '' : 's'}).`}</span>
+      </div>
       <div className="mt-3 space-y-3">
         {groups.map((g) => {
           const isOpen = openGroup === g.id; const toks = tokensOfGroup(g.id);
           const groupCustom = toks.some((t) => resolved[t.key]?.state === 'custom');
           return (
-            <section key={g.id} ref={(el) => { groupRefs.current[g.id] = el; }} data-style-group={g.id} data-open={isOpen ? '1' : undefined} className={`rounded-2xl border bg-white shadow-card ${isOpen ? 'border-accent/40' : 'border-line'}`} onFocusCapture={() => { if (isOpen) onRegion(g.id); }}>
+            <section key={g.id} ref={(el) => { groupRefs.current[g.id] = el; }} data-style-group={g.id} data-open={isOpen ? '1' : undefined} className={`rounded-2xl border bg-white shadow-card lg:scroll-mt-60 ${isOpen ? 'border-accent/40' : 'border-line'}`} onFocusCapture={() => { if (isOpen) onRegion(g.id); }}>
               <button type="button" aria-expanded={isOpen} aria-label={`${g.label}: ${isOpen ? 'close' : 'open'}`} onClick={() => open(isOpen ? null : g.id)} className="flex min-h-14 w-full items-center gap-3 px-4 py-2.5 text-left">
                 <span className="min-w-0 flex-1">
                   <span className="block text-[17px] font-semibold">{g.label}</span>

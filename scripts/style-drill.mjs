@@ -18,8 +18,8 @@
 //   Reset all colours with its confirmation, then Undo; the Persian view keeps the same colours.
 //   2026-10-09, later (the preview control bar): every group switches the preview to its screen (Welcome, the item popup, the menu
 //     scrolled to the region) with its region outlined; Compare (toggled on the laptop, held on the phone) shows the venue's default
-//     colours in the preview; What changed lists exactly the custom tokens as default → current, and its per-colour reset goes through
-//     the readability guard; the scroll position and the screen are kept through a colour save; Discard this session's changes puts
+//     colours in the preview; a colour's own reset (Back to auto / venue default) goes through the readability guard (the What changed
+//     list that did this is removed, Kian, 2026-10-10, and the preview bar sits at the top of the Style tab); the scroll position and the screen are kept through a colour save; Discard this session's changes puts
 //     the snapshot taken when the tab opened back in one step (served variables compared) and Undo brings the discarded state back;
 //     on the phone the Style tab is a bottom sheet under the live preview and keeps at least 45 % of the viewport for the preview
 //     while a colour is being edited.
@@ -235,35 +235,30 @@ await snap(l, 'style-laptop');
   await sleep(300); const price3 = await tokenState('rows.price'), name3 = await tokenState('rows.name');
   await snap(l, 'linked-custom-stays');
   check('linked-custom', pub2.ok && price2.state === 'custom' && pub3.ok && v3['--c-rows-price'] === '#ffc14d' && price3.state === 'custom' && v3['--c-rows-name'] === WHITE && name3.state === 'auto' && v3['--c-rows-line'] === '#484848', `price set to #ffc14d (${price2.state}; on the public page after ${pub2.ms} ms); row background → #2a2a2a: price stays ${v3['--c-rows-price']} (${price3.state}), item name re-derived ${v3['--c-rows-name']} (${name3.state}), line ${v3['--c-rows-line']}; on the public page after ${pub3.ms} ms`);
-  { // Compare (laptop: a toggle) shows the venue's default colours in the preview and the saved ones again; What changed lists exactly the custom tokens, default → current
+  { // Compare (laptop: a toggle) shows the venue's default colours in the preview and the saved ones again
     const pressedBar = () => l.getAttribute('[data-preview-compare]', 'aria-pressed');
     await l.click('[data-preview-compare]'); await sleep(250);
     const on = { bg: await frameVar('--c-rows-bg'), price: await frameVar('--c-rows-price'), pressed: await pressedBar() };
     await snap(l, 'compare-on');
     await l.click('[data-preview-compare]'); await sleep(250);
     const off = { bg: await frameVar('--c-rows-bg'), price: await frameVar('--c-rows-price'), pressed: await pressedBar() };
-    const list = await l.$$eval('[data-style-changed]', (els) => els.map((e) => ({ key: e.dataset.styleChanged, def: e.dataset.default, cur: e.dataset.current })));
-    const followed = (await l.textContent('[data-style-followed]').catch(() => '')) || '';
-    const dbCustom = Object.keys(await colorsOf('senso')).sort();
-    const bg = list.find((x) => x.key === 'rows.bg'), price = list.find((x) => x.key === 'rows.price');
-    await snap(l, 'what-changed');
-    check('compare-what-changed', on.bg === WHITE && on.price === INK && on.pressed === 'true' && off.bg === '#2a2a2a' && off.price === '#ffc14d' && off.pressed === 'false' && list.length === 2 && list.map((x) => x.key).sort().join() === dbCustom.join() && bg?.def === WHITE && bg?.cur === '#2a2a2a' && price?.def === INK && price?.cur === '#ffc14d' && /Item name/.test(followed), `Compare on → the preview shows the defaults (row background ${on.bg}, price ${on.price}; pressed ${on.pressed}); off → the saved colours again (${off.bg}, ${off.price}); What changed lists ${list.length} colours [${list.map((x) => `${x.key} ${x.def}→${x.cur}`).join(', ')}] = the custom tokens in the database [${dbCustom.join(', ')}]; the Auto colours that followed: "${followed.trim()}"`);
-    // the per-colour reset goes through the readability guard: Row background back to white with the yellow price kept is refused (nothing saved); the price reset first passes, then the background
-    await l.click('[data-style-changed-reset="rows.bg"]');
-    const refused = await l.waitForSelector('[data-style-changed="rows.bg"] [data-style-refused]', { timeout: 5000 }).then((e) => e.textContent()).catch(() => null);
+    const inStyleTab = await l.evaluate(() => !!document.querySelector('[data-style-bar] [data-preview-bar="laptop"] [data-preview-compare]') && !document.querySelector('aside [data-preview-bar]'));
+    check('compare', on.bg === WHITE && on.price === INK && on.pressed === 'true' && off.bg === '#2a2a2a' && off.price === '#ffc14d' && off.pressed === 'false' && inStyleTab, `Compare on → the preview shows the defaults (row background ${on.bg}, price ${on.price}; pressed ${on.pressed}); off → the saved colours again (${off.bg}, ${off.price}); the bar sits at the top of the Style tab, none beside the iPhone (Kian, 2026-10-10): ${inStyleTab}`);
+    // a colour's own reset (Back to venue default / Back to auto) goes through the readability guard: Row background back to white with the yellow price kept is refused (nothing saved); the price reset first passes, then the background
+    const backTo = async (key) => { let n = 0; if ((await l.getAttribute(`[data-style-token="${key}"] > button`, 'aria-expanded')) !== 'true') { n++; await l.click(`[data-style-token="${key}"] > button`); } n++; await l.click(`[data-style-token="${key}"] button:has-text("Back to")`); return n; };
+    await backTo('rows.bg');
+    const refused = await l.waitForSelector('[data-style-token="rows.bg"] [data-style-refused]', { timeout: 5000 }).then((e) => e.textContent()).catch(() => null);
     await sleep(400); const stillBg = (await colorsOf('senso'))['rows.bg'] ?? null;
-    await snap(l, 'what-changed-refused');
-    let taps = 0; const tapL = async (sel) => { taps++; await l.click(sel); };
-    await tapL('[data-style-changed-reset="rows.price"]'); await l.waitForSelector('[role=status]:has-text("Reset")');
+    await snap(l, 'reset-refused');
+    const tapsPrice = await backTo('rows.price');
     const priceGone = await waitDb(`select style->'colors'->>'rows.price' as c from venues where id='senso'`, [], (r) => r?.c == null);
     const pubPrice = await waitPublic('senso', (h) => publicVar(h, 'rows.price') === WHITE && publicVar(h, 'rows.bg') === '#2a2a2a');
-    await sleep(500); const list2 = await l.$$eval('[data-style-changed]', (els) => els.map((e) => e.dataset.styleChanged));
-    await tapL('[data-style-changed-reset="rows.bg"]'); await l.waitForSelector('[role=status]:has-text("Reset")');
+    const tapsBg = await backTo('rows.bg');
     const bgGone = await waitDb(`select coalesce(style->'colors', '{}'::jsonb) as c from venues where id='senso'`, [], (r) => r && Object.keys(r.c).length === 0);
     const pubBg = await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === WHITE && publicVar(h, 'rows.price') === INK);
-    await sleep(500); const list3 = await l.$$eval('[data-style-changed]', (els) => els.length);
-    check('changed-reset-guard', !!refused && /4\.5:1/.test(refused) && /Price/.test(refused) && stillBg === '#2a2a2a' && priceGone.ok && pubPrice.ok && list2.join() === 'rows.bg' && bgGone.ok && pubBg.ok && list3 === 0, `Reset on Row background (#2a2a2a → Auto white) while the price is #ffc14d: refused by the guard with "${(refused || '').trim()}", nothing saved (database still ${stillBg}); Reset on Price → Auto again (database ${priceGone.ok}, white on the dark rows on the public page after ${pubPrice.ms} ms), the list then [${list2.join(', ')}]; Reset on Row background → passes (database empty ${bgGone.ok}, white rows and ink price on the public page after ${pubBg.ms} ms), the list empty (${list3 === 0}); ${taps} taps for the two resets`);
-    measure(`per-colour reset from What changed: 1 tap each, through the readability guard (a refusal shown in the row); on the public page in ${pubPrice.ms} / ${pubBg.ms} ms`);
+    await sleep(500); const after = { bg: await tokenState('rows.bg'), price: await tokenState('rows.price') };
+    check('reset-guard', !!refused && /4\.5:1/.test(refused) && /Price/.test(refused) && stillBg === '#2a2a2a' && priceGone.ok && pubPrice.ok && bgGone.ok && pubBg.ok && after.bg.state !== 'custom' && after.price.state === 'auto', `Back to venue default on Row background (#2a2a2a → white) while the price is #ffc14d: refused by the guard with "${(refused || '').trim()}", nothing saved (database still ${stillBg}); Back to auto on Price (${tapsPrice} taps) → Auto again (database ${priceGone.ok}, white on the dark rows on the public page after ${pubPrice.ms} ms); Back to venue default on Row background (${tapsBg} taps) → passes (database empty ${bgGone.ok}, white rows and ink price on the public page after ${pubBg.ms} ms); the rows now read ${after.bg.state} / ${after.price.state}`);
+    measure(`a colour back to its default: ${tapsPrice} taps (the colour, Back to …), through the readability guard (a refusal shown under the colour); on the public page in ${pubPrice.ms} / ${pubBg.ms} ms`);
     // the two custom colours again for the Reset group step
     await setHex('rows.bg', '#2a2a2a'); await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === '#2a2a2a');
     await setHex('rows.price', '#ffc14d'); await waitPublic('senso', (h) => publicVar(h, 'rows.price') === '#ffc14d');
@@ -496,14 +491,14 @@ await snap(l, 'style-laptop');
   await l.waitForSelector('[role=status]:has-text("Discarded")');
   const pubD = await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === WHITE && /id="welcome"/.test(h) && layoutOf(h, sec.id) === 'list');
   const varsD = varsOf(pubD.html || await publicHtml('senso')); const styleD = await styleJson('senso'); const layoutD = (await db.query('select layout from sections where id = $1', [sec.id])).rows[0].layout;
-  await sleep(600); const listD = await l.$$eval('[data-style-changed]', (els) => els.map((e) => e.dataset.styleChanged)); const changesD = await l.getAttribute('[data-style-discard]', 'data-changes');
+  await sleep(600); const changesD = await l.getAttribute('[data-style-discard]', 'data-changes');
   await snap(l, 'discard-after');
   const tU = Date.now(); await l.click('[role=status] button:has-text("Undo")'); await l.waitForSelector('[role=status]:has-text("Undone")');
   const pubU = await waitPublic('senso', (h) => publicVar(h, 'rows.bg') === '#141414' && !/id="welcome"/.test(h) && layoutOf(h, sec.id) === 'grid');
   const varsU = varsOf(pubU.html || await publicHtml('senso')); const styleU = await styleJson('senso'); const layoutU = (await db.query('select layout from sections where id = $1', [sec.id])).rows[0].layout;
   const sameD = JSON.stringify(varsD) === JSON.stringify(vars0), sameU = JSON.stringify(varsU) === JSON.stringify(vars1);
   const diffD = Object.keys({ ...vars0, ...varsD }).filter((k) => vars0[k] !== varsD[k]);
-  check('discard', disabledAtOpen === true && changes === '3' && pubD.ok && sameD && styleD === style0 && layoutD === 'list' && listD.join() === 'tabs.bg' && changesD === '0' && pubU.ok && sameU && styleU === style1 && layoutU === 'grid', `Style tab opened on a snapshot (bar background cream, welcome on, "${sec.name}" as a list; Discard disabled: ${disabledAtOpen}); then rows #141414, welcome off, "${sec.name}" to Grid (the button counts ${changes} changes); Discard (${taps} taps: Discard, confirm) → the public page serves exactly the snapshot's ${Object.keys(vars0).length} colour variables after ${pubD.ms} ms (identical: ${sameD}${diffD.length ? `; differ: ${diffD.join(', ')}` : ''}), welcome on, layout ${layoutD}, venues.style equal to the snapshot (${styleD === style0}), What changed back to [${listD.join(', ')}], the button counts ${changesD}; ${Date.now() - tD} ms after the first tap; Undo → the discarded state back after ${pubU.ms} ms (${Date.now() - tU} ms after the tap): variables identical (${sameU}), venues.style (${styleU === style1}), layout ${layoutU}`);
+  check('discard', disabledAtOpen === true && changes === '3' && pubD.ok && sameD && styleD === style0 && layoutD === 'list' && changesD === '0' && pubU.ok && sameU && styleU === style1 && layoutU === 'grid', `Style tab opened on a snapshot (bar background cream, welcome on, "${sec.name}" as a list; Discard disabled: ${disabledAtOpen}); then rows #141414, welcome off, "${sec.name}" to Grid (the button counts ${changes} changes); Discard (${taps} taps: Discard, confirm) → the public page serves exactly the snapshot's ${Object.keys(vars0).length} colour variables after ${pubD.ms} ms (identical: ${sameD}${diffD.length ? `; differ: ${diffD.join(', ')}` : ''}), welcome on, layout ${layoutD}, venues.style equal to the snapshot (${styleD === style0}), the button counts ${changesD}; ${Date.now() - tD} ms after the first tap; Undo → the discarded state back after ${pubU.ms} ms (${Date.now() - tU} ms after the tap): variables identical (${sameU}), venues.style (${styleU === style1}), layout ${layoutU}`);
   measure(`Discard this session's changes: ${taps} taps (Discard, confirm); the opening snapshot back on the public page in ${pubD.ms} ms; Undo → the discarded state back in ${pubU.ms} ms`);
   await api('/api/admin/style', { action: 'reset', venue: 'senso' }, c); await api('/api/admin/style', { action: 'update', venue: 'senso', patch: { welcome: true } }, c); await api('/api/admin/section', { action: 'update', id: sec.id, patch: { layout: 'list' } }, c);
   await waitPublic('senso', (h) => publicVar(h, 'tabs.bg') === WHITE && /id="welcome"/.test(h) && layoutOf(h, sec.id) === 'list');

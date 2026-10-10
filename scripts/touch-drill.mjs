@@ -171,7 +171,7 @@ for (const vp of VIEWPORTS) {
   });
   { const t = Date.now(); await p.click('[role=status] button:has-text("Undo")', { timeout: 5000 }).catch(() => {}); await p.waitForSelector('[role=status]:has-text("Undone")', { timeout: 5000 }).catch(() => {});
     const back = (await p.locator(`[data-item="${itemId}"] [data-price]`).textContent().catch(() => '')).trim(); undone.push({ viewport: vp.id, was, back, ms: Date.now() - t }); log('toast', `${vp.id}: price ${was} changed for the toast, Undo → ${back}`); }
-  await screen(vp, p, 'menu: preview open', async () => { await p.evaluate(() => scrollTo(0, 0)); await p.click('button:has-text("Preview")'); await p.waitForSelector('[data-preview-bar="phone"]'); });
+  await screen(vp, p, 'menu: preview open', async () => { await p.evaluate(() => scrollTo(0, 0)); await p.click('button:has-text("Preview")'); await p.waitForSelector('[data-preview-area] iframe[data-preview-frame]'); });
   await p.goto(`${base}/admin/senso`); await p.waitForSelector('[data-item]'); await markSeen(p);
   const openItem = async (id) => {
     await done();

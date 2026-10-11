@@ -1,16 +1,18 @@
 // Builds reports/welcome/gallery.html, the picking tool for Kian (our tool, not a public page; one self-contained file: the
 // Senso logo is inlined). Usage: node reports/welcome/gallery/build.mjs — prints the gzipped size of every candidate.
 //
-// Each candidate (F1–F10, W1–W10) is shown large and still, falling on its own, and at the three depth sizes on Senso's welcome
-// background; one full-scene demo per season puts all ten on a replica of Senso's welcome screen (the served colours of
-// 2026-10-09, the real card markup and CSS) with the motion planned for step 2: three depth layers, fall + pendulum sway + drift +
-// 3D flutter per leaf (snow: drift and sway only), every parameter random per load, the scene full on the first frame
-// (negative delays), transform and opacity only, at most 20 particles. "Still" shows the reduced-motion composition.
+// Each candidate (F1–F10, W1–W10 of 2026-10-09; S1–S10 of 2026-10-11 for spring) is shown large and still, falling on its own,
+// and at the three depth sizes on Senso's welcome background; one full-scene demo per season puts all ten on a replica of Senso's
+// welcome screen (the served colours of 2026-10-09, the real card markup and CSS) with the motion planned for step 2: three depth
+// layers, fall + pendulum sway + drift + 3D flutter per leaf (snow: drift and sway only; spring: blossoms twirl as they fall,
+// petals flip and float, buds drop straighter), every parameter random per load, the scene full on the first frame (negative
+// delays), transform and opacity only, at most 20 particles. "Still" shows the reduced-motion composition. Kian's fall and
+// winter picks are marked on their cards; summer was picked from summer-gallery.html (a note links it).
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
-import { LEAVES, FLAKES, SHARED_DEFS } from './art.mjs';
+import { LEAVES, FLAKES, SPRING, SHARED_DEFS } from './art.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '../../..');
@@ -23,13 +25,15 @@ const commit = (() => { try { return fs.readFileSync(path.join(root, '.git/HEAD'
 // Senso's welcome colours as served on 2026-10-09 (the Welcome group's tokens; the snow tint is the Auto rule on the cream).
 const COLORS = { bg: '#fff8ee', text: '#1d1d1f', btnBg: '#f2ece2', btnText: '#1d1d1f', activeBg: '#042c7c', activeText: '#ffffff', snow: '#b2becc', leaves: '#cc9434' };
 
-const sizes = [...LEAVES, ...FLAKES].map((c) => ({ no: c.no, name: c.name, raw: (c.defs + c.symbol).length, gz: gz(c.defs + c.symbol) }));
+const sizes = [...LEAVES, ...FLAKES, ...SPRING].map((c) => ({ no: c.no, name: c.name, raw: (c.defs + c.symbol).length, gz: gz(c.defs + c.symbol) }));
 const sharedGz = gz(SHARED_DEFS);
+// Kian's picks of 2026-10-09 (CLAUDE.md, "Welcome artwork for Senso"), marked on their cards.
+const PICKED = ['F1', 'F2', 'F4', 'F8', 'F9', 'W1', 'W3', 'W5', 'W7', 'W10'];
 
 const card = (c, kind) => `<article class="card${kind === 'snow' ? ' snowc' : ''}" id="${c.no}">
-  <h3><b>${c.no}</b> ${c.name} <small>${c.note}</small></h3>
+  <h3><b>${c.no}</b> ${c.name}${c.fa ? ` <span lang="fa" dir="rtl">${c.fa}</span>` : ''}${PICKED.includes(c.no) ? ' <i class="pick">Kian\'s pick</i>' : ''} <small>${c.note}</small></h3>
   <div class="panes">
-    <div class="pane big${kind === 'snow' ? ' senso' : ''}"><svg viewBox="0 0 64 64"><use href="#${c.no}"/></svg><span>large, still</span></div>
+    <div class="pane big${kind !== 'leaves' ? ' senso' : ''}"><svg viewBox="0 0 64 64"><use href="#${c.no}"/></svg><span>large, still</span></div>
     <div class="pane alone senso"><div class="scene" data-alone="${c.no}" data-kind="${kind}"></div><span>falling on its own</span></div>
     <div class="pane sizes senso"><svg viewBox="0 0 64 64" style="width:20px;height:20px"><use href="#${c.no}"/></svg><svg viewBox="0 0 64 64" style="width:34px;height:34px"><use href="#${c.no}"/></svg><svg viewBox="0 0 64 64" style="width:50px;height:50px"><use href="#${c.no}"/></svg><span>far · middle · near, on Senso's background</span></div>
   </div>
@@ -61,6 +65,8 @@ body { margin: 0; padding: 24px 16px 64px; font: 15px/1.45 system-ui, -apple-sys
 h1 { font-size: 26px; margin: 0 0 6px; } h2 { font-size: 22px; margin: 40px 0 12px; } h3 { font-size: 17px; margin: 0 0 8px; }
 h3 b { display: inline-block; min-width: 2.6em; padding: 1px 8px; margin-right: 6px; border-radius: 999px; background: #1d1d1f; color: #fff; font-size: 15px; text-align: center; }
 h3 small { font-weight: 400; color: #6b6b6b; margin-left: 6px; }
+h3 span[lang="fa"] { font-weight: 500; color: #444; }
+h3 .pick { display: inline-block; padding: 1px 8px; border-radius: 999px; background: #e3f1e6; color: #1e6a34; font-size: 12px; font-style: normal; font-weight: 600; vertical-align: 1px; }
 p.lead { max-width: 70ch; color: #444; margin: 0 0 8px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(520px, 1fr)); gap: 16px; }
 .card { border: 1px solid #e5e5ea; border-radius: 16px; padding: 14px 14px 10px; }
@@ -99,12 +105,14 @@ table { border-collapse: collapse; font-size: 13px; margin: 8px 0 0; } td, th { 
    .w flutters in 3D (rotateX/Y/Z up to --rx/--ry/--rz, --fp per cycle). Snow: no flutter, a slow turn for crystals, none for soft flakes. */
 .scene { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .scene .p { position: absolute; left: calc(var(--x) * 100%); top: 0; width: var(--s); height: var(--s); margin-left: calc(var(--s) * -.5); opacity: var(--o); }
-.scene .y, .scene .s, .scene .w { display: block; width: 100%; height: 100%; will-change: transform; }
+.scene .y, .scene .s, .scene .t, .scene .w { display: block; width: 100%; height: 100%; will-change: transform; }
 .scene .y { animation: fall var(--d) linear var(--l) infinite; }
 .scene .s { animation: sway var(--sp) var(--l) infinite alternate; }
 .scene .w { animation: flutter var(--fp) ease-in-out var(--l) infinite alternate; }
 .scene .snow .w { animation: spin var(--fp) linear var(--l) infinite; }
 .scene .soft .w { animation: none; }
+/* spring: a whole blossom also twirls (.t, a slow full turn one way or the other, --tp per turn) under its flutter */
+.scene .t { animation: spin var(--tp) linear var(--l) infinite; animation-direction: var(--td); }
 @keyframes fall { from { transform: translate3d(0, calc(var(--s) * -1.3), 0); } to { transform: translate3d(var(--dr), calc(var(--h) + var(--s) * .4), 0); } }
 @keyframes sway { 0% { transform: translate(calc(var(--sw) * -1), 0); animation-timing-function: ease-in; } 50% { transform: translate(0, var(--dip)); animation-timing-function: ease-out; } 100% { transform: translate(var(--sw), 0); } }
 @keyframes flutter {
@@ -113,9 +121,9 @@ table { border-collapse: collapse; font-size: 13px; margin: 8px 0 0; } td, th { 
   100% { transform: perspective(260px) rotateX(calc(var(--rx) * .6)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.scene.still .y, .scene.still .s, .scene.still .w { animation: none; }
+.scene.still .y, .scene.still .s, .scene.still .t, .scene.still .w { animation: none; }
 .scene.still .p { top: calc(var(--y) * 100%); transform: rotate(var(--rz)); }
-@media (prefers-reduced-motion: reduce) { .scene .y, .scene .s, .scene .w { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .scene .y, .scene .s, .scene .t, .scene .w { animation: none !important; } }
 `;
 
 // The engine. makeScene draws a random scene into a .scene element (its frame's --w/--h give the size); makeStill the resting
@@ -123,27 +131,40 @@ table { border-collapse: collapse; font-size: 13px; margin: 8px 0 0; } td, th { 
 const js = `
 (function () {
   var LEAF = ${JSON.stringify(LEAVES.map((c) => c.no))}, SNOW = ${JSON.stringify(FLAKES.map((c) => c.no))}, SOFT = ['W8', 'W9', 'W10'];
+  var BLOOM = ${JSON.stringify(SPRING.map((c) => c.no))}, TRAIT = ${JSON.stringify(Object.fromEntries(SPRING.map((c) => [c.no, [c.motion, c.scale]])))};
   var LAYERS = {
     leaves: { base: 44, far: { n: 9, size: [.42, .6], dur: [15, 22], op: [.35, .55], sway: [6, 12], sp: [3.4, 5.2], drift: [-.1, .1], fp: [6, 9] },
               mid: { n: 9, size: [.65, .9], dur: [10, 15], op: [.7, .9], sway: [12, 22], sp: [2.8, 4.2], drift: [-.16, .16], fp: [5, 7.5] },
               near: { n: 2, size: [1, 1.3], dur: [7.5, 10.5], op: [.85, .95], sway: [20, 34], sp: [2.4, 3.6], drift: [-.22, .22], fp: [4.2, 6.5] } },
     snow: { base: 26, far: { n: 9, size: [.45, .65], dur: [14, 20], op: [.4, .6], sway: [4, 8], sp: [3.5, 6], drift: [-.06, .06], fp: [30, 48] },
             mid: { n: 9, size: [.7, .95], dur: [10, 14], op: [.7, .9], sway: [6, 12], sp: [3, 5], drift: [-.1, .1], fp: [24, 40] },
-            near: { n: 2, size: [1, 1.3], dur: [8, 11], op: [.85, 1], sway: [8, 16], sp: [2.8, 4.4], drift: [-.14, .14], fp: [20, 32] } }
+            near: { n: 2, size: [1, 1.3], dur: [8, 11], op: [.85, 1], sway: [8, 16], sp: [2.8, 4.4], drift: [-.14, .14], fp: [20, 32] } },
+    // spring: lighter than leaves, so slower and wider, the flutter quicker (petals flip); per design see TRAIT and particle()
+    bloom: { base: 44, far: { n: 9, size: [.42, .6], dur: [16, 24], op: [.4, .6], sway: [8, 16], sp: [3.6, 5.6], drift: [-.12, .12], fp: [3.2, 5.5] },
+             mid: { n: 9, size: [.65, .9], dur: [11, 16], op: [.75, .92], sway: [14, 26], sp: [3, 4.6], drift: [-.18, .18], fp: [2.6, 4.4] },
+             near: { n: 2, size: [1, 1.3], dur: [8.5, 12], op: [.88, .96], sway: [22, 36], sp: [2.6, 3.8], drift: [-.24, .24], fp: [2.2, 3.6] } }
   };
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
   var r1 = function (n) { return Math.round(n * 10) / 10; };
   var pick = function (list) { return list[Math.floor(Math.random() * list.length)]; };
   function particle(kind, layer, design, w, h) {
     var K = LAYERS[kind], L = K[layer], size = Math.round(K.base * rnd(L.size[0], L.size[1]) * (SOFT.indexOf(design) >= 0 ? 1.4 : 1)), d = r1(rnd(L.dur[0], L.dur[1]));
-    return { design: design, layer: layer, x: r1(rnd(.02, .98) * 100) / 100, s: size, d: d, l: r1(-rnd(0, d)), o: r1(rnd(L.op[0], L.op[1]) * 100) / 100, sw: Math.round(rnd(L.sway[0], L.sway[1])), sp: r1(rnd(L.sp[0], L.sp[1])), dr: Math.round(rnd(L.drift[0], L.drift[1]) * w), rx: Math.round(rnd(10, 28)), ry: Math.round(rnd(15, 40)), rz: Math.round(rnd(5, 16)), fp: r1(rnd(L.fp[0], L.fp[1])), dip: Math.round(rnd(4, 10)) };
+    var p = { design: design, layer: layer, x: r1(rnd(.02, .98) * 100) / 100, s: size, d: d, l: r1(-rnd(0, d)), o: r1(rnd(L.op[0], L.op[1]) * 100) / 100, sw: Math.round(rnd(L.sway[0], L.sway[1])), sp: r1(rnd(L.sp[0], L.sp[1])), dr: Math.round(rnd(L.drift[0], L.drift[1]) * w), rx: Math.round(rnd(10, 28)), ry: Math.round(rnd(15, 40)), rz: Math.round(rnd(5, 16)), fp: r1(rnd(L.fp[0], L.fp[1])), dip: Math.round(rnd(4, 10)) };
+    if (kind !== 'bloom') return p;
+    var t = TRAIT[design]; p.s = Math.round(p.s * t[1]);
+    if (t[0] === 'petal') { p.rx = Math.round(rnd(35, 75)); p.ry = Math.round(rnd(30, 70)); p.rz = Math.round(rnd(10, 28)); p.sw = Math.round(p.sw * 1.15); }
+    else if (t[0] === 'flower') { p.rx = Math.round(rnd(12, 32)); p.ry = Math.round(rnd(15, 38)); p.rz = Math.round(rnd(6, 16)); p.tp = r1(rnd(7, 15)); p.td = Math.random() < .5 ? 'normal' : 'reverse'; }
+    else { p.d = r1(p.d * .75); p.l = r1(-rnd(0, p.d)); p.sw = Math.round(p.sw * .45); p.rx = Math.round(rnd(4, 10)); p.ry = Math.round(rnd(6, 14)); p.rz = Math.round(rnd(6, 14)); p.fp = r1(p.fp * 1.6); p.dip = Math.round(rnd(1, 3)); }
+    return p;
   }
   function el(p, kind) {
     var i = document.createElement('i'); i.className = 'p ' + p.layer + (kind === 'snow' ? ' snow' : '') + (SOFT.indexOf(p.design) >= 0 ? ' soft' : '');
     var st = '--x:' + p.x + ';--s:' + p.s + 'px;--d:' + p.d + 's;--l:' + p.l + 's;--o:' + p.o + ';--sw:' + p.sw + 'px;--sp:' + p.sp + 's;--dr:' + p.dr + 'px;--rx:' + p.rx + 'deg;--ry:' + p.ry + 'deg;--rz:' + p.rz + 'deg;--fp:' + p.fp + 's;--dip:' + (kind === 'snow' ? 0 : p.dip) + 'px';
     if (p.y != null) st += ';--y:' + p.y;
+    var inner = '<svg class="w" viewBox="0 0 64 64" focusable="false"><use href="#' + p.design + '"/></svg>';
+    if (p.tp) { st += ';--tp:' + p.tp + 's;--td:' + p.td; inner = '<b class="t">' + inner + '</b>'; }
     i.setAttribute('style', st);
-    i.innerHTML = '<b class="y"><b class="s"><svg class="w" viewBox="0 0 64 64" focusable="false"><use href="#' + p.design + '"/></svg></b></b>';
+    i.innerHTML = '<b class="y"><b class="s">' + inner + '</b></b>';
     return i;
   }
   var size = function (root) { var w = root.clientWidth || 390, h = root.clientHeight || 844; root.style.setProperty('--w', w + 'px'); root.style.setProperty('--h', h + 'px'); return [w, h]; };
@@ -160,7 +181,7 @@ const js = `
     root.innerHTML = ''; root.classList.add('still');
     // leaves rest low on the screen and along the sides; snow hangs scattered over the whole screen
     var spots = kind === 'snow' ? [[.1, .08], [.5, .05], [.85, .12], [.25, .25], [.7, .3], [.08, .45], [.92, .5], [.3, .7], [.6, .78], [.15, .9], [.8, .92], [.45, .95]] : [[.08, .86], [.22, .93], [.38, .9], [.56, .95], [.72, .88], [.9, .92], [.05, .3], [.94, .55], [.9, .12], [.12, .6]];
-    for (var i = 0; i < (kind === 'snow' ? 12 : 8); i++) { var p = particle(kind, i < 2 ? 'near' : i < 6 ? 'mid' : 'far', pick(designs), w, 0); p.x = spots[i][0] + rnd(-.03, .03); p.y = spots[i][1] + rnd(-.03, .03); p.rz = Math.round(rnd(-60, 60)); out.push(p); root.appendChild(el(p, kind)); }
+    for (var i = 0; i < (kind === 'snow' ? 12 : kind === 'bloom' ? 10 : 8); i++) { var p = particle(kind, i < 2 ? 'near' : i < 6 ? 'mid' : 'far', pick(designs), w, 0); p.x = spots[i][0] + rnd(-.03, .03); p.y = spots[i][1] + rnd(-.03, .03); p.rz = Math.round(rnd(-60, 60)); out.push(p); root.appendChild(el(p, kind)); }
     return out;
   }
   var greet = function () { var t = new Date().getHours(); return t >= 5 && t < 12 ? ['Good morning', 'صبح بخیر'] : t >= 12 && t < 17 ? ['Good afternoon', 'ظهر بخیر'] : ['Good evening', 'عصر بخیر']; }();
@@ -172,13 +193,13 @@ const js = `
   });
   // the full demos
   document.querySelectorAll('[data-demo]').forEach(function (frame) {
-    var kind = frame.dataset.demo, designs = kind === 'snow' ? SNOW : LEAF, root = frame.querySelector('.scene'), box = frame.closest('.demo'), still = box.querySelector('[data-still]'), readout = box.querySelector('[data-readout]');
+    var kind = frame.dataset.demo, designs = kind === 'snow' ? SNOW : kind === 'bloom' ? BLOOM : LEAF, root = frame.querySelector('.scene'), box = frame.closest('.demo'), still = box.querySelector('[data-still]'), readout = box.querySelector('[data-readout]');
     var draw = function () { var ps = still.checked ? makeStill(root, kind, designs) : makeScene(root, kind, designs); readout.textContent = ps.length + ' particles (' + ps.filter(function (p) { return p.layer === 'near'; }).length + ' near, ' + ps.filter(function (p) { return p.layer === 'mid'; }).length + ' middle, ' + ps.filter(function (p) { return p.layer === 'far'; }).length + ' far): ' + ps.map(function (p) { return p.design + '@' + Math.round(p.x * 100) + '%/' + p.s + 'px/' + p.d + 's'; }).join(', '); };
     box.querySelector('[data-replay]').addEventListener('click', draw); still.addEventListener('change', draw); draw();
   });
 })();`;
 
-const table = `<table><tr><th>No.</th><th>Design</th><th>gzipped</th><th>raw</th></tr>${sizes.map((s) => `<tr><td>${s.no}</td><td>${s.name}</td><td>${s.gz} B</td><td>${s.raw} B</td></tr>`).join('')}<tr><td></td><td>shared gradients (spots, crease)</td><td>${sharedGz} B</td><td>${SHARED_DEFS.length} B</td></tr><tr><td></td><td><b>all ten leaves</b></td><td><b>${kb(gz(LEAVES.map((c) => c.defs + c.symbol).join('') + SHARED_DEFS))}</b></td><td>${kb(LEAVES.reduce((n, c) => n + (c.defs + c.symbol).length, 0) + SHARED_DEFS.length)}</td></tr><tr><td></td><td><b>all ten snowflakes</b></td><td><b>${kb(gz(FLAKES.map((c) => c.defs + c.symbol).join('')))}</b></td><td>${kb(FLAKES.reduce((n, c) => n + (c.defs + c.symbol).length, 0))}</td></tr><tr><td></td><td>the scene engine (its CSS and script, as previewed here)</td><td>${kb(gz(css.slice(css.indexOf('/* ---- the scene engine')) + js))}</td><td></td></tr></table>`;
+const table = `<table><tr><th>No.</th><th>Design</th><th>gzipped</th><th>raw</th></tr>${sizes.map((s) => `<tr><td>${s.no}</td><td>${s.name}</td><td>${s.gz} B</td><td>${s.raw} B</td></tr>`).join('')}<tr><td></td><td>shared gradients (spots, crease)</td><td>${sharedGz} B</td><td>${SHARED_DEFS.length} B</td></tr><tr><td></td><td><b>all ten leaves</b></td><td><b>${kb(gz(LEAVES.map((c) => c.defs + c.symbol).join('') + SHARED_DEFS))}</b></td><td>${kb(LEAVES.reduce((n, c) => n + (c.defs + c.symbol).length, 0) + SHARED_DEFS.length)}</td></tr><tr><td></td><td><b>all ten snowflakes</b></td><td><b>${kb(gz(FLAKES.map((c) => c.defs + c.symbol).join('')))}</b></td><td>${kb(FLAKES.reduce((n, c) => n + (c.defs + c.symbol).length, 0))}</td></tr><tr><td></td><td><b>all ten spring designs</b></td><td><b>${kb(gz(SPRING.map((c) => c.defs + c.symbol).join('') + SHARED_DEFS))}</b></td><td>${kb(SPRING.reduce((n, c) => n + (c.defs + c.symbol).length, 0) + SHARED_DEFS.length)}</td></tr><tr><td></td><td>the scene engine (its CSS and script, as previewed here)</td><td>${kb(gz(css.slice(css.indexOf('/* ---- the scene engine')) + js))}</td><td></td></tr></table>`;
 
 const html = `<!doctype html>
 <html lang="en">
@@ -190,12 +211,12 @@ const html = `<!doctype html>
 </head>
 <body>
 <h1>Welcome artwork candidates — Senso</h1>
-<p class="lead">Ten fall leaves (F1–F10) and ten snowflakes (W1–W10), all original inline SVG, each defined once as a symbol. Pick 5 to 7 per season and reply with the numbers. Built ${new Date().toISOString().slice(0, 10)}${commit ? ` from ${commit.slice(0, 7)}` : ''} by <code>reports/welcome/gallery/build.mjs</code> (the artwork in <code>art.mjs</code>). Our tool, not a public page.</p>
+<p class="lead"><b>New, 2026-10-11: ten spring candidates (S1–S10: blossoms, petals and buds), <a href="#spring">below</a>.</b> Pick 5 to 7 and reply with the numbers. Above them, the ten fall leaves (F1–F10) and ten snowflakes (W1–W10) of 2026-10-09 with Kian's picks marked; summer was picked from its own gallery (<a href="#summer">note</a>). All original inline SVG, each defined once as a symbol. Built ${new Date().toISOString().slice(0, 10)}${commit ? ` from ${commit.slice(0, 7)}` : ''} by <code>reports/welcome/gallery/build.mjs</code> (the artwork in <code>art.mjs</code>). Our tool, not a public page.</p>
 <div class="note"><p><b>How to read a card:</b> the design large and still; the same design falling on its own with the step-2 motion (near layer); the design at the far, middle and near sizes on Senso's welcome background (cream <code>${COLORS.bg}</code>). Under each season, the full-scene demo shows all ten together on a replica of Senso's welcome screen; <b>Replay</b> draws a new random scene, <b>Still</b> shows the reduced-motion composition.</p>
 <p><b>Colours:</b> the leaves carry their own natural palettes (orange, rust, gold, red, brown, two-tone turning); they are not tinted by the Style tab's "Fall leaves" token (open question in the reply). The snow is drawn in the "Winter snow" token colour, which is <code>${COLORS.snow}</code> on Senso's cream (the Auto rule); W2 and W4 carry white plates.</p>
 <p><b>Sizes</b> (each candidate alone, gzipped; the step-2 budget is 15 KB gzipped for everything inline, artwork included):</p>${table}</div>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>${SHARED_DEFS}${[...LEAVES, ...FLAKES].map((c) => c.defs + c.symbol).join('')}</defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>${SHARED_DEFS}${[...LEAVES, ...FLAKES, ...SPRING].map((c) => c.defs + c.symbol).join('')}</defs></svg>
 
 <h2 id="fall">Fall — F1 to F10</h2>
 <div class="grid">${LEAVES.map((c) => card(c, 'leaves')).join('')}</div>
@@ -205,6 +226,17 @@ ${demo('fall', 'leaves', 'Fall, all ten together')}
 <div class="grid">${FLAKES.map((c) => card(c, 'snow')).join('')}</div>
 ${demo('winter', 'snow', 'Winter, all ten together')}
 
+<h2 id="spring">Spring — S1 to S10 (new, 2026-10-11)</h2>
+<div class="note"><p><b>Pick 5 to 7</b>, any mix of blossoms (S1–S5), petals (S6–S8) and buds (S9, S10), and reply with the numbers. The picks become Senso's spring scene, built like the fall and winter artwork, and the spring versions of the ten transitions (T1–T10) are then built from them.</p>
+<p><b>Motion</b> (the demo below and each card's middle pane): spring falls lighter than the leaves: slower, with a wider sway. A whole blossom twirls slowly as it falls (a full turn every 7–15 s, either way) and tilts a little; a single petal flips and floats (it tilts far over in 3D, like a petal in the air); a bud is heavier, drops a quarter faster and barely sways. Same rules as fall and winter: 20 particles (2 near, 9 middle, 9 far), random per load, full on the first frame, transform and opacity only; "Still" shows the blossoms resting low and along the sides.</p>
+<p><b>Colours:</b> natural palettes, like the leaves: pinks, white, violet-blue, gold, scarlet; the rosebud is Senso's own rose (<code>#cc3366</code>, the site pink the spring scene uses today). By analogy with the fall leaves and the summer sun (the PM, 2026-10-09), the picked artwork would carry its own colours, so the Style tab's "Spring blossoms" token would leave Senso's Welcome group (Kebab Land and the default template keep it). White petals carry a thin warm edge so they read on the cream.</p>
+<p><b>Sizes:</b> each design alone ${kb(Math.min(...SPRING.map((c) => sizes.find((x) => x.no === c.no).gz)))}–${kb(Math.max(...SPRING.map((c) => sizes.find((x) => x.no === c.no).gz)))} gzipped; all ten ${kb(gz(SPRING.map((c) => c.defs + c.symbol).join('') + SHARED_DEFS))}. Six picks fit the 15 KB inline budget with room (fall's five leaves ship at 7.1 KB with the engine).</p></div>
+<div class="grid">${SPRING.map((c) => card(c, 'bloom')).join('')}</div>
+${demo('spring', 'bloom', 'Spring, all ten together')}
+
+<h2 id="summer">Summer — picked</h2>
+<div class="note"><p>Summer is final: on 2026-10-10 Kian picked, from <a href="summer-gallery.html">summer-gallery.html</a>, the Persian sun with a few dandelion seeds (U5 and U1 there), built into Senso's summer scene the same day. Nothing to pick here.</p></div>
+
 <script>${js}</script>
 </body>
 </html>
@@ -213,4 +245,5 @@ fs.writeFileSync(out, html);
 console.log(`wrote ${path.relative(root, out)} (${kb(Buffer.byteLength(html))}, ${kb(gz(html))} gzipped)`);
 console.log('candidate | gzipped B | raw B');
 for (const s of sizes) console.log(`${s.no.padEnd(4)} ${s.name.padEnd(18)} | ${String(s.gz).padStart(5)} | ${String(s.raw).padStart(5)}`);
+console.log(`all spring ${kb(gz(SPRING.map((c) => c.defs + c.symbol).join('') + SHARED_DEFS))} gz`);
 console.log(`shared defs ${sharedGz} B gz; all leaves ${kb(gz(LEAVES.map((c) => c.defs + c.symbol).join('') + SHARED_DEFS))} gz; all flakes ${kb(gz(FLAKES.map((c) => c.defs + c.symbol).join('')))} gz; engine ${kb(gz(css.slice(css.indexOf('/* ---- the scene engine')) + js))} gz`);

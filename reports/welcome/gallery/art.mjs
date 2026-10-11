@@ -257,3 +257,146 @@ FLAKES.push({ no: 'W10', name: 'Soft core', note: 'a round flake with a bright c
 // shared: the brown spot gradient
 // shared: the brown spot gradient and the crease across the midrib (one half of the blade a touch lighter, the other darker)
 export const SHARED_DEFS = rad('spot', [[0, '#5a2d0c', 0.6], [0.6, '#5a2d0c', 0.25], [1, '#5a2d0c', 0]], 0.5, 0.5, 0.5) + lin('crease', [[0, '#fff', 0], [0.47, '#fff', 0.12], [0.53, '#000', 0.13], [1, '#000', 0]], 0, 0, 1, 0);
+
+// ---- spring (2026-10-11): ten candidates S1–S10 for Senso, natural palettes like the leaves. Blossoms S1–S5 (whole flowers,
+// each petal its own smoothed outline around the heart, one gradient across the flower from the heart out, a highlight per petal,
+// veins, stamens), petals S6–S8 (one petal large, drawn like a leaf blade: base gradient, shading, a soft crease, a curled edge
+// on two), buds S9–S10. `motion` names how the gallery's demo moves each (flower: twirls as it falls; petal: flips and floats;
+// bud: heavier, drops straighter); `scale` its size against a whole blossom. ----
+export const SPRING = [];
+const rotP = (p, a, c) => { const t = (a * Math.PI) / 180, s = Math.sin(t), k = Math.cos(t); return P(c.x + p.x * k - p.y * s, c.y + p.x * s + p.y * k, p.c); };
+const radU = (id, stops, cx, cy, r) => `<radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}">${stops.map(([o, c, a]) => `<stop offset="${o}" stop-color="${c}"${a != null ? ` stop-opacity="${a}"` : ''}/>`).join('')}</radialGradient>`;
+// Petal outlines in local coordinates, the base at the origin, pointing up: a half-width profile [t along the length, fraction of
+// the half-width], mirrored with a little jitter so no petal is symmetric; `notch` cuts the cherry's notch into the tip, `point`
+// and `bud` keep a sharp tip.
+const PROFILES = {
+  round: [[0.12, 0.42], [0.35, 0.84], [0.6, 1], [0.82, 0.88], [0.95, 0.52]],
+  notch: [[0.14, 0.36], [0.4, 0.8], [0.66, 1], [0.86, 0.94], [0.97, 0.62], [1, 0.26]],
+  point: [[0.14, 0.48], [0.38, 0.94], [0.58, 1], [0.78, 0.72], [0.92, 0.32]],
+  strap: [[0.1, 0.62], [0.32, 0.96], [0.6, 1], [0.84, 0.9], [0.96, 0.5]],
+  spoon: [[0.1, 0.34], [0.3, 0.68], [0.55, 0.95], [0.72, 1], [0.86, 0.9], [0.96, 0.56]],
+  ovate: [[0.08, 0.52], [0.25, 0.86], [0.5, 1], [0.72, 0.94], [0.88, 0.66], [0.97, 0.28]],
+  bud: [[0.06, 0.62], [0.25, 0.96], [0.45, 1], [0.68, 0.84], [0.88, 0.44]],
+};
+function petalPts(shape, L, W, r, { notch = 0.1, j = 0.5 } = {}) {
+  const h = W / 2, jit = () => (r() - 0.5) * 2 * j, prof = PROFILES[shape];
+  const right = prof.map(([t, w]) => P(w * h + jit() * 0.6, -t * L + jit()));
+  const left = prof.map(([t, w]) => P(-w * h + jit() * 0.6, -t * L + jit())).reverse();
+  const tip = shape === 'notch' ? [P(jit() * 0.3, -L * (1 - notch), true)] : [P(jit() * 0.4, -L, shape === 'point' || shape === 'bud')];
+  return [P(0, 0, true), ...right, ...tip, ...left];
+}
+// A whole flower: k petals around the heart C, each turned and a little different in size; returns the petal paths (to be used
+// twice: the colour, then the highlight per petal) and its veins (offsets across the petal, from the base toward the tip).
+function flower({ k, shape, L, W, at = 0, off = 2, notch, C = { x: 32, y: 32 }, seed, veins = [], vlen = 0.8, jitA = 6, jitS = 0.1 }) {
+  const r = rng(seed); let paths = '', vd = '';
+  for (let i = 0; i < k; i++) {
+    const a = at + (360 / k) * i + (r() - 0.5) * 2 * jitA, s = 1 + (r() - 0.5) * 2 * jitS, base = pol(C.x, C.y, a, off);
+    paths += `<path d="${smooth(petalPts(shape, L * s, W * s, r, { notch }).map((p) => rotP(p, a, base)), 1).d}"/>`;
+    for (const v of veins) { const q = [P(0, -L * s * 0.1), P(v * W * s * 0.16, -L * s * 0.45), P(v * W * s * 0.3, -L * s * vlen)].map((p) => rotP(p, a, base)); vd += `M${f(q[0].x)} ${f(q[0].y)}Q${f(q[1].x)} ${f(q[1].y)} ${f(q[2].x)} ${f(q[2].y)}`; }
+  }
+  return { paths, vd };
+}
+const veinPath = (d, col, op, w = 0.4) => (d ? `<path d="${d}" fill="none" stroke="${col}" stroke-opacity="${op}" stroke-width="${w}" stroke-linecap="round"/>` : '');
+// Stamens: n slightly curved filaments from the heart, each with an anther.
+function stamens(C, n, r0, r1, col, anther, seed, { w = 0.4, ar = 0.7, spread = 0.3 } = {}) {
+  const r = rng(seed); let d = '', dots = '';
+  for (let i = 0; i < n; i++) {
+    const a = (360 / n) * i + (r() - 0.5) * 22, len = r1 * (1 - spread / 2 + r() * spread), p0 = pol(C.x, C.y, a, r0), p1 = pol(C.x, C.y, a + (r() - 0.5) * 10, len), m = pol(C.x, C.y, a - 5, (r0 + len) / 2);
+    d += `M${f(p0.x)} ${f(p0.y)}Q${f(m.x)} ${f(m.y)} ${f(p1.x)} ${f(p1.y)}`; dots += `<circle cx="${f(p1.x)}" cy="${f(p1.y)}" r="${ar}"/>`;
+  }
+  return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/><g fill="${anther}">${dots}</g>`;
+}
+// A blossom symbol: the petals (kept in the symbol's defs, so the shape itself is never drawn bare) used for the colour with a
+// thin edge, then for a highlight per petal (objectBoundingBox: each petal gets its own light from the top left).
+const petalsUse = (id, sub, edge, so = 0.45, sw = 0.4) => `<use href="#${id}${sub}" fill="url(#${id}${sub}g)" stroke="${edge}" stroke-opacity="${so}" stroke-width="${sw}" stroke-linejoin="round"/><use href="#${id}${sub}" fill="url(#${id}s)"/>`;
+const addS = (no, name, fa, note, motion, scale, art) => SPRING.push({ no, name, fa, note, motion, scale, ...art });
+
+// ---- S1 cherry blossom: five notched petals, pale pink deepening to a pink heart, yellow-tipped stamens ----
+{
+  const C = { x: 32, y: 32 }, fl = flower({ k: 5, shape: 'notch', L: 24, W: 20, at: -8, off: 1.5, notch: 0.12, C, seed: 21, veins: [-0.45, 0, 0.45] });
+  const defs = radU('S1pg', [[0, '#d94d7a'], [0.16, '#ec84a4'], [0.5, '#f8c4d3'], [1, '#fde9f0']], 32, 32, 27) + shade('S1s', '#a33a62', 0.35, 0.3, 0.95, 0.3, 0.22);
+  const symbol = `<symbol id="S1" viewBox="0 0 64 64"><defs><g id="S1p">${fl.paths}</g></defs>${petalsUse('S1', 'p', '#c4527a')}${veinPath(fl.vd, '#cf4f7b', 0.28, 0.35)}${stamens(C, 14, 2, 9.5, '#c8406e', '#f0c040', 22, { ar: 0.75 })}<circle cx="32" cy="32" r="2.3" fill="#b8305e"/></symbol>`;
+  addS('S1', 'Cherry blossom', '', 'pale pink, five notched petals, a deep pink heart', 'flower', 1, { defs, symbol });
+}
+// ---- S2 almond blossom (شکوفه بادام, the first blossom of the Persian spring): five round white petals blushing to a red heart,
+// long red stamens with gold anthers ----
+{
+  const C = { x: 32, y: 32 }, fl = flower({ k: 5, shape: 'round', L: 23, W: 22, at: 20, off: 1.5, C, seed: 23, veins: [-0.5, -0.2, 0.2, 0.5], vlen: 0.7 });
+  const defs = radU('S2pg', [[0, '#a81c40'], [0.13, '#d6506e'], [0.28, '#f2b0c2'], [0.52, '#fde9ef'], [1, '#ffffff']], 32, 32, 26) + shade('S2s', '#8a4a5e', 0.32, 0.28, 0.95, 0.35, 0.2);
+  const symbol = `<symbol id="S2" viewBox="0 0 64 64"><defs><g id="S2p">${fl.paths}</g></defs>${petalsUse('S2', 'p', '#b47a8c', 0.6, 0.45)}${veinPath(fl.vd, '#d68ea2', 0.35, 0.35)}${stamens(C, 18, 2.4, 11.5, '#b02848', '#e8b048', 24, { w: 0.45, ar: 0.8 })}<circle cx="32" cy="32" r="2.6" fill="#8c1a38"/></symbol>`;
+  addS('S2', 'Almond blossom', 'شکوفه بادام', 'white blushing to a red heart, long red stamens', 'flower', 1, { defs, symbol });
+}
+// ---- S3 white trillium (Ontario's flower): three broad pointed white petals with fine veins, three green sepals between them,
+// a pale green heart with yellow stamens; the petal tips just turning pink ----
+{
+  const C = { x: 32, y: 33 }, sep = flower({ k: 3, shape: 'point', L: 26, W: 7.5, at: 60, off: 0, C, seed: 25, jitA: 4 });
+  const fl = flower({ k: 3, shape: 'point', L: 27, W: 22, at: 0, off: 1, C, seed: 26, veins: [-0.62, -0.32, 0, 0.32, 0.62], vlen: 0.86, jitA: 4 });
+  const defs = radU('S3kg', [[0, '#3f6a22'], [1, '#86b04e']], 32, 33, 27) + radU('S3pg', [[0, '#dfe8b0'], [0.22, '#f3f6e0'], [0.62, '#ffffff'], [1, '#fbe6ee']], 32, 33, 28) + shade('S3s', '#7a7a5a', 0.3, 0.28, 0.95, 0.3, 0.24);
+  const symbol = `<symbol id="S3" viewBox="0 0 64 64"><defs><g id="S3k">${sep.paths}</g><g id="S3p">${fl.paths}</g></defs><use href="#S3k" fill="url(#S3kg)" stroke="#2e5418" stroke-opacity=".4" stroke-width=".4" stroke-linejoin="round"/>${petalsUse('S3', 'p', '#9c977a', 0.75, 0.5)}${veinPath(fl.vd, '#b8b28e', 0.6, 0.35)}${stamens(C, 6, 2, 6.5, '#d4bc3e', '#f0cc3a', 27, { w: 0.6, ar: 0.95, spread: 0.1 })}<circle cx="32" cy="33" r="2.6" fill="#cfe08a" stroke="#8aa04a" stroke-width=".4"/></symbol>`;
+  addS('S3', 'White trillium', '', "Ontario's flower: three white petals, green sepals", 'flower', 1.05, { defs, symbol });
+}
+// ---- S4 hyacinth floret (سنبل, of the Haft-sin): a six-pointed star, violet-blue deepening to the throat, a darker stripe down
+// each petal, pale stamens ----
+{
+  const C = { x: 32, y: 32 }, fl = flower({ k: 6, shape: 'point', L: 22, W: 11.5, at: 0, off: 3, C, seed: 28, veins: [0], vlen: 0.78 });
+  const defs = radU('S4pg', [[0, '#2e2270'], [0.22, '#4a3aa0'], [0.56, '#7c6cd4'], [1, '#b8adf0']], 32, 32, 26) + shade('S4s', '#2a1e6a', 0.3, 0.28, 0.95, 0.32, 0.22);
+  const symbol = `<symbol id="S4" viewBox="0 0 64 64"><defs><g id="S4p">${fl.paths}</g></defs>${petalsUse('S4', 'p', '#3e3090', 0.4)}${veinPath(fl.vd, '#3a2c8a', 0.45, 0.8)}<circle cx="32" cy="32" r="3.8" fill="#2a1e66"/>${stamens(C, 6, 1.4, 3.4, '#ece6bc', '#f4eec8', 29, { w: 0.5, ar: 0.65, spread: 0.1 })}</symbol>`;
+  addS('S4', 'Hyacinth floret', 'سنبل', 'violet-blue star, a dark stripe on each petal', 'flower', 0.85, { defs, symbol });
+}
+// ---- S5 forsythia: four long strap petals, a little uneven, gold deepening to amber at the throat ----
+{
+  const C = { x: 32, y: 32 }, fl = flower({ k: 4, shape: 'strap', L: 25, W: 11, at: 18, off: 0.8, C, seed: 31, veins: [0], vlen: 0.85, jitA: 12, jitS: 0.12 });
+  const defs = radU('S5pg', [[0, '#cf880c'], [0.24, '#edb01e'], [0.6, '#f8cf34'], [1, '#ffe46c']], 32, 32, 27) + shade('S5s', '#9a6a08', 0.3, 0.28, 0.95, 0.35, 0.3);
+  const symbol = `<symbol id="S5" viewBox="0 0 64 64"><defs><g id="S5p">${fl.paths}</g></defs>${petalsUse('S5', 'p', '#a8740c', 0.5)}${veinPath(fl.vd, '#c48a0e', 0.5, 0.5)}<circle cx="32" cy="32" r="2.4" fill="#b0901e"/>${stamens(C, 2, 0.8, 3.2, '#d89a10', '#e0a814', 32, { w: 0.55, ar: 0.55, spread: 0.05 })}</symbol>`;
+  addS('S5', 'Forsythia', '', 'bright gold, four long uneven petals', 'flower', 0.95, { defs, symbol });
+}
+// ---- the single petals, drawn like a leaf blade (base gradient, shading, a patch) but with a softer crease of their own (the
+// leaves' shared crease is too strong for a petal) and the outline kept in the symbol's defs ----
+function petalSym(id, { d, base, shadeDark, patch, details, shadeAt, crease = 0.06 }) {
+  const defs = lin(`${id}g`, base) + shade(`${id}s`, shadeDark, ...(shadeAt ?? [])) + (patch ? rad(`${id}p`, patch.stops, patch.cx, patch.cy, patch.r) : '') + lin(`${id}c`, [[0, '#fff', 0], [0.47, '#fff', crease], [0.53, '#000', crease], [1, '#000', 0]], 0, 0, 1, 0);
+  return { defs, symbol: `<symbol id="${id}" viewBox="0 0 64 64"><defs><path id="${id}o" d="${d}"/></defs><use href="#${id}o" fill="url(#${id}g)" stroke="${shadeDark}" stroke-opacity=".3" stroke-width=".4" stroke-linejoin="round"/>${patch ? `<use href="#${id}o" fill="url(#${id}p)"/>` : ''}<use href="#${id}o" fill="url(#${id}s)"/><use href="#${id}o" fill="url(#${id}c)"/>${details}</symbol>` };
+}
+const onePetal = (shape, L, W, at, base, seed, o) => { const r = rng(seed); const pts = petalPts(shape, L, W, r, o).map((p) => rotP(p, at, base)); return smooth(pts, 1); };
+const fan = (base, at, L, W, offs, len = 0.85) => offs.map((v) => [P(0, -L * 0.06), P(v * W * 0.2, -L * 0.45), P(v * W * 0.4, -L * len)].map((p) => rotP(p, at, base))).map((q) => `M${f(q[0].x)} ${f(q[0].y)}Q${f(q[1].x)} ${f(q[1].y)} ${f(q[2].x)} ${f(q[2].y)}`).join('');
+// ---- S6 cherry petal: one notched petal, pink at the base fading to blush, a curled edge ----
+{
+  const base = { x: 33, y: 60 }, at = -6, { d, samples } = onePetal('notch', 50, 40, at, base, 33, { notch: 0.09, j: 0.6 });
+  const details = veinPath(fan(base, at, 50, 40, [-0.7, -0.35, 0, 0.35, 0.7]), '#d65a84', 0.3, 0.5) + curl(samples, 34, 50, 2.2, '#fff4f7', '#b04a70', { x: 32, y: 32 });
+  addS('S6', 'Cherry petal', '', 'one notched petal, pink at the base, a curled edge', 'petal', 0.62, petalSym('S6', { d, base: [[0, '#fde7ee'], [0.5, '#f9bccd'], [1, '#e46890']], shadeDark: '#9a2c55', details }));
+}
+// ---- S7 magnolia petal: long and cupped, cream at the tip flushing to purple-pink at the base, its cupped edge showing ----
+{
+  const base = { x: 32, y: 61 }, at = 5, { d, samples } = onePetal('spoon', 54, 30, at, base, 35, { j: 0.5 });
+  const details = veinPath(fan(base, at, 54, 30, [-0.55, -0.2, 0.2, 0.55], 0.9), '#b0608e', 0.2, 0.45) + curl(samples, 17, 36, 2.2, '#fffdfb', '#7a2a5a', { x: 30, y: 36 });
+  addS('S7', 'Magnolia petal', '', 'long and cupped, cream flushing to purple-pink, one edge rolled in', 'petal', 0.95, petalSym('S7', { d, base: [[0, '#fffaf6'], [0.4, '#f9e2ec'], [0.75, '#dc8cb8'], [1, '#9c3474']], shadeDark: '#5a1a40', details, shadeAt: [0.3, 0.3, 0.95, 0.32, 0.5] }));
+}
+// ---- S8 tulip petal (لاله): broad and glossy, scarlet, with the dark heart at the base ringed in gold (داغ لاله of the poems) ----
+{
+  const base = { x: 32, y: 60 }, at = -3, { d } = onePetal('ovate', 52, 40, at, base, 37, { j: 0.5 });
+  const details = veinPath(fan(base, at, 52, 40, [-0.6, -0.3, 0, 0.3, 0.6], 0.88), '#7a0a18', 0.22, 0.45);
+  addS('S8', 'Tulip petal', 'لاله', 'scarlet, the dark heart at its base ringed in gold', 'petal', 0.8, petalSym('S8', { d, base: [[0, '#f04a3a'], [0.35, '#e02430'], [0.8, '#c0162c'], [1, '#a8102a']], shadeDark: '#4a0410', shadeAt: [0.3, 0.25, 0.95, 0.38, 0.45], patch: { stops: [[0, '#1a0408', 0.95], [0.5, '#2a0610', 0.88], [0.66, '#f2b632', 0.85], [0.84, '#f2b632', 0.25], [1, '#f2b632', 0]], cx: 0.5, cy: 0.97, r: 0.21 }, details }));
+}
+// ---- S9 rosebud (غنچه, for the Roses name): a closed bud in Senso's rose, two outer petals wrapping it, five sepals, a short stem ----
+{
+  const bud = smooth([P(32, 7, true), P(37.5, 12), P(41.5, 21), P(41.6, 31), P(37.6, 39), P(32, 42.4), P(26.4, 39), P(22.4, 31), P(22.5, 21), P(26.5, 12)], 1).d;
+  const wrapL = smooth([P(32, 43, true), P(25.5, 39.4), P(21.9, 30), P(22.6, 20), P(26.8, 12.4), P(30.6, 10.2, true), P(29, 17.5), P(28.6, 26.5), P(30.2, 35.5)], 1).d;
+  const wrapR = smooth([P(32, 43, true), P(38.6, 39.6), P(42.1, 31), P(41.7, 22), P(38.6, 14.8), P(34.6, 12.6, true), P(35.8, 20), P(35.6, 29), P(34.2, 37)], 1).d;
+  const sepal = (x0, y0, x1, y1, bend, w) => { const nx = -(y1 - y0), ny = x1 - x0, nl = Math.hypot(nx, ny), ox = (nx / nl) * w, oy = (ny / nl) * w, mx = (x0 + x1) / 2 + bend, my = (y0 + y1) / 2; return smooth([P(x0 + ox, y0 + oy), P(mx + ox * 0.55, my + oy * 0.55), P(x1, y1, true), P(mx - ox * 0.55, my - oy * 0.55), P(x0 - ox, y0 - oy)], 1).d; };
+  const sepals = [sepal(29.5, 44, 17.5, 25, -2.5, 2.2), sepal(34.5, 44, 46.5, 27, 2.5, 2.2), sepal(30.5, 45, 25.5, 33.5, -1, 1.8), sepal(33.5, 45, 39, 32, 1, 1.8), sepal(32, 45.5, 32.6, 35.5, 0.4, 1.5)].map((d) => `<path d="${d}"/>`).join('');
+  const defs = lin('S9g', [[0, '#f590aa'], [0.45, '#cc3366'], [1, '#98163f']], 0.4, 0, 0.6, 1) + lin('S9l', [[0, '#c42a58'], [1, '#8e1238']], 0.3, 0, 0.7, 1) + lin('S9r', [[0, '#e65a82'], [1, '#b02656']], 0.3, 0, 0.7, 1) + lin('S9k', [[0, '#86b04e'], [1, '#3e6a22']], 0.5, 0, 0.5, 1) + rad('S9h', [[0, '#8cb850'], [1, '#4a7428']], 0.4, 0.35, 0.7) + shade('S9s', '#5a0a26', 0.32, 0.25, 0.95, 0.35, 0.35);
+  const symbol = `<symbol id="S9" viewBox="0 0 64 64"><path d="M32 48Q30.6 56 33 63" fill="none" stroke="#4a7428" stroke-width="2.4" stroke-linecap="round"/><path d="M31.6 54.6l-3.6-1.4 3.2 3.4Z" fill="#6a6a2a"/><path d="${bud}" fill="url(#S9g)"/><path d="${wrapL}" fill="url(#S9l)"/><path d="${wrapR}" fill="url(#S9r)"/><path d="${bud}" fill="url(#S9s)"/><path d="M30.6 10.2Q28.6 22 30.2 35.5M34.6 12.6Q36.2 24 34.2 37" fill="none" stroke="#ffc2d2" stroke-opacity=".7" stroke-width=".6" stroke-linecap="round"/><path d="M32 9.6Q34.6 11.6 33.8 14.2Q32.6 16.2 30.8 15" fill="none" stroke="#7e1034" stroke-opacity=".35" stroke-width=".5" stroke-linecap="round"/><g fill="url(#S9k)" stroke="#2e5418" stroke-opacity=".35" stroke-width=".35">${sepals}</g><ellipse cx="32" cy="45.6" rx="4.6" ry="3.8" fill="url(#S9h)"/></symbol>`;
+  addS('S9', 'Rosebud', 'غنچه', "a closed bud in Senso's rose, green sepals, a short stem", 'bud', 0.85, { defs, symbol });
+}
+// ---- S10 cherry buds: a short twig with two plump pink buds (one opening) on green stalks, brown bud scales and a new leaf ----
+{
+  const r = rng(39), budShape = (L, W) => smooth(petalPts('bud', L, W, r, { j: 0.3 }), 1).d;
+  const cup = 'M-3.4 .4Q0 3.8 3.4 .4L2.2-2.2.9-.4 0-2.8-.9-.4-2.2-2.2Z';
+  const leafD = smooth(petalPts('point', 15, 7.5, r, { j: 0.3 }).map((p) => rotP(p, 104, { x: 32, y: 44.5 })), 1).d;
+  const defs = lin('S10a', [[0, '#fcc4d2'], [0.55, '#f084a2'], [1, '#d8507a']], 0.3, 0, 0.7, 1) + lin('S10b', [[0, '#fde0e8'], [0.5, '#f7aac0'], [1, '#e66a90']], 0.3, 0, 0.7, 1) + lin('S10l', [[0, '#b2d866'], [1, '#5f9a2c']], 0, 0, 1, 0.4) + shade('S10s', '#9a2c55', 0.3, 0.25, 0.95, 0.45, 0.25);
+  const bud1D = budShape(16, 12);
+  const bud1 = `<g transform="translate(21.5 30) rotate(-28)"><path d="${bud1D}" fill="url(#S10a)"/><path d="${bud1D}" fill="url(#S10s)"/><path d="${cup}" fill="#7f9e3c"/></g>`;
+  const bud2D = budShape(19, 15);
+  const bud2 = `<g transform="translate(41.5 26.5) rotate(20)"><path d="${bud2D}" fill="url(#S10b)"/><path d="${bud2D}" fill="url(#S10s)"/><path d="M0-18.6Q-2.6-12-1.2-5M.4-18.6Q3.4-11 2.2-4.4" fill="none" stroke="#d8507a" stroke-opacity=".45" stroke-width=".5" stroke-linecap="round"/><path d="${cup}" fill="#7f9e3c" transform="scale(1.15)"/></g>`;
+  const symbol = `<symbol id="S10" viewBox="0 0 64 64"><path d="M5 60C13 54.5 21.5 49.5 30 45.2S44 38.6 51 36.4" fill="none" stroke="#6b4630" stroke-width="3.2" stroke-linecap="round"/><path d="M7.4 58C14.6 53 21.6 48.6 29.6 44.2" fill="none" stroke="#a47e5c" stroke-opacity=".55" stroke-width=".8" stroke-linecap="round"/><path d="M30.2 43.6Q26.6 37 22.4 31.6M31 43.4Q36.6 35 40.8 28.4" fill="none" stroke="#7a9a3a" stroke-width="1.3" stroke-linecap="round"/><path d="${leafD}" fill="url(#S10l)" stroke="#3e6a22" stroke-opacity=".4" stroke-width=".35"/><ellipse cx="30.4" cy="44.6" rx="3.4" ry="2.5" transform="rotate(-30 30.4 44.6)" fill="#8a5a3a"/><ellipse cx="31.6" cy="43.6" rx="2" ry="1.5" transform="rotate(-30 31.6 43.6)" fill="#b07a4e"/>${bud1}${bud2}</symbol>`;
+  addS('S10', 'Cherry buds', '', 'two plump pink buds on a twig, one opening, a new leaf', 'bud', 0.9, { defs, symbol });
+}

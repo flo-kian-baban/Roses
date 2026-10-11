@@ -162,3 +162,31 @@ Renumbered U1–U6 on 2026-10-11 (they were S1–S6 until then, in the gallery, 
 Same rules as fall and winter: original drawings built from geometry (no stock or traced art), at most 20 moving elements, random per load and full on the first frame, transform and opacity only, no blur. Rendered headlessly before handing over (six live frames, six stills, every design tile, no script error). Senso only; Kebab Land and the default template keep their summer until Kian confirms Senso's. Nothing on the customers' pages changes until he picks.
 
 **Kian's pick (2026-10-10): U5, the Persian sun, as the main scene, mixed with U1's dandelion seeds, lighter.** Built into Senso's summer (see CLAUDE.md, "Summer welcome scene"): 20 particles per load (the sun, 10 sparkles, 4 motes, 5 small faint seeds instead of U1's 18). Two changes from the gallery, found on the iPhone 13 viewport (664 px tall, the gallery's frame is 844): the sun's size is capped so its rays stop above the card on a short phone (unchanged at 844 px), and the sparkles stay above or below the card instead of anywhere. Season drill (hand run on a scratch copy): artwork, randomness, smoothness (median 60 fps at CPU 4×, no long task), reduced-motion still (14 designs resting), recording, inline code 7.1 KB gzipped (≤ 15 KB) all PASS for summer.
+
+## Spring candidates for Senso (2026-10-11: step 0 of the per-season transitions batch)
+
+Kian approved the welcome transitions in principle and asked, through the PM, for spring and summer versions of all ten and a transition choice per season. Step 0 checked the artwork first: **summer is final** (Kian's pick of 2026-10-10 above, from `summer-gallery.html`, built), **spring is not** (Senso's spring still shows the scene of 2026-10-09: two flat petal shapes in the "Spring blossoms" tint). So spring gets its candidates first, exactly as fall and winter did, and the transitions wait for the pick.
+
+Ten spring candidates (S1–S10) are added to `gallery.html` (rebuilt by `node reports/welcome/gallery/build.mjs`; the designs in `gallery/art.mjs`, after the snowflakes), each shown large and still, falling on its own and at the far, middle and near sizes on Senso's cream, plus a full-scene demo of all ten on the replica of Senso's welcome screen with Replay and Still. Pick 5 to 7. The fall and winter sections are unchanged (every symbol byte for byte, same sizes) except that Kian's picks are now marked on their cards; a note at the end points to the summer pick. (The summer candidates are numbered U1–U6 since 2026-10-11; they were S1–S6.)
+
+| No. | Design | Kind | Colours | gzipped | raw |
+| --- | --- | --- | --- | --- | --- |
+| S1 | Cherry blossom | blossom | pale pink, five notched petals, a deep pink heart, gold-tipped stamens | 1709 B | 4442 B |
+| S2 | Almond blossom (شکوفه بادام) | blossom | white blushing to a red heart, long red stamens | 1712 B | 4595 B |
+| S3 | White trillium (Ontario's flower) | blossom | three white petals with fine veins, tips turning pink, green sepals | 1599 B | 4258 B |
+| S4 | Hyacinth floret (سنبل, of the Haft-sin) | blossom | violet-blue six-pointed star, a dark stripe on each petal | 1477 B | 3745 B |
+| S5 | Forsythia | blossom | bright gold, four long uneven petals | 1122 B | 2685 B |
+| S6 | Cherry petal | petal | one notched petal, pink at the base, a curled edge | 909 B | 2648 B |
+| S7 | Magnolia petal | petal | long and cupped, cream flushing to purple-pink, one edge rolled in | 970 B | 2831 B |
+| S8 | Tulip petal (لاله) | petal | scarlet, the dark heart at its base ringed in gold (داغ لاله of the poems) | 714 B | 2093 B |
+| S9 | Rosebud (غنچه) | bud | a closed bud in Senso's rose `#cc3366`, green sepals, a short stem | 1172 B | 3645 B |
+| S10 | Cherry buds | bud | two plump pink buds on a twig, one opening, a new leaf | 1115 B | 3690 B |
+| | all ten spring designs (with the shared gradients) | | | 9.6 KB | |
+
+Drawing: the same method as the leaves, all original geometry: a petal is a half-width profile along its length, mirrored with a little jitter and smoothed (sharp corners kept at the base, the tip and the cherry's notch); a blossom places its petals around the heart, one gradient across the whole flower from the heart out plus a highlight per petal, veins, stamens with anthers; a single petal is drawn like a leaf blade (base gradient, shading, a soft crease of its own, a curled edge on S6 and S7, the tulip's blotch as a patch). White petals carry a thin warm edge so they read on the cream. Styling by presentation attributes only, as before.
+
+Motion in the demo (what step 2 would build): lighter than the leaves, so slower (far 16–24 s, middle 11–16 s, near 8.5–12 s per fall) with a wider sway; a whole blossom also twirls (a full turn every 7–15 s, either way) under a small 3D tilt; a single petal flips and floats (tilts of 35–75° / 30–70°); a bud is heavier: a quarter faster, under half the sway, barely tilting. Petals are drawn smaller than blossoms (scale 0.62–0.95). 20 particles (2 near, 9 middle, 9 far), random per load, full on the first frame, transform and opacity only; Still: ten designs resting low and along the sides.
+
+Checked on the built file (Chromium and WebKit, two loads each, script in the session's scratchpad): the spring demo runs 20 particles (2 near, 9 middle, 9 far) with 70–77 animations, all running and mid-flight on the first read, keyframes on `transform` only; Still shows 10 designs and 0 animations; every spring design paints (bounding boxes 29–52 × 46–56 in the 64 box); the cards' own panes animate; two loads draw different scenes; no script error from the spring section. One old error stays: F7's curled lobe was never drawn (its curl indices run past its outline, so the browser rejects that one path; in the gallery since `68bce67`, F7 was not picked; left as Kian saw it).
+
+Stills (Chromium, `gallery/shots.mjs reports/welcome spring`; the script now takes the seasons to shoot, so the fall and winter stills were not redrawn): `gallery-spring-demo.jpg`, `gallery-spring-still.jpg`, `gallery-spring-cards.jpg`. No app code changed; Kebab Land, the default template and Senso's served pages are untouched until the picks.

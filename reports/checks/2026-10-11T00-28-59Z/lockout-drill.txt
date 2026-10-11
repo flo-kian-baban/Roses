@@ -1,0 +1,29 @@
+2026-10-11T00:41:41.001Z connected to database "roses_check_20261011t002859z" as application "roses-check:lockout-drill"
+2026-10-11T00:41:41.044Z admin signed in (cookie received); creating drill PINs
+2026-10-11T00:41:41.123Z login_failures cleared for both venues before the drill
+2026-10-11T00:41:41.123Z --- Part 1: 5 wrong PINs from address A on venue senso (defaults: 5 failures → 15-minute lock for venue + address)
+2026-10-11T00:41:41.254Z A wrong PIN #1: 303 → wrong PIN (4 tries left)
+2026-10-11T00:41:41.383Z A wrong PIN #2: 303 → wrong PIN (3 tries left)
+2026-10-11T00:41:41.510Z A wrong PIN #3: 303 → wrong PIN (2 tries left)
+2026-10-11T00:41:41.638Z A wrong PIN #4: 303 → wrong PIN (1 try left)
+2026-10-11T00:41:41.764Z A wrong PIN #5: 303 → too many wrong PINs; locked until 08:56 p.m.
+2026-10-11T00:41:41.768Z A correct PIN while locked: 303 → too many wrong PINs; try again at 08:56 p.m. (cookie set: false)
+2026-10-11T00:41:41.809Z B correct PIN, same venue, other address: 303 → /admin/senso (cookie set: true)
+2026-10-11T00:41:41.845Z A correct PIN on the other venue (lock is per venue + address): 303 → /admin/kebab-land (cookie set: true)
+2026-10-11T00:41:41.850Z login_failures: key=senso:<addr-A> failures=5 locked_until=2026-10-11T00:56:41.758Z minutes_left=15
+2026-10-11T00:41:41.850Z login_failures: key=venue:senso failures=5 locked_until=null minutes_left=null
+2026-10-11T00:41:41.850Z Part 1 PASS
+2026-10-11T00:41:42.000Z --- revoked PIN from address B: 303 → wrong PIN (4 tries left) (cookie set: false); the valid PIN from B just before: /admin/senso
+2026-10-11T00:41:42.000Z Revoked PIN PASS
+2026-10-11T00:41:42.000Z --- Part 2: 50 wrong PINs on venue kebab-land from 10 addresses (5 each) via the TRUST_PROXY=1 server; cap = 50 per 60 minutes
+2026-10-11T00:41:47.010Z 50th failure: 303 → PIN login for this venue is locked until 09:41 p.m.
+2026-10-11T00:41:47.012Z correct PIN from an 11th address on kebab-land: 303 → PIN login for this venue is locked until 09:41 p.m.; an admin can unlock it (cookie set: false)
+2026-10-11T00:41:47.051Z correct PIN from that address on senso (other venue unaffected): 303 → /admin/senso (cookie set: true)
+2026-10-11T00:41:47.052Z login_failures: key=venue:kebab-land failures=50 locked_until=2026-10-11T01:41:47.003Z
+2026-10-11T00:41:47.055Z admin_alerts rows for kebab-land: before 0, now 1; latest: {"id":"5","kind":"lockout-cap","message":"50 failed PIN attempts within 60 minutes: PIN login for this venue is locked until 2026-10-11T01:41:47.003Z. An admin can unlock it from this page.","seen_at":null}
+2026-10-11T00:41:47.074Z admin home shows the alert with an Unlock button: true
+2026-10-11T00:41:47.074Z Part 2 PASS
+2026-10-11T00:41:47.076Z admin unlock of kebab-land: 303 → /admin?unlocked=kebab-land
+2026-10-11T00:41:47.115Z correct PIN on kebab-land after unlock: 303 → /admin/kebab-land
+2026-10-11T00:41:47.128Z drill PINs revoked; senso lock rows cleared so nobody stays locked out
+2026-10-11T00:41:47.132Z LOCKOUT DRILL PASS

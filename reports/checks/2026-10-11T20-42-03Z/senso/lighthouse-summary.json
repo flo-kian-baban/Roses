@@ -1,0 +1,42 @@
+{
+  "url": "http://127.0.0.1:64314/senso",
+  "note": "Local production build (next build && next start) on the developer machine. A local estimate, not the hosted result.",
+  "runs": [
+    {
+      "run": 1,
+      "formFactor": "mobile",
+      "emulated": true,
+      "performance": 100,
+      "lcpMs": 1235,
+      "fcpMs": 923,
+      "tbtMs": 48,
+      "cls": 0,
+      "speedIndexMs": 923,
+      "lcpElement": "<img src=\"/brand/senso-logo.png\" width=\"271\" height=\"143\" alt=\"Senso Café &amp; Bites\" decoding=\"async\" fetchpriority=\"h"
+    },
+    {
+      "run": 2,
+      "formFactor": "mobile",
+      "emulated": true,
+      "performance": 100,
+      "lcpMs": 1215,
+      "fcpMs": 1065,
+      "tbtMs": 0,
+      "cls": 0,
+      "speedIndexMs": 1065,
+      "lcpElement": "<img src=\"/brand/senso-logo.png\" width=\"271\" height=\"143\" alt=\"Senso Café &amp; Bites\" decoding=\"async\" fetchpriority=\"h"
+    },
+    {
+      "run": 3,
+      "formFactor": "mobile",
+      "emulated": true,
+      "performance": 100,
+      "lcpMs": 1211,
+      "fcpMs": 907,
+      "tbtMs": 0,
+      "cls": 0,
+      "speedIndexMs": 907,
+      "lcpElement": "<img src=\"/brand/senso-logo.png\" width=\"271\" height=\"143\" alt=\"Senso Café &amp; Bites\" decoding=\"async\" fetchpriority=\"h"
+    }
+  ]
+}

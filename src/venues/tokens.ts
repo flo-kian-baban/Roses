@@ -103,7 +103,7 @@ const LEAVES = '#e0782f', SNOW_INK = '#7f98b5', BLOSSOM = '#f2a0b4', LIGHT = '#f
 // gradient from the tip (`tip`) through the blade (`mid`) to the stem end (`base`), the shadow side (`dark`), the veins (`vein`),
 // the pale underside and fold of a curled edge (`under`, `fold`), the petiole (`stem`), and a turning patch where the species has one.
 // The brown spots are shared. Snow is drawn in the "Winter snow" token (currentColor) with white plates (WHITE).
-// Summer (Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: S5 the Persian sun, mixed lightly with S1's dandelion
+// Summer (Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: U5 the Persian sun, mixed lightly with U1's dandelion
 // seeds): the sun's disc gradient (`disc` light → `disc2` → `disc3` at the rim), its outer ring, dotted inner ring and shine, the
 // straight rays with their light centre lines, the flame rays, the sparkles (`spark` with a `sparkCore`) and the motes of light;
 // the seed's pappus filaments and barbs, its beak, the seed body's gradient (`achene` dark → `achene2` light) and its ridges.

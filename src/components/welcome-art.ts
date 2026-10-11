@@ -183,8 +183,8 @@ const W7 = () => flake('W7', '<path d="M32 32V6M32 14l-3.5-2M32 14l3.5-2"/><path
 // W10 soft round flake with a bright core: its gradient reads its colour from its own element, the Winter snow token
 const W10 = () => rad('W10g', [[0, ARTWORK.white, 1], [0.3, 'currentColor', 0.9], [0.7, 'currentColor', 0.35], [1, 'currentColor', 0]], 0.5, 0.5, 0.5, 'color:var(--c-welcome-snow)') + '<symbol id="W10" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="url(#W10g)"/></symbol>';
 
-// ---- summer (Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: S5 the Persian sun as the main scene, mixed with
-// S1's dandelion seeds, lighter) ----
+// ---- summer (Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: U5 the Persian sun as the main scene, mixed with
+// U1's dandelion seeds, lighter) ----
 // The sun, after the khorshid of Persian tiles (no face), in three layers so each can turn at its own speed (200 × 200): the disc
 // (a crisp gradient, a fine outer ring, a dotted inner ring, a shine), twelve straight tapered rays with light centre lines, and
 // twelve flame rays between them (a centre line waving across the radius, tapering to a point). A four-point sparkle with a light

@@ -146,17 +146,19 @@ Tap → menu visible: senso 213 ms (English) / 232 ms (Persian), kebab-land 227 
 
 ## Summer candidates for Senso (Kian, 2026-10-10: the summer scene of 2026-10-09, soft blurred light, is not liked; the other seasons are)
 
+Renumbered U1–U6 on 2026-10-11 (they were S1–S6 until then, in the gallery, this section and CLAUDE.md), so that S means spring everywhere (the spring candidates S1–S10 in `gallery.html`). Kian's summer pick is unchanged: U5 with a few of U1's seeds.
+
 `summer-gallery.html` (our tool, one self-contained file; rebuilt by `node reports/welcome/summer/build.mjs` from `summer/art.mjs`) runs six whole-scene ideas live behind a replica of Senso's welcome card at iPhone 13 size, each with **Replay** (a new random scene) and **Still** (the reduced-motion composition), and each concept's designs shown large:
 
 | No. | Idea | Designs | Motion | Artwork gzipped |
 | --- | --- | --- | --- | --- |
-| S1 | Dandelion seeds (قاصدک, the bringer of good news) | 3 seeds (full, lopsided, young) | across from the left on a breeze, bobbing and tilting; 18 in three depths | 2.9 KB |
-| S2 | Butterflies | monarch, tiger swallowtail, spring azure, painted lady | 6 on wandering paths, wings flapping in 3D about the body with an uneven beat | 2.0 KB |
-| S3 | Summer fruit | orange, lemon, lime wheels, cherries (گیلاس), strawberry, watermelon wedge (هندوانه), mint | the fall leaves' motion: down, pendulum sway, 3D tumble; 20 | 4.3 KB |
-| S4 | Sparkling lemonade | 3 bubble designs, lemon wheel, mint | rising with a wobble and a slight squash; lemon and mint tumbling up among them; 18 | 2.1 KB |
-| S5 | Persian sun (خورشید) | disc, straight rays, flame rays (no face), sparkle, mote | the two rings of rays turning slowly in opposite directions, the flames breathing; 12 sparkles twinkling, 6 motes rising | 2.1 KB |
-| S6 | Rose petals (for the Roses name) | red, pink and blush petals, two curled | the fall leaves' motion, slower; 20 | 2.4 KB |
+| U1 | Dandelion seeds (قاصدک, the bringer of good news) | 3 seeds (full, lopsided, young) | across from the left on a breeze, bobbing and tilting; 18 in three depths | 2.9 KB |
+| U2 | Butterflies | monarch, tiger swallowtail, spring azure, painted lady | 6 on wandering paths, wings flapping in 3D about the body with an uneven beat | 2.0 KB |
+| U3 | Summer fruit | orange, lemon, lime wheels, cherries (گیلاس), strawberry, watermelon wedge (هندوانه), mint | the fall leaves' motion: down, pendulum sway, 3D tumble; 20 | 4.3 KB |
+| U4 | Sparkling lemonade | 3 bubble designs, lemon wheel, mint | rising with a wobble and a slight squash; lemon and mint tumbling up among them; 18 | 2.1 KB |
+| U5 | Persian sun (خورشید) | disc, straight rays, flame rays (no face), sparkle, mote | the two rings of rays turning slowly in opposite directions, the flames breathing; 12 sparkles twinkling, 6 motes rising | 2.1 KB |
+| U6 | Rose petals (for the Roses name) | red, pink and blush petals, two curled | the fall leaves' motion, slower; 20 | 2.4 KB |
 
 Same rules as fall and winter: original drawings built from geometry (no stock or traced art), at most 20 moving elements, random per load and full on the first frame, transform and opacity only, no blur. Rendered headlessly before handing over (six live frames, six stills, every design tile, no script error). Senso only; Kebab Land and the default template keep their summer until Kian confirms Senso's. Nothing on the customers' pages changes until he picks.
 
-**Kian's pick (2026-10-10): S5, the Persian sun, as the main scene, mixed with S1's dandelion seeds, lighter.** Built into Senso's summer (see CLAUDE.md, "Summer welcome scene"): 20 particles per load (the sun, 10 sparkles, 4 motes, 5 small faint seeds instead of S1's 18). Two changes from the gallery, found on the iPhone 13 viewport (664 px tall, the gallery's frame is 844): the sun's size is capped so its rays stop above the card on a short phone (unchanged at 844 px), and the sparkles stay above or below the card instead of anywhere. Season drill (hand run on a scratch copy): artwork, randomness, smoothness (median 60 fps at CPU 4×, no long task), reduced-motion still (14 designs resting), recording, inline code 7.1 KB gzipped (≤ 15 KB) all PASS for summer.
+**Kian's pick (2026-10-10): U5, the Persian sun, as the main scene, mixed with U1's dandelion seeds, lighter.** Built into Senso's summer (see CLAUDE.md, "Summer welcome scene"): 20 particles per load (the sun, 10 sparkles, 4 motes, 5 small faint seeds instead of U1's 18). Two changes from the gallery, found on the iPhone 13 viewport (664 px tall, the gallery's frame is 844): the sun's size is capped so its rays stop above the card on a short phone (unchanged at 844 px), and the sparkles stay above or below the card instead of anywhere. Season drill (hand run on a scratch copy): artwork, randomness, smoothness (median 60 fps at CPU 4×, no long task), reduced-motion still (14 designs resting), recording, inline code 7.1 KB gzipped (≤ 15 KB) all PASS for summer.

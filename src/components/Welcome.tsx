@@ -81,12 +81,12 @@ if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){s.
 else{for(var k in L)if(k!=='b')for(var j=0;j<L[k][0];j++)one(k,R(.02,.98))}
 s.innerHTML=h})();`;
 
-// The summer engine (Senso, Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: S5 the Persian sun as the main scene,
-// mixed with S1's dandelion seeds, lighter). 20 particles on every load: the sun in the top corner (its size random, 72–80 % of the
+// The summer engine (Senso, Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: U5 the Persian sun as the main scene,
+// mixed with U1's dandelion seeds, lighter). 20 particles on every load: the sun in the top corner (its size random, 72–80 % of the
 // width up to 440 px, and never so big that its rays reach the card: on a short phone it is smaller; its rays and flames started at
 // a random point of their slow turns), 10 sparkles twinkling (5 near the sun, 5 above or below the card, never on it; size, place,
 // period and phase random), 4 motes of light rising, and 5 dandelion seeds (3 far, 2 middle; no near ones,
-// small and faint: lighter than the S1 candidate's 18) carried across from the left on a breeze at a random height, bobbing and
+// small and faint: lighter than the U1 candidate's 18) carried across from the left on a breeze at a random height, bobbing and
 // tilting, each a random design of the scene's data-designs. Negative delays: everything is mid-flight on the first frame. Reduced
 // motion: the sun, the sparkles at their own sizes and three seeds resting low and on the left, nothing moving (no motes). The
 // stylesheet does the rest (the "Summer artwork" rules in src/styles/public.css). Nothing is stored.

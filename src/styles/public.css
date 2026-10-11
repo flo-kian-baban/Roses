@@ -83,8 +83,8 @@ html[data-welcome="done"] #welcome { opacity: 0; visibility: hidden; pointer-eve
   100% { transform: perspective(260px) rotateX(calc(var(--rx) * .6)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
 @keyframes wa-spin { to { transform: rotate(360deg); } }
-/* Summer artwork (Senso, Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: S5 the Persian sun as the main scene,
-   mixed with S1's dandelion seeds, lighter; the particles drawn on every load by sunEngineScript in src/components/Welcome.tsx).
+/* Summer artwork (Senso, Kian's pick of 2026-10-10 from reports/welcome/summer-gallery.html: U5 the Persian sun as the main scene,
+   mixed with U1's dandelion seeds, lighter; the particles drawn on every load by sunEngineScript in src/components/Welcome.tsx).
    The sun sits in the top corner (.sun, its own size --s, raised by --y): its straight rays (.sr) turn one way, 140 s a turn, its
    flame rays the other, 190 s, while breathing (.sf, 7 s); all three started --l earlier, at a random point of their cycle. The
    sparkles (.tw at --x, --y) twinkle (.k: grow, turn a quarter and fade over --d); the motes of light (.mo) rise (.u) over --d,

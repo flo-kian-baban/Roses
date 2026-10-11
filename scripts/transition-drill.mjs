@@ -10,15 +10,27 @@
 //     (the median frame interval), no long task > 50 ms, with an English tap (the page's own language on a first visit, so the tap changes
 //     no layout); every animation of the transition on transform, opacity or an individual transform property, and ended before the
 //     overlay goes (nothing cut); reported per concept as measured;
-//   the same with a Persian tap, reported as measured (the tap then lays the whole menu out again in Persian, a cost of the language
-//     switch that the 200 ms fade of 2026-10-09 has too); with it, the language is applied at the first frame after the tap, before the
-//     transition has moved (no flash of the other language);
+//   the same with a Persian tap, measured (the tap then lays the whole menu out again in Persian, a cost of the language switch that the
+//     200 ms fade of 2026-10-09 has too); with it, the language is applied at the first frame after the tap, before the transition has
+//     moved (no flash of the other language); and (the PM, 2026-10-11) a real check over the 20 Persian taps, persian-tap-senso: no long
+//     task > 50 ms, listed in reports/checks/known-misses.json as "Persian tap, Senso" until the relayout task is ≤ 50 ms;
 //   timing: total ≤ 900 ms (from the tap to the overlay gone, at CPU 4× and unthrottled); the menu scrollable and tappable within 300 ms
 //     of the tap, measured with a real touch scroll right after the tap (the first scroll event and the page moved) and, on another load,
 //     a real tap on the first item (its popup open), both during the transition;
 //   reduced motion: a 150 ms fade for every concept (an opacity between 0 and 1 seen, gone in 120–230 ms, one animation: the overlay's
 //     opacity; nothing of the concept built);
 //   recordings (Playwright video, on disk only): all ten in fall on the iPhone 13 viewport;
+//   WebKit (the PM, 2026-10-11), every version functionally in Playwright's WebKit with the iPhone 13 device (mobile emulation, touch):
+//     it plays (the page names it, its animations on transform or opacity, none cut), ends ≤ 900 ms, the menu scrollable and tappable
+//     within 300 ms during it (a real touch tap on the first item opening its popup; the scroll a real mouse wheel on a load with mobile
+//     emulation off, same viewport, because Playwright's mobile WebKit has no scroll input: no wheel, no touch drag), the 150 ms fade under
+//     reduced motion, no console or page error on its four loads; fps reported for information only (WebKit runs unthrottled: CPU
+//     throttling is Chromium's CDP); each version compared with Chromium (animation count, animated properties, the checks' outcomes,
+//     gone-after with the same interaction unthrottled within 100 ms), any difference reported. A WebKit load that misses a time target
+//     (gone ≤ 900 ms, scroll or item tap ≤ 300 ms, the fade in 120–230 ms) is measured once more and both attempts are printed: headless
+//     WebKit on this machine stalls now and then (hand run of 2026-10-11: T10-winter gone after 1298 ms once, then 20 of 20 within 728–763
+//     ms; T5-fall's reduced-motion fade 249 ms once, then 20 of 20 within 160–165 ms; a cold first load once froze 680 ms); the check
+//     passes only on the second attempt, errors are never measured again, and every first-attempt miss is counted in the report;
 //   unchanged: Kebab Land's welcome behaviour byte for byte as the previous commit served it (scripts/fixtures/welcome-behaviour.json:
 //     head script, tap script, the whole overlay with the logo's <img> as a placeholder, the public stylesheet by hash) in fall and in
 //     winter; every venue on the default template (--venues) with the same head and tap scripts and stylesheet;
@@ -37,7 +49,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import net from 'node:net';
 import { spawn, execFileSync, spawnSync } from 'node:child_process';
-import { chromium, devices } from 'playwright';
+import { chromium, webkit, devices } from 'playwright';
 import { connectDb, loadEnv } from './load-env.mjs';
 import { behaviourOf, compareBehaviour, stylesheetHashes } from './welcome-behaviour-fixture.mjs';
 
@@ -58,6 +70,8 @@ const measure = (text) => { measures.push(text); console.log(`MEASURE: ${text}`)
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const gz = (s) => zlib.gzipSync(Buffer.from(s)).length;
 const DEVICE = { ...devices['iPhone 13'], defaultBrowserType: 'chromium' };
+const WK_DEVICE = devices['iPhone 13'], WK_SCROLL = { ...devices['iPhone 13'], isMobile: false }; // WebKit: mobile emulation; the scroll load without it (mobile WebKit has no wheel)
+const OK_PROPS = ['transform', 'opacity', 'scale', 'rotate', 'translate'];
 const SEASONS = { fall: '2026-10-15T12:00:00-04:00', winter: '2026-12-15T12:00:00-05:00', spring: '2027-04-15T12:00:00-04:00', summer: '2027-07-15T12:00:00-04:00' };
 const IDS = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10'];
 const BUDGET = 3072, TOTAL = 900, USABLE = 300;
@@ -125,10 +139,19 @@ const settled = (p) => p.waitForFunction(() => { const b = document.querySelecto
 const offWait = (p) => p.waitForFunction(() => window.__tx && window.__tx.off !== null && performance.now() > window.__tx.off + 200, null, { timeout: 8000 }).then(() => true).catch(() => false);
 
 let browser = await chromium.launch();
+let wk = null; // WebKit, launched with the first WebKit load
+// One load of /senso: Chromium (page errors) or WebKit (page errors and console errors, the PM's check).
+async function load(engine, opts) {
+  const ctx = engine === 'webkit' ? await (wk ??= await webkit.launch()).newContext(opts) : await browser.newContext(opts);
+  const p = await ctx.newPage(); const errors = [];
+  p.on('pageerror', (e) => errors.push(engine === 'webkit' ? `page error: ${e.message}` : e.message));
+  if (engine === 'webkit') p.on('console', (m) => { if (m.type() === 'error') errors.push(`console error: ${m.text()}`); });
+  await p.goto(`${base}/senso`, { waitUntil: 'load' });
+  return { ctx, p, errors };
+}
 // Smoothness (and timing) at CPU 4× with a tap in `lang`.
 async function smooth(lang) {
-  const ctx = await browser.newContext(DEVICE); const p = await ctx.newPage(); const errors = []; p.on('pageerror', (e) => errors.push(e.message));
-  await p.goto(`${base}/senso`, { waitUntil: 'load' }); await settled(p); await sleep(250);
+  const { ctx, p, errors } = await load('chromium', DEVICE); await settled(p); await sleep(250);
   const cdp = await ctx.newCDPSession(p); await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 }); await sleep(500);
   await p.evaluate(RECORDER); await sleep(60);
   await p.tap(`#welcome button[data-lang="${lang}"]`);
@@ -136,19 +159,33 @@ async function smooth(lang) {
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 }); await ctx.close();
   return { ...r, done, errors };
 }
+// WebKit: a load that misses its time target is measured once more (see the header); `again` keeps the first attempt.
+async function twice(fn, ok) { const a = await fn(); if (ok(a)) return { ...a, again: null }; const b = await fn(); return { ...b, again: a }; }
+// WebKit: the version plays from an English tap, unthrottled (fps for information only).
+async function wkPlay() {
+  const { ctx, p, errors } = await load('webkit', WK_DEVICE); await settled(p); await sleep(250);
+  const key = await p.evaluate(() => document.getElementById('welcome')?.rosesTxKey ?? null);
+  await p.evaluate(RECORDER); await sleep(60);
+  await p.tap('#welcome button[data-lang="en"]');
+  const done = await offWait(p); const r = done ? await p.evaluate(RESULT) : null;
+  await ctx.close();
+  return { ...r, done, key, errors };
+}
 // Usable within 300 ms: a real touch scroll right after the tap (the first scroll event and the page moved), or a real tap on the first item (its popup open).
-async function usable(kind) {
-  const ctx = await browser.newContext(DEVICE); const p = await ctx.newPage(); const errors = []; p.on('pageerror', (e) => errors.push(e.message));
-  await p.goto(`${base}/senso`, { waitUntil: 'load' }); await settled(p); await sleep(250);
+// In WebKit (engine 'webkit') the scroll is a mouse wheel on a load without mobile emulation (see the header).
+async function usable(kind, engine = 'chromium') {
+  const wkit = engine === 'webkit';
+  const { ctx, p, errors } = await load(engine, wkit ? (kind === 'scroll' ? WK_SCROLL : WK_DEVICE) : DEVICE); await settled(p); await sleep(250);
   await p.evaluate(RECORDER);
   const item = await p.evaluate(() => { const li = document.querySelector('main section li.item'); const r = li.getBoundingClientRect(); return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + Math.min(r.height / 2, 60)), id: li.dataset.id }; });
   await p.evaluate(() => { const R = window.__tx; R.scroll = null; R.itemClick = null; R.sheet = null;
     addEventListener('scroll', () => { if (R.scroll === null && R.click !== null) R.scroll = { t: performance.now() - R.click, y: scrollY }; }, { passive: true });
     document.addEventListener('click', (e) => { if (R.itemClick === null && R.click !== null && e.target.closest && e.target.closest('main li.item')) R.itemClick = { t: performance.now() - R.click, id: e.target.closest('li.item').dataset.id }; }, true);
     const d = document.getElementById('sheet'); if (d) new MutationObserver(() => { if (d.open && R.sheet === null && R.click !== null) R.sheet = performance.now() - R.click; }).observe(d, { attributes: true, attributeFilter: ['open'] }); });
-  const cdp = await ctx.newCDPSession(p);
+  const cdp = wkit ? null : await ctx.newCDPSession(p);
   await p.tap('#welcome button[data-lang="en"]');
-  if (kind === 'scroll') await cdp.send('Input.synthesizeScrollGesture', { x: 195, y: 520, xDistance: 0, yDistance: -260, speed: 2600, gestureSourceType: 'touch', preventFling: true });
+  if (kind === 'scroll' && wkit) { await p.mouse.move(195, 520); await p.mouse.wheel(0, 260); }
+  else if (kind === 'scroll') await cdp.send('Input.synthesizeScrollGesture', { x: 195, y: 520, xDistance: 0, yDistance: -260, speed: 2600, gestureSourceType: 'touch', preventFling: true });
   else await p.touchscreen.tap(item.x, item.y);
   await offWait(p); await sleep(150);
   const r = await p.evaluate(() => { const R = window.__tx; return { scroll: R.scroll && { t: Math.round(R.scroll.t), y: Math.round(R.scroll.y) }, y: Math.round(scrollY), itemClick: R.itemClick && { t: Math.round(R.itemClick.t), id: R.itemClick.id }, sheet: R.sheet === null ? null : Math.round(R.sheet), sheetOpen: !!document.getElementById('sheet')?.open, offMs: Math.round(R.off - R.click) }; });
@@ -156,14 +193,13 @@ async function usable(kind) {
   return { ...r, item, errors };
 }
 // Reduced motion: the 150 ms fade.
-async function reduced() {
-  const ctx = await browser.newContext({ ...DEVICE, reducedMotion: 'reduce' }); const p = await ctx.newPage();
-  await p.goto(`${base}/senso`, { waitUntil: 'load' }); await p.waitForFunction(() => document.documentElement.dataset.welcome === 'show'); await sleep(150);
+async function reduced(engine = 'chromium') {
+  const { ctx, p, errors } = await load(engine, { ...(engine === 'webkit' ? WK_DEVICE : DEVICE), reducedMotion: 'reduce' }); await p.waitForFunction(() => document.documentElement.dataset.welcome === 'show'); await sleep(150);
   const r = await p.evaluate(() => new Promise((res) => { const w = document.getElementById('welcome'); let faded = false, anims = null; const s = performance.now(); w.querySelector('button[data-lang="en"]').click();
     requestAnimationFrame(() => { const a = document.getAnimations().filter((x) => !(x instanceof CSSAnimation) && !(x instanceof CSSTransition)); anims = { count: a.length, targets: a.map((x) => (x.effect.target.id || x.effect.target.className || x.effect.target.tagName)), props: [...new Set(a.flatMap((x) => x.effect.getKeyframes().flatMap((k) => Object.keys(k).filter((q) => !['offset', 'computedOffset', 'easing', 'composite'].includes(q)))))], built: !!w.querySelector('.txb, .txl') }; });
     const tick = () => { const cs = getComputedStyle(w), t = performance.now() - s, o = Number(cs.opacity); if (o > 0 && o < 1) faded = true; if (cs.display === 'none' || t > 2000) res({ ms: Math.round(t), faded, anims, welcome: document.documentElement.dataset.welcome }); else requestAnimationFrame(tick); }; tick(); }));
   await ctx.close();
-  return r;
+  return { ...r, errors };
 }
 async function record(id, season) {
   const ctx = await browser.newContext({ ...DEVICE, recordVideo: { dir: out, size: { width: 390, height: 664 } } }); const p = await ctx.newPage();
@@ -217,9 +253,40 @@ try {
         `${k}: the overlay gone ${en.offMs} ms after the tap at CPU 4× and ${sc.offMs} / ${tp.offMs} ms unthrottled (≤ ${TOTAL}); a touch scroll started right after the tap moved the page from ${sc.scroll?.t ?? '—'} ms (≤ ${USABLE}; scrolled to ${sc.y} px during the transition); on another load a tap on the first item landed ${tp.itemClick?.t ?? '—'} ms after the language tap and opened its popup at ${tp.sheet ?? '—'} ms (≤ ${USABLE}; open ${tp.sheetOpen})`);
       const rm = await reduced();
       check(`reduced-${k}`, rm.faded && rm.ms >= 120 && rm.ms <= 230 && rm.anims?.count === 1 && rm.anims.props.join() === 'opacity' && !rm.anims.built && rm.welcome === 'off', `${k} with reduced motion: the 150 ms fade (an opacity between 0 and 1 seen: ${rm.faded}; gone after ${rm.ms} ms, 120–230), ${rm.anims?.count} animation on ${rm.anims?.targets.join(', ')} (${rm.anims?.props.join(', ')}), nothing of the concept built: ${!rm.anims?.built}`);
+      // WebKit: the same version, functionally (fps for information), and compared with Chromium
+      const wp = await twice(wkPlay, (r) => r.done && r.offMs <= TOTAL);
+      const wsc = await twice(() => usable('scroll', 'webkit'), (r) => !!r.scroll && r.scroll.t <= USABLE && r.y > 0 && r.offMs <= TOTAL);
+      const wtp = await twice(() => usable('tap', 'webkit'), (r) => !!r.itemClick && r.itemClick.t <= USABLE && r.sheet !== null && r.sheet <= USABLE && r.sheetOpen && r.offMs <= TOTAL);
+      const wrm = await twice(() => reduced('webkit'), (r) => r.faded && r.ms >= 120 && r.ms <= 230);
+      const again = [wp.again && `play: first gone after ${wp.again.offMs ?? '—'} ms`, wsc.again && `scroll load: first gone after ${wsc.again.offMs} ms, scroll at ${wsc.again.scroll?.t ?? '—'} ms`, wtp.again && `tap load: first gone after ${wtp.again.offMs} ms, item tap at ${wtp.again.itemClick?.t ?? '—'} ms, popup at ${wtp.again.sheet ?? '—'} ms`, wrm.again && `reduced motion: first gone after ${wrm.again.ms} ms`].filter(Boolean);
+      const againText = again.length ? ` [measured again after a miss: ${again.join('; ')}]` : '';
+      const wProps = wp.anims?.props || [], wPropsOk = wProps.every((x) => OK_PROPS.includes(x)), wCut = wp.anims ? wp.anims.lastEnd - wp.offMs : null;
+      const wPlays = wp.done && wp.key === k && !!wp.anims && wp.anims.count > 0 && wPropsOk && wCut !== null && wCut <= 17;
+      check(`webkit-plays-${k}`, wPlays, `WebKit, iPhone 13 device, English tap: ${k} plays (the page names ${wp.key}), ${wp.anims?.count} animations on ${wProps.join(', ')} (transform, opacity and the individual transform properties only: ${wPropsOk}); the last ends ${wp.anims?.lastEnd} ms after the tap and the overlay goes at ${wp.offMs} ms (nothing cut: ${wCut !== null && wCut <= 17}); for information, unthrottled: ${wp.frames} frames, median ${wp.medianFps} fps, worst gap ${wp.worstGapMs} ms${wp.again ? ` [measured again after a miss: the first load ended at ${wp.again.offMs ?? '—'} ms]` : ''}`);
+      const wTiming = wp.done && wp.offMs <= TOTAL && wsc.offMs <= TOTAL && wtp.offMs <= TOTAL && !!wsc.scroll && wsc.scroll.t <= USABLE && wsc.y > 0 && !!wtp.itemClick && wtp.itemClick.t <= USABLE && wtp.sheet !== null && wtp.sheet <= USABLE && wtp.sheetOpen;
+      check(`webkit-timing-${k}`, wTiming, `WebKit, ${k}: the overlay gone ${wp.offMs} ms after the tap (${wsc.offMs} / ${wtp.offMs} ms on the scroll and tap loads; ≤ ${TOTAL}); a mouse wheel right after the tap (mobile emulation off for that load) moved the page from ${wsc.scroll?.t ?? '—'} ms (≤ ${USABLE}; scrolled to ${wsc.y} px during the transition); a touch tap on the first item landed ${wtp.itemClick?.t ?? '—'} ms after the language tap and opened its popup at ${wtp.sheet ?? '—'} ms (≤ ${USABLE}; open ${wtp.sheetOpen})${againText}`);
+      const wReduced = wrm.faded && wrm.ms >= 120 && wrm.ms <= 230 && wrm.anims?.count === 1 && wrm.anims.props.join() === 'opacity' && !wrm.anims.built && wrm.welcome === 'off';
+      check(`webkit-reduced-${k}`, wReduced, `WebKit, ${k} with reduced motion: the 150 ms fade (an opacity between 0 and 1 seen: ${wrm.faded}; gone after ${wrm.ms} ms, 120–230), ${wrm.anims?.count} animation on ${wrm.anims?.targets.join(', ')} (${wrm.anims?.props.join(', ')}), nothing of the concept built: ${!wrm.anims?.built}${wrm.again ? ` [measured again after a miss: the first fade was gone after ${wrm.again.ms} ms]` : ''}`);
+      const wErrors = [wp, wsc, wtp, wrm].flatMap((r) => [...r.errors, ...(r.again?.errors || [])]); // every attempt's errors count
+      check(`webkit-errors-${k}`, wErrors.length === 0, `WebKit, ${k}: console and page errors on its ${4 + again.length} loads (play, scroll, tap, reduced motion${again.length ? `, ${again.length} measured again` : ''}): ${wErrors.length ? wErrors.join(' | ') : 'none'}`);
+      // Compared with Chromium: the same animations (count and properties), the same outcome of each functional check, and gone-after
+      // with the same interaction unthrottled within 100 ms (Chromium's CPU 4× play is not comparable: WebKit is not throttled).
+      const cPlays = en.done && !!en.anims && en.anims.count > 0 && okProps && cut !== null && cut <= 17;
+      const cTiming = en.done && en.offMs <= TOTAL && unthrottled <= TOTAL && !!sc.scroll && sc.scroll.t <= USABLE && sc.y > 0 && !!tp.itemClick && tp.itemClick.t <= USABLE && tp.sheet !== null && tp.sheet <= USABLE && tp.sheetOpen;
+      const cReduced = rm.faded && rm.ms >= 120 && rm.ms <= 230 && rm.anims?.count === 1 && rm.anims.props.join() === 'opacity' && !rm.anims.built && rm.welcome === 'off';
+      const wUnthrottled = Math.max(wsc.offMs, wtp.offMs), same = (a, b) => [...a].sort().join() === [...b].sort().join();
+      const differs = [
+        en.anims?.count !== wp.anims?.count && `animations ${en.anims?.count} in Chromium, ${wp.anims?.count} in WebKit`,
+        !same(en.anims?.props || [], wProps) && `animated properties ${(en.anims?.props || []).join('/')} in Chromium, ${wProps.join('/')} in WebKit`,
+        cPlays !== wPlays && `plays: Chromium ${cPlays ? 'pass' : 'fail'}, WebKit ${wPlays ? 'pass' : 'fail'}`,
+        cTiming !== wTiming && `timing: Chromium ${cTiming ? 'pass' : 'fail'}, WebKit ${wTiming ? 'pass' : 'fail'}`,
+        cReduced !== wReduced && `reduced motion: Chromium ${cReduced ? 'pass' : 'fail'}, WebKit ${wReduced ? 'pass' : 'fail'}`,
+        Math.abs(wUnthrottled - unthrottled) > 100 && `gone after ${unthrottled} ms in Chromium and ${wUnthrottled} ms in WebKit (scroll and tap loads, unthrottled)`,
+      ].filter(Boolean);
       let rec = null; if (season === 'fall') { rec = await record(id, season); check(`recording-${k}`, rec.size > 10000, `${path.relative(process.cwd(), rec.file)} (${(rec.size / 1024).toFixed(0)} KB; gitignored, on disk only)`); }
-      rows.push({ id, season, key: k, name: w?.name, level: w?.level, nominalMs: w?.ms ?? null, text: w?.text ?? null, sizeGz: size, en: { offMs: en.offMs, medianFps: en.medianFps, worstGapMs: en.worstGapMs, longestTaskMs: en.longestTaskMs, animations: en.anims?.count, lastEnd: en.anims?.lastEnd }, fa: { offMs: fa.offMs, medianFps: fa.medianFps, worstGapMs: fa.worstGapMs, longestTaskMs: fa.longestTaskMs, langAtFirstFrame: fa.first?.lang }, unthrottledOffMs: unthrottled, scrollMs: sc.scroll?.t ?? null, tapMs: tp.itemClick?.t ?? null, sheetMs: tp.sheet, reducedMs: rm.ms, recording: rec && path.basename(rec.file) });
-      measure(`${k}: ${en.offMs} ms at CPU 4× (${unthrottled} ms unthrottled), median ${en.medianFps} fps, longest task ${en.longestTaskMs} ms; Persian tap ${fa.medianFps} fps, longest task ${fa.longestTaskMs} ms; scroll at ${sc.scroll?.t} ms, item tap at ${tp.itemClick?.t} ms; reduced motion ${rm.ms} ms; ${size} B gzipped`);
+      rows.push({ id, season, key: k, name: w?.name, level: w?.level, nominalMs: w?.ms ?? null, text: w?.text ?? null, sizeGz: size, en: { offMs: en.offMs, medianFps: en.medianFps, worstGapMs: en.worstGapMs, longestTaskMs: en.longestTaskMs, animations: en.anims?.count, lastEnd: en.anims?.lastEnd }, fa: { done: fa.done, offMs: fa.offMs, medianFps: fa.medianFps, worstGapMs: fa.worstGapMs, longestTaskMs: fa.longestTaskMs, langAtFirstFrame: fa.first?.lang }, unthrottledOffMs: unthrottled, scrollMs: sc.scroll?.t ?? null, tapMs: tp.itemClick?.t ?? null, sheetMs: tp.sheet, reducedMs: rm.ms, recording: rec && path.basename(rec.file),
+        webkit: { plays: wPlays, timing: wTiming, reduced: wReduced, errors: wErrors.length, offMs: wp.offMs, scrollOffMs: wsc.offMs, tapOffMs: wtp.offMs, animations: wp.anims?.count ?? null, props: wProps, lastEnd: wp.anims?.lastEnd ?? null, medianFps: wp.medianFps, worstGapMs: wp.worstGapMs, scrollMs: wsc.scroll?.t ?? null, tapMs: wtp.itemClick?.t ?? null, sheetMs: wtp.sheet, reducedMs: wrm.ms, again, differs } });
+      measure(`${k}: ${en.offMs} ms at CPU 4× (${unthrottled} ms unthrottled), median ${en.medianFps} fps, longest task ${en.longestTaskMs} ms; Persian tap ${fa.medianFps} fps, longest task ${fa.longestTaskMs} ms; scroll at ${sc.scroll?.t} ms, item tap at ${tp.itemClick?.t} ms; reduced motion ${rm.ms} ms; ${size} B gzipped; WebKit: gone after ${wp.offMs} ms, ${wp.anims?.count} animations, ${wp.medianFps} fps (information), scroll at ${wsc.scroll?.t} ms, item tap at ${wtp.itemClick?.t} ms, reduced motion ${wrm.ms} ms, ${wErrors.length} errors, ${again.length ? `measured again after a miss (${again.join('; ')}), ` : ''}${differs.length ? `differs from Chromium: ${differs.join('; ')}` : 'as Chromium'}`);
     }
     // unchanged: Kebab Land as the previous commit served it; the venues on the default template with the same scripts and stylesheet
     for (const v of venues.filter((x) => x !== 'senso')) {
@@ -230,6 +297,15 @@ try {
       const diffs = v === 'kebab-land' ? compareBehaviour(ref, b, css) : compareBehaviour({ ...ref, overlay: null }, b, css);
       check(`unchanged-${v}-${season}`, r.status === 200 && got.ok && diffs.length === 0 && !/welcome-tx|rosesTx/.test(got.html), `${v} ${season} (regenerated by a no-op Style save, ${r.status}): ${v === 'kebab-land' ? 'head script, tap script, the whole overlay (logo as a placeholder) and the public stylesheet' : 'head script, tap script and the public stylesheet'} byte for byte as the previous commit (${fixture.capturedFrom.commit}) served Kebab Land: ${diffs.length ? diffs.join('; ') : 'identical'}; no transition code in its page: ${!/welcome-tx|rosesTx/.test(got.html)}`);
     }
+  }
+  // The Persian tap (the PM, 2026-10-11): a real check over the 20 Persian taps measured above (CPU 4×, from the tap to the overlay gone),
+  // listed in reports/checks/known-misses.json as "Persian tap, Senso" until the relayout task is ≤ 50 ms; measured and printed every run.
+  {
+    const taps = rows.map((r) => ({ key: r.key, done: !!r.fa.done, ms: r.fa.longestTaskMs })), over = taps.filter((x) => !x.done || x.ms > 50);
+    check('persian-tap-senso', taps.length === IDS.length * 2 && over.length === 0, `Senso, iPhone 13 viewport, CPU 4×, the فارسی tap of every concept in fall and winter (${taps.length} of ${IDS.length * 2} taps measured): no long task over 50 ms from the tap to the overlay gone; over 50 ms: ${over.length}${over.length ? ` (${over.map((x) => `${x.key} ${x.done ? `${x.ms} ms` : 'not measured'}`).join(', ')})` : ''}; the longest task per tap: ${taps.map((x) => `${x.key} ${x.done ? x.ms : '—'}`).join(', ')} ms`);
+    const wkRows = rows.filter((r) => r.webkit);
+    measure(`WebKit: ${wkRows.length} versions, ${wkRows.filter((r) => r.webkit.plays && r.webkit.timing && r.webkit.reduced && !r.webkit.errors).length} passing every functional check; ${wkRows.filter((r) => r.webkit.differs.length).length} behaving differently from Chromium${wkRows.some((r) => r.webkit.differs.length) ? ` (${wkRows.filter((r) => r.webkit.differs.length).map((r) => r.key).join(', ')})` : ''}; ${wkRows.reduce((n, r) => n + r.webkit.again.length, 0)} loads measured again after a miss${wkRows.some((r) => r.webkit.again.length) ? ` (${wkRows.filter((r) => r.webkit.again.length).map((r) => `${r.key}: ${r.webkit.again.join('; ')}`).join(' · ')})` : ''}`);
+    measure(`Persian tap, Senso (CPU 4×): ${over.length} of ${taps.length} taps with a long task over 50 ms, the longest ${Math.max(0, ...taps.map((x) => x.ms || 0))} ms`);
   }
   // spring and summer: no transition is built, the page keeps the plain fade
   for (const season of ['spring', 'summer']) {
@@ -305,14 +381,17 @@ try {
     await signIn();
     if (original) { const r = await api('/api/admin/style', { action: 'restore', venue: 'senso', style: original }); const back = (await db.query(`select style->>'transition' as t from venues where id = 'senso'`)).rows[0]?.t ?? null; check('restored', r.status === 200 && back === (original.transition ?? null), `Senso's style put back as it was (restore ${r.status}): transition ${back ?? '(unset: T1)'}`); }
   } catch (e) { check('restored', false, `could not put Senso's style back: ${e.message}`); }
-  await stop(); await browser.close(); await db.end(); fs.closeSync(serverLog);
+  await stop(); await browser.close(); if (wk) await wk.close(); await db.end(); fs.closeSync(serverLog);
   fs.rmSync(copy, { recursive: true, force: true });
 }
 
 const pass = results.every((r) => r.ok);
 const table = ['| Concept | Level | Season | Time (nominal) | Gone after (CPU 4× / unthrottled) | Median fps (4×) | Longest task (4×) | Scroll / tap after | Reduced motion | Gzipped | Persian tap: fps, longest task |', '|---|---|---|---|---|---|---|---|---|---|---|',
   ...rows.map((r) => `| ${r.id} ${r.name} | ${r.level} | ${r.season} | ${r.nominalMs} ms | ${r.en.offMs} / ${r.unthrottledOffMs} ms | ${r.en.medianFps} | ${r.en.longestTaskMs} ms | ${r.scrollMs} / ${r.tapMs} ms | ${r.reducedMs} ms | ${r.sizeGz} B | ${r.fa.medianFps}, ${r.fa.longestTaskMs} ms |`)];
+const wkTable = ['| Concept | Season | Plays | Gone after (play / scroll / tap load) | Scroll / item tap / popup after | Reduced motion | Errors | Animations (WebKit / Chromium) | fps (information) | As Chromium? |', '|---|---|---|---|---|---|---|---|---|---|',
+  ...rows.filter((r) => r.webkit).map((r) => `| ${r.id} ${r.name} | ${r.season} | ${r.webkit.plays ? 'yes' : '**no**'} | ${r.webkit.offMs} / ${r.webkit.scrollOffMs} / ${r.webkit.tapOffMs} ms | ${r.webkit.scrollMs} / ${r.webkit.tapMs} / ${r.webkit.sheetMs} ms | ${r.webkit.reducedMs} ms | ${r.webkit.errors} | ${r.webkit.animations} / ${r.en.animations} | ${r.webkit.medianFps} median, worst gap ${r.webkit.worstGapMs} ms | ${r.webkit.differs.length ? `**differs**: ${r.webkit.differs.join('; ')}` : 'yes'} |`)];
+const wkDiffers = rows.filter((r) => r.webkit?.differs.length), wkAgain = rows.filter((r) => r.webkit?.again.length);
 fs.writeFileSync(path.join(out, 'transition-drill.json'), JSON.stringify({ base, dist, copy, at: new Date().toISOString(), pass, rows, results, measures, transcript }, null, 2));
-fs.writeFileSync(path.join(out, 'transition-drill.txt'), [`Transition drill ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length} checks)`, '', ...table, '', 'Measurements:', ...measures.map((m) => `- ${m}`), '', ...results.map((r) => `${r.ok ? 'PASS' : 'FAIL'} ${r.step}: ${r.text}`), '', 'Transcript:', ...transcript.map((l) => `${l.at} [${l.step}] ${l.text}`)].join('\n'));
+fs.writeFileSync(path.join(out, 'transition-drill.txt'), [`Transition drill ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length} checks)`, '', ...table, '', `WebKit (the PM, 2026-10-11; functional checks, fps for information only; ${wkDiffers.length ? `${wkDiffers.length} version(s) behave differently from Chromium: ${wkDiffers.map((r) => `${r.key}: ${r.webkit.differs.join('; ')}`).join(' · ')}` : 'every version behaves as in Chromium'}; loads measured again after a miss: ${wkAgain.length ? wkAgain.map((r) => `${r.key}: ${r.webkit.again.join('; ')}`).join(' · ') : 'none'}):`, '', ...wkTable, '', 'Measurements:', ...measures.map((m) => `- ${m}`), '', ...results.map((r) => `${r.ok ? 'PASS' : 'FAIL'} ${r.step}: ${r.text}`), '', 'Transcript:', ...transcript.map((l) => `${l.at} [${l.step}] ${l.text}`)].join('\n'));
 console.log(`TRANSITION DRILL ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length})`);
 process.exit(pass ? 0 : 1);

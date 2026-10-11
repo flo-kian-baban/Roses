@@ -1,14 +1,14 @@
 // Summer welcome candidates for Senso (Kian, 2026-10-10: the summer scene of 2026-10-09, soft blurred orbs of light, is not
-// liked; the other seasons are). Six whole-scene concepts, S1–S6, each built from the symbols below and shown behind a replica
+// liked; the other seasons are). Six whole-scene concepts, U1–U6, each built from the symbols below and shown behind a replica
 // of Senso's welcome card by build.mjs. Every symbol is original, built here from plain geometry (no stock, traced or
 // third-party assets), crisp: no blur filter and no soft glow anywhere.
 //
-//   S1 Dandelion seeds (قاصدک: in Persian a dandelion seed is the bringer of good news) carried across on a breeze;
-//   S2 Butterflies: four North American summer species, wings flapping in 3D on a wandering flight;
-//   S3 Summer fruit: orange, lemon and lime wheels, cherries, strawberries, a watermelon wedge and mint, tumbling down;
-//   S4 Sparkling lemonade: bubbles rising and wobbling, with a few lemon wheels and mint leaves;
-//   S5 Persian sun (خورشید): an ornamental sun of straight and flame rays in a top corner, turning slowly, with twinkles;
-//   S6 Rose petals (for the Roses name): red, pink and blush petals, some curled, tumbling down.
+//   U1 Dandelion seeds (قاصدک: in Persian a dandelion seed is the bringer of good news) carried across on a breeze;
+//   U2 Butterflies: four North American summer species, wings flapping in 3D on a wandering flight;
+//   U3 Summer fruit: orange, lemon and lime wheels, cherries, strawberries, a watermelon wedge and mint, tumbling down;
+//   U4 Sparkling lemonade: bubbles rising and wobbling, with a few lemon wheels and mint leaves;
+//   U5 Persian sun (خورشید): an ornamental sun of straight and flame rays in a top corner, turning slowly, with twinkles;
+//   U6 Rose petals (for the Roses name): red, pink and blush petals, some curled, tumbling down.
 //
 // Styling is by presentation attributes only: a stylesheet class never reaches the content a <use> clones (Chromium). Each
 // symbol's gradients carry its own id prefix. The colours are natural palettes for the gallery; a picked design's palette moves
@@ -41,7 +41,7 @@ const sym = (id, vb, body) => `<symbol id="${id}" viewBox="${vb}">${body}</symbo
 const qAt = (a, c, e, t) => { const u = 1 - t; return { x: u * u * a.x + 2 * u * t * c.x + t * t * e.x, y: u * u * a.y + 2 * u * t * c.y + t * t * e.y }; };
 const qDir = (a, c, e, t) => { const dx = 2 * (1 - t) * (c.x - a.x) + 2 * t * (e.x - c.x), dy = 2 * (1 - t) * (c.y - a.y) + 2 * t * (e.y - c.y); return (Math.atan2(dx, -dy) * 180) / Math.PI; };
 
-// ---------------------------------------------------------------- S1 dandelion seeds
+// ---------------------------------------------------------------- U1 dandelion seeds
 // A seed (achene) with its beak and the pappus: fine filaments radiating like an umbrella from the beak's tip, the outer ones
 // drooping, each with tiny barbs on its outer half. A lopsided seed has lost a few filaments on one side.
 function dandelion(no, name, seed, { n, spread, len, tilt = 0, gap = null, lean = 0 }) {
@@ -72,7 +72,7 @@ function dandelion(no, name, seed, { n, spread, len, tilt = 0, gap = null, lean 
   return { no, name, symbol: sym(no, '0 0 64 64', body) };
 }
 
-// ---------------------------------------------------------------- S2 butterflies
+// ---------------------------------------------------------------- U2 butterflies
 // One symbol per species for the right wing pair (fore and hind wing, root on x = 0, viewBox 40 × 64), mirrored for the left
 // wing, so each wing can flap in 3D about the body; one shared body (viewBox 12 × 64): head, thorax, abdomen and clubbed antennae.
 const FORE = [P(1, 27), P(6, 17), P(14, 9.5), P(24, 4.5), P(35.5, 4.5, true), P(38, 10), P(35, 20), P(30, 27.5), P(21, 31.5), P(11, 32.5), P(2, 32, true)];
@@ -140,7 +140,7 @@ const BODY = sym('Bbody', '0 0 12 64', [
   `<path d="M5.3 26.5V31.5" stroke="#cdbfa8" stroke-width=".45" stroke-opacity=".6" stroke-linecap="round"/>`,
 ].join(''));
 
-// ---------------------------------------------------------------- S3 / S4 summer fruit and mint
+// ---------------------------------------------------------------- U3 / U4 summer fruit and mint
 // A citrus wheel: rind, pith, juicy segments separated by pale membranes, vesicle streaks, a centre and a light on the rind.
 function citrus(no, name, C, segs = 10) {
   const r = rng(no.charCodeAt(0) * 31 + no.length), g = (s) => `${no}${s}`, ri = 3.8, ro = 23, gap = 3.4;
@@ -231,7 +231,7 @@ function mint(no, name, seed) {
   return { no, name, symbol: sym(no, '0 0 64 64', body) };
 }
 
-// ---------------------------------------------------------------- S4 bubbles
+// ---------------------------------------------------------------- U4 bubbles
 // A bubble: nearly clear inside, a thin warm rim, an inner reflection ring, a bright crescent and a point of light, a faint
 // reflection low on the other side. Q3 is two bubbles stuck together.
 function bubble(no, name, parts) {
@@ -248,7 +248,7 @@ function bubble(no, name, parts) {
   return { no, name, symbol: sym(no, '0 0 64 64', body) };
 }
 
-// ---------------------------------------------------------------- S5 Persian sun
+// ---------------------------------------------------------------- U5 Persian sun
 // Three layers, so each can turn at its own speed: the disc (a crisp gradient, a fine ring and a dotted ring), twelve straight
 // tapered rays, twelve flame rays between them (an S curve, the Persian khorshid ornament; no face). Gold of Senso's logo.
 const SUN_DISC = sym('Udisc', '0 0 200 200', [
@@ -269,7 +269,7 @@ const SUN_FLAMES = sym('Uflames', '0 0 200 200', `<path d="${Array.from({ length
 const SPARK = sym('Uspark', '0 0 24 24', `<path d="M12 1.5C12.6 8.5 15.5 11.4 22.5 12 15.5 12.6 12.6 15.5 12 22.5 11.4 15.5 8.5 12.6 1.5 12 8.5 11.4 11.4 8.5 12 1.5Z" fill="#e2a334"/><path d="M12 6.5C12.3 10.2 13.8 11.7 17.5 12 13.8 12.3 12.3 13.8 12 17.5 11.7 13.8 10.2 12.3 6.5 12 10.2 11.7 11.7 10.2 12 6.5Z" fill="#fff6d6"/>`);
 const MOTE = sym('Umote', '0 0 24 24', `<circle cx="12" cy="12" r="5" fill="#e8b552"/><circle cx="10.5" cy="10.5" r="1.6" fill="#fff4cf"/>`);
 
-// ---------------------------------------------------------------- S6 rose petals
+// ---------------------------------------------------------------- U6 rose petals
 // A rose petal: a broad rounded blade with a slight dip at the top and a narrow pale base, coloured from the pale base into the
 // petal's colour and darker at the rim; a soft light on one side (it is cupped), fine veins fanning from the base, and on some a
 // curled edge showing the lighter back of the petal along one margin.
@@ -325,16 +325,16 @@ export const DESIGNS = {
 };
 export const SHARED = { BODY, SUN_DISC, SUN_RAYS, SUN_FLAMES, SPARK, MOTE };
 export const CONCEPTS = [
-  { no: 'S1', name: 'Dandelion seeds', fa: 'قاصدک', mode: 'drift', designs: ['D1', 'D2', 'D3'], shared: [],
+  { no: 'U1', name: 'Dandelion seeds', fa: 'قاصدک', mode: 'drift', designs: ['D1', 'D2', 'D3'], shared: [],
     note: 'Seeds carried across from left to right on a light breeze, bobbing and turning slowly; three depths. In Persian a dandelion seed, ghasedak, is the bringer of good news, a welcome in itself.' },
-  { no: 'S2', name: 'Butterflies', fa: 'پروانه', mode: 'wander', designs: ['B1', 'B2', 'B3', 'B4'], shared: ['BODY'],
+  { no: 'U2', name: 'Butterflies', fa: 'پروانه', mode: 'wander', designs: ['B1', 'B2', 'B3', 'B4'], shared: ['BODY'],
     note: 'Six butterflies of four Ontario summer species (monarch, tiger swallowtail, spring azure, painted lady), each on its own wandering path, wings flapping in 3D about the body with an uneven beat.' },
-  { no: 'S3', name: 'Summer fruit', fa: 'میوه‌های تابستانی', mode: 'fall', designs: ['O1', 'O2', 'O3', 'O4', 'O5', 'O6', 'O7'], shared: [],
+  { no: 'U3', name: 'Summer fruit', fa: 'میوه‌های تابستانی', mode: 'fall', designs: ['O1', 'O2', 'O3', 'O4', 'O5', 'O6', 'O7'], shared: [],
     note: 'Orange, lemon and lime wheels, cherries, strawberries, a watermelon wedge and mint leaves tumbling down like the fall leaves; Senso\'s juices and ice cream.' },
-  { no: 'S4', name: 'Sparkling lemonade', fa: 'شربت گازدار', mode: 'rise', designs: ['Q1', 'Q2', 'Q3'], extras: ['O2', 'O7'], shared: [],
+  { no: 'U4', name: 'Sparkling lemonade', fa: 'شربت گازدار', mode: 'rise', designs: ['Q1', 'Q2', 'Q3'], extras: ['O2', 'O7'], shared: [],
     note: 'Bubbles rising from the bottom, wobbling as they go, with a few lemon wheels and mint leaves drifting up among them, as in a glass of lemonade or a mojito.' },
-  { no: 'S5', name: 'Persian sun', fa: 'خورشید', mode: 'sun', designs: [], shared: ['SUN_DISC', 'SUN_RAYS', 'SUN_FLAMES', 'SPARK', 'MOTE'],
+  { no: 'U5', name: 'Persian sun', fa: 'خورشید', mode: 'sun', designs: [], shared: ['SUN_DISC', 'SUN_RAYS', 'SUN_FLAMES', 'SPARK', 'MOTE'],
     note: 'An ornamental sun in the top corner, after the khorshid of Persian tiles (straight rays and flame rays; no face), in the gold of Senso\'s logo: its two rings of rays turn slowly in opposite directions; small sparkles twinkle and a few motes of light float up. Crisp, no glow.' },
-  { no: 'S6', name: 'Rose petals', fa: 'گلبرگ رز', mode: 'fall', designs: ['R1', 'R2', 'R3', 'R4', 'R5'], shared: [],
+  { no: 'U6', name: 'Rose petals', fa: 'گلبرگ رز', mode: 'fall', designs: ['R1', 'R2', 'R3', 'R4', 'R5'], shared: [],
     note: 'Red, pink and blush rose petals, some curled, tumbling down slowly; a nod to the Roses name. If picked, spring (today pink blossoms) would get a different motif in its own batch.' },
 ];

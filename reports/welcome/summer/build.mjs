@@ -1,7 +1,7 @@
 // Builds reports/welcome/summer-gallery.html, the picking tool for Kian's summer scene (our tool, not a public page; one
 // self-contained file: the Senso logo is inlined). Usage: node reports/welcome/summer/build.mjs — prints each concept's size.
 //
-// Six concepts (S1–S6, art.mjs), each running live on a replica of Senso's welcome screen at iPhone 13 size (the served colours
+// Six concepts (U1–U6, art.mjs), each running live on a replica of Senso's welcome screen at iPhone 13 size (the served colours
 // and the real card markup and CSS of 2026-10-09), with the motion that would ship: every parameter random per load, the scene
 // full on the first frame (negative delays), transform and opacity only, at most 20 particles, no blur. "Still" shows what a
 // phone with reduced motion would get. Under each phone, the concept's designs large, to judge the drawing.
@@ -89,7 +89,7 @@ table { border-collapse: collapse; font-size: 13px; margin: 8px 0 0; } td, th { 
 .scene .p { position: absolute; left: 0; top: 0; width: var(--s); height: var(--s); opacity: var(--o); }
 .scene .y, .scene .s, .scene .w { display: block; width: 100%; height: 100%; will-change: transform; }
 .scene svg { display: block; width: 100%; height: 100%; overflow: visible; }
-/* fall: S3 fruit, S6 petals (the fall leaves' motion: down, a pendulum swing dipping at its centre, a 3D flutter) */
+/* fall: U3 fruit, U6 petals (the fall leaves' motion: down, a pendulum swing dipping at its centre, a 3D flutter) */
 .scene .m-fall { left: calc(var(--x) * 100%); margin-left: calc(var(--s) * -.5); }
 .m-fall .y { animation: fall var(--d) linear var(--l) infinite; }
 .m-fall .s { animation: sway var(--sp) var(--l) infinite alternate; }
@@ -101,14 +101,14 @@ table { border-collapse: collapse; font-size: 13px; margin: 8px 0 0; } td, th { 
   50% { transform: perspective(260px) rotateX(calc(var(--rx) * .2)) rotateY(calc(var(--ry) * .3)) rotateZ(calc(var(--rz) * .1)); }
   100% { transform: perspective(260px) rotateX(calc(var(--rx) * .6)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
-/* drift: S1, across from the left on the breeze, rising or sinking a little, bobbing, tilting */
+/* drift: U1, across from the left on the breeze, rising or sinking a little, bobbing, tilting */
 .m-drift .y { animation: breeze var(--d) linear var(--l) infinite; }
 @keyframes breeze { from { transform: translate3d(calc(var(--s) * -1.1), var(--y0), 0); } to { transform: translate3d(calc(var(--w) + var(--s) * .2), var(--y1), 0); } }
 .m-drift .s { animation: bob var(--sp) ease-in-out var(--l) infinite alternate; }
 .m-drift .w { animation: tilt var(--fp) ease-in-out var(--l) infinite alternate; }
 @keyframes bob { from { transform: translateY(calc(var(--sw) * -1)); } to { transform: translateY(var(--sw)); } }
 @keyframes tilt { from { transform: rotate(calc(var(--rz) * -1)); } to { transform: rotate(var(--rz)); } }
-/* rise: S4 bubbles (wobble and a slight squash), lemon and mint among them (a slow tumble), S5 motes */
+/* rise: U4 bubbles (wobble and a slight squash), lemon and mint among them (a slow tumble), U5 motes */
 .scene .m-rise { left: calc(var(--x) * 100%); margin-left: calc(var(--s) * -.5); }
 .m-rise .y { animation: rise var(--d) linear var(--l) infinite; }
 .m-rise .s { animation: wobble var(--sp) ease-in-out var(--l) infinite alternate; }
@@ -117,7 +117,7 @@ table { border-collapse: collapse; font-size: 13px; margin: 8px 0 0; } td, th { 
 @keyframes rise { from { transform: translate3d(0, calc(var(--h) + var(--s) * .3), 0); } to { transform: translate3d(var(--dr), calc(var(--s) * -1.3), 0); } }
 @keyframes wobble { from { transform: translateX(calc(var(--sw) * -1)); } to { transform: translateX(var(--sw)); } }
 @keyframes squash { from { transform: scale(1.04, .96); } to { transform: scale(.96, 1.04); } }
-/* wander: S2, four waypoints (back to the first), easing in and out at each, the body tilting toward its way, bobbing; the
+/* wander: U2, four waypoints (back to the first), easing in and out at each, the body tilting toward its way, bobbing; the
    wings (one symbol, mirrored for the left) flap in 3D about the body with an uneven beat */
 .scene .m-wander, .scene .m-still-wander { height: calc(var(--s) * .8); }
 .m-wander .y { animation: wander var(--d) ease-in-out var(--l) infinite; }
@@ -136,7 +136,7 @@ table { border-collapse: collapse; font-size: 13px; margin: 8px 0 0; } td, th { 
 @keyframes flapR { 0%, 100% { transform: perspective(160px) rotateY(-14deg); } 16% { transform: perspective(160px) rotateY(-74deg); } 32% { transform: perspective(160px) rotateY(-10deg); } 50% { transform: perspective(160px) rotateY(-68deg); } 68% { transform: perspective(160px) rotateY(-16deg); } 84% { transform: perspective(160px) rotateY(-24deg); } }
 @keyframes flapL { 0%, 100% { transform: perspective(160px) rotateY(14deg); } 16% { transform: perspective(160px) rotateY(74deg); } 32% { transform: perspective(160px) rotateY(10deg); } 50% { transform: perspective(160px) rotateY(68deg); } 68% { transform: perspective(160px) rotateY(16deg); } 84% { transform: perspective(160px) rotateY(24deg); } }
 .still-wings .wl { animation: none; transform: perspective(160px) rotateY(28deg); } .still-wings .wr { animation: none; transform: perspective(160px) rotateY(-28deg); }
-/* sun: S5, its rays turning one way, its flames the other and breathing; sparkles twinkling */
+/* sun: U5, its rays turning one way, its flames the other and breathing; sparkles twinkling */
 .sun { position: absolute; width: var(--sz); height: var(--sz); right: calc(var(--sz) * -.3); top: calc(var(--sz) * -.3); }
 .sun > * { position: absolute; inset: 0; display: block; }
 .sun .rays { animation: turn 140s linear infinite; }
@@ -271,7 +271,7 @@ const html = `<!doctype html>
 </head>
 <body>
 <h1>Summer welcome candidates — Senso</h1>
-<p class="lead">Six ideas for the summer scene behind the welcome card, replacing the soft blurred light of 2026-10-09. Each phone runs live; pick one (or name a mix, for example S3's fruit with S4's bubbles) and reply with its number. Built ${new Date().toISOString().slice(0, 10)}${head ? ` on ${head}` : ''} by <code>reports/welcome/summer/build.mjs</code> (the artwork in <code>art.mjs</code>). Our tool, not a public page.</p>
+<p class="lead">Six ideas for the summer scene behind the welcome card, replacing the soft blurred light of 2026-10-09. Each phone runs live; pick one (or name a mix, for example U3's fruit with U4's bubbles) and reply with its number. Built ${new Date().toISOString().slice(0, 10)}${head ? ` on ${head}` : ''} by <code>reports/welcome/summer/build.mjs</code> (the artwork in <code>art.mjs</code>). Our tool, not a public page. <b>Renumbered U1–U6 on 2026-10-11</b> (they were S1–S6), so that S means spring in the main gallery; Kian's pick of 2026-10-10 is unchanged: U5, the Persian sun, with a few of U1's dandelion seeds, built into Senso's summer.</p>
 <div class="note"><p><b>Same rules as fall and winter:</b> original drawings (inline SVG, nothing traced or stock), at most 20 moving elements, a new random scene on every load and on <b>Replay</b>, already in motion on the first frame, movement on transform and opacity only, no blur anywhere. <b>Still</b> shows what a phone with reduced motion gets. Senso's cream background and card, as served.</p>
 <p><b>Scope:</b> Senso only, as with the leaves and snow; Kebab Land and the default template keep their summer scene until you confirm Senso's, then each gets its own in its own brand. Nothing on the customers' pages changes until you pick.</p>
 ${table}</div>

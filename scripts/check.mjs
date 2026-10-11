@@ -30,6 +30,13 @@
 // Touch targets (the PM, 2026-10-09): scripts/touch-drill.mjs measures the tap area of every visible interactive element of the admin on the
 // iPhone 13 and iPhone SE viewports (sign-in, Menu, Style, Details, Team, + Add venue and what opens from them) and fails on any under 44 × 44
 // CSS px that is not an inline text link; the list is printed in touch/touch-drill.txt.
+// 2026-10-10 (the owner and manager via Kian): the welcome screen's transitions into the menu, Senso only (src/lib/transitions.ts):
+// scripts/transition-drill.mjs, on a copy of the build with its own server on a fourth free port and a fixed fall and winter clock, every
+// concept T1–T10 chosen through the Style route: only the chosen one in the served HTML, ≤ 3 KB gzipped, smoothness at CPU 4× (median
+// ≥ 50 fps, no long task > 50 ms) as measured, total ≤ 900 ms, the menu scrollable and tappable within 300 ms (a real scroll and a real
+// tap during the transition), the language applied first, the 150 ms fade under reduced motion, recordings of all ten in fall, the
+// admin preview's choose and Play on a laptop and a phone, Kebab Land byte for byte as the previous commit served it. The page checks
+// and the welcome drill take the ruling's targets on a page with a transition (usable ≤ 300 ms, gone ≤ 900 ms, the 150 ms fade).
 import fs from 'node:fs';
 import path from 'node:path';
 import net from 'node:net';
@@ -42,7 +49,7 @@ import { loadEnv } from './load-env.mjs';
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
 const out = path.resolve('reports/checks', stamp);
-fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true }); fs.mkdirSync(path.join(out, 'preview'), { recursive: true }); fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.mkdirSync(path.join(out, 'season'), { recursive: true }); fs.mkdirSync(path.join(out, 'after-tap'), { recursive: true }); fs.mkdirSync(path.join(out, 'touch'), { recursive: true });
+fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true }); fs.mkdirSync(path.join(out, 'preview'), { recursive: true }); fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.mkdirSync(path.join(out, 'season'), { recursive: true }); fs.mkdirSync(path.join(out, 'transition'), { recursive: true }); fs.mkdirSync(path.join(out, 'after-tap'), { recursive: true }); fs.mkdirSync(path.join(out, 'touch'), { recursive: true });
 const DIST = '.next-check';
 // Free ports, picked at start (the PM, 2026-10-09; 3100 had been taken by another project's server): the system hands out a free port for
 // each of the suite's three servers, and each is checked free on 127.0.0.1 and ::1 (the lockout drill reaches the server over IPv6).
@@ -54,7 +61,7 @@ async function freePort(avoid) {
   }
   throw new Error('no free port found');
 }
-const PORT = await freePort([]), PROXY_PORT = await freePort([PORT]), SEASON_PORT = await freePort([PORT, PROXY_PORT]);
+const PORT = await freePort([]), PROXY_PORT = await freePort([PORT]), SEASON_PORT = await freePort([PORT, PROXY_PORT]), TX_PORT = await freePort([PORT, PROXY_PORT, SEASON_PORT]);
 const base = `http://127.0.0.1:${PORT}`;
 // Known misses (the PM, 2026-10-09).
 const KNOWN_FILE = 'reports/checks/known-misses.json';
@@ -160,7 +167,7 @@ const sampler = setInterval(async () => {
   try { for (const r of (await db.query(`select application_name as app, datname as db from pg_stat_activity where application_name like 'roses-check:%'`)).rows) seen.set(`${r.app} → ${r.db}`, (seen.get(`${r.app} → ${r.db}`) || 0) + 1); } catch { /* between queries */ }
 }, 400);
 if (!fs.existsSync(chromium.executablePath())) { console.error('Playwright Chromium missing: npx playwright install chromium'); process.exit(2); }
-log(`ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server)`);
+log(`ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server)`);
 if (!process.env.CHROME_PATH) { const mac = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'; if (!fs.existsSync(mac) && !spawnSync('which', ['google-chrome']).stdout?.length) process.env.CHROME_PATH = chromium.executablePath(); }
 
 // temporary admin account for the drills (removed at the end; never written to any file)
@@ -196,7 +203,7 @@ try {
     const up = (await waitHttp(`${base}/senso`)) && (await waitHttp(`http://127.0.0.1:${PROXY_PORT}/senso`));
     const own = [a, b].map((p) => ({ port: p.port, pid: p.pid, alive: p.exitCode === null, listeners: listeners(p.port) }));
     const mine = own.every((o) => o.alive && o.listeners.length > 0 && o.listeners.every((x) => x === o.pid));
-    fs.writeFileSync(path.join(out, 'ports.json'), JSON.stringify({ picked: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT }, servers: own, pass: up && mine }, null, 2));
+    fs.writeFileSync(path.join(out, 'ports.json'), JSON.stringify({ picked: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT }, servers: own, pass: up && mine }, null, 2));
     return { pass: up && mine, evidence: [`server-${PORT}.log`, `server-${PROXY_PORT}.log`, 'ports.json'], note: `${up ? 'both answer 200 on /senso' : 'a server did not come up'}; ${own.map((o) => `port ${o.port}: listener pid ${o.listeners.join(',') || 'none'}, spawned pid ${o.pid}${o.alive ? '' : ' (exited)'}`).join('; ')}${mine ? ': the suite\'s own processes' : ': NOT the suite\'s own process, so no check ran against it'}` };
   }, 'servers');
   if (!results.at(-1).pass) throw new Error('servers failed; stopping');
@@ -214,11 +221,11 @@ try {
 
   for (const venue of pageVenues) {
     const vout = path.join(out, venue); fs.mkdirSync(vout, { recursive: true });
-    await step(`public page checks: ${label(venue)} (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms, reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)`, async () => {
+    await step(`public page checks: ${label(venue)} (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms (with a transition into the menu: usable ≤ 300 ms and gone ≤ 900 ms), reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)`, async () => {
       const r = await run('node', ['scripts/check-page.mjs', venue, '--base', base, '--out', vout, '--jpeg'], { logFile: `${venue}/check-page.log` });
       const j = JSON.parse(fs.readFileSync(path.join(vout, `${venue}-checks.json`), 'utf8')).checks;
       const fv = j.firstVisit, rv = j.repeatVisit, rm = j.reducedMotion;
-      return { pass: r.status === 0, evidence: [`${venue}/${venue}-checks.json`, `${venue}/${venue}-en.jpg`, `${venue}/${venue}-fa.jpg`, `${venue}/check-page.log`], note: `toggle dir=${j.persianToggle.dir}, Persian headings ${j.persianToggle.visibleFaHeadings}; welcome screen up at the first sample (${fv.upAtFirstSampleMs} ms, greeting "${fv.greet}" in both languages, ${fv.season} scene with ${fv.particles} particles, nothing pre-highlighted: ${fv.noPreHighlight}; logo at ${fv.entrance.logoShownAtMs} ms, greeting at ${fv.entrance.greetingEnAtMs} / ${fv.entrance.greetingFaAtMs} ms, buttons at ${fv.entrance.buttonsAtMs} ms), tap English → menu visible in ${fv.tap.ms} ms (stored ${JSON.stringify(fv.tap.storedKeys)}); shows again on reload with ${JSON.stringify(rv.pressed)} pre-highlighted (stored keys ${JSON.stringify(rv.storedKeys)}); reduced motion: shown still with ${rm.running} animations running, page visible at once ${rm.pageVisibleAtOnce}, off in ${rm.tap.ms} ms; JavaScript off: overlay display ${j.javascriptOff.display ?? j.javascriptOff.overlayVisible}, menu visible ${j.javascriptOff.rowVisible}; images ${j.images.loaded}/${j.images.total}; tabs: ${j.tabs.summary.onTappedTab}/${j.tabs.summary.count} taps end on their tab at the bar with ${j.tabs.summary.othersLit} other tabs lit on the way, ${j.tabs.scroll.down.mismatches + j.tabs.scroll.up.mismatches}/${j.tabs.scroll.down.samples + j.tabs.scroll.up.samples} scroll steps off, last tab at the bottom ${j.tabs.scroll.lastTabActiveAtBottom}, direct link ${j.tabs.directLink.ok}; after a reload: ${j.topAfterReload.afterReload.y} px from the top, hash "${j.topAfterReload.afterReload.hash}" (was ${j.topAfterReload.beforeReload.y} px, "${j.topAfterReload.beforeReload.hash}")` };
+      return { pass: r.status === 0, evidence: [`${venue}/${venue}-checks.json`, `${venue}/${venue}-en.jpg`, `${venue}/${venue}-fa.jpg`, `${venue}/check-page.log`], note: `toggle dir=${j.persianToggle.dir}, Persian headings ${j.persianToggle.visibleFaHeadings}; welcome screen up at the first sample (${fv.upAtFirstSampleMs} ms, greeting "${fv.greet}" in both languages, ${fv.season} scene with ${fv.particles} particles, nothing pre-highlighted: ${fv.noPreHighlight}; logo at ${fv.entrance.logoShownAtMs} ms, greeting at ${fv.entrance.greetingEnAtMs} / ${fv.entrance.greetingFaAtMs} ms, buttons at ${fv.entrance.buttonsAtMs} ms), tap English → ${fv.tap.tx ? `transition ${fv.tap.tx}: menu usable after ${fv.tap.usableMs} ms, overlay gone after ${fv.tap.ms} ms` : `menu visible in ${fv.tap.ms} ms`} (stored ${JSON.stringify(fv.tap.storedKeys)}); shows again on reload with ${JSON.stringify(rv.pressed)} pre-highlighted (stored keys ${JSON.stringify(rv.storedKeys)}); reduced motion: shown still with ${rm.running} animations running, page visible at once ${rm.pageVisibleAtOnce}, off in ${rm.tap.ms} ms${rm.tap.tx ? ` (the 150 ms fade, an opacity between 0 and 1 seen: ${rm.tap.faded})` : ''}; JavaScript off: overlay display ${j.javascriptOff.display ?? j.javascriptOff.overlayVisible}, menu visible ${j.javascriptOff.rowVisible}; images ${j.images.loaded}/${j.images.total}; tabs: ${j.tabs.summary.onTappedTab}/${j.tabs.summary.count} taps end on their tab at the bar with ${j.tabs.summary.othersLit} other tabs lit on the way, ${j.tabs.scroll.down.mismatches + j.tabs.scroll.up.mismatches}/${j.tabs.scroll.down.samples + j.tabs.scroll.up.samples} scroll steps off, last tab at the bottom ${j.tabs.scroll.lastTabActiveAtBottom}, direct link ${j.tabs.directLink.ok}; after a reload: ${j.topAfterReload.afterReload.y} px from the top, hash "${j.topAfterReload.afterReload.hash}" (was ${j.topAfterReload.beforeReload.y} px, "${j.topAfterReload.beforeReload.hash}")` };
     }, `page-${venue === newVenueId ? 'temp-venue' : venue}`);
   }
   await step(`brand words in the built pages${newVenueId ? ' and the temporary venue\'s page' : ''}`, async () => {
@@ -248,7 +255,7 @@ try {
     }, `photo-links-${venue}`);
   }
   // The welcome screen (Kian, 2026-10-09): the clock and date boundaries, the scene and its budget, the tap, the kill switch, recordings.
-  await step('welcome screen drill (greeting boundaries with a mocked clock, the page\'s season scene ≤ 20 particles on transform and opacity, reduced motion still, tap → menu ≤ 300 ms with the language persisted and pre-highlighted, section anchor, keyboard and labels, JavaScript off, kill switch, default contrast, inline code ≤ 15 KB gzipped on senso with the picked artwork and ≤ 10 KB on kebab-land)', async () => {
+  await step('welcome screen drill (greeting boundaries with a mocked clock, the page\'s season scene ≤ 20 particles on transform and opacity, reduced motion still, tap → menu ≤ 300 ms (on a page with a transition into the menu: usable ≤ 300 ms, gone ≤ 900 ms, the 150 ms fade under reduced motion) with the language persisted and pre-highlighted, section anchor, keyboard and labels, JavaScript off, kill switch, default contrast, inline code ≤ 15 KB gzipped on senso with the picked artwork and ≤ 10 KB on kebab-land)', async () => {
     const r = await run('node', ['scripts/welcome-drill.mjs', '--base', base, '--out', path.join(out, 'welcome'), '--jpeg'], { env: drillEnv, logFile: 'welcome/welcome-drill.log' });
     const m = (r.stdout.match(/WELCOME DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
@@ -261,6 +268,13 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, checks: drillChecks('season/season-drill.json', !!(m && m.length)), evidence: ['season/season-drill.txt', 'season/season-drill.json', 'season/season-server.log', 'season/*.jpg', 'season/senso-fall.webm, senso-winter.webm and senso-summer.webm (on disk only)'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   }, 'season');
+  // The transitions into the menu (2026-10-10): Senso, fall and winter, every concept; Kebab Land and the default template unchanged.
+  await step('transition drill (Senso, fall and winter, every concept T1–T10 chosen through the Style route on a copy of the build with its own server and a fixed clock: only the chosen transition in the served HTML and ≤ 3 KB gzipped; smoothness on the iPhone 13 viewport with CPU 4× from the tap to the overlay gone, median ≥ 50 fps and no long task > 50 ms, every animation on transform or opacity and none cut; total ≤ 900 ms; the menu scrollable and tappable within 300 ms of the tap, with a real touch scroll and a real tap during the transition; the language applied at the first frame; the 150 ms fade under reduced motion; spring and summer without a transition; recordings of all ten in fall; the admin preview choosing and playing on a laptop and a phone, in the bar\'s season, again on Play; Kebab Land\'s welcome behaviour and the default template\'s scripts byte for byte as the previous commit served them)', async () => {
+    const r = await run('node', ['scripts/transition-drill.mjs', '--dist', DIST, '--copy', '.next-transition', '--port', String(TX_PORT), '--out', path.join(out, 'transition'), '--venues', pageVenues.join(','), '--jpeg'], { env: drillEnv, logFile: 'transition/transition-drill.log' });
+    const m = (r.stdout.match(/TRANSITION DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
+    return { pass: r.status === 0, checks: drillChecks('transition/transition-drill.json', !!(m && m.length)), evidence: ['transition/transition-drill.txt', 'transition/transition-drill.json', 'transition/transition-server.log', 'transition/*.jpg', 'transition/transition-T1-fall.webm … transition-T10-fall.webm (on disk only)'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
+  }, 'transition');
   // The menu after the tap (the PM, 2026-10-09): the overlay covers the menu, so Lighthouse's LCP measures the welcome screen; what the
   // customer waits for after the language tap is measured here, under throttled mobile conditions, and reported as measured.
   await step('menu after the language tap under throttled mobile conditions (Slow 4G as DevTools applies it, CPU 4×): the first section visible and, as a separate check, its photos in view loaded within 2.5 s of the tap, on senso with its first section as a List and as a Grid and on kebab-land; the eager rule (the first row only); first-section photo bytes', async () => {
@@ -357,7 +371,7 @@ try {
     const names = [...read(`server-${port}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]);
     processes.push({ process: app, source: `server-${port}.log`, databases: [...new Set(names)] });
   }
-  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['preview-drill', 'preview/preview-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['season-server', 'season/season-server.log'], ['after-tap-drill', 'after-tap/after-tap-drill.log'], ['touch-drill', 'touch/touch-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
+  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['preview-drill', 'preview/preview-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['season-server', 'season/season-server.log'], ['transition-server', 'transition/transition-server.log'], ['transition-drill', 'transition/transition-drill.log'], ['after-tap-drill', 'after-tap/after-tap-drill.log'], ['touch-drill', 'touch/touch-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
     if (!fs.existsSync(path.join(out, file))) continue;
     processes.push({ process: `roses-check:${name}`, source: file, databases: [...new Set([...read(file).matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))] });
   }
@@ -372,7 +386,7 @@ try {
   const onWorking = (c) => c.endsWith(`→ ${workName}`);
   const wrongSample = samples.filter((x) => onWorking(x.connection) && !x.connection.startsWith('roses-check:suite-readonly →'));
   const otherRuns = samples.filter((x) => !onWorking(x.connection) && !x.connection.endsWith(`→ ${scratchName}`));
-  const mustSee = [...Object.values(SERVER_APPS), 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:preview-drill', 'roses-check:style-drill', 'roses-check:welcome-drill', 'roses-check:season-server', 'roses-check:after-tap-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
+  const mustSee = [...Object.values(SERVER_APPS), 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:preview-drill', 'roses-check:style-drill', 'roses-check:welcome-drill', 'roses-check:season-server', 'roses-check:transition-server', 'roses-check:transition-drill', 'roses-check:after-tap-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
   const unseen = mustSee.filter((a) => !samples.some((x) => x.connection.startsWith(`${a} →`)));
   const passA = wrongProcess.length === 0 && wrongSample.length === 0 && processes.length >= 8 && unseen.length === 0;
   fs.writeFileSync(path.join(out, 'isolation.json'), JSON.stringify({ scratch: scratchName, working: workName, processes, pgStatActivitySamples: samples, otherRunsSeen: otherRuns, pass: passA }, null, 2));
@@ -417,7 +431,7 @@ const cell = (t) => String(t ?? '').replace(/\|/g, '\\|').replace(/\s+/g, ' ');
 const knownStatus = (k) => !k.run ? '**NOT RUN** (the suite stopped before its step)' : k.run.status === 'KNOWN MISS' ? `**KNOWN MISS** (${k.run.checks.filter((c) => !c.ok).length} of ${k.run.checks.length} listed checks missed their target)` : k.run.status === 'NOW PASSING' ? '**NOW PASSING**: every listed check met its target in this run (reported; the entry stays until its clearing condition is met)' : `**${k.run.status}** (fails the run)`;
 const lines = [
   `# Check suite — ${stamp.replace('T', ' ').replace(/-(\d\d)-(\d\d)Z$/, ':$1:$2Z')}`, '',
-  `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, ${KNOWN_FILE} included) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
+  `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, ${KNOWN_FILE} included) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
   `**${pass ? 'PASS' : 'FAIL'}** — ${results.filter((r) => outcome(r) === 'PASS').length} of ${results.length} checks passed${knownMissed.length ? `, ${knownMissed.length} KNOWN MISS (listed in \`${KNOWN_FILE}\`, still measured: see Known misses)` : ''}${failed.length ? `, ${failed.length} failed (not listed as known misses)` : ', no unlisted failure'}.${nowPassing.length ? ` Known miss now passing: ${nowPassing.map((k) => k.title).join(', ')} (see Known misses).` : ''}`, '',
   ...(pass ? [] : [`Cause: ${(() => { const f = failed[0]; return `${f.name} — ${(f.note || '').replace(/\s+/g, ' ').slice(0, 300)}`; })()}`, '', 'This failed run is kept on purpose (PM, 2026-10-08): the folder is never deleted, even when a re-run passes.', '']),
   '## Known misses', '',
@@ -430,7 +444,7 @@ const lines = [
   'Every path is relative to this folder. Screenshots, full Lighthouse JSON, the first HTML responses, uploads and the dumps stay on the machine that ran the suite (gitignored); report.md, summary.json, the check JSON files and the text logs are committed. Every server and drill ran against the scratch copy of the working database (isolation.json lists the database each process connected to, from its own log and from pg_stat_activity), which was dropped afterwards; the working database itself was only read (the dump, then the search for suite-account rows in working-db-suite-rows.json). Lighthouse numbers are local estimates; since the welcome screen (2026-10-09) their LCP element is the welcome logo, so the Lighthouse LCP measures the welcome screen, not the menu behind it; the menu after the language tap is measured by the after-tap step under throttled mobile conditions.', '',
 ];
 fs.writeFileSync(path.join(out, 'report.md'), lines.join('\n'));
-fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, pass, ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT }, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
+fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, pass, ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT }, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
 console.log('\n' + lines.slice(4).join('\n'));
 console.log(`\nreport: ${path.relative(process.cwd(), path.join(out, 'report.md'))}`);
 console.log(`CHECK SUITE ${pass ? 'PASS' : 'FAIL'}${knownMissed.length ? ` (${knownMissed.length} KNOWN MISS)` : ''}`);

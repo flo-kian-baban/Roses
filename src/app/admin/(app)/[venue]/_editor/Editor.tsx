@@ -3,7 +3,8 @@
 // left, the customers' page as a phone preview on the right (a Preview button on phones). Every change is saved at
 // once through the JSON API, answered with "Saved · Undo" for 10 seconds, and the preview reloads and scrolls to what
 // was edited. Tapping an item, a section heading or the header inside the preview opens the matching editor.
-// Preview control bar (Kian, 2026-10-09): the preview's view (screen, language, season, time of day, Replay) is state here, one for
+// Preview control bar (Kian, 2026-10-09): the preview's view (screen, language, season, time of day, Replay, and Play for the Style tab's
+// Transition, 2026-10-10: the venue's transition into the menu played in the preview, which then ends on the menu) is state here, one for
 // the laptop frame and the phone overlay. The bar sits in the Style tab (Kian, 2026-10-10: with the styling, not on the phone): at the
 // top of the tab on a laptop, staying in view while it scrolls, and in the bottom sheet's header on a phone; the Menu and Details tabs
 // show the menu and have no bar. The Style tab's screen is kept through a save (the fresh frame is put back on it before it is shown)
@@ -61,6 +62,7 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
   const [season, setSeason] = useState<Season | null>(null);
   const [slot, setSlot] = useState<Slot | null>(null);
   const [replay, setReplay] = useState(0);
+  const [play, setPlay] = useState(0); // Play in the Style tab's Welcome group: the venue's transition into the menu, played in the preview
   const [now, setNow] = useState<PageNow>({ season: null, slot: null }); // the page's own season and greeting, read from the loaded frame
   const [detent, setDetent] = useState<Detent>('half'); // the Style tab's bottom sheet on a phone
   const [editing, setEditing] = useState(false); // a colour is open in the Style tab: the sheet stays at half, the preview in view
@@ -93,14 +95,17 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
   const storeKey = `roses-admin-preview:${venue.id}`;
   useEffect(() => { try { const j = JSON.parse(sessionStorage.getItem(storeKey) || 'null'); if (j && typeof j === 'object') { if (SCREENS.some((s) => s.id === j.screen)) setStyleScreen(j.screen); if (j.season) setSeason(j.season); if (j.slot) setSlot(j.slot); } } catch { /* ignore */ } }, [storeKey]);
   useEffect(() => { try { sessionStorage.setItem(storeKey, JSON.stringify({ screen: styleScreen, season, slot })); } catch { /* ignore */ } }, [storeKey, styleScreen, season, slot]);
-  const view: View = { screen: tab === 'style' ? styleScreen : 'menu', lang, season, slot, replay };
+  const view: View = { screen: tab === 'style' ? styleScreen : 'menu', lang, season, slot, replay, play };
   const onView = (p: ViewPatch) => {
     if (p.screen) setStyleScreen(p.screen);
     if (p.lang) chooseLang(p.lang);
     if ('season' in p) setSeason(p.season ?? null);
     if ('slot' in p) setSlot(p.slot ?? null);
     if (p.replay) setReplay((n) => n + 1);
+    if (p.play) setPlay((n) => n + 1);
   };
+  const playTransition = useCallback(() => setPlay((n) => n + 1), []);
+  const played = useCallback(() => setStyleScreen('menu'), []); // a played transition ends on the menu, and the bar says so
 
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), toast.error ? 6000 : 10000); return () => clearTimeout(t); }, [toast]);
   useEffect(() => { if (!highlight) return; const t = setTimeout(() => setHighlight(null), 2500); return () => clearTimeout(t); }, [highlight]);
@@ -192,10 +197,10 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
 
   const openItem = open ? menu.items[open.id] : null;
   const tabLink = (t: Tab, label: string) => <a href={TAB_HREF(venue.id, t)} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); go(t); }} aria-current={tab === t ? 'page' : undefined} className={`tap flex h-9 items-center rounded-full px-3.5 text-[15px] font-semibold ${tab === t ? 'bg-ink text-white' : 'text-ink-muted hover:bg-fill hover:text-ink'}`}>{label}</a>;
-  const previewProps = { venueId: venue.id, reloadKey, focus, view, onNow: setNow, onPick, styleMode: tab === 'style', region: tab === 'style' ? region : NO_REGION };
+  const previewProps = { venueId: venue.id, reloadKey, focus, view, onNow: setNow, onPick, styleMode: tab === 'style', region: tab === 'style' ? region : NO_REGION, onPlayed: played };
   const phoneStyle = !desktop && tab === 'style' && me.canManage; // the Style tab on a phone: the preview on top, the controls in a bottom sheet
   const bar = (phone: boolean) => <PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone={phone} />;
-  const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} />;
+  const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} previewSeason={season ?? now.season} onPlay={playTransition} />;
 
   const panel = openItem && <ItemPanel item={openItem} venueId={venue.id} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} column={wide} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (

@@ -24,4 +24,7 @@ reports/style-tokens/**/*.png
 # Welcome screen recordings (Playwright video): on disk only
 reports/**/*.webm
 .next-season/
+.next-transition/
+# Kian's review server on port 3000 serves the newest commit from this dist dir in whichever worktree holds it
+.next-kian/
 .next-fixture/

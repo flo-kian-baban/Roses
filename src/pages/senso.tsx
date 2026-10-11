@@ -12,7 +12,8 @@ import { colorCss, resolveColors } from '@/venues/tokens';
 // data access (src/lib/menu.ts), the language toggle and the welcome screen (src/components). PM build decision of
 // 2026-10-07: the venues are separate brands under the Roses parent brand and their pages must not look alike.
 // Pre-rendered at build time from the database, regenerated hourly for the season (the PM, 2026-10-09) and on every admin
-// save, and served as plain HTML with no framework JavaScript. Welcome artwork: Kian's picks of 2026-10-09 (`art`; Senso only)
+// save, and served as plain HTML with no framework JavaScript. Welcome artwork: Kian's picks of 2026-10-09 (`art`; Senso only), and the
+// transition into the menu chosen in the Style tab (2026-10-10; only that one, for the page's season)
 // (`runtime` is listed only because Next 16's type validator rejects a config object without one of its known keys).
 export const config = { unstable_runtimeJS: false, runtime: 'nodejs' };
 
@@ -48,7 +49,7 @@ export default function Senso({ venue, sections, season }: Props) {
       </Head>
       {/* In the body so it follows the stylesheet in cascade order. */}
       <style dangerouslySetInnerHTML={{ __html: css }} />
-      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} season={season} art />}
+      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} season={season} art transition={String(style.transition ?? '')} />}
       <SensoPage venue={venue} sections={sections} photos={style.photos !== false} />
     </>
   );

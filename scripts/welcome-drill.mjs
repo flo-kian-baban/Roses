@@ -5,9 +5,11 @@
 //     05:00 / 11:59 / 12:00 / 16:59 / 17:00, read from the html attribute the head script sets, both languages shown (the season is the
 //     page's since the PM's decision of 2026-10-09, current season only: its boundaries are render tests in scripts/season-drill.mjs);
 //   the scene of the season the page was rendered for: at most 20 particles, every running animation on transform or opacity only;
-//     reduced motion: shown but still, the fade instant;
+//     reduced motion: shown but still, the fade instant (with a transition: the 150 ms fade of Kian's ruling);
 //   the tap: the menu visible within 300 ms (measured in the page from the click to the overlay gone), the language set and stored,
-//     pre-highlighted on the next load (English, then Persian, whose greeting line then reads first);
+//     pre-highlighted on the next load (English, then Persian, whose greeting line then reads first); on a page with a transition into
+//     the menu (Senso since 2026-10-10, Kian's ruling; the transitions themselves: scripts/transition-drill.mjs) the menu usable within
+//     300 ms (the overlay lets taps through, the menu no longer inert, the page scrollable) and the overlay gone within 900 ms;
 //   a section anchor in the URL: the browser scrolls there behind the overlay, the choice puts the page at the top with the first tab active (Kian, 2026-10-09, later);
 //   keyboard and labels: Tab reaches the first button and Enter chooses it; role dialog, aria-modal, buttons ≥ 44 px tall with a name; the menu
 //     behind is inert while the overlay is up and reachable again after the choice;
@@ -83,14 +85,23 @@ const PROBE = () => {
     y: Math.round(scrollY),
   };
 };
-// The tap, timed inside the page: from the click on the button to the overlay gone (display none, visibility hidden or opacity 0).
+// The tap, timed inside the page: from the click on the button to the overlay gone (display none, visibility hidden or opacity 0); also
+// the moment the menu is usable (the overlay lets taps through, the menu no longer inert, the page scrollable), the page's transition
+// into the menu if it carries one (#welcome-tx), and whether the overlay faded (an opacity strictly between 0 and 1 seen).
 const TAP = (lang) => new Promise((res) => {
-  const w = document.getElementById('welcome'), b = w.querySelector(`button[data-lang="${lang}"]`); const start = performance.now(); b.click();
-  const tick = () => { const cs = getComputedStyle(w); const t = performance.now() - start; const gone = cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0;
-    if (gone || t > 3000) res({ ms: Math.round(t), gone, display: cs.display, visibility: cs.visibility, opacity: cs.opacity, welcome: document.documentElement.dataset.welcome, lang: document.documentElement.dataset.lang, dir: document.documentElement.dir, rowVisible: !!document.querySelector('main li.item') && document.querySelector('main li.item').getClientRects().length > 0, inert: document.querySelector('main') ? document.querySelector('main').inert : null, y: Math.round(scrollY) });
+  const w = document.getElementById('welcome'), b = w.querySelector(`button[data-lang="${lang}"]`), m = document.querySelector('main'), tx = document.getElementById('welcome-tx'); let usable = null, faded = false; const start = performance.now(); b.click();
+  const tick = () => { const cs = getComputedStyle(w); const t = performance.now() - start; const o = Number(cs.opacity); if (o > 0 && o < 1) faded = true;
+    if (usable === null && (cs.display === 'none' || cs.pointerEvents === 'none') && !(m && m.inert) && getComputedStyle(document.body).overflowY !== 'hidden') usable = Math.round(t);
+    const gone = cs.display === 'none' || cs.visibility === 'hidden' || o === 0;
+    if (gone || t > 3000) res({ ms: Math.round(t), gone, usableMs: usable, faded, tx: tx ? tx.dataset.tx || 'yes' : null, display: cs.display, visibility: cs.visibility, opacity: cs.opacity, welcome: document.documentElement.dataset.welcome, lang: document.documentElement.dataset.lang, dir: document.documentElement.dir, rowVisible: !!document.querySelector('main li.item') && document.querySelector('main li.item').getClientRects().length > 0, inert: document.querySelector('main') ? document.querySelector('main').inert : null, y: Math.round(scrollY) });
     else requestAnimationFrame(tick); };
   tick();
 });
+// The tap's targets: the menu visible within 300 ms; with a transition into the menu (Kian, 2026-10-10) usable within 300 ms and gone within 900 ms.
+const tapOk = (tap) => (tap.tx ? tap.gone && tap.usableMs !== null && tap.usableMs <= 300 && tap.ms <= 900 : tap.gone && tap.ms <= 300);
+const tapText = (tap) => (tap.tx ? `the menu usable after ${tap.usableMs} ms and the overlay gone after ${tap.ms} ms (transition ${tap.tx}; targets ≤ 300 and ≤ 900)` : `the overlay gone and the menu visible after ${tap.ms} ms (target ≤ 300)`);
+// Reduced motion: the overlay goes at once; with a transition, in the 150 ms fade (an opacity seen between 0 and 1, gone in 120–230 ms).
+const reducedOk = (tap) => (tap.tx ? tap.gone && tap.faded && tap.ms >= 120 && tap.ms <= 230 : tap.gone && tap.ms <= 60);
 const settled = (page) => page.waitForFunction(() => { const b = document.querySelector('#welcome button[data-lang="fa"]'); return !!b && Number(getComputedStyle(b).opacity) === 1; }, null, { timeout: 5000 }).then(() => true).catch(() => false);
 const off = (page) => page.waitForFunction(() => document.documentElement.dataset.welcome === 'off', null, { timeout: 5000 }).then(() => true).catch(() => false);
 const sceneId = (venue) => (venue === 'senso' ? 'senso' : 'kebab');
@@ -124,7 +135,7 @@ for (const venue of VENUES) {
   const r = await rp.evaluate(PROBE);
   await shot(rp, `${venue}-reduced-motion`);
   const tap = await rp.evaluate(TAP, 'en');
-  check(`reduced-motion-${venue}`, r.welcome === 'show' && r.display === 'grid' && r.running === 0 && r.particlesVisible >= 8 && r.en?.opacity === 1 && r.fa?.opacity === 1 && r.buttons.every((b) => b.opacity === 1) && r.logo?.opacity === 1 && r.headerVisible && tap.gone && tap.ms <= 60, `${venue} with reduced motion: the welcome screen shown (display ${r.display}) with ${r.running} animations running, ${r.particlesVisible} particles of the ${r.particles} standing still in view, greeting and buttons fully visible at once (opacities ${r.en?.opacity}, ${r.fa?.opacity}, ${r.buttons.map((b) => b.opacity).join('/')}), the page behind visible (${r.headerVisible}); a tap removes it without a fade in ${tap.ms} ms`);
+  check(`reduced-motion-${venue}`, r.welcome === 'show' && r.display === 'grid' && r.running === 0 && r.particlesVisible >= 8 && r.en?.opacity === 1 && r.fa?.opacity === 1 && r.buttons.every((b) => b.opacity === 1) && r.logo?.opacity === 1 && r.headerVisible && reducedOk(tap), `${venue} with reduced motion: the welcome screen shown (display ${r.display}) with ${r.running} animations running, ${r.particlesVisible} particles of the ${r.particles} standing still in view, greeting and buttons fully visible at once (opacities ${r.en?.opacity}, ${r.fa?.opacity}, ${r.buttons.map((b) => b.opacity).join('/')}), the page behind visible (${r.headerVisible}); a tap removes it ${tap.tx ? `in the 150 ms fade (transition ${tap.tx}; an opacity between 0 and 1 seen: ${tap.faded}), gone after ${tap.ms} ms (120–230)` : `without a fade in ${tap.ms} ms`}`);
   await rctx.close();
 }
 
@@ -137,8 +148,8 @@ for (const venue of VENUES) {
   const tapEn = await page.evaluate(TAP, 'en'); const offEn = await off(page); await sleep(100);
   const afterEn = await page.evaluate(PROBE);
   await shot(page, `${venue}-after-english`);
-  check(`tap-${venue}`, entrance && first.saved === null && first.buttons.every((b) => b.pressed === null) && first.inert === true && tapEn.gone && tapEn.ms <= 300 && tapEn.lang === 'en' && tapEn.rowVisible && offEn && afterEn.display === 'none' && afterEn.inert === false && (afterEn.stored || []).includes('roses-lang=en'), `${venue} first visit: no language pre-highlighted (saved ${first.saved}, pressed ${first.buttons.map((b) => b.pressed).join('/')}), the menu inert behind the overlay (${first.inert}); tap English → the overlay gone and the menu visible after ${tapEn.ms} ms (target ≤ 300; lang ${tapEn.lang}, first row visible ${tapEn.rowVisible}), then display ${afterEn.display}, the menu reachable again (inert ${afterEn.inert}); stored: ${(afterEn.stored || []).join(', ')}`);
-  measure(`${venue}: tap a language → menu visible in ${tapEn.ms} ms`);
+  check(`tap-${venue}`, entrance && first.saved === null && first.buttons.every((b) => b.pressed === null) && first.inert === true && tapOk(tapEn) && tapEn.lang === 'en' && tapEn.rowVisible && offEn && afterEn.display === 'none' && afterEn.inert === false && (afterEn.stored || []).includes('roses-lang=en'), `${venue} first visit: no language pre-highlighted (saved ${first.saved}, pressed ${first.buttons.map((b) => b.pressed).join('/')}), the menu inert behind the overlay (${first.inert}); tap English → ${tapText(tapEn)} (lang ${tapEn.lang}, first row visible ${tapEn.rowVisible}), then display ${afterEn.display}, the menu reachable again (inert ${afterEn.inert}); stored: ${(afterEn.stored || []).join(', ')}`);
+  measure(`${venue}: tap a language → ${tapEn.tx ? `menu usable in ${tapEn.usableMs} ms, transition ${tapEn.tx} over in ${tapEn.ms} ms` : `menu visible in ${tapEn.ms} ms`}`);
   await page.reload({ waitUntil: 'load' }); await settled(page);
   const again = await page.evaluate(PROBE); const vars = varsOf(await publicHtml(venue));
   const enBtn = again.buttons.find((b) => b.lang === 'en'), faBtn = again.buttons.find((b) => b.lang === 'fa');
@@ -149,8 +160,8 @@ for (const venue of VENUES) {
   const third = await page.evaluate(PROBE); const faBtn3 = third.buttons.find((b) => b.lang === 'fa'), enBtn3 = third.buttons.find((b) => b.lang === 'en');
   await shot(page, `${venue}-reload-persian-remembered`);
   const active = rgb(vars['--c-welcome-active-bg']), plain = rgb(vars['--c-welcome-btn-bg']);
-  check(`remembered-${venue}`, again.welcome === 'show' && again.saved === 'en' && enBtn?.pressed === 'true' && faBtn?.pressed === null && enBtn.bg === active && faBtn.bg === plain && tapFa.gone && tapFa.ms <= 300 && tapFa.lang === 'fa' && tapFa.dir === 'rtl' && afterFa.faHeadingVisible && (afterFa.stored || []).includes('roses-lang=fa') && third.saved === 'fa' && faBtn3?.pressed === 'true' && enBtn3?.pressed === null && faBtn3.bg === active && third.dir === 'rtl' && third.fa.top < third.en.top && (third.stored || []).join() === 'roses-lang=fa', `${venue} reload: the welcome screen again with English pre-highlighted (saved ${again.saved}; English pressed ${enBtn?.pressed}, filled ${enBtn?.bg} = remembered-button colour ${active}: ${enBtn?.bg === active}; Persian plain ${faBtn?.bg}); tap فارسی → Persian page after ${tapFa.ms} ms (dir ${tapFa.dir}, a Persian heading visible ${afterFa.faHeadingVisible}); reload: فارسی pre-highlighted (${faBtn3?.pressed}), the Persian greeting line first (${third.fa?.top} px above the English at ${third.en?.top}); stored keys: ${(third.stored || []).join(', ')}`);
-  measure(`${venue}: tap فارسی → Persian menu visible in ${tapFa.ms} ms`);
+  check(`remembered-${venue}`, again.welcome === 'show' && again.saved === 'en' && enBtn?.pressed === 'true' && faBtn?.pressed === null && enBtn.bg === active && faBtn.bg === plain && tapOk(tapFa) && tapFa.lang === 'fa' && tapFa.dir === 'rtl' && afterFa.faHeadingVisible && (afterFa.stored || []).includes('roses-lang=fa') && third.saved === 'fa' && faBtn3?.pressed === 'true' && enBtn3?.pressed === null && faBtn3.bg === active && third.dir === 'rtl' && third.fa.top < third.en.top && (third.stored || []).join() === 'roses-lang=fa', `${venue} reload: the welcome screen again with English pre-highlighted (saved ${again.saved}; English pressed ${enBtn?.pressed}, filled ${enBtn?.bg} = remembered-button colour ${active}: ${enBtn?.bg === active}; Persian plain ${faBtn?.bg}); tap فارسی → Persian page: ${tapText(tapFa)} (dir ${tapFa.dir}, a Persian heading visible ${afterFa.faHeadingVisible}); reload: فارسی pre-highlighted (${faBtn3?.pressed}), the Persian greeting line first (${third.fa?.top} px above the English at ${third.en?.top}); stored keys: ${(third.stored || []).join(', ')}`);
+  measure(`${venue}: tap فارسی → ${tapFa.tx ? `Persian menu usable in ${tapFa.usableMs} ms, transition ${tapFa.tx} over in ${tapFa.ms} ms` : `Persian menu visible in ${tapFa.ms} ms`}`);
   await ctx.close();
 }
 

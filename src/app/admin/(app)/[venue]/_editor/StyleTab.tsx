@@ -18,11 +18,16 @@
 // again); the button restores it in one step (one change record for the style, one per section whose layout changed), with a
 // confirmation and an Undo.
 // Layout group (Kian, 2026-10-08): the template's switches, then the layout of every section: List or Grid.
-// Welcome group (Kian, 2026-10-09, replacing the Intro group): its on/off switch (the kill switch) at the top, then the welcome
-// screen's colours as tokens under the readability guard; the preview-only season and time of day are in the preview bar.
+// Welcome group (Kian, 2026-10-09, replacing the Intro group): its on/off switch (the kill switch) at the top, then (Senso, 2026-10-10)
+// the Transition into the menu: the ten concepts with their names, levels, times and the line for the preview's season, and Play,
+// which plays the chosen one in the preview in the season of the preview bar (choosing one saves it like every control here and plays
+// it from the fresh page); then the welcome screen's colours as tokens under the readability guard. The preview-only season and time
+// of day are in the preview bar.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Brand, EditorSection, SectionLayout, StyleValues } from '@/lib/types';
 import type { StyleOption } from '@/venues/styles';
+import { LEVELS, TRANSITIONS, isTxSeason } from '@/lib/transitions';
+import { SEASONS, type Season } from '@/lib/welcome';
 import { GROUPS, baseName, cssVar, isLight, normHex, resolveColors, unreadable, type GroupId, type Resolved, type TokenDef } from '@/venues/tokens';
 import { Icon } from '../../../_ui/icons';
 import { ApiFail, call, type Resp } from './api';
@@ -45,10 +50,11 @@ function countStyleChanges(a: StyleValues, b: StyleValues): number {
   return n;
 }
 
-export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefaults, onRegion, onEditing, picked, sections, onLayout, snapshot, onSnapshot }: {
+export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefaults, onRegion, onEditing, picked, sections, onLayout, snapshot, onSnapshot, previewSeason, onPlay }: {
   venueId: string; version: number; onSaved: (r: Resp, text?: string) => void; onApply: (r: Resp) => void; onLive: (vars: Record<string, string> | null) => void; onDefaults: (vars: Record<string, string>) => void;
   onRegion: (r: Region | null) => void; onEditing: (editing: boolean) => void; picked: Picked; sections: EditorSection[]; onLayout: (id: string, layout: SectionLayout) => Promise<void>;
   snapshot: StyleSnapshot | null; onSnapshot: React.Dispatch<React.SetStateAction<StyleSnapshot | null>>; // the visit's snapshot, held by the editor
+  previewSeason: Season | null; onPlay: () => void; // the preview's season (the bar's, else the page's) and Play for the transition
 }) {
   const [data, setData] = useState<Data | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -179,7 +185,9 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
               </button>
               {isOpen && (
                 <div className="border-t border-line px-1 pb-3 pt-1">
-                  {g.id === 'welcome' && <WelcomeControls option={data.layout.find((o) => o.key === 'welcome')} on={data.values.welcome !== false} onSwitch={(v) => setLayout('welcome', v)} />}
+                  {g.id === 'welcome' && <WelcomeControls option={data.layout.find((o) => o.key === 'welcome')} on={data.values.welcome !== false} onSwitch={(v) => setLayout('welcome', v)}
+                    transition={data.layout.find((o) => o.key === 'transition')} chosen={String(data.values.transition ?? '')} season={previewSeason} onPlay={onPlay}
+                    onChoose={async (id) => { if (id !== data.values.transition) await setLayout('transition', id); onPlay(); }} />}
                   {toks.map((t) => <TokenRow key={t.key} token={t} res={resolved[t.key]} base={t.on ? resolved[t.on] : null} baseLabel={t.on ? baseName(t.on) : null} open={openToken === t.key} palette={data.palette} fail={fail?.key === t.key ? fail : null}
                     onOpen={() => { setOpenToken(openToken === t.key ? null : t.key); onRegion(g.id); }} onLive={(v) => live(t.key, v)} onSet={(v, text) => setColor(t.key, v, text)} />)}
                   <div className="mt-2 px-3"><button type="button" className={btnSmall} disabled={!groupCustom} onClick={() => reset(g.id)}><Icon name="undo" className="h-4 w-4" />Reset group to venue default</button></div>
@@ -191,7 +199,7 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
         <section data-style-group="layout" className="rounded-2xl border border-line bg-white shadow-card">
           <div className="px-4 pt-3"><h2 className="text-[17px] font-semibold">Layout</h2><p className="text-xs text-ink-muted">What the {data.template.name} template can switch.</p></div>
           <div className="mt-1 divide-y divide-line">
-            {data.layout.filter((o) => o.key !== 'welcome').map((o) => (
+            {data.layout.filter((o) => o.key !== 'welcome' && o.key !== 'transition').map((o) => (
               <div key={o.key} className="px-4 py-3" data-style-option={o.key}>
                 {o.type === 'switch' ? (
                   <label className="flex items-center justify-between gap-4">
@@ -287,16 +295,50 @@ function TokenRow({ token: t, res, base, baseLabel, open, palette, fail, onOpen,
   );
 }
 
-// The Welcome group's own control above its colours: the kill switch, the template's "welcome" option (src/venues/styles.ts), saved
+// The Welcome group's own controls above its colours: the kill switch, the template's "welcome" option (src/venues/styles.ts), saved
 // like the Layout switches with "Saved · Undo". The preview-only season and time of day live in the preview bar (Kian, 2026-10-09).
-function WelcomeControls({ option: o, on, onSwitch }: { option: StyleOption | undefined; on: boolean; onSwitch: (v: boolean) => void }) {
+// Then, where the template has it (Senso), the transition into the menu (2026-10-10): the ten concepts (src/lib/transitions.ts), each
+// with its level, its time and its line for the preview's season (both lines in spring and summer, which keep the plain fade until
+// their own versions are built), the chosen one marked; a tap chooses it (saved, then played in the preview), Play plays it again.
+function WelcomeControls({ option: o, on, onSwitch, transition: tx, chosen, season, onChoose, onPlay }: {
+  option: StyleOption | undefined; on: boolean; onSwitch: (v: boolean) => void;
+  transition: StyleOption | undefined; chosen: string; season: Season | null; onChoose: (id: string) => Promise<void>; onPlay: () => void;
+}) {
+  const [busy, setBusy] = useState<string | null>(null);
   if (!o || o.type !== 'switch') return null;
+  const built = isTxSeason(season), seasonLabel = SEASONS.find((x) => x.id === season)?.label ?? 'this season';
   return (
     <div className="mb-1 border-b border-line px-3">
       <label className="flex min-h-12 items-center justify-between gap-4 py-2.5" data-style-option="welcome">
         <span><span className="block text-[15px] font-medium">{o.label}</span>{o.hint && <span className="mt-0.5 block text-xs text-ink-muted">{o.hint}</span>}<span className="mt-0.5 block text-xs text-ink-muted">Season and time of day for the preview: in the bar above the preview.</span></span>
         <Switch checked={on} label={`${o.label}: ${on ? 'on' : 'off'}`} onChange={(v) => onSwitch(v)} />
       </label>
+      {tx && tx.type === 'choice' && (
+        <div className="border-t border-line py-3" data-style-option="transition" data-chosen={chosen}>
+          <div className="flex items-center justify-between gap-3">
+            <span className="min-w-0"><span className="block text-[15px] font-medium">{tx.label}</span>{tx.hint && <span className="mt-0.5 block text-xs text-ink-muted">{tx.hint}</span>}</span>
+            <button type="button" className={`${btnSmall} shrink-0`} onClick={onPlay} disabled={!on} data-transition-play aria-label={`Play the transition in the preview (${seasonLabel})`}><Icon name="play" className="h-4 w-4" />Play</button>
+          </div>
+          <p className="mt-1.5 text-xs text-ink-muted" data-transition-season>{!on ? 'The welcome screen is off: the menu opens directly, with no transition.' : built ? `In ${seasonLabel.toLowerCase()}, as the preview shows it (season in the bar above the preview).` : `Spring and summer keep the plain fade until their versions are built (after their artwork is final). Below: what each one does in fall and in winter.`}</p>
+          <div className="mt-2 space-y-1.5" role="radiogroup" aria-label={tx.label}>
+            {TRANSITIONS.map((t) => {
+              const sel = chosen === t.id;
+              return (
+                <button key={t.id} type="button" role="radio" aria-checked={sel} disabled={!on || busy !== null} data-transition={t.id}
+                  onClick={async () => { setBusy(t.id); try { await onChoose(t.id); } finally { setBusy(null); } }}
+                  className={`flex min-h-14 w-full items-start gap-3 rounded-2xl border px-3 py-2.5 text-left transition active:scale-[.99] ${sel ? 'border-ink bg-fill' : 'border-line bg-white hover:bg-fill'} ${busy === t.id ? 'opacity-70' : ''}`}>
+                  <span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 ${sel ? 'border-ink bg-ink text-white' : 'border-neutral-300'}`} aria-hidden="true">{sel && <Icon name="check" className="h-3 w-3" strokeWidth={3} />}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex flex-wrap items-baseline gap-x-2"><span className="text-[15px] font-semibold">{t.id} {t.name}</span><span className="text-xs text-ink-muted">{LEVELS[t.level]} · {(t[built ? season : 'fall'].ms / 1000).toFixed(2)} s</span></span>
+                    {built ? <span className="mt-0.5 block text-[13px] leading-snug text-ink-muted">{t[season].text}</span>
+                      : <><span className="mt-0.5 block text-[13px] leading-snug text-ink-muted">Fall: {t.fall.text}</span><span className="mt-0.5 block text-[13px] leading-snug text-ink-muted">Winter: {t.winter.text}</span></>}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

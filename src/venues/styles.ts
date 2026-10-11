@@ -5,6 +5,7 @@
 // that still counts as the venue's default (tokens.ts reads it). Plain data, no React, no database: this module is
 // imported by the templates, the API and the client components alike.
 import type { Brand, StyleValues } from '@/lib/types';
+import { DEFAULT_TRANSITION, TRANSITIONS } from '@/lib/transitions';
 
 export type StyleOption = { key: string; label: string; hint?: string } & (
   | { type: 'switch'; default: boolean }
@@ -15,9 +16,12 @@ export type Template = { id: string; name: string; options: (brand: Brand | null
 // Welcome group, not under Layout. A value stored under the old key "intro" is ignored (the welcome screen starts on).
 const welcome: StyleOption = { key: 'welcome', type: 'switch', label: 'Welcome screen', default: true, hint: 'Before the menu, on every visit and refresh: the logo, a greeting, the language buttons and the season scene. Off: the menu opens directly.' };
 const photos: StyleOption = { key: 'photos', type: 'switch', label: 'Photos in the list', default: true, hint: 'Off: the list shows text only; the photo still opens with the item.' };
+// The transition from the welcome screen into the menu (owner and manager via Kian, 2026-10-10; Senso only until Kian confirms it): one
+// of the ten concepts of src/lib/transitions.ts, T1 until the owner picks. The Style tab shows it in its Welcome group with a Play button.
+const transition: StyleOption = { key: 'transition', type: 'choice', label: 'Transition', default: DEFAULT_TRANSITION, choices: TRANSITIONS.map((t) => ({ value: t.id, label: `${t.id} ${t.name}` })), hint: 'From the welcome screen into the menu, after a language is tapped. The menu can be scrolled and tapped from the first moment.' };
 
 export const TEMPLATES: Record<string, Template> = {
-  senso: { id: 'senso', name: 'Senso Café & Bites', options: () => [welcome, photos] },
+  senso: { id: 'senso', name: 'Senso Café & Bites', options: () => [welcome, transition, photos] },
   'kebab-land': { id: 'kebab-land', name: 'Roses Kebab Land', options: () => [welcome, photos] },
   default: {
     id: 'default', name: 'Default',

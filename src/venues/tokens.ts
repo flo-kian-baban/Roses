@@ -116,6 +116,9 @@ export const ARTWORK = {
   beech: { tip: '#d99a3c', mid: '#c27a2a', base: '#9a5a1e', dark: '#4a2208', vein: '#5a2e0a', under: '#e8c08a', fold: '#5a2e0a', stem: '#6b3a12' },
   sun: { disc: '#ffe08a', disc2: '#f6bf45', disc3: '#e9a531', ring: '#d99a2b', dots: '#fff3cf', rays: '#e9a93a', rayLine: '#fbe3a0', flames: '#f2c14e', spark: '#e2a334', sparkCore: '#fff6d6', mote: '#e8b552', moteCore: '#fff4cf' },
   seed: { filament: '#968a75', barb: '#a89c86', beak: '#b8aa8e', achene: '#5d432c', achene2: '#a07c55', ridge: '#4e3825' },
+  // The welcome transitions (2026-10-10, src/lib/welcome-transitions.ts): winter's frosted pane (`pane` towards the clearing,
+  // `rim` at the edges); the white of the white-out and of the snow cap is WHITE.
+  frost: { pane: '#edf2f7', rim: '#f8fafc' },
   white: WHITE, black: BLACK,
 } as const;
 

@@ -8,6 +8,10 @@
 // live with its scene running; Menu; Item popup: the first item's popup; Section list), the language, the season (another season's scene is fetched from the admin API and
 // swapped into the frame, since the customers' page carries only the current season) and the time of day (the greeting), each
 // preview-only, plus Replay. After a save the fresh frame is put back on the same screen and position before it is shown.
+// Play (the Style tab's Welcome group, 2026-10-10): the venue's transition from the welcome screen into the menu, played in the frame by
+// the page's own code (a tap on the language button of the preview's language, which the page answers as it does for customers), in
+// the preview's season (another season's transition is fetched with its scene), on demand and as often as asked; it ends on the menu
+// (onPlayed). A play asked for while a save reloads the frame waits for the fresh frame, so it plays what was just chosen.
 // Style tab (Kian, 2026-10-08): the open group's region is outlined in the frame (the `region` prop, owned by the editor; a new
 // `n` re-applies it), a tap on a region reports it to the editor (onPick kind "region"), and a colour being picked (or Compare's
 // default colours) is applied live to the frame's CSS variables before it is saved (setVars). The controls on the left are the
@@ -32,9 +36,9 @@ const W = 440, H = 956, RAIL = 5, BEZEL = 13, STATUS = 54, EDGE = RAIL + BEZEL, 
 
 type Props = {
   venueId: string; reloadKey: number; focus: Focus; view: View; onNow: (now: PageNow) => void;
-  frame: boolean; onClose?: () => void; onPick?: (p: Pick) => void; styleMode?: boolean; region?: RegionState;
+  frame: boolean; onClose?: () => void; onPick?: (p: Pick) => void; styleMode?: boolean; region?: RegionState; onPlayed?: () => void;
 };
-export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venueId, reloadKey, focus, view, onNow, frame, onClose, onPick, styleMode = false, region = NO_REGION }, handle) {
+export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venueId, reloadKey, focus, view, onNow, frame, onClose, onPick, styleMode = false, region = NO_REGION, onPlayed }, handle) {
   const refA = useRef<HTMLIFrameElement>(null), refB = useRef<HTMLIFrameElement>(null);
   const frames = [refA, refB];
   const [active, setActive] = useState<0 | 1 | null>(null);
@@ -49,6 +53,10 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
   const regionRef = useRef(region); regionRef.current = region;
   const varsRef = useRef<Record<string, string> | null>(null); // the live colours (a colour being picked, or Compare), re-applied to a fresh frame
   const scrollRef = useRef(0);
+  const reloading = useRef(false), playWanted = useRef(false); // a play asked for while the frame reloads waits for the fresh frame
+  const seasonP = useRef<Promise<void>>(Promise.resolve()); // the latest season switch in the frame (a play waits for its scene and transition)
+  const playedRef = useRef(onPlayed); playedRef.current = onPlayed;
+  const play = (d: Document) => { void seasonP.current.then(() => { if (d === activeDoc()) playTransition(d, viewRef.current.lang, () => playedRef.current?.()); }); };
   const isOurs = (d: Document | null | undefined): d is Document => !!d && d.location.pathname === `/${venueId}`;
   const activeDoc = () => { const a = activeRef.current; if (a === null) return null; const d = frames[a].current?.contentDocument; return isOurs(d) ? d : null; };
 
@@ -60,7 +68,7 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
   useEffect(() => { if (!view.replay) return; const d = activeDoc(); if (d) replayWelcome(d); }, [view.replay]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { const d = activeDoc(); if (d) applyLang(d, view.lang); }, [view.lang]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { const d = activeDoc(); if (d) applyGreet(d, view.slot); }, [view.slot]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { const d = activeDoc(); if (d) void applySeason(d, venueId, view.season, () => viewRef.current.season === view.season); }, [view.season]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const d = activeDoc(); if (d) seasonP.current = applySeason(d, venueId, view.season, () => viewRef.current.season === view.season); }, [view.season]); // eslint-disable-line react-hooks/exhaustive-deps
   // The open group's region (or a re-assertion of it): outlined in the loaded frame, scrolled to when out of view.
   useEffect(() => { const d = activeDoc(); if (d) applyRegion(d, region.region, true); }, [region]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -70,9 +78,12 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
     loadingSlot.current = next;
     const cur = activeRef.current === null ? null : frames[activeRef.current].current;
     scrollRef.current = cur?.contentWindow?.scrollY ?? 0;
-    setLoading(true);
+    reloading.current = true; setLoading(true);
     const w = frames[next].current?.contentWindow; if (w) w.location.replace(`/${venueId}?preview=${reloadKey}.${Date.now()}`);
   }, [venueId, reloadKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Play: now, or once the frame being reloaded is in (a transition just chosen is saved, then played from the fresh page). Declared after
+  // the reload above, so a save and a play in the same render see the reload first.
+  useEffect(() => { if (!view.play) return; const d = activeDoc(); if (reloading.current || !d) { playWanted.current = true; return; } play(d); }, [view.play]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onLoad = (slot: 0 | 1) => () => {
     if (slot !== loadingSlot.current) return;
@@ -85,13 +96,14 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
     const main = d.querySelector('main'); if (main) main.inert = false; // the page's script made the menu inert behind the overlay; the admin edits it
     previewStyle(d);
     applyLang(d, v.lang); applyGreet(d, v.slot);
-    if (v.season) { const want = v.season; void applySeason(d, venueId, want, () => viewRef.current.season === want); }
+    if (v.season) { const want = v.season; seasonP.current = applySeason(d, venueId, want, () => viewRef.current.season === want); }
     if (pickRef.current) attachPick(d, (p) => pickRef.current?.(p), () => styleModeRef.current);
     if (varsRef.current) applyVars(d, varsRef.current);
     applyScreen(d, v); // the same screen as before the save: the welcome screen, the popup or the section list open again
     if (!showFocus(d, focusRef.current)) d.defaultView?.scrollTo({ top: scrollRef.current, behavior: 'auto' }); // the item just edited, or the same position
     if (regionRef.current.region) applyRegion(d, regionRef.current.region, activeRef.current === null); // the first load of this preview (the phone overlay opening) scrolls to the open group's region; a reload after a save keeps its place
-    activeRef.current = slot; setActive(slot); setLoading(false);
+    activeRef.current = slot; setActive(slot); setLoading(false); reloading.current = false;
+    if (playWanted.current) { playWanted.current = false; play(d); } // once the preview's season (its scene and transition) is in
   };
 
   // Laptop: the phone scales down to fit the column (always whole, never cut).
@@ -208,7 +220,8 @@ function previewStyle(d: Document) {
     + '.roses-style main>header,.roses-style #tabs,.roses-style main section h2,.roses-style main section ul,.roses-style main footer,.roses-style dialog,.roses-style #welcome{cursor:pointer}'
     + '.roses-region{outline:3px solid #ee6a3a!important;outline-offset:-3px;border-radius:10px;transition:outline-color .2s}dialog.roses-region{outline-offset:-3px}'
     + 'html.roses-region-page body{box-shadow:inset 0 0 0 3px #ee6a3a;min-height:100dvh}'
-    + 'html.roses-show-welcome #welcome{display:grid!important;place-items:center!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}'; // place-items as the page's own rule for data-welcome="show" sets it (the frame is "off"): without it the card stretches and the buttons grow tall
+    + 'html.roses-show-welcome #welcome{display:grid!important;place-items:center!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}' // place-items as the page's own rule for data-welcome="show" sets it (the frame is "off"): without it the card stretches and the buttons grow tall
+    + 'html.roses-play[data-welcome="show"] #welcome,html.roses-play[data-welcome="done"] #welcome{display:grid!important;place-items:center!important}html.roses-play-still .welcome-card *{animation:none!important}'; // Play: the page's own states run the transition (the card without its entrance, already settled)
   d.head.appendChild(st);
 }
 // Tap-to-edit: one capture-phase click listener on the loaded document. Menu tab: an item row, a section heading or the
@@ -263,20 +276,53 @@ function applyRegion(d: Document, region: Region | null, scroll: boolean) {
   const visible = els.some((el) => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < w.innerHeight; });
   if (!visible) (els[0] as HTMLElement).scrollIntoView({ block: region === 'footer' ? 'end' : 'start', behavior: 'auto' });
 }
+// Play the page's transition (Style tab → Welcome → Transition, 2026-10-10). The welcome screen is put up through the page's own state
+// ("show"; already settled, without its entrance, when it was not up), held a moment so the person sees it, then the language button
+// of the preview's language is clicked for the page (the admin's own click listener steps aside): the page applies the language and
+// runs its transition (w.rosesTx, the chosen concept for the frame's season; the 150 ms fade under reduced motion) and puts the menu up
+// at "off", where the preview takes its own state back and reports the end. One play at a time; a new frame stops a play in flight.
+function playTransition(d: Document, lang: 'en' | 'fa', onEnd: () => void) {
+  const h = d.documentElement, w = d.getElementById('welcome'), btn = w?.querySelector<HTMLButtonElement>(`button[data-lang="${lang}"]`);
+  if (!w || !btn || h.classList.contains('roses-play')) return;
+  previewStyle(d);
+  const up = h.classList.contains('roses-show-welcome');
+  h.classList.add('roses-play'); if (!up) h.classList.add('roses-play-still');
+  h.dataset.welcome = 'show'; h.classList.remove('roses-show-welcome');
+  const done = () => { h.classList.remove('roses-play', 'roses-play-still'); onEnd(); };
+  const mo = new MutationObserver(() => { if (h.dataset.welcome === 'off') { mo.disconnect(); done(); } });
+  setTimeout(() => {
+    if (!btn.isConnected || h.dataset.welcome !== 'show') { h.classList.remove('roses-play', 'roses-play-still'); return; }
+    mo.observe(h, { attributes: true, attributeFilter: ['data-welcome'] });
+    synthetic(d, () => btn.click());
+  }, up ? 350 : 700);
+}
 // The preview-only season (Kian, 2026-10-09; current season only since the PM's decision of the same day): the customers' page
 // carries only today's scene, so another season's scene is fetched from the admin API and swapped into the frame (today's is
 // kept and put back when the page's own season is chosen again); the artwork engine's script is run again on the new scene. Nothing is saved.
+// The season's transition into the menu comes with its scene (the venue's chosen concept for that season, or none in spring and summer,
+// where the page keeps its plain fade): its style replaces the page's, its script redefines the page's w.rosesTx; today's are kept
+// and put back with today's scene.
+type TxPart = { key: string; css: string; js: string } | null;
+type Kept = { html: string; season: string; tx: unknown; txCss: string | null; txKey: string | null };
 async function applySeason(d: Document, venueId: string, season: Season | null, stillWanted: () => boolean) {
-  const holder = d.querySelector<HTMLElement>('#welcome .welcome-scene'), w = d.getElementById('welcome');
+  const holder = d.querySelector<HTMLElement>('#welcome .welcome-scene'), w = d.getElementById('welcome') as (HTMLElement & { rosesTx?: unknown }) | null;
   if (!holder || !w) return;
-  const kept = holder as HTMLElement & { rosesToday?: { html: string; season: string } };
-  if (!season) { if (kept.rosesToday) { holder.innerHTML = kept.rosesToday.html; w.dataset.season = kept.rosesToday.season; delete kept.rosesToday; } return; }
+  const kept = holder as HTMLElement & { rosesToday?: Kept };
+  if (!season) { if (kept.rosesToday) { const k = kept.rosesToday; holder.innerHTML = k.html; w.dataset.season = k.season; setTx(d, w, k.txCss, null, k.txKey); w.rosesTx = k.tx; delete kept.rosesToday; } return; }
   if (w.dataset.season === season && !kept.rosesToday) return; // today's season is already up
-  const r = await fetch(`/api/admin/welcome-scene?venue=${encodeURIComponent(venueId)}&season=${season}`).then((x) => x.json() as Promise<{ ok: boolean; html?: string; script?: string | null }>).catch(() => null);
+  const r = await fetch(`/api/admin/welcome-scene?venue=${encodeURIComponent(venueId)}&season=${season}`).then((x) => x.json() as Promise<{ ok: boolean; html?: string; script?: string | null; tx?: TxPart }>).catch(() => null);
   if (!r?.ok || !r.html || !stillWanted() || !holder.isConnected) return;
-  if (!kept.rosesToday) kept.rosesToday = { html: holder.innerHTML, season: w.dataset.season ?? '' };
+  if (!kept.rosesToday) kept.rosesToday = { html: holder.innerHTML, season: w.dataset.season ?? '', tx: w.rosesTx, txCss: d.getElementById('welcome-tx')?.textContent ?? null, txKey: d.getElementById('welcome-tx')?.dataset.tx ?? null };
   holder.innerHTML = r.html; w.dataset.season = season;
   if (r.script) { const s = d.createElement('script'); s.textContent = r.script; holder.appendChild(s); s.remove(); }
+  setTx(d, w, r.tx?.css ?? null, r.tx?.js ?? null, r.tx?.key ?? null);
+  if (!r.tx) delete w.rosesTx;
+}
+function setTx(d: Document, w: HTMLElement, css: string | null, js: string | null, key: string | null) {
+  let st = d.getElementById('welcome-tx');
+  if (css === null) st?.remove();
+  else { if (!st) { st = d.createElement('style'); st.id = 'welcome-tx'; w.appendChild(st); } st.textContent = css; if (key) st.dataset.tx = key; }
+  if (js) { const s = d.createElement('script'); s.textContent = js; w.appendChild(s); s.remove(); }
 }
 // Live colours, applied to the frame's CSS variables (the page's :root values stay in its own <style>): a colour being picked, or
 // the venue's default colours while Compare is held; null takes every live value away again. The two rules that carry plain values

@@ -2,8 +2,11 @@
 // Evidence for a venue page on a running local server (default http://localhost:3000):
 // the first HTML response carries the welcome screen and its head decision script (Kian, 2026-10-09, replacing the logo intro); on
 // a first visit the welcome screen is up at first paint with the greeting in both languages and no language pre-highlighted, a tap
-// on English opens the menu within 300 ms and stores only the language; it shows again on a reload with the last language
-// pre-highlighted; with reduced motion it is shown still (no animation running) and the page behind is visible at once; with
+// on English opens the menu within 300 ms and stores only the language (on a page with a transition into the menu, Senso since
+// 2026-10-10, Kian's ruling: the menu usable within 300 ms of the tap, the overlay letting taps and scrolls through and the menu no
+// longer inert, and the transition over within 900 ms); it shows again on a reload with the last language pre-highlighted; with
+// reduced motion it is shown still (no animation running) and the page behind is visible at once, and a tap removes it at once (with
+// a transition: in a 150 ms fade, Kian's ruling); with
 // JavaScript off there is no overlay and the menu shows directly; category tabs follow taps and the scroll, top of the page after
 // a reload (Kian, 2026-10-08); full-page iPhone screenshots in English and Persian; DOM summary. Raw outputs go to reports/<dir>/.
 // The finer welcome checks (clock and date boundaries, the scene, the kill switch, budgets, recordings) are in scripts/welcome-drill.mjs.
@@ -84,8 +87,12 @@ await fs.writeFile(path.join(out, `${venue}-first-response.html`), html);
 log.checks.welcomeInFirstHtml = { present: /id="welcome"/.test(html), headScript: /dataset\.welcome='show'/.test(html) && /getHours\(\)/.test(html), seasonRendered: /id="welcome"[^>]*data-season="(fall|winter|spring|summer)"/.test(html), noStoredFlag: !/roses-welcome/.test(html), bytes: html.length };
 // What the overlay shows, read inside the page (the welcome drill has the full probe; this one follows the first visit and the reload).
 const probe = () => { const h = document.documentElement, w = document.getElementById('welcome'); const cs = w ? getComputedStyle(w) : null; const g = h.dataset.greet || null; const slot = g && w ? w.querySelector(`.g[data-g="${g}"]`) : null; const op = (e) => (e ? Number(getComputedStyle(e).opacity) : null); const shown = (e) => !!e && e.getClientRects().length > 0; return { t: Math.round(performance.now()), welcome: h.dataset.welcome || null, display: cs ? cs.display : 'absent', styled: !!cs && cs.position === 'fixed', opacity: cs ? cs.opacity : null, greet: g, season: w ? w.dataset.season || null : null, saved: h.dataset.langSaved || null, lang: h.dataset.lang, en: slot ? op(slot.querySelector('[lang=en]')) : null, fa: slot ? op(slot.querySelector('[lang=fa]')) : null, enShown: slot ? shown(slot.querySelector('[lang=en]')) : false, faShown: slot ? shown(slot.querySelector('[lang=fa]')) : false, logo: op(w && w.querySelector('.welcome-card img, .welcome-name')), buttons: w ? [...w.querySelectorAll('button[data-lang]')].map((b) => ({ lang: b.dataset.lang, pressed: b.getAttribute('aria-pressed'), opacity: Number(getComputedStyle(b).opacity) })) : [], particles: w ? w.querySelectorAll('.scene .p').length : 0, running: w ? w.getAnimations({ subtree: true }).filter((a) => a.playState === 'running').length : 0, storedKeys: (() => { try { return Object.keys(localStorage).filter((k) => k.startsWith('roses-')); } catch { return []; } })(), page: { header: op(document.querySelector('main > header')), tabs: op(document.querySelector('main #tabs')), h2: op(document.querySelector('main section:first-of-type h2')), row1: op(document.querySelector('main section:first-of-type li.item')) }, inert: (() => { const m = document.querySelector('main'); return m ? m.inert : null; })() }; };
-// The tap, timed inside the page from the click to the overlay gone (display none, visibility hidden or opacity 0).
-const tapLang = (lang) => new Promise((res) => { const w = document.getElementById('welcome'), b = w.querySelector(`button[data-lang="${lang}"]`); const start = performance.now(); b.click(); const tick = () => { const cs = getComputedStyle(w); const t = performance.now() - start; const gone = cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0; if (gone || t > 3000) res({ ms: Math.round(t), gone, welcome: document.documentElement.dataset.welcome, lang: document.documentElement.dataset.lang, rowVisible: !!document.querySelector('main li.item') && document.querySelector('main li.item').getClientRects().length > 0 }); else requestAnimationFrame(tick); }; tick(); });
+// The tap, timed inside the page from the click to the overlay gone (display none, visibility hidden or opacity 0); also the moment the
+// menu is usable (the overlay lets taps through, the menu is no longer inert and the page can scroll), whether the page carries a
+// transition into the menu (#welcome-tx, Senso since 2026-10-10) and whether the overlay faded (an opacity strictly between 0 and 1 seen).
+const tapLang = (lang) => new Promise((res) => { const w = document.getElementById('welcome'), b = w.querySelector(`button[data-lang="${lang}"]`), m = document.querySelector('main'); const tx = document.getElementById('welcome-tx'); let usable = null, faded = false; const start = performance.now(); b.click(); const tick = () => { const cs = getComputedStyle(w); const t = performance.now() - start; const o = Number(cs.opacity); if (o > 0 && o < 1) faded = true; if (usable === null && (cs.display === 'none' || cs.pointerEvents === 'none') && !(m && m.inert) && getComputedStyle(document.body).overflowY !== 'hidden') usable = Math.round(t); const gone = cs.display === 'none' || cs.visibility === 'hidden' || o === 0; if (gone || t > 3000) res({ ms: Math.round(t), gone, usableMs: usable, faded, tx: tx ? tx.dataset.tx || 'yes' : null, welcome: document.documentElement.dataset.welcome, lang: document.documentElement.dataset.lang, rowVisible: !!document.querySelector('main li.item') && document.querySelector('main li.item').getClientRects().length > 0 }); else requestAnimationFrame(tick); }; tick(); });
+// The tap's targets: the menu visible within 300 ms; with a transition (Kian, 2026-10-10) the menu usable within 300 ms and the overlay gone within 900 ms.
+const tapOk = (tap) => (tap.tx ? tap.gone && tap.usableMs !== null && tap.usableMs <= 300 && tap.ms <= 900 : tap.gone && tap.ms <= 300);
 const waitOff = (page) => page.waitForFunction(() => document.documentElement.dataset.welcome === 'off', null, { timeout: 5000 }).then(() => true).catch(() => false);
 const waitShow = (page) => page.waitForFunction(() => document.documentElement.dataset.welcome === 'show', null, { timeout: 5000 }).then(() => true).catch(() => false);
 
@@ -123,7 +130,7 @@ const browser = await chromium.launch();
   };
   const fv = log.checks.firstVisit;
   fv.ok = fv.upAtFirstSample && !!fv.greet && !!fv.season && fv.bothLanguagesShown && fv.noPreHighlight && fv.particles > 0 && fv.particles <= 20 && fv.animationsRunning > 0 && fv.menuInertBehind && entrance.greetingWasHidden && entrance.buttonsAtMs != null
-    && tap.gone && tap.ms <= 300 && tap.lang === 'en' && tap.rowVisible && off && after.display === 'none' && after.inert === false && after.storedKeys.join() === 'roses-lang';
+    && tapOk(tap) && tap.lang === 'en' && tap.rowVisible && off && after.display === 'none' && after.inert === false && after.storedKeys.join() === 'roses-lang';
   await page.waitForLoadState('networkidle').catch(() => {});
   log.checks.images = await loadAllImages(page);
   await page.screenshot(shotOpts(path.join(out, `${venue}-en.png`)));
@@ -193,7 +200,8 @@ const browser = await chromium.launch();
 }
 
 // 4. reduced motion, fresh context (no storage): the welcome screen is shown but still (no animation running, the greeting and
-//    buttons fully visible at once), the page behind it visible at once; a tap removes it without a fade
+//    buttons fully visible at once), the page behind it visible at once; a tap removes it without a fade (with a transition into the
+//    menu, Senso since 2026-10-10: in the 150 ms fade of Kian's ruling, measured as an opacity seen between 0 and 1 and gone in 120–230 ms)
 {
   const ctx = await browser.newContext({ ...DEVICE, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
@@ -202,7 +210,7 @@ const browser = await chromium.launch();
   const r = await page.evaluate(probe);
   const prefersReduced = await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
   const tap = await page.evaluate(tapLang, 'en');
-  log.checks.reducedMotion = { ...r, samples: undefined, prefersReduced, tap, shownStill: r.welcome === 'show' && r.display === 'grid' && r.running === 0 && r.en === 1 && r.fa === 1 && r.logo === 1 && r.buttons.every((b) => b.opacity === 1) && r.particles > 0, pageVisibleAtOnce: r.page.header === 1 && r.page.tabs === 1 && r.page.h2 === 1 && r.page.row1 === 1, instantOff: tap.gone && tap.ms <= 60 };
+  log.checks.reducedMotion = { ...r, samples: undefined, prefersReduced, tap, shownStill: r.welcome === 'show' && r.display === 'grid' && r.running === 0 && r.en === 1 && r.fa === 1 && r.logo === 1 && r.buttons.every((b) => b.opacity === 1) && r.particles > 0, pageVisibleAtOnce: r.page.header === 1 && r.page.tabs === 1 && r.page.h2 === 1 && r.page.row1 === 1, instantOff: tap.tx ? null : tap.gone && tap.ms <= 60, fade150: tap.tx ? tap.gone && tap.faded && tap.ms >= 120 && tap.ms <= 230 : null };
   await ctx.close();
 }
 // 5. JavaScript off, fresh context: no overlay, the menu shows directly
@@ -221,7 +229,7 @@ await browser.close();
 await fs.writeFile(path.join(out, `${venue}-checks.json`), JSON.stringify(log, null, 2));
 const c = log.checks;
 console.log(JSON.stringify({ welcomeInFirstHtml: c.welcomeInFirstHtml, firstVisit: { ...c.firstVisit, samples: undefined }, repeatVisit: { ...c.repeatVisit, samples: undefined }, reducedMotion: c.reducedMotion, javascriptOff: c.javascriptOff, persianToggle: c.persianToggle, dom: { ...c.dom, sections: c.dom.sections.length } }, null, 2));
-const pass = c.welcomeInFirstHtml.present && c.welcomeInFirstHtml.headScript && c.welcomeInFirstHtml.seasonRendered && c.welcomeInFirstHtml.noStoredFlag && c.firstVisit.ok && c.repeatVisit.showsAgain && c.reducedMotion.shownStill && c.reducedMotion.pageVisibleAtOnce && c.reducedMotion.instantOff && c.javascriptOff.ok && c.persianToggle.dir === 'rtl' && c.fontRequests.thirdParty.length === 0 && c.images.loaded === c.images.total && c.imagesFa.loaded === c.imagesFa.total && c.tabs.ok && c.topAfterReload.ok;
+const pass = c.welcomeInFirstHtml.present && c.welcomeInFirstHtml.headScript && c.welcomeInFirstHtml.seasonRendered && c.welcomeInFirstHtml.noStoredFlag && c.firstVisit.ok && c.repeatVisit.showsAgain && c.reducedMotion.shownStill && c.reducedMotion.pageVisibleAtOnce && (c.reducedMotion.tap.tx ? c.reducedMotion.fade150 : c.reducedMotion.instantOff) && c.javascriptOff.ok && c.persianToggle.dir === 'rtl' && c.fontRequests.thirdParty.length === 0 && c.images.loaded === c.images.total && c.imagesFa.loaded === c.imagesFa.total && c.tabs.ok && c.topAfterReload.ok;
 console.log('tabs:', JSON.stringify({ ...c.tabs, taps: undefined }), '\ntop after reload:', JSON.stringify(c.topAfterReload));
 console.log('fonts requested:', JSON.stringify(c.fontRequests), '\nimages EN:', JSON.stringify(c.images), '\nimages FA:', JSON.stringify(c.imagesFa));
 console.log(pass ? 'PASS' : 'FAIL');

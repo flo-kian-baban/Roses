@@ -11,6 +11,9 @@
 // The script inside the overlay handles the tap: it sets the language like the header toggle, stores it, fades the overlay out
 // (data-welcome="done", then "off" once the 200 ms fade has ended, display none) and puts the page at the top (Kian, 2026-10-09).
 // No framework JavaScript: inline script, CSS and inline SVG only (src/styles/public.css, the "Welcome screen" block).
+// Senso (2026-10-10, the owner and manager via Kian): instead of the fade, the venue's chosen transition into the menu for this season
+// (src/lib/transitions.ts, src/lib/welcome-transitions.ts): its style and its script are the only ones in the page; the tap applies the
+// language, makes the menu usable and hands over to it (welcomeScriptTx below); spring and summer keep the fade until theirs are built.
 //
 // Scenes. Senso (Kian's picks of 2026-10-09, src/components/welcome-art.ts): the fall and winter scenes are the picked artwork
 // with a per-load engine (engineScript): the HTML carries the symbols and an empty scene, and the inline script draws 20 particles
@@ -24,7 +27,9 @@
 import type { CSSProperties, ReactNode } from 'react';
 import type { Bi as BiText, Logo } from '@/lib/types';
 import { GREETINGS, type Season } from '@/lib/welcome';
+import { DEFAULT_TRANSITION, isTransitionId, isTxSeason } from '@/lib/transitions';
 import { artScene, type ArtScene } from './welcome-art';
+import { transitionCode, type TxCode } from '@/lib/welcome-transitions';
 import { Bi } from './Bi';
 export { usesArtwork } from './welcome-art';
 
@@ -47,6 +52,15 @@ var choose=function(n){h.dataset.lang=n;h.lang=n;h.dir=n==='fa'?'rtl':'ltr';try{
 var off=function(){if(h.dataset.welcome==='done')h.dataset.welcome='off'};if(reduced)off();else{w.addEventListener('transitionend',off,{once:true});setTimeout(off,320)}
 window.scrollTo(0,0)};
 w.querySelectorAll('button[data-lang]').forEach(function(b){b.addEventListener('click',function(){choose(b.getAttribute('data-lang'))})})})();`;
+// The tap on a venue with transitions (Senso, 2026-10-10; src/lib/welcome-transitions.ts): the same as above, except that once
+// the language is applied, the menu reachable and the page at the top, the overlay hands over to the transition the page carries
+// (w.rosesTx: the chosen concept for this season, or the 150 ms fade under reduced motion); a season without one (spring, summer)
+// keeps the fade above. A page without transitions (Kebab Land, the default template) keeps welcomeScript byte for byte.
+const welcomeScriptTx = welcomeScript.replace(
+  "var off=function(){if(h.dataset.welcome==='done')h.dataset.welcome='off'};if(reduced)off();else{w.addEventListener('transitionend',off,{once:true});setTimeout(off,320)}\nwindow.scrollTo(0,0)};",
+  "var off=function(){if(h.dataset.welcome==='done')h.dataset.welcome='off'};window.scrollTo(0,0);if(w.rosesTx)w.rosesTx(off,reduced);else if(reduced)off();else{w.addEventListener('transitionend',off,{once:true});setTimeout(off,320)}};",
+);
+if (welcomeScriptTx === welcomeScript) throw new Error('welcomeScriptTx: the tap code changed; update the hook');
 
 // The artwork engine (Senso; the scene element names its kind, leaves or snow, and the picked designs). Three depth layers, each
 // [count, size min, size max (× the base size), fall duration min, max (s), opacity min, max, sway width min, max (px), sway period
@@ -89,11 +103,13 @@ export const engineFor = (kind: ArtScene['kind']) => (kind === 'sun' ? sunEngine
 
 // `tile`: the logo on the venue's tile (the Header group's token), for a white-on-transparent logo on a light welcome background;
 // the page passes it only when the welcome background is light (on a dark one the logo sits straight on it, so nothing cuts the scene).
-// `season`: the one the page was rendered for; `art`: the venue uses the picked artwork (Senso only until Kian confirms it).
-export function Welcome({ logo, name, tile, season, art = false }: { logo: Logo | null; name: BiText; tile?: boolean; season: Season; art?: boolean }) {
+// `season`: the one the page was rendered for; `art`: the venue uses the picked artwork (Senso only until Kian confirms it);
+// `transition`: the venue's chosen transition into the menu (art venues only; the page carries that one concept, for this season only).
+export function Welcome({ logo, name, tile, season, art = false, transition }: { logo: Logo | null; name: BiText; tile?: boolean; season: Season; art?: boolean; transition?: string }) {
   const alt = name.en ?? '';
   const img = logo && <img src={logo.url} width={logo.width} height={logo.height} alt={alt} decoding="async" fetchPriority="high" className={tile ? undefined : 'welcome-logo'} />;
   const a = artScene(season, art);
+  const tx = txFor(art, transition, season);
   return (
     <div id="welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-greet" data-season={season}>
       <Scene season={season} art={art} />
@@ -110,9 +126,15 @@ export function Welcome({ logo, name, tile, season, art = false }: { logo: Logo 
           <button type="button" data-lang="fa" lang="fa" dir="rtl">فارسی</button>
         </div>
       </div>
-      <script dangerouslySetInnerHTML={{ __html: welcomeScript }} />
+      {tx && <style id="welcome-tx" data-tx={tx.key} dangerouslySetInnerHTML={{ __html: tx.css }} />}
+      <script dangerouslySetInnerHTML={{ __html: art ? welcomeScriptTx + (tx ? tx.js : '') : welcomeScript }} />
     </div>
   );
+}
+// The transition a page ships: the venue's choice (T1 until the owner picks) for the page's season, when it is built for that season.
+export function txFor(art: boolean, transition: string | null | undefined, season: Season): TxCode | null {
+  if (!art || !isTxSeason(season)) return null;
+  return transitionCode(isTransitionId(transition) ? transition : DEFAULT_TRANSITION, season);
 }
 
 // ---- the scenes ----

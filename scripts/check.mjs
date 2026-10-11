@@ -9,7 +9,11 @@
 // starts two servers on free ports (the second with TRUST_PROXY=1 for the venue-cap test), creates a temporary admin account in the
 // copy, runs every check, and writes reports/checks/<date-time>/report.md next to the raw evidence. Exit code 1 when
 // any check fails; a failed run's folder is kept (its report carries a one-line cause), never deleted.
-//   npm run check
+// Pre-flight (the PM, 2026-10-11, after a run whose timings another project's server at ~590 % CPU made invalid): before the scratch
+// copy and the build, scripts/preflight.mjs reads the load average, free memory, Docker's memory and the top 5 processes by CPU, all
+// recorded in report.md; when a process the suite did not start is above 100 % CPU the suite prints it (name, PID, port, CPU), leaves
+// it alone and exits 2 before building. `npm run check -- --force` runs anyway and marks every timing check "under external load".
+//   npm run check            npm run check -- --force
 // 2026-10-08: the colour-literal scan (0 in the public sources) and the Style tab drill (scripts/style-drill.mjs) joined the suite.
 // 2026-10-09: the welcome screen replaced the logo intro: the page checks follow it instead (first visit, reload with the last language
 // pre-highlighted, reduced motion still, JavaScript off) and the welcome drill (scripts/welcome-drill.mjs) covers the boundaries, the
@@ -49,6 +53,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import pg from 'pg';
 import { chromium } from 'playwright';
 import { loadEnv } from './load-env.mjs';
+import { readings as preReadings, offenders as preOffenders, describe as preDescribe, markdown as preMarkdown, TIMING, LIMIT as CPU_LIMIT } from './preflight.mjs';
 
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
@@ -144,6 +149,22 @@ function startServer(port, env, logFile) {
     process.exit(2);
   }
 }
+// Pre-flight (the PM, 2026-10-11): no process the suite did not start above 100 % CPU (only the suite and npm run at this point), or
+// stop before building; --force runs anyway with every timing check marked "under external load". Other processes are only read.
+const FORCE = process.argv.includes('--force');
+const pre = preReadings(process.env.ROSES_DB_CONTAINER || 'roses-db');
+const preBad = preOffenders(pre, [process.pid, process.ppid]);
+const underLoad = preBad.length > 0; // only reachable past here with --force
+log(`pre-flight: load average ${pre.load1.toFixed(2)} (1 min) on ${pre.cpus} CPUs; memory free ${(pre.free / 1024 ** 3).toFixed(1)} GB, available ${pre.available === null ? '—' : (pre.available / 1024 ** 3).toFixed(1)} GB; Docker VM ${pre.dockerTotal === null ? '—' : (pre.dockerTotal / 1024 ** 3).toFixed(1)} GB; top by CPU: ${pre.top.map(preDescribe).join('; ')}`);
+if (underLoad && !FORCE) {
+  console.error(`npm run check stopped before building (pre-flight, the PM, 2026-10-11): a process the suite did not start is above ${CPU_LIMIT} % CPU, so the run's timings would not be valid. It is left alone:`);
+  for (const p of preBad) console.error(`  ${p.name}  PID ${p.pid}  port ${p.ports.join(', ') || '—'}  ${p.cpu.toFixed(0)} % CPU  (${p.command})`);
+  console.error('Run the suite again when it is quiet, or run `npm run check -- --force` to run anyway (every timing check is then marked "under external load").');
+  const files = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? files(path.join(d, e.name)) : [e.name]));
+  if (files(out).length === 0) fs.rmSync(out, { recursive: true, force: true }); // nothing ran: the run folder holds only empty folders
+  process.exit(2);
+}
+if (underLoad) log(`pre-flight: FORCED (--force) past ${preBad.map(preDescribe).join('; ')}: every timing check is marked "under external load"`);
 if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) { console.error('DATABASE_URL / SESSION_SECRET missing: run npm run setup'); process.exit(2); }
 const WORK_URL = process.env.DATABASE_URL;
 const workName = new URL(WORK_URL).pathname.slice(1);
@@ -436,20 +457,22 @@ const knownStatus = (k) => !k.run ? '**NOT RUN** (the suite stopped before its s
 const lines = [
   `# Check suite — ${stamp.replace('T', ' ').replace(/-(\d\d)-(\d\d)Z$/, ':$1:$2Z')}`, '',
   `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, ${KNOWN_FILE} included) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
+  ...(underLoad ? [`**Run forced past the pre-flight (\`--force\`) under external load**: ${preBad.map(preDescribe).join('; ')}. Every timing check below is marked "under external load"; its times are not evidence.`, ''] : []),
   `**${pass ? 'PASS' : 'FAIL'}** — ${results.filter((r) => outcome(r) === 'PASS').length} of ${results.length} checks passed${knownMissed.length ? `, ${knownMissed.length} KNOWN MISS (listed in \`${KNOWN_FILE}\`, still measured: see Known misses)` : ''}${failed.length ? `, ${failed.length} failed (not listed as known misses)` : ', no unlisted failure'}.${nowPassing.length ? ` Known miss now passing: ${nowPassing.map((k) => k.title).join(', ')} (see Known misses).` : ''}`, '',
   ...(pass ? [] : [`Cause: ${(() => { const f = failed[0]; return `${f.name} — ${(f.note || '').replace(/\s+/g, ' ').slice(0, 300)}`; })()}`, '', 'This failed run is kept on purpose (PM, 2026-10-08): the folder is never deleted, even when a re-run passes.', '']),
+  ...preMarkdown(pre, preBad, FORCE),
   '## Known misses', '',
   `Listed in \`${KNOWN_FILE}\` (committed; blob ${knownBlob || '?'} in ${commit}). A listed check is still measured and printed, here and as KNOWN MISS in the table; it does not fail the run. Any failure that is not listed fails it. A listed check that passes is reported here as NOW PASSING.`, '',
   ...(known.length ? ['| Known miss | This run | Measured | Cause | Clears when | Listed |', '| --- | --- | --- | --- | --- | --- |',
     ...known.map((k) => `| ${cell(k.title)} (\`${k.id}\`, step \`${k.step}\`) | ${knownStatus(k)} | ${k.run ? k.run.checks.map((c) => `${c.ok === null ? 'NOT MEASURED' : c.ok ? 'met' : 'MISSED'}: \`${c.id}\`: ${cell(c.text)}`).join('<br>') : '—'} | ${cell(k.cause)} | ${cell(k.clears)} | ${cell(k.listed)} |`)] : ['None listed.']), '',
   '## Checks', '',
   '| Check | Result | Time | Evidence | Notes |', '| --- | --- | --- | --- | --- |',
-  ...results.map((r) => `| ${r.name} | ${outcome(r)} | ${(r.ms / 1000).toFixed(1)} s | ${r.evidence.map((e) => `\`${e}\``).join(', ')} | ${r.note.replace(/\|/g, '\\|')} |`), '',
+  ...results.map((r) => `| ${r.name} | ${outcome(r)}${underLoad && TIMING.test(r.name) ? ' (under external load)' : ''} | ${(r.ms / 1000).toFixed(1)} s | ${r.evidence.map((e) => `\`${e}\``).join(', ')} | ${r.note.replace(/\|/g, '\\|')} |`), '',
   'Every path is relative to this folder. Screenshots, full Lighthouse JSON, the first HTML responses, uploads and the dumps stay on the machine that ran the suite (gitignored); report.md, summary.json, the check JSON files and the text logs are committed. Every server and drill ran against the scratch copy of the working database (isolation.json lists the database each process connected to, from its own log and from pg_stat_activity), which was dropped afterwards; the working database itself was only read (the dump, then the search for suite-account rows in working-db-suite-rows.json). Lighthouse numbers are local estimates; since the welcome screen (2026-10-09) their LCP element is the welcome logo, so the Lighthouse LCP measures the welcome screen, not the menu behind it; the menu after the language tap is measured by the after-tap step under throttled mobile conditions.', '',
 ];
 fs.writeFileSync(path.join(out, 'report.md'), lines.join('\n'));
-fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, pass, ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT }, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
+fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, pass, preflight: { ...pre, forced: underLoad, offenders: preBad }, underExternalLoad: underLoad ? results.filter((r) => TIMING.test(r.name)).map((r) => r.name) : [], ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT }, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
 console.log('\n' + lines.slice(4).join('\n'));
 console.log(`\nreport: ${path.relative(process.cwd(), path.join(out, 'report.md'))}`);
-console.log(`CHECK SUITE ${pass ? 'PASS' : 'FAIL'}${knownMissed.length ? ` (${knownMissed.length} KNOWN MISS)` : ''}`);
+console.log(`CHECK SUITE ${pass ? 'PASS' : 'FAIL'}${knownMissed.length ? ` (${knownMissed.length} KNOWN MISS)` : ''}${underLoad ? ' (forced: timing checks under external load)' : ''}`);
 process.exit(pass ? 0 : 1);

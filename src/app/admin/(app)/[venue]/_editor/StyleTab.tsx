@@ -310,7 +310,7 @@ function WelcomeControls({ option: o, on, onSwitch, transition: tx, chosen, seas
   return (
     <div className="mb-1 border-b border-line px-3">
       <label className="flex min-h-12 items-center justify-between gap-4 py-2.5" data-style-option="welcome">
-        <span><span className="block text-[15px] font-medium">{o.label}</span>{o.hint && <span className="mt-0.5 block text-xs text-ink-muted">{o.hint}</span>}<span className="mt-0.5 block text-xs text-ink-muted">Season and time of day for the preview: in the bar above the preview.</span></span>
+        <span><span className="block text-[15px] font-medium">{o.label}</span>{o.hint && <span className="mt-0.5 block text-xs text-ink-muted">{o.hint}</span>}<span className="mt-0.5 block text-xs text-ink-muted">Season and time of day for the preview: in the preview bar at the top of these controls.</span></span>
         <Switch checked={on} label={`${o.label}: ${on ? 'on' : 'off'}`} onChange={(v) => onSwitch(v)} />
       </label>
       {tx && tx.type === 'choice' && (
@@ -319,7 +319,7 @@ function WelcomeControls({ option: o, on, onSwitch, transition: tx, chosen, seas
             <span className="min-w-0"><span className="block text-[15px] font-medium">{tx.label}</span>{tx.hint && <span className="mt-0.5 block text-xs text-ink-muted">{tx.hint}</span>}</span>
             <button type="button" className={`${btnSmall} shrink-0`} onClick={onPlay} disabled={!on} data-transition-play aria-label={`Play the transition in the preview (${seasonLabel})`}><Icon name="play" className="h-4 w-4" />Play</button>
           </div>
-          <p className="mt-1.5 text-xs text-ink-muted" data-transition-season>{!on ? 'The welcome screen is off: the menu opens directly, with no transition.' : built ? `In ${seasonLabel.toLowerCase()}, as the preview shows it (season in the bar above the preview).` : `Spring and summer keep the plain fade until their versions are built (after their artwork is final). Below: what each one does in fall and in winter.`}</p>
+          <p className="mt-1.5 text-xs text-ink-muted" data-transition-season>{!on ? 'The welcome screen is off: the menu opens directly, with no transition.' : built ? `In ${seasonLabel.toLowerCase()}, as the preview shows it (its season is set in the preview bar).` : `Spring and summer keep the plain fade until their versions are built (after their artwork is final). Below: what each one does in fall and in winter.`}</p>
           <div className="mt-2 space-y-1.5" role="radiogroup" aria-label={tx.label}>
             {TRANSITIONS.map((t) => {
               const sel = chosen === t.id;

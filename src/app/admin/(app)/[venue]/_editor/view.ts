@@ -14,7 +14,9 @@ export const SLOTS: { id: Slot; label: string }[] = [{ id: 'morning', label: 'Mo
 // season / slot: null = the page's own (the season it was rendered for; the greeting of the device clock), as customers get it.
 // replay: a counter; each increment replays the welcome animation from the start. play: a counter; each increment plays the venue's
 // transition from the welcome screen into the menu (Style tab → Welcome → Transition, 2026-10-10), in the preview's season and language.
-export type View = { screen: Screen; lang: 'en' | 'fa'; season: Season | null; slot: Slot | null; replay: number; play: number };
-export type ViewPatch = Partial<Omit<View, 'replay' | 'play'>> & { replay?: true; play?: true };
+// playTx: the concept a play is for when it was just chosen (its save is still on its way): the preview plays that one in the frame on
+// screen, with its code from the admin's scene API, so the frame is not swapped before it plays; null: the frame's own.
+export type View = { screen: Screen; lang: 'en' | 'fa'; season: Season | null; slot: Slot | null; replay: number; play: number; playTx: string | null };
+export type ViewPatch = Partial<Omit<View, 'replay' | 'play' | 'playTx'>> & { replay?: true; play?: true; playTx?: string };
 // The page's own season and greeting, read from the loaded frame: the bar marks them as the defaults.
 export type PageNow = { season: Season | null; slot: Slot | null };

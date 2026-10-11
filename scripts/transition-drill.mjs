@@ -25,7 +25,9 @@
 //   the admin preview (Style tab → Welcome → Transition): on a laptop, a concept chosen is saved and played in the preview's frame by the
 //     page's own code (the frame names the chosen concept and season, reaches "done" and ends on the menu, the bar's screen then Menu);
 //     the bar's Winter, then Play: the winter version; Play again: played again; on the iPhone 13 viewport, the same choice and Play in the
-//     Style tab's bottom sheet.
+//     Style tab's bottom sheet; and every one of those plays as on the public page (Kian, 2026-10-10: the preview showed a jump): no swap
+//     of the frame during it, the card settled at the tap and seen settled for ≥ 480 ms, none of the preview's outline while it plays,
+//     frames with a median interval ≤ 20 ms, the menu ≤ 900 ms after the tap.
 // At the end Senso's style is put back as it was (the Style route's restore). The drill's server is its own: the port must be free
 // before it starts, and its listener must be the process it spawned (lsof).
 //   DRILL_ADMIN_EMAIL=… DRILL_ADMIN_PIN=… node scripts/transition-drill.mjs --dist .next-check --copy .next-transition --port 3103 --out reports/checks/<stamp>/transition [--venues senso,kebab-land,<temp>] [--jpeg]
@@ -239,9 +241,30 @@ try {
 
   // ---- the admin preview: choose and play (laptop), the bar's Winter and Play, Play again; the phone's bottom sheet
   await stop(); await start('fall'); await signIn();
+  // the copy's cache still holds the summer page rendered just above: a no-op save makes the fall page current before the admin plays it
+  await api('/api/admin/style', { action: 'update', venue: 'senso', patch: {} }); await waitPage('senso', (h) => seasonOf(h) === 'fall');
   const [cname, cvalue] = cookie.split('=');
-  const frameState = (p) => p.evaluate(() => { const f = document.querySelector('iframe[data-preview-frame]'); const d = f && f.contentDocument; const w = d && d.getElementById('welcome'); return d ? { welcome: d.documentElement.dataset.welcome, key: w ? w.rosesTxKey ?? null : null, season: w ? w.dataset.season : null, playing: d.documentElement.classList.contains('roses-play') } : null; });
-  const watchPlay = async (p, action) => { const seen = []; const t = Date.now(); await action(); while (Date.now() - t < 8000) { const s = await frameState(p); seen.push({ ms: Date.now() - t, ...s }); if (s && s.welcome === 'off' && seen.some((x) => x.welcome === 'done')) break; await sleep(40); } const done = seen.find((x) => x.welcome === 'done'); const end = seen.at(-1); return { played: !!done && end?.welcome === 'off' && !end.playing, key: done?.key ?? null, doneAt: done?.ms ?? null, offAt: end?.welcome === 'off' ? end.ms : null }; };
+  // The preview's play, watched frame by frame from the admin page (its requestAnimationFrame: the frame's paint rhythm, the two share a
+  // thread): the frame on screen (its slot), its welcome state, the concept named in it, whether the card's entrance is still running,
+  // the outline of the preview's own on the overlay, and whether the preview is playing. A play must look as on the public page (Kian,
+  // 2026-10-10: the preview showed the transitions with a jump): no swap of the frame between the welcome screen and the menu, the card
+  // settled when it is tapped and seen settled for a beat (≥ 480 ms), none of the preview's outline on it while it plays, the frames
+  // as smooth (median interval ≤ 20 ms) and the tap to the menu within the public page's 900 ms.
+  const LOGGER = () => { const L = window.__pl = []; window.__plStop = false; const t0 = performance.now(); const tick = () => { const f = document.querySelector('iframe[data-preview-frame]'); const d = f && f.contentDocument, W = f && f.contentWindow, w = d && d.getElementById('welcome'); if (w) { const c = w.querySelector('.welcome-card'); const run = c ? c.getAnimations({ subtree: true }).filter((a) => a instanceof W.CSSAnimation && a.playState === 'running').length : 0; L.push({ t: Math.round(performance.now() - t0), slot: f.dataset.previewSlot, welcome: d.documentElement.dataset.welcome, key: w.rosesTxKey ?? null, playing: d.documentElement.classList.contains('roses-play'), settled: run === 0, outline: W.getComputedStyle(w).outlineStyle }); } if (!window.__plStop) requestAnimationFrame(tick); }; requestAnimationFrame(tick); };
+  const watchPlay = async (p, action) => {
+    await p.evaluate(LOGGER); await action();
+    const t = Date.now(); let L = [];
+    while (Date.now() - t < 9000) { L = await p.evaluate(() => window.__pl); const di = L.findIndex((x) => x.welcome === 'done'); if (di >= 0 && L.slice(di).some((x) => x.welcome === 'off')) break; await sleep(60); }
+    await p.evaluate(() => { window.__plStop = true; });
+    const di = L.findIndex((x) => x.welcome === 'done'), oi = L.findIndex((x, i) => i > di && x.welcome === 'off'), si = L.findIndex((x) => x.playing && x.welcome === 'show');
+    if (di < 0 || oi < di || si < 0) return { played: false, key: null, samples: L.length };
+    let from = si; for (let i = di - 1; i >= si; i--) if (!L[i].settled) { from = i + 1; break; }
+    const seg = L.slice(di, oi + 1), gaps = seg.slice(1).map((x, i) => x.t - seg[i].t).sort((a, b) => a - b);
+    const r = { played: true, key: L[di].key, doneAt: L[di].t, offAt: L[oi].t, tapToOff: L[oi].t - L[di].t, slots: [...new Set(L.slice(si, oi + 1).map((x) => x.slot))], settledAtTap: L[di - 1]?.settled === true, beat: L[di].t - L[from].t, outline: [...new Set(L.filter((x) => x.playing).map((x) => x.outline))], medianGap: gaps[Math.floor(gaps.length / 2)], worstGap: gaps.at(-1) };
+    r.ok = r.slots.length === 1 && r.settledAtTap && r.beat >= 480 && r.outline.join() === 'none' && r.tapToOff <= TOTAL && r.medianGap <= 20;
+    return r;
+  };
+  const playText = (x) => x.played ? `${x.key}: tapped at ${x.doneAt} ms after the click, after the card had been settled for ${x.beat} ms (≥ 480; settled at the tap: ${x.settledAtTap}), the menu ${x.tapToOff} ms after the tap (≤ ${TOTAL}); the frame on screen throughout (${x.slots.length === 1 ? 'no swap' : `swapped: slots ${x.slots.join(', ')}`}), the preview's outline while playing: ${x.outline.join('/')}; frames ${x.medianGap} ms median, ${x.worstGap} ms worst` : `not played (${x.samples} samples)`;
   {
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } }); await ctx.addCookies([{ name: cname, value: cvalue, url: base }]);
     const p = await ctx.newPage(); const errors = []; p.on('pageerror', (e) => errors.push(e.message));
@@ -254,7 +277,8 @@ try {
     const b = await watchPlay(p, () => p.click('[data-transition-play]'));
     const c = await watchPlay(p, () => p.click('[data-transition-play]'));
     await p.screenshot({ path: path.join(out, `admin-play-laptop.${jpeg ? 'jpg' : 'png'}`), ...(jpeg ? { type: 'jpeg', quality: 70 } : {}) });
-    check('admin-play-laptop', a.played && a.key === 'T6-fall' && savedAs === 'T6' && screen === 'menu' && b.played && b.key === 'T6-winter' && c.played && c.key === 'T6-winter' && errors.length === 0, `laptop, Style tab → Welcome: T6 chosen → saved (venues.style.transition ${savedAs}) and played in the preview from the fresh page (${a.key}: "done" at ${a.doneAt} ms, the menu at ${a.offAt} ms after the click), the bar's screen then ${screen}; the bar's Winter, then Play → ${b.key} played (menu at ${b.offAt} ms); Play again → ${c.key} played again (menu at ${c.offAt} ms); page errors ${errors.length}`);
+    check('admin-play-laptop', a.played && a.key === 'T6-fall' && savedAs === 'T6' && screen === 'menu' && b.played && b.key === 'T6-winter' && c.played && c.key === 'T6-winter' && errors.length === 0, `laptop, Style tab → Welcome: T6 chosen → saved (venues.style.transition ${savedAs}) and played in the preview (${a.key}), the bar's screen then ${screen}; the bar's Winter, then Play → ${b.key} played; Play again → ${c.key} played again; page errors ${errors.length}`);
+    check('admin-play-like-public-laptop', a.ok && b.ok && c.ok, `laptop, each play as on the public page: chosen: ${playText(a)}; Winter, Play: ${playText(b)}; Play again: ${playText(c)}`);
     await ctx.close();
   }
   {
@@ -268,7 +292,8 @@ try {
     const play = p.locator('[data-style-sheet] [data-transition-play]'); await play.scrollIntoViewIfNeeded();
     const b = await watchPlay(p, () => play.tap());
     await p.screenshot({ path: path.join(out, `admin-play-phone.${jpeg ? 'jpg' : 'png'}`), ...(jpeg ? { type: 'jpeg', quality: 70 } : {}) });
-    check('admin-play-phone', a.played && a.key === 'T3-fall' && b.played && b.key === 'T3-fall' && errors.length === 0, `iPhone 13 viewport, the Style tab's bottom sheet → Welcome: T3 tapped → played in the preview above the sheet (${a.key}, the menu at ${a.offAt} ms); Play tapped → played again (${b.key}, the menu at ${b.offAt} ms); page errors ${errors.length}`);
+    check('admin-play-phone', a.played && a.key === 'T3-fall' && b.played && b.key === 'T3-fall' && errors.length === 0, `iPhone 13 viewport, the Style tab's bottom sheet → Welcome: T3 tapped → played in the preview above the sheet (${a.key}); Play tapped → played again (${b.key}); page errors ${errors.length}`);
+    check('admin-play-like-public-phone', a.ok && b.ok, `iPhone 13 viewport, each play as on the public page: chosen: ${playText(a)}; Play: ${playText(b)}`);
     await ctx.close();
   }
 } catch (e) {

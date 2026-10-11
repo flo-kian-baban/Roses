@@ -62,7 +62,7 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
   const [season, setSeason] = useState<Season | null>(null);
   const [slot, setSlot] = useState<Slot | null>(null);
   const [replay, setReplay] = useState(0);
-  const [play, setPlay] = useState(0); // Play in the Style tab's Welcome group: the venue's transition into the menu, played in the preview
+  const [play, setPlay] = useState<{ n: number; tx: string | null }>({ n: 0, tx: null }); // Play in the Style tab's Welcome group: the venue's transition into the menu, played in the preview (tx: a concept just chosen)
   const [now, setNow] = useState<PageNow>({ season: null, slot: null }); // the page's own season and greeting, read from the loaded frame
   const [detent, setDetent] = useState<Detent>('half'); // the Style tab's bottom sheet on a phone
   const [editing, setEditing] = useState(false); // a colour is open in the Style tab: the sheet stays at half, the preview in view
@@ -95,16 +95,16 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
   const storeKey = `roses-admin-preview:${venue.id}`;
   useEffect(() => { try { const j = JSON.parse(sessionStorage.getItem(storeKey) || 'null'); if (j && typeof j === 'object') { if (SCREENS.some((s) => s.id === j.screen)) setStyleScreen(j.screen); if (j.season) setSeason(j.season); if (j.slot) setSlot(j.slot); } } catch { /* ignore */ } }, [storeKey]);
   useEffect(() => { try { sessionStorage.setItem(storeKey, JSON.stringify({ screen: styleScreen, season, slot })); } catch { /* ignore */ } }, [storeKey, styleScreen, season, slot]);
-  const view: View = { screen: tab === 'style' ? styleScreen : 'menu', lang, season, slot, replay, play };
+  const view: View = { screen: tab === 'style' ? styleScreen : 'menu', lang, season, slot, replay, play: play.n, playTx: play.tx };
   const onView = (p: ViewPatch) => {
     if (p.screen) setStyleScreen(p.screen);
     if (p.lang) chooseLang(p.lang);
     if ('season' in p) setSeason(p.season ?? null);
     if ('slot' in p) setSlot(p.slot ?? null);
     if (p.replay) setReplay((n) => n + 1);
-    if (p.play) setPlay((n) => n + 1);
+    if (p.play) setPlay((x) => ({ n: x.n + 1, tx: p.playTx ?? null }));
   };
-  const playTransition = useCallback(() => setPlay((n) => n + 1), []);
+  const playTransition = useCallback((tx?: string) => setPlay((x) => ({ n: x.n + 1, tx: tx ?? null })), []);
   const played = useCallback(() => setStyleScreen('menu'), []); // a played transition ends on the menu, and the bar says so
 
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), toast.error ? 6000 : 10000); return () => clearTimeout(t); }, [toast]);

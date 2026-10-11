@@ -56,7 +56,16 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
   const reloading = useRef(false), playWanted = useRef(false); // a play asked for while the frame reloads waits for the fresh frame
   const seasonP = useRef<Promise<void>>(Promise.resolve()); // the latest season switch in the frame (a play waits for its scene and transition)
   const playedRef = useRef(onPlayed); playedRef.current = onPlayed;
-  const play = (d: Document) => { void seasonP.current.then(() => { if (d === activeDoc()) playTransition(d, viewRef.current.lang, () => playedRef.current?.()); }); };
+  // A play: the frame's own transition, or (tx) a concept just chosen, put into the frame on screen first (its code from the admin's scene
+  // API, as the page will carry it once the save lands), so the frame is not swapped before it plays. While it plays a save's reload
+  // waits (deferred) and lands after it, on the menu, where the two frames look alike.
+  const playing = useRef(false), deferred = useRef(false);
+  const play = (d: Document, fresh = false, tx: string | null = null) => {
+    if (playing.current) return; // one play at a time
+    playing.current = true;
+    const ended = () => { playing.current = false; playedRef.current?.(); if (deferred.current) { deferred.current = false; reload(); } };
+    void seasonP.current.then(() => (tx ? putTx(d, venueId, tx) : undefined)).then(() => { if (d === activeDoc() && playTransition(d, viewRef.current.lang, ended, fresh)) return; playing.current = false; if (deferred.current) { deferred.current = false; reload(); } });
+  };
   const isOurs = (d: Document | null | undefined): d is Document => !!d && d.location.pathname === `/${venueId}`;
   const activeDoc = () => { const a = activeRef.current; if (a === null) return null; const d = frames[a].current?.contentDocument; return isOurs(d) ? d : null; };
 
@@ -72,18 +81,21 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
   // The open group's region (or a re-assertion of it): outlined in the loaded frame, scrolled to when out of view.
   useEffect(() => { const d = activeDoc(); if (d) applyRegion(d, region.region, true); }, [region]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // A save (reloadKey) loads the page into the hidden slot (location.replace: a preview reload never adds a history entry).
-  useEffect(() => {
+  // A save (reloadKey) loads the page into the hidden slot (location.replace: a preview reload never adds a history entry); while a
+  // transition plays it waits for the end of the play.
+  const reloadKeyRef = useRef(reloadKey); reloadKeyRef.current = reloadKey;
+  const reload = () => {
     const next = (activeRef.current === null ? 0 : 1 - activeRef.current) as 0 | 1;
     loadingSlot.current = next;
     const cur = activeRef.current === null ? null : frames[activeRef.current].current;
     scrollRef.current = cur?.contentWindow?.scrollY ?? 0;
     reloading.current = true; setLoading(true);
-    const w = frames[next].current?.contentWindow; if (w) w.location.replace(`/${venueId}?preview=${reloadKey}.${Date.now()}`);
-  }, [venueId, reloadKey]); // eslint-disable-line react-hooks/exhaustive-deps
+    const w = frames[next].current?.contentWindow; if (w) w.location.replace(`/${venueId}?preview=${reloadKeyRef.current}.${Date.now()}`);
+  };
+  useEffect(() => { if (playing.current) { deferred.current = true; return; } reload(); }, [venueId, reloadKey]); // eslint-disable-line react-hooks/exhaustive-deps
   // Play: now, or once the frame being reloaded is in (a transition just chosen is saved, then played from the fresh page). Declared after
   // the reload above, so a save and a play in the same render see the reload first.
-  useEffect(() => { if (!view.play) return; const d = activeDoc(); if (reloading.current || !d) { playWanted.current = true; return; } play(d); }, [view.play]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!view.play) return; const d = activeDoc(); if (reloading.current || !d) { playWanted.current = true; return; } play(d, false, viewRef.current.playTx); }, [view.play]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onLoad = (slot: 0 | 1) => () => {
     if (slot !== loadingSlot.current) return;
@@ -102,8 +114,9 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
     applyScreen(d, v); // the same screen as before the save: the welcome screen, the popup or the section list open again
     if (!showFocus(d, focusRef.current)) d.defaultView?.scrollTo({ top: scrollRef.current, behavior: 'auto' }); // the item just edited, or the same position
     if (regionRef.current.region) applyRegion(d, regionRef.current.region, activeRef.current === null); // the first load of this preview (the phone overlay opening) scrolls to the open group's region; a reload after a save keeps its place
+    if (playWanted.current) h.classList.add('roses-play-still'); // a transition just chosen plays from this fresh page: its welcome card settled from its first visible frame, as in the frame it replaces (no entrance starting over under the cross-fade)
     activeRef.current = slot; setActive(slot); setLoading(false); reloading.current = false;
-    if (playWanted.current) { playWanted.current = false; play(d); } // once the preview's season (its scene and transition) is in
+    if (playWanted.current) { playWanted.current = false; play(d, true); } // once the preview's season (its scene and transition) is in
   };
 
   // Laptop: the phone scales down to fit the column (always whole, never cut).
@@ -221,7 +234,8 @@ function previewStyle(d: Document) {
     + '.roses-region{outline:3px solid #ee6a3a!important;outline-offset:-3px;border-radius:10px;transition:outline-color .2s}dialog.roses-region{outline-offset:-3px}'
     + 'html.roses-region-page body{box-shadow:inset 0 0 0 3px #ee6a3a;min-height:100dvh}'
     + 'html.roses-show-welcome #welcome{display:grid!important;place-items:center!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}' // place-items as the page's own rule for data-welcome="show" sets it (the frame is "off"): without it the card stretches and the buttons grow tall
-    + 'html.roses-play[data-welcome="show"] #welcome,html.roses-play[data-welcome="done"] #welcome{display:grid!important;place-items:center!important}html.roses-play-still .welcome-card *{animation:none!important}'; // Play: the page's own states run the transition (the card without its entrance, already settled)
+    + 'html.roses-play[data-welcome="show"] #welcome,html.roses-play[data-welcome="done"] #welcome{display:grid!important;place-items:center!important}html.roses-play-still .welcome-card *{animation:none!important}' // Play: the page's own states run the transition (still: the card settled, without its entrance)
+    + 'html.roses-play .roses-region{outline:none!important}html.roses-play.roses-region-page body{box-shadow:none!important}'; // and nothing of the preview's own on the page while it plays (the open group's outline would snap away with the overlay)
   d.head.appendChild(st);
 }
 // Tap-to-edit: one capture-phase click listener on the loaded document. Menu tab: an item row, a section heading or the
@@ -276,25 +290,42 @@ function applyRegion(d: Document, region: Region | null, scroll: boolean) {
   const visible = els.some((el) => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < w.innerHeight; });
   if (!visible) (els[0] as HTMLElement).scrollIntoView({ block: region === 'footer' ? 'end' : 'start', behavior: 'auto' });
 }
-// Play the page's transition (Style tab → Welcome → Transition, 2026-10-10). The welcome screen is put up through the page's own state
-// ("show"; already settled, without its entrance, when it was not up), held a moment so the person sees it, then the language button
-// of the preview's language is clicked for the page (the admin's own click listener steps aside): the page applies the language and
-// runs its transition (w.rosesTx, the chosen concept for the frame's season; the 150 ms fade under reduced motion) and puts the menu up
-// at "off", where the preview takes its own state back and reports the end. One play at a time; a new frame stops a play in flight.
-function playTransition(d: Document, lang: 'en' | 'fa', onEnd: () => void) {
+// Play the page's transition (Style tab → Welcome → Transition, 2026-10-10), timed as a customer's visit (Kian, 2026-10-10: the preview
+// showed the transitions with a jump; they must play exactly as on the public page). The welcome screen is put up through the page's
+// own state ("show") and the language button of the preview's language is clicked for the page once the welcome screen is settled and
+// has been seen for a moment (BEAT_MS), as a customer taps it: the page applies the language and runs its own transition (w.rosesTx, the
+// chosen concept for the frame's season; the 150 ms fade under reduced motion) and puts the menu up at "off", where the preview takes
+// its own state back and reports the end. Settled means: a frame fresh from a save shows the card settled from its first visible frame
+// (roses-play-still, set in onLoad; the cross-fade from the old frame must end first, CROSSFADE_MS); a welcome screen already up finishes
+// its entrance; one that was not up (the menu showing) is put up as a page load shows it, its entrance from the start. While it plays,
+// nothing of the preview's own shows on the page (the open group's outline). One play at a time; a new frame stops a play in flight.
+const BEAT_MS = 500, CROSSFADE_MS = 220; // the iframes' cross-fade is 200 ms (duration-200)
+function playTransition(d: Document, lang: 'en' | 'fa', onEnd: () => void, fresh = false): boolean {
   const h = d.documentElement, w = d.getElementById('welcome'), btn = w?.querySelector<HTMLButtonElement>(`button[data-lang="${lang}"]`);
-  if (!w || !btn || h.classList.contains('roses-play')) return;
+  if (!w || !btn || h.classList.contains('roses-play')) return false;
   previewStyle(d);
-  const up = h.classList.contains('roses-show-welcome');
-  h.classList.add('roses-play'); if (!up) h.classList.add('roses-play-still');
+  h.classList.add('roses-play'); if (fresh) h.classList.add('roses-play-still');
   h.dataset.welcome = 'show'; h.classList.remove('roses-show-welcome');
-  const done = () => { h.classList.remove('roses-play', 'roses-play-still'); onEnd(); };
-  const mo = new MutationObserver(() => { if (h.dataset.welcome === 'off') { mo.disconnect(); done(); } });
-  setTimeout(() => {
-    if (!btn.isConnected || h.dataset.welcome !== 'show') { h.classList.remove('roses-play', 'roses-play-still'); return; }
+  const card = w.querySelector('.welcome-card');
+  const entrance = card ? card.getAnimations({ subtree: true }).filter((a) => a.playState !== 'finished') : []; // (getAnimations flushes the style just changed: an entrance starting now is in it)
+  const stop = () => h.classList.remove('roses-play', 'roses-play-still');
+  const mo = new MutationObserver(() => { if (h.dataset.welcome === 'off') { mo.disconnect(); stop(); onEnd(); } });
+  void Promise.all(entrance.map((a) => a.finished.catch(() => undefined))).then(() => setTimeout(() => {
+    if (!btn.isConnected || h.dataset.welcome !== 'show') { stop(); onEnd(); return; }
     mo.observe(h, { attributes: true, attributeFilter: ['data-welcome'] });
     synthetic(d, () => btn.click());
-  }, up ? 350 : 700);
+  }, (fresh ? CROSSFADE_MS : 0) + BEAT_MS));
+  return true;
+}
+// A concept just chosen, put into the frame on screen for its season (the scene stays): its style and script as the page will carry them.
+async function putTx(d: Document, venueId: string, tx: string) {
+  const w = d.getElementById('welcome') as (HTMLElement & { rosesTxKey?: string; rosesTx?: unknown }) | null; if (!w) return;
+  const season = w.dataset.season ?? '';
+  if (w.rosesTxKey === `${tx}-${season}`) return; // already the one in the frame
+  const r = await fetch(`/api/admin/welcome-scene?venue=${encodeURIComponent(venueId)}&season=${season}&transition=${encodeURIComponent(tx)}`).then((x) => x.json() as Promise<{ ok: boolean; tx?: TxPart }>).catch(() => null);
+  if (!r?.ok || !w.isConnected) return;
+  setTx(d, w, r.tx?.css ?? null, r.tx?.js ?? null, r.tx?.key ?? null);
+  if (!r.tx) delete w.rosesTx;
 }
 // The preview-only season (Kian, 2026-10-09; current season only since the PM's decision of the same day): the customers' page
 // carries only today's scene, so another season's scene is fetched from the admin API and swapped into the frame (today's is

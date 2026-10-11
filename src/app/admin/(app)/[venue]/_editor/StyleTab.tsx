@@ -54,7 +54,7 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
   venueId: string; version: number; onSaved: (r: Resp, text?: string) => void; onApply: (r: Resp) => void; onLive: (vars: Record<string, string> | null) => void; onDefaults: (vars: Record<string, string>) => void;
   onRegion: (r: Region | null) => void; onEditing: (editing: boolean) => void; picked: Picked; sections: EditorSection[]; onLayout: (id: string, layout: SectionLayout) => Promise<void>;
   snapshot: StyleSnapshot | null; onSnapshot: React.Dispatch<React.SetStateAction<StyleSnapshot | null>>; // the visit's snapshot, held by the editor
-  previewSeason: Season | null; onPlay: () => void; // the preview's season (the bar's, else the page's) and Play for the transition
+  previewSeason: Season | null; onPlay: (tx?: string) => void; // the preview's season (the bar's, else the page's) and Play for the transition (with the concept just chosen)
 }) {
   const [data, setData] = useState<Data | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -186,8 +186,8 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
               {isOpen && (
                 <div className="border-t border-line px-1 pb-3 pt-1">
                   {g.id === 'welcome' && <WelcomeControls option={data.layout.find((o) => o.key === 'welcome')} on={data.values.welcome !== false} onSwitch={(v) => setLayout('welcome', v)}
-                    transition={data.layout.find((o) => o.key === 'transition')} chosen={String(data.values.transition ?? '')} season={previewSeason} onPlay={onPlay}
-                    onChoose={async (id) => { if (id !== data.values.transition) await setLayout('transition', id); onPlay(); }} />}
+                    transition={data.layout.find((o) => o.key === 'transition')} chosen={String(data.values.transition ?? '')} season={previewSeason} onPlay={() => onPlay()}
+                    onChoose={async (id) => { onPlay(id); if (id !== data.values.transition) await setLayout('transition', id); }} />}
                   {toks.map((t) => <TokenRow key={t.key} token={t} res={resolved[t.key]} base={t.on ? resolved[t.on] : null} baseLabel={t.on ? baseName(t.on) : null} open={openToken === t.key} palette={data.palette} fail={fail?.key === t.key ? fail : null}
                     onOpen={() => { setOpenToken(openToken === t.key ? null : t.key); onRegion(g.id); }} onLive={(v) => live(t.key, v)} onSet={(v, text) => setColor(t.key, v, text)} />)}
                   <div className="mt-2 px-3"><button type="button" className={btnSmall} disabled={!groupCustom} onClick={() => reset(g.id)}><Icon name="undo" className="h-4 w-4" />Reset group to venue default</button></div>
@@ -299,7 +299,7 @@ function TokenRow({ token: t, res, base, baseLabel, open, palette, fail, onOpen,
 // like the Layout switches with "Saved · Undo". The preview-only season and time of day live in the preview bar (Kian, 2026-10-09).
 // Then, where the template has it (Senso), the transition into the menu (2026-10-10): the ten concepts (src/lib/transitions.ts), each
 // with its level, its time and its line for the preview's season (both lines in spring and summer, which keep the plain fade until
-// their own versions are built), the chosen one marked; a tap chooses it (saved, then played in the preview), Play plays it again.
+// their own versions are built), the chosen one marked; a tap chooses it (played in the preview at once and saved), Play plays it again.
 function WelcomeControls({ option: o, on, onSwitch, transition: tx, chosen, season, onChoose, onPlay }: {
   option: StyleOption | undefined; on: boolean; onSwitch: (v: boolean) => void;
   transition: StyleOption | undefined; chosen: string; season: Season | null; onChoose: (id: string) => Promise<void>; onPlay: () => void;

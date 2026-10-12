@@ -1,0 +1,568 @@
+{
+  "stamp": "2026-10-12T05-57-50Z",
+  "commit": "75dc26e",
+  "suite": "fast",
+  "pass": false,
+  "preflight": {
+    "at": "2026-10-12T05:57:51.408Z",
+    "load1": 6.70703125,
+    "load5": 26.76513671875,
+    "load15": 32.85302734375,
+    "cpus": 10,
+    "free": 7017529344,
+    "available": 15410429952,
+    "total": 34359738368,
+    "dockerTotal": 8217448448,
+    "container": "roses-db",
+    "dbLimit": 0,
+    "top": [
+      {
+        "pid": 81620,
+        "cpu": 49.3,
+        "name": "node",
+        "command": "node",
+        "ports": []
+      },
+      {
+        "pid": 482,
+        "cpu": 13.5,
+        "name": "WindowServer",
+        "command": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer",
+        "ports": []
+      },
+      {
+        "pid": 72027,
+        "cpu": 7.2,
+        "name": "ChatGPT Classic",
+        "command": "/Applications/ChatGPT Classic.app/Contents/MacOS/ChatGPT Classic",
+        "ports": []
+      },
+      {
+        "pid": 81591,
+        "cpu": 5.4,
+        "name": "npm run check",
+        "command": "npm run check",
+        "ports": []
+      },
+      {
+        "pid": 31749,
+        "cpu": 4.7,
+        "name": "Claude",
+        "command": "/Applications/Claude.app/Contents/MacOS/Claude",
+        "ports": []
+      }
+    ],
+    "over": [],
+    "forced": false,
+    "offenders": []
+  },
+  "underExternalLoad": [],
+  "ports": {
+    "server": 49792,
+    "proxyServer": 49793,
+    "seasonServer": 49797,
+    "transitionServer": 49799
+  },
+  "knownMisses": [
+    {
+      "id": "after-tap-photos-senso",
+      "title": "after-tap photos, Senso",
+      "step": "after-tap",
+      "baseline": {
+        "run": "2026-10-12T03-57-29Z",
+        "unit": "ms",
+        "tolerance": 0.1,
+        "checks": {
+          "after-tap-senso-list-photos": {
+            "over": 2,
+            "of": 2,
+            "worst": 8043,
+            "unit": "ms"
+          },
+          "after-tap-senso-grid-photos": {
+            "over": 2,
+            "of": 2,
+            "worst": 4845,
+            "unit": "ms"
+          }
+        },
+        "set": "2026-10-12, the PM: as measured in that run (each check is the worse of 2 repeats over Slow 4G). Tolerance 10 % on the worst value, a decision taken by the build agent for the PM to confirm: the same measurement on unchanged code ranged 7975–8409 ms (List) and 4692–5195 ms (Grid) over the 13 committed runs (2026-10-09 to 2026-10-12), so a strict comparison would fail about half the runs on noise of a few milliseconds"
+      },
+      "status": "KNOWN MISS WORSENED",
+      "checks": [
+        {
+          "id": "after-tap-senso-list-photos",
+          "ok": false,
+          "text": "MISSES the 2500 ms target: senso (first section as a List), the 4 photo(s) in view loaded not within 25 s / not within 25 s after the tap; the first row's 1 eager photo(s) 3212 ms / 1143 ms, all 6 first-section photos not within 25 s / not within 25 s; served as a list with 6 photos (1 eager)",
+          "metric": {
+            "over": 2,
+            "of": 2,
+            "worst": null,
+            "unit": "ms"
+          },
+          "baseline": {
+            "over": 2,
+            "of": 2,
+            "worst": 8043,
+            "unit": "ms"
+          },
+          "worsened": "worst not measured ms (baseline 8043 ms, tolerance 10 %: up to 8847)"
+        },
+        {
+          "id": "after-tap-senso-grid-photos",
+          "ok": false,
+          "text": "MISSES the 2500 ms target: senso (\"Senso Signature\" as a Grid), the 4 photo(s) in view loaded not within 25 s / not within 25 s after the tap; the first row's 2 eager photo(s) not within 25 s / not within 25 s, all 6 first-section photos not within 25 s / not within 25 s; served as a grid with 6 photos (2 eager)",
+          "metric": {
+            "over": 2,
+            "of": 2,
+            "worst": null,
+            "unit": "ms"
+          },
+          "baseline": {
+            "over": 2,
+            "of": 2,
+            "worst": 4845,
+            "unit": "ms"
+          },
+          "worsened": "worst not measured ms (baseline 4845 ms, tolerance 10 %: up to 5330)"
+        }
+      ]
+    },
+    {
+      "id": "persian-tap-senso",
+      "title": "Persian tap, Senso",
+      "step": "transition",
+      "baseline": {
+        "run": "2026-10-12T03-57-29Z",
+        "unit": "ms",
+        "tolerance": 0,
+        "checks": {
+          "persian-tap-senso": {
+            "over": 16,
+            "of": 40,
+            "worst": 58,
+            "unit": "ms"
+          }
+        },
+        "set": "2026-10-12, the PM: 16 of 40 Persian taps over 50 ms, the longest 58 ms"
+      },
+      "status": "NOW PASSING",
+      "checks": [
+        {
+          "id": "persian-tap-senso",
+          "ok": true,
+          "text": "Senso, iPhone 13 viewport, CPU 4×, the فارسی tap of the version chosen for each season (fast mode) (4 of 4 taps measured): no long task over 50 ms from the tap to the overlay gone; over 50 ms: 0; the longest task per tap: T6-fall 0, T4-winter 0, T3-spring 0, T6-summer 0 ms",
+          "metric": {
+            "over": 0,
+            "of": 4,
+            "worst": 0,
+            "unit": "ms"
+          },
+          "baseline": {
+            "over": 16,
+            "of": 40,
+            "worst": 58,
+            "unit": "ms"
+          }
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "id": "migrations",
+      "name": "migrations on the scratch copy (roses_check_20261012t055750z)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 63,
+      "evidence": [
+        "migrate.log"
+      ],
+      "note": "0 migration(s) applied, 5 already present"
+    },
+    {
+      "id": "build",
+      "name": "production build (.next-check)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 6546,
+      "evidence": [
+        "build.log"
+      ],
+      "note": "next build ok"
+    },
+    {
+      "id": "colour-literals",
+      "name": "colour literals in the public templates, the menu kit and the public stylesheet (Kian, 2026-10-08: 0 outside src/venues/tokens.ts)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 41,
+      "evidence": [
+        "colour-literals.txt",
+        "colour-literals.json"
+      ],
+      "note": "0 colour literal(s) in 18 public files; 229 hex values live in the token defaults file"
+    },
+    {
+      "id": "servers",
+      "name": "servers on 49792 and 49793 (TRUST_PROXY=1), ports picked free at start, each port's listener the process the suite spawned",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 679,
+      "evidence": [
+        "server-49792.log",
+        "server-49793.log",
+        "ports.json"
+      ],
+      "note": "both answer 200 on /senso; port 49792: listener pid 82098, spawned pid 82098; port 49793: listener pid 82099, spawned pid 82099: the suite's own processes"
+    },
+    {
+      "id": "temp-venue",
+      "name": "temporary venue on the default template (created through the admin API: logo upload, tagline, location, 2 sections, 4 items)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 363,
+      "evidence": [
+        "new-venue/new-venue.json",
+        "new-venue/new-venue-drill.txt"
+      ],
+      "note": "/drill-default-venue: 2 sections, 4 shown items, logo uploads/drill-default-venue/logo-77f753bb-f67a-4b03-bd3e-ef3a3a8656e7.png, GET → 200"
+    },
+    {
+      "id": "page-senso",
+      "name": "public page checks: senso (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms (with a transition into the menu: usable ≤ 300 ms and gone ≤ 900 ms), reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)",
+      "pass": false,
+      "outcome": "FAIL",
+      "ms": 82839,
+      "evidence": [
+        "senso/senso-checks.json",
+        "senso/senso-en.jpg",
+        "senso/senso-fa.jpg",
+        "senso/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 15; welcome screen up at the first sample (35 ms, greeting \"evening\" in both languages, fall scene with 20 particles, nothing pre-highlighted: true; logo at 683 ms, greeting at 943 / 1081 ms, buttons at 1330 ms), tap English → transition T6-fall: menu usable after 1 ms, overlay gone after 818 ms (stored [\"roses-lang\"]); shows again on reload with [\"fa\"] pre-highlighted (stored keys [\"roses-lang\"]); reduced motion: shown still with 0 animations running, page visible at once true, off in 164 ms (the 150 ms fade, an opacity between 0 and 1 seen: true); JavaScript off: overlay display none, menu visible true; images 122/124; tabs: 18/18 taps end on their tab at the bar with 0 other tabs lit on the way, 0/638 scroll steps off, last tab at the bottom true, direct link true; after a reload: 0 px from the top, hash \"\" (was 84 px, \"\")"
+    },
+    {
+      "id": "page-kebab-land",
+      "name": "public page checks: kebab-land (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms (with a transition into the menu: usable ≤ 300 ms and gone ≤ 900 ms), reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 61311,
+      "evidence": [
+        "kebab-land/kebab-land-checks.json",
+        "kebab-land/kebab-land-en.jpg",
+        "kebab-land/kebab-land-fa.jpg",
+        "kebab-land/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 17; welcome screen up at the first sample (79 ms, greeting \"evening\" in both languages, fall scene with 18 particles, nothing pre-highlighted: true; logo at 667 ms, greeting at 909 / 1063 ms, buttons at 1308 ms), tap English → menu visible in 231 ms (stored [\"roses-lang\"]); shows again on reload with [\"fa\"] pre-highlighted (stored keys [\"roses-lang\"]); reduced motion: shown still with 0 animations running, page visible at once true, off in 0 ms; JavaScript off: overlay display none, menu visible true; images 47/47; tabs: 20/20 taps end on their tab at the bar with 0 other tabs lit on the way, 0/416 scroll steps off, last tab at the bottom true, direct link true; after a reload: 0 px from the top, hash \"\" (was 84 px, \"\")"
+    },
+    {
+      "id": "page-temp-venue",
+      "name": "public page checks: drill-default-venue (temporary venue, default template) (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms (with a transition into the menu: usable ≤ 300 ms and gone ≤ 900 ms), reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 12285,
+      "evidence": [
+        "drill-default-venue/drill-default-venue-checks.json",
+        "drill-default-venue/drill-default-venue-en.jpg",
+        "drill-default-venue/drill-default-venue-fa.jpg",
+        "drill-default-venue/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 2; welcome screen up at the first sample (66 ms, greeting \"evening\" in both languages, fall scene with 18 particles, nothing pre-highlighted: true; logo at 66 ms, greeting at 913 / 1046 ms, buttons at 1295 ms), tap English → menu visible in 212 ms (stored [\"roses-lang\"]); shows again on reload with [\"fa\"] pre-highlighted (stored keys [\"roses-lang\"]); reduced motion: shown still with 0 animations running, page visible at once true, off in 1 ms; JavaScript off: overlay display none, menu visible true; images 3/3; tabs: 5/5 taps end on their tab at the bar with 0 other tabs lit on the way, 0/10 scroll steps off, last tab at the bottom true, direct link true; after a reload: 0 px from the top, hash \"\" (was 103 px, \"\")"
+    },
+    {
+      "id": "brand-words",
+      "name": "brand words in the built pages and the temporary venue's page",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 35,
+      "evidence": [
+        "brand-words.txt"
+      ],
+      "note": "no \"Mealsy\" or \"Flo\" in visible text or metadata (3 pages)"
+    },
+    {
+      "id": "no-runtime-js",
+      "name": "no runtime JavaScript: drill-default-venue (temporary venue, default template)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 0,
+      "evidence": [
+        "drill-default-venue/no-runtime-js.json"
+      ],
+      "note": "4 inline script tags (head decision, welcome screen, language toggle, menu), 0 external, 0 JavaScript chunk references, 0 script preloads; default template: true"
+    },
+    {
+      "id": "photo-links-senso",
+      "name": "photo links: senso",
+      "pass": false,
+      "outcome": "FAIL",
+      "ms": 2985,
+      "evidence": [
+        "senso/photo-links.md",
+        "senso/photo-links.json"
+      ],
+      "note": "135 URLs, 2 not 200/206"
+    },
+    {
+      "id": "photo-links-kebab-land",
+      "name": "photo links: kebab-land",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 1932,
+      "evidence": [
+        "kebab-land/photo-links.md",
+        "kebab-land/photo-links.json"
+      ],
+      "note": "46 URLs, 0 not 200/206"
+    },
+    {
+      "id": "welcome",
+      "name": "welcome screen drill (greeting boundaries with a mocked clock, the page's season scene ≤ 20 particles on transform and opacity, reduced motion still, tap → menu ≤ 300 ms (on a page with a transition into the menu: usable ≤ 300 ms, gone ≤ 900 ms, the 150 ms fade under reduced motion) with the language persisted and pre-highlighted, section anchor, keyboard and labels, JavaScript off, kill switch, default contrast, inline code ≤ 15 KB gzipped on senso with the picked artwork and ≤ 10 KB on kebab-land)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 31771,
+      "evidence": [
+        "welcome/welcome-drill.txt",
+        "welcome/welcome-drill.json",
+        "welcome/*.jpg"
+      ],
+      "note": "WELCOME DRILL PASS (18/18); senso: tap a language → menu usable in 1 ms, transition T6-fall over in 813 ms; senso: tap فارسی → Persian menu usable in 1 ms, transition T6-fall over in 815 ms; kebab-land: tap a language → menu visible in 229 ms; kebab-land: tap فارسی → Persian menu visible in 231 ms; kill switch: off → the menu shows directly after 6 ms; on → the welcome screen back after 7 ms; senso: inline code for the welcome screen (fall scene): 8.8 KB gzipped (25.3 KB raw); its stylesheet block 4.0 KB gzipped; kebab-land: inline code for the welcome screen (fall scene): 2.2 KB gzipped (7.6 KB raw); its stylesheet block 4.0 KB gzipped"
+    },
+    {
+      "id": "season",
+      "name": "season drill (current season only: render tests at the Toronto boundary instants Aug 31 / Sep 1, Nov 30 / Dec 1, Feb 28 / Mar 1, May 31 / Jun 1 on a copy of the build with a fixed server clock, two renders an hour apart with the cached page aged 3601 s and a control within the hour, revalidate 3600 in the manifest; senso's picked artwork in every season (spring since 2026-10-11: five blossoms and the rosebud, its own engine): 20 particles at most 2 near present and mid-flight on the first sample, smoothness on the iPhone 13 viewport with CPU 4× (median ≥ 50 fps, no long task > 50 ms), two loads differ, reduced-motion still, inline size per season, recordings; kebab-land and the default template: the served scene of every season and its symbols byte for byte as in the fixture from the previous commit, the motion rules verbatim; one still per season per venue; the guard: a server started with ROSES_NOW alone renders the real current season, with the suite's flag ROSES_CHECK_SUITE=1 the forged one)",
+      "pass": false,
+      "outcome": "FAIL",
+      "ms": 92071,
+      "evidence": [
+        "season/season-drill.txt",
+        "season/season-drill.json",
+        "season/season-server.log",
+        "season/*.jpg",
+        "season/senso-fall.webm, senso-winter.webm and senso-summer.webm (on disk only)"
+      ],
+      "note": "SEASON DRILL FAIL (26/30); regeneration interval: 3600 s configured (revalidate; the same in getStaticProps of every public page); an hour later the next request serves the previous render and the fresh season lands after 115 / 113 / 114 / 113 ms; senso fall: inline welcome code with the picked artwork 8.8 KB gzipped (25.3 KB raw), symbols F1, F2, F4, F8, F9; senso fall smoothness (CPU 4×): median 60 fps, longest task 0 ms; senso winter: inline welcome code with the picked artwork 4.1 KB gzipped (10.9 KB raw), symbols W1, W3, W5, W7, W10; senso winter smoothness (CPU 4×): median 60 fps, longest task 0 ms; senso spring: inline welcome code with the picked artwork 10.9 KB gzipped (31.0 KB raw), symbols S1, S2, S3, S4, S5, S9; senso spring smoothness (CPU 4×): median 60 fps, longest task 0 ms; senso summer: inline welcome code with the picked artwork 8.8 KB gzipped (23.8 KB raw), symbols Udisc, Urays, Uflames, Uspark, Umote, D1, D2, D3, Udg; senso summer smoothness (CPU 4×): median 60 fps, longest task 0 ms; ROSES_NOW guard: a server started with ROSES_NOW alone (set to winter) rendered fall on 3 venues, the real season in Toronto (fall); with the suite's flag the same instant rendered winter"
+    },
+    {
+      "id": "transition",
+      "name": "transition drill, fast: the browser checks on the 4 versions chosen now, the served HTML and size of all 40 (Senso, every season (fall and winter since 2026-10-10, spring and summer since 2026-10-11), every concept T1–T10, 40 versions, chosen through the Style route per season on a copy of the build with its own server and a fixed clock: only the chosen transition in the served HTML and ≤ 3 KB gzipped; smoothness on the iPhone 13 viewport with CPU 4× from the tap to the overlay gone, median ≥ 50 fps and no long task > 50 ms, every animation on transform or opacity and none cut; total ≤ 900 ms; the menu scrollable and tappable within 300 ms of the tap, with a real touch scroll and a real tap during the transition; the language applied at the first frame; the 150 ms fade under reduced motion; the Persian tap with no long task > 50 ms (listed known miss \"Persian tap, Senso\"); every version in WebKit, functionally (it plays, ≤ 900 ms, the menu scrollable and tappable within 300 ms during it, the 150 ms fade, no console or page error), every time measured 3 times and judged on the median, all three printed, outliers over 2× the median flagged and counted, fps for information, compared with Chromium; day one: the pages of all four seasons byte for byte the same with the single choice of 2026-10-10 and with it saved per season; four different choices, one per season, each shipped alone at the Toronto season boundary instants (Feb 28 / Mar 1, May 31 / Jun 1, Aug 31 / Sep 1, Nov 30 / Dec 1); recordings of all 40; the admin preview choosing and playing per season on a laptop and a phone, the bar's season carrying that season's choice; Kebab Land's welcome behaviour and the default template's scripts byte for byte as the previous commit served them)",
+      "pass": false,
+      "outcome": "FAIL",
+      "ms": 199170,
+      "evidence": [
+        "transition/transition-drill.txt",
+        "transition/transition-drill.json",
+        "transition/transition-server.log",
+        "transition/*.jpg",
+        "transition/transition-T1-fall.webm … transition-T10-summer.webm, all 40 (on disk only)"
+      ],
+      "note": "failing and not listed as known misses: webkit-errors-T6-fall, webkit-errors-T4-winter, webkit-errors-T3-spring, webkit-errors-T6-summer; TRANSITION DRILL FAIL (134/138); T6-fall: 839 ms at CPU 4× (816 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 82 ms, item tap at 26 ms; reduced motion 170 ms; 2033 B gzipped; WebKit (median of 3; runs): gone after 828 ms (828/826/831), 51/51/51 animations, 59/59/59 fps (information), scroll at 80 ms (81/79/80), item tap at 42 ms (42/41/42), reduced motion 162 ms (162/156/164), 36 errors, as Chromium; T4-winter: 829 ms at CPU 4× (815 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 82 ms, item tap at 25 ms; reduced motion 177 ms; 1731 B gzipped; WebKit (median of 3; runs): gone after 797 ms (797/813/797), 22/22/22 animations, 59/59/59 fps (information), scroll at 80 ms (79/80/80), item tap at 50 ms (52/47/50), reduced motion 156 ms (153/156/165), 36 errors, as Chromium; T3-spring: 758 ms at CPU 4× (699 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 81 ms, item tap at 26 ms; reduced motion 170 ms; 1767 B gzipped; WebKit (median of 3; runs): gone after 728 ms (728/730/714), 70/70/70 animations, 59/59/59 fps (information), scroll at 109 ms (97/112/109), item tap at 47 ms (47/51/41), reduced motion 161 ms (165/155/161), 36 errors, as Chromium; T6-summer: 811 ms at CPU 4× (800 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 83 ms, item tap at 23 ms; reduced motion 184 ms; 1925 B gzipped; WebKit (median of 3; runs): gone after 814 ms (815/814/796), 33/33/33 animations, 59/59/59 fps (information), scroll at 63 ms (63/64/63), item tap at 34 ms (34/32/34), reduced motion 164 ms (155/168/164), 36 errors, as Chromium; WebKit (3 runs per time, the median): 4 versions, 0 passing every functional check; 0 behaving differently from Chromium; 0 outlier run(s); Persian tap, Senso (CPU 4×): 0 of 4 taps with a long task over 50 ms, the longest 0 ms",
+      "unlisted": [
+        "webkit-errors-T6-fall",
+        "webkit-errors-T4-winter",
+        "webkit-errors-T3-spring",
+        "webkit-errors-T6-summer"
+      ]
+    },
+    {
+      "id": "after-tap",
+      "name": "menu after the language tap under throttled mobile conditions (Slow 4G as DevTools applies it, CPU 4×): the first section visible and, as a separate check, its photos in view loaded within 2.5 s of the tap, on senso with its first section as a List and as a Grid and on kebab-land; the eager rule (the first row only); first-section photo bytes",
+      "pass": false,
+      "outcome": "FAIL",
+      "ms": 119623,
+      "evidence": [
+        "after-tap/after-tap.txt",
+        "after-tap/after-tap.json"
+      ],
+      "note": "KNOWN MISS WORSENED: after-tap photos, Senso: after-tap-senso-list-photos measured worst not measured ms (baseline 8043 ms, tolerance 10 %: up to 8847); after-tap-senso-grid-photos measured worst not measured ms (baseline 4845 ms, tolerance 10 %: up to 5330); AFTER-TAP DRILL FAIL (6/9); senso (first section as a List): menu visible 830 ms / 843 ms, first-row photo(s) 3212 ms / 1143 ms, the 4 photos in view not within 25 s / not within 25 s, all 6 not within 25 s / not within 25 s after the tap (target ≤ 2500 ms for the menu and the photos in view) — MISS; senso (\"Senso Signature\" as a Grid): menu visible 829 ms / 844 ms, first-row photo(s) not within 25 s / not within 25 s, the 4 photos in view not within 25 s / not within 25 s, all 6 not within 25 s / not within 25 s after the tap (target ≤ 2500 ms for the menu and the photos in view) — MISS; kebab-land (as it is): menu visible 229 ms / 231 ms, first-row photo(s) 14 ms / 231 ms, the 1 photos in view 229 ms / 231 ms, all 2 828 ms / 997 ms after the tap (target ≤ 2500 ms for the menu and the photos in view); photo bytes: senso 6 photos 237 KB–367 KB (1.14 MB), kebab-land 2 photos 72 KB–146 KB (218 KB)",
+      "unlisted": [
+        "photo-sizes"
+      ]
+    },
+    {
+      "id": "lighthouse-senso",
+      "name": "Lighthouse mobile ×3: senso (LCP ≤ 2.5 s, TBT ≤ 50 ms)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 31671,
+      "evidence": [
+        "senso/lighthouse-summary.json",
+        "senso/lighthouse.log"
+      ],
+      "note": "LCP 1504 / 1503 / 1503 ms, TBT 0 / 0 / 0 ms, performance 100 / 100 / 100 (targets LCP ≤ 2500, TBT ≤ 50; local estimates); LCP element /brand/senso-logo.png: the welcome screen's logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)"
+    },
+    {
+      "id": "lighthouse-kebab-land",
+      "name": "Lighthouse mobile ×3: kebab-land (LCP ≤ 2.5 s, TBT ≤ 50 ms)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 27626,
+      "evidence": [
+        "kebab-land/lighthouse-summary.json",
+        "kebab-land/lighthouse.log"
+      ],
+      "note": "LCP 1204 / 1205 / 1204 ms, TBT 0 / 0 / 0 ms, performance 100 / 100 / 100 (targets LCP ≤ 2500, TBT ≤ 50; local estimates); LCP element /brand/kebab-land-logo.png: the welcome screen's logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)"
+    },
+    {
+      "id": "lighthouse-temp-venue",
+      "name": "Lighthouse mobile ×3: drill-default-venue (temporary venue, default template) (LCP ≤ 2.5 s, TBT ≤ 50 ms)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 23173,
+      "evidence": [
+        "drill-default-venue/lighthouse-summary.json",
+        "drill-default-venue/lighthouse.log"
+      ],
+      "note": "LCP 1055 / 1055 / 1056 ms, TBT 0 / 0 / 0 ms, performance 100 / 100 / 100 (targets LCP ≤ 2500, TBT ≤ 50; local estimates); LCP element /uploads/drill-default-venue/logo-77f753bb-f67a-4b03-bd3e-ef3a3a8656e7.png: the welcome screen's logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)"
+    },
+    {
+      "id": "admin",
+      "name": "admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route and section layout 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 9531,
+      "evidence": [
+        "admin/admin-drill.txt",
+        "admin/admin-drill.json",
+        "admin/*.jpg"
+      ],
+      "note": "ADMIN DRILL PASS (37/37); Details: change the tagline: 2 taps (Details tab, field) + typing + Enter; on the public page in 316 ms; Style: change the footer phone-link colour: 3 taps (group, token, swatch); on the public page in 313 ms; + Add venue: 3 taps + the name; Details tab open 90 ms after Create; the new page answers 200 (3 ms)"
+    },
+    {
+      "id": "lockout",
+      "name": "lockout: 5 per venue + address, 50 per hour per venue with alert and unlock, revoked PIN",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 6359,
+      "evidence": [
+        "lockout-drill.txt"
+      ],
+      "note": "LOCKOUT DRILL PASS"
+    },
+    {
+      "id": "revalidation",
+      "name": "revalidation: a price changed in the editor reaches the public page within 10 s, then Undo",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 1293,
+      "evidence": [
+        "revalidation-log.txt"
+      ],
+      "note": "88 ms after Enter; Undo back on the page 325 ms after the tap"
+    },
+    {
+      "id": "editor",
+      "name": "page editor drill (task targets with tap counts, preview ≤ 1 s, reorder on the public page, Undo on the public page, change record, no preview script, the preview never shows the welcome screen after a save, drag-and-drop of items and sections, tap-to-edit in the preview, photo upload, section delete with move or delete and Undo, items in no section in the Needs-attention bar)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 10496,
+      "evidence": [
+        "editor/editor-drill.txt",
+        "editor/editor-drill.json",
+        "editor/*.jpg"
+      ],
+      "note": "EDITOR DRILL PASS (22/22); add an item: 1 tap + name + price + confirm (Enter); on the public page in 16 ms; sheet confirmed at +242 ms; change a price: 1 tap + typing + confirm (Enter); saved in 56 ms; hide an item: 1 tap; off the public page in 5 ms; photo upload: 2 taps + choose a photo; uploaded, saved and shown in the editor 91 ms after choosing (9818 bytes stored); on the public page in 6 ms; preview shows a saved change after 126 ms; Undo of a price change back on the public page after 6 ms; tap-to-edit: 1 tap on the item in the preview; editor open after 54 ms; drag an item (laptop): one drag; database and public page in the new order after 6 ms; drag a section (laptop): one drag; database and public page in the new order after 7 ms; delete a section, items moved: 3 taps (menu, Delete section, confirm with the default choice); on the public page in 8 ms"
+    },
+    {
+      "id": "preview",
+      "name": "preview control bar drill (the bar in the Style tab only, at its top and in view while it scrolls on the laptop, in the bottom sheet on a phone, none on the Menu tab or in its preview; from the Menu tab on the iPhone 13 viewport: the welcome screen in another season, in the evening, in Persian in ≤ 4 taps with the customers' page byte-identical; every switch of the bar within 300 ms on the phone and the laptop, Replay; the frame kept across tabs with the Style tab's screen back on return; the section list and the item popup open again after a save in the Style tab; a language tap on the previewed welcome screen; the customers' HTML without preview markup)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 12393,
+      "evidence": [
+        "preview/preview-drill.txt",
+        "preview/preview-drill.json",
+        "preview/*.jpg"
+      ],
+      "note": "PREVIEW DRILL PASS (9/9); preview the welcome screen in winter, in the evening, in Persian from the Menu tab: 4 taps (Style, season, time of day, language); the scene shown 59 ms after the season tap; preview bar on the phone: every switch within 64 ms (screens, languages, seasons fetched from the admin API, times of day, Replay); preview bar on the laptop: every switch within 70 ms; switching tabs keeps the preview frame (no reload); the Style tab's screen comes back with it; after a save in the Style tab the preview is back on its screen (section list; item popup)"
+    },
+    {
+      "id": "style",
+      "name": "Style tab drill (day-one defaults = the pre-token look, task target with tap count, the phone's bottom sheet with ≥ 45 % of the viewport left to the preview while a colour is edited and Compare held on touch, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, every group switching the preview to its screen with its region outlined, preview ↔ controls with the controls as the master through a save, the Welcome group with the bar's season switch and a saved colour, Compare toggled on the laptop from the bar at the top of the Style tab, a colour's own reset through the guard, section layout List/Grid on the public page and in the preview with Undo, position and screen kept through a colour save, Discard this session's changes restoring the opening snapshot with Undo, the snapshot kept for the whole visit (across tab switches; a reload, leaving the venue or a Discard start it again), the phone layout on the iPhone SE at Safari's visible height (≥ 45 % preview, controls at full size), Reset all with confirmation, Persian view)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 42165,
+      "evidence": [
+        "style/style-drill.txt",
+        "style/style-drill.json",
+        "style/day-one-senso.json",
+        "style/day-one-kebab-land.json",
+        "style/guard-route.json",
+        "style/*.jpg"
+      ],
+      "note": "STYLE DRILL PASS (31/31); change the category bar background: 3 taps (Style tab, group, swatch) + 0 extra; on the public page in 6 ms; Style tab on a phone: with a colour open the preview keeps 45 % of the viewport (299 of 664 px; target ≥ 45 %); Compare held → the default colours, released → the saved ones; change the category bar background with the custom picker: 3 taps + choosing; saved in 54 ms; Style tab on a small phone (iPhone SE, 375 × 548, Safari's visible height): with a colour open the preview keeps 45.1 % of the viewport (247 of 548 px; target ≥ 45 %; 45 % at 553 px); the controls get 97 px of the sheet (161 px on the iPhone 13) at their full size, the open colour's 94 px of swatches in view: true; preview shows a saved colour after 94 ms; a colour back to its default: 2 taps (the colour, Back to …), through the readability guard (a refusal shown under the colour); on the public page in 6 / 5 ms; readability guard: refusal shown with the ratio and a one-tap fix; the fix saved in 53 ms; tap a region in the preview: 1 tap; its group open after 16 ms; opening a Style group switches the preview to its screen within 965 ms (all 8 groups); welcome colour: on the overlay in the preview after 84 ms; after a colour save the preview keeps its position (scrollY 19091 → 19091) and its screen (the popup open again); switch a section to the grid layout: 1 tap (Layout group); on the public page in 7 ms; in the preview after 125 ms; Discard this session's changes: 2 taps (Discard, confirm); the opening snapshot back on the public page in 7 ms; Undo → the discarded state back in 6 ms; Discard this session's changes: the snapshot kept through 5 tab switches (the button counted 1 then 2); a reload, leaving the venue and a Discard each start it again (0 / 0 / 0)"
+    },
+    {
+      "id": "touch",
+      "name": "touch targets in the admin on a phone (the iPhone 13 and the iPhone SE at Safari's visible height): every visible interactive element of the sign-in screens, the Menu tab and what opens from it, the item editor with sizes, add-ons and combo parts, the Style tab's bottom sheet, the Details tab, Team and + Add venue, its tap area measured as its box joined with its labels and pads and verified unobstructed by hit tests; none under 44 × 44 CSS px except inline text links; the list printed",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 122390,
+      "evidence": [
+        "touch/touch-drill.txt",
+        "touch/touch-drill.json",
+        "touch/*.jpg"
+      ],
+      "note": "TOUCH DRILL PASS (4/4); touch targets, iPhone 13 (390 × 664): 1750 measured, 0 under 44 × 44, smallest tap area 44 px wide, 44 px tall; 1 inline links exempt; touch targets, iPhone SE (375 × 548, Safari's visible height): 1750 measured, 0 under 44 × 44, smallest tap area 44 px wide, 44 px tall; 1 inline links exempt"
+    },
+    {
+      "id": "backup",
+      "name": "backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 3547,
+      "evidence": [
+        "backup-drill.txt"
+      ],
+      "note": "12 table comparisons equal, 0 different; item recovered: true"
+    },
+    {
+      "id": "uploads-clean",
+      "name": "uploads:clean on the run's uploads (keeps the temporary venue's logo, removes the editor drill's orphan photo, prints each file)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 71,
+      "evidence": [
+        "uploads-clean.txt"
+      ],
+      "note": "2 files before, 1 after; kept 1 referenced (the venue logo: true), removed 1 (9818 bytes: senso/photo-5aadbda8-4a8d-4511-9e76-a1572116efa1.jpg); the scratch copy references 3 key(s)"
+    },
+    {
+      "id": "temp-venue-removed",
+      "name": "temporary venue removed from the scratch copy (drill-default-venue)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 69,
+      "evidence": [
+        "new-venue/new-venue-drill.txt"
+      ],
+      "note": "rows left 0; its page still answers 200 from the cache until the next save or build (the scratch copy is dropped anyway)"
+    },
+    {
+      "id": "isolation-a",
+      "outcome": "PASS",
+      "name": "isolation (a): every server and drill process connected to the scratch database roses_check_20261012t055750z (own log line per process + pg_stat_activity sampled every 400 ms)",
+      "pass": true,
+      "ms": 0,
+      "evidence": [
+        "isolation.json",
+        "server-49792.log",
+        "server-49793.log",
+        "*/…-drill.log"
+      ],
+      "note": "22 processes, every one on the scratch copy by its own log; pg_stat_activity: 17 distinct connections seen over 7989 samples (servers and drills included), none on roses"
+    },
+    {
+      "id": "isolation-b",
+      "outcome": "PASS",
+      "name": "isolation (b): the working database roses holds no row written by a suite account (admins, PINs, revisions, drill items/sections/venues, lockout-drill failure rows)",
+      "pass": true,
+      "ms": 0,
+      "evidence": [
+        "working-db-suite-rows.json"
+      ],
+      "note": "admins 0, pins 0, revisionsBySuiteAccounts 0, drillItemsOrSections 0, lockoutDrillFailureRows 0"
+    }
+  ]
+}

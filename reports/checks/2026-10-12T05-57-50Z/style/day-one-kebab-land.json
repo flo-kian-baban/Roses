@@ -1,0 +1,617 @@
+{
+  "venue": "kebab-land",
+  "served": {
+    "--c-page-bg": "#ffffff",
+    "--c-page-text": "#1d1d1f",
+    "--c-page-band": "#f3f3f3",
+    "--c-header-bg": "#ffffff",
+    "--c-header-tile": "#141414",
+    "--c-header-lang-bg": "#f2f2f2",
+    "--c-header-lang-text": "#1d1d1f",
+    "--c-tabs-bg": "#ffffff",
+    "--c-tabs-text": "#6b6b6b",
+    "--c-tabs-active": "#1d1d1f",
+    "--c-tabs-indicator": "#1d1d1f",
+    "--c-tabs-list": "#1d1d1f",
+    "--c-tabs-line": "#e6e6e6",
+    "--c-headings-title": "#1d1d1f",
+    "--c-headings-note": "#6b6b6b",
+    "--c-rows-bg": "#ffffff",
+    "--c-rows-name": "#1d1d1f",
+    "--c-rows-desc": "#6b6b6b",
+    "--c-rows-price": "#1d1d1f",
+    "--c-rows-chip-bg": "#f3f3f3",
+    "--c-rows-chip-text": "#1d1d1f",
+    "--c-rows-photo": "#f3f3f3",
+    "--c-rows-line": "#e6e6e6",
+    "--c-sheet-bg": "#ffffff",
+    "--c-sheet-title": "#1d1d1f",
+    "--c-sheet-price": "#1d1d1f",
+    "--c-sheet-body": "#545454",
+    "--c-sheet-muted": "#6b6b6b",
+    "--c-sheet-line": "#e6e6e6",
+    "--c-sheet-hero": "#f3f3f3",
+    "--c-sheet-close-bg": "#ffffff",
+    "--c-sheet-close-icon": "#1d1d1f",
+    "--c-sheet-dim": "#000000",
+    "--c-footer-bg": "#ffffff",
+    "--c-footer-label": "#b92e2e",
+    "--c-footer-address": "#1d1d1f",
+    "--c-footer-hours": "#6b6b6b",
+    "--c-footer-phone": "#b92e2e",
+    "--c-welcome-bg": "#141414",
+    "--c-welcome-text": "#ffffff",
+    "--c-welcome-btn-bg": "#2c2c2c",
+    "--c-welcome-btn-text": "#ffffff",
+    "--c-welcome-active-bg": "#b92e2e",
+    "--c-welcome-active-text": "#ffffff",
+    "--c-welcome-leaves": "#f8512f",
+    "--c-welcome-snow": "#ececec",
+    "--c-welcome-blossoms": "#f2a0b4",
+    "--c-welcome-light": "#ffc14d"
+  },
+  "expected": {
+    "page.bg": "#ffffff",
+    "page.text": "#1d1d1f",
+    "page.band": "#f3f3f3",
+    "header.bg": "#ffffff",
+    "header.langBg": "#f2f2f2",
+    "header.langText": "#1d1d1f",
+    "tabs.bg": "#ffffff",
+    "tabs.text": "#6b6b6b",
+    "tabs.active": "#000000",
+    "tabs.indicator": "#000000",
+    "tabs.list": "#000000",
+    "tabs.line": "#e6e6e6",
+    "headings.title": "#1d1d1f",
+    "headings.note": "#6b6b6b",
+    "rows.bg": "#ffffff",
+    "rows.name": "#1d1d1f",
+    "rows.desc": "#6b6b6b",
+    "rows.price": "#1d1d1f",
+    "rows.chipBg": "#f3f3f3",
+    "rows.chipText": "#1d1d1f",
+    "rows.photo": "#f3f3f3",
+    "rows.line": "#e6e6e6",
+    "sheet.bg": "#ffffff",
+    "sheet.title": "#000000",
+    "sheet.price": "#000000",
+    "sheet.body": "#545454",
+    "sheet.muted": "#6b6b6b",
+    "sheet.line": "#e6e6e6",
+    "sheet.hero": "#f3f3f3",
+    "sheet.closeBg": "#ffffff",
+    "sheet.closeIcon": "#000000",
+    "sheet.dim": "#000000",
+    "footer.bg": "#ffffff",
+    "footer.address": "#1d1d1f",
+    "footer.hours": "#6b6b6b",
+    "header.tile": "#141414",
+    "footer.label": "#b92e2e",
+    "footer.phone": "#b92e2e"
+  },
+  "same": [
+    "page.bg",
+    "page.text",
+    "page.band",
+    "header.bg",
+    "header.langBg",
+    "header.langText",
+    "tabs.bg",
+    "tabs.text",
+    "tabs.line",
+    "headings.title",
+    "headings.note",
+    "rows.bg",
+    "rows.name",
+    "rows.desc",
+    "rows.price",
+    "rows.chipBg",
+    "rows.chipText",
+    "rows.photo",
+    "rows.line",
+    "sheet.bg",
+    "sheet.body",
+    "sheet.muted",
+    "sheet.line",
+    "sheet.hero",
+    "sheet.closeBg",
+    "sheet.dim",
+    "footer.bg",
+    "footer.address",
+    "footer.hours",
+    "header.tile",
+    "footer.label",
+    "footer.phone"
+  ],
+  "known": [
+    "tabs.active #000000→#1d1d1f",
+    "tabs.indicator #000000→#1d1d1f",
+    "tabs.list #000000→#1d1d1f",
+    "sheet.title #000000→#1d1d1f",
+    "sheet.price #000000→#1d1d1f",
+    "sheet.closeIcon #000000→#1d1d1f"
+  ],
+  "diff": [],
+  "missing": [],
+  "extra": [],
+  "api": {
+    "groups": [
+      {
+        "id": "page",
+        "label": "Page",
+        "hint": "The background and text of the whole page."
+      },
+      {
+        "id": "header",
+        "label": "Header",
+        "hint": "The logo and the language button at the top."
+      },
+      {
+        "id": "tabs",
+        "label": "Category tabs",
+        "hint": "The category bar that sticks to the top while scrolling."
+      },
+      {
+        "id": "headings",
+        "label": "Section headings",
+        "hint": "Section titles and the note under them."
+      },
+      {
+        "id": "rows",
+        "label": "Item rows",
+        "hint": "Each menu item in the list."
+      },
+      {
+        "id": "sheet",
+        "label": "Item popup",
+        "hint": "The item details that open on tap, and the section list."
+      },
+      {
+        "id": "footer",
+        "label": "Footer",
+        "hint": "Locations, hours and phone numbers at the bottom."
+      },
+      {
+        "id": "welcome",
+        "label": "Welcome",
+        "hint": "The welcome screen before the menu: the logo, the greeting, the two language buttons and the season scene."
+      }
+    ],
+    "tokens": [
+      {
+        "key": "page.bg",
+        "group": "page",
+        "label": "Background",
+        "kind": "bg"
+      },
+      {
+        "key": "page.text",
+        "group": "page",
+        "label": "Text",
+        "kind": "text",
+        "on": "page.bg",
+        "rule": "ink"
+      },
+      {
+        "key": "page.band",
+        "group": "page",
+        "label": "Band between sections",
+        "kind": "decor",
+        "on": "page.bg",
+        "rule": "band"
+      },
+      {
+        "key": "header.bg",
+        "group": "header",
+        "label": "Background",
+        "kind": "bg",
+        "on": "page.bg",
+        "rule": "same"
+      },
+      {
+        "key": "header.tile",
+        "group": "header",
+        "label": "Tile behind the logo",
+        "kind": "bg",
+        "note": "Also behind the logo on the welcome screen."
+      },
+      {
+        "key": "header.langBg",
+        "group": "header",
+        "label": "Language button",
+        "kind": "bg",
+        "on": "header.bg",
+        "rule": "soft"
+      },
+      {
+        "key": "header.langText",
+        "group": "header",
+        "label": "Language button text",
+        "kind": "text",
+        "on": "header.langBg",
+        "rule": "text"
+      },
+      {
+        "key": "tabs.bg",
+        "group": "tabs",
+        "label": "Bar background",
+        "kind": "bg",
+        "on": "page.bg",
+        "rule": "same"
+      },
+      {
+        "key": "tabs.text",
+        "group": "tabs",
+        "label": "Tab text",
+        "kind": "text",
+        "on": "tabs.bg",
+        "rule": "muted"
+      },
+      {
+        "key": "tabs.active",
+        "group": "tabs",
+        "label": "Active tab text",
+        "kind": "text",
+        "on": "tabs.bg",
+        "rule": "text"
+      },
+      {
+        "key": "tabs.indicator",
+        "group": "tabs",
+        "label": "Active tab underline",
+        "kind": "indicator",
+        "on": "tabs.bg",
+        "rule": "text"
+      },
+      {
+        "key": "tabs.list",
+        "group": "tabs",
+        "label": "Section-list button",
+        "kind": "text",
+        "on": "tabs.bg",
+        "rule": "text"
+      },
+      {
+        "key": "tabs.line",
+        "group": "tabs",
+        "label": "Hairline under the bar",
+        "kind": "decor",
+        "on": "tabs.bg",
+        "rule": "line"
+      },
+      {
+        "key": "headings.title",
+        "group": "headings",
+        "label": "Section title",
+        "kind": "large",
+        "on": "page.bg",
+        "rule": "text"
+      },
+      {
+        "key": "headings.note",
+        "group": "headings",
+        "label": "Note under the title",
+        "kind": "text",
+        "on": "page.bg",
+        "rule": "muted"
+      },
+      {
+        "key": "rows.bg",
+        "group": "rows",
+        "label": "Row background",
+        "kind": "bg",
+        "on": "page.bg",
+        "rule": "same"
+      },
+      {
+        "key": "rows.name",
+        "group": "rows",
+        "label": "Item name",
+        "kind": "text",
+        "on": "rows.bg",
+        "rule": "text"
+      },
+      {
+        "key": "rows.desc",
+        "group": "rows",
+        "label": "Description",
+        "kind": "text",
+        "on": "rows.bg",
+        "rule": "muted"
+      },
+      {
+        "key": "rows.price",
+        "group": "rows",
+        "label": "Price",
+        "kind": "text",
+        "on": "rows.bg",
+        "rule": "text"
+      },
+      {
+        "key": "rows.chipBg",
+        "group": "rows",
+        "label": "“Serves” chip",
+        "kind": "bg",
+        "on": "rows.bg",
+        "rule": "band"
+      },
+      {
+        "key": "rows.chipText",
+        "group": "rows",
+        "label": "“Serves” chip text",
+        "kind": "text",
+        "on": "rows.chipBg",
+        "rule": "text"
+      },
+      {
+        "key": "rows.photo",
+        "group": "rows",
+        "label": "Photo placeholder",
+        "kind": "decor",
+        "on": "rows.bg",
+        "rule": "band"
+      },
+      {
+        "key": "rows.line",
+        "group": "rows",
+        "label": "Line between rows",
+        "kind": "decor",
+        "on": "rows.bg",
+        "rule": "line"
+      },
+      {
+        "key": "sheet.bg",
+        "group": "sheet",
+        "label": "Popup background",
+        "kind": "bg",
+        "on": "page.bg",
+        "rule": "same"
+      },
+      {
+        "key": "sheet.title",
+        "group": "sheet",
+        "label": "Title",
+        "kind": "large",
+        "on": "sheet.bg",
+        "rule": "text",
+        "note": "Also “Sizes”, “Options”, “Includes” and the section list."
+      },
+      {
+        "key": "sheet.price",
+        "group": "sheet",
+        "label": "Price",
+        "kind": "text",
+        "on": "sheet.bg",
+        "rule": "text",
+        "note": "Also the sizes, options and combo parts."
+      },
+      {
+        "key": "sheet.body",
+        "group": "sheet",
+        "label": "Description text",
+        "kind": "text",
+        "on": "sheet.bg",
+        "rule": "body"
+      },
+      {
+        "key": "sheet.muted",
+        "group": "sheet",
+        "label": "Option prices",
+        "kind": "text",
+        "on": "sheet.bg",
+        "rule": "muted",
+        "note": "The “+$” prices and the “Menu” caption of the section list."
+      },
+      {
+        "key": "sheet.line",
+        "group": "sheet",
+        "label": "Lines between sizes and options",
+        "kind": "decor",
+        "on": "sheet.bg",
+        "rule": "line"
+      },
+      {
+        "key": "sheet.hero",
+        "group": "sheet",
+        "label": "Photo placeholder and group bands",
+        "kind": "decor",
+        "on": "sheet.bg",
+        "rule": "band",
+        "note": "Behind the headings of Sizes, Options, Includes and Good to know; also where a photo is missing."
+      },
+      {
+        "key": "sheet.closeBg",
+        "group": "sheet",
+        "label": "Close button",
+        "kind": "bg",
+        "on": "sheet.bg",
+        "rule": "same"
+      },
+      {
+        "key": "sheet.closeIcon",
+        "group": "sheet",
+        "label": "Close button icon",
+        "kind": "indicator",
+        "on": "sheet.closeBg",
+        "rule": "text"
+      },
+      {
+        "key": "sheet.dim",
+        "group": "sheet",
+        "label": "Dim behind the popup",
+        "kind": "bg",
+        "note": "Shown at 45% over the page."
+      },
+      {
+        "key": "footer.bg",
+        "group": "footer",
+        "label": "Background",
+        "kind": "bg",
+        "on": "page.bg",
+        "rule": "same"
+      },
+      {
+        "key": "footer.label",
+        "group": "footer",
+        "label": "Location labels",
+        "kind": "text",
+        "on": "footer.bg",
+        "rule": "text"
+      },
+      {
+        "key": "footer.address",
+        "group": "footer",
+        "label": "Address",
+        "kind": "text",
+        "on": "footer.bg",
+        "rule": "muted"
+      },
+      {
+        "key": "footer.hours",
+        "group": "footer",
+        "label": "Hours",
+        "kind": "text",
+        "on": "footer.bg",
+        "rule": "muted"
+      },
+      {
+        "key": "footer.phone",
+        "group": "footer",
+        "label": "Phone link",
+        "kind": "text",
+        "on": "footer.bg",
+        "rule": "text"
+      },
+      {
+        "key": "welcome.bg",
+        "group": "welcome",
+        "label": "Background",
+        "kind": "bg"
+      },
+      {
+        "key": "welcome.text",
+        "group": "welcome",
+        "label": "Greeting",
+        "kind": "large",
+        "on": "welcome.bg",
+        "rule": "ink"
+      },
+      {
+        "key": "welcome.btnBg",
+        "group": "welcome",
+        "label": "Language buttons",
+        "kind": "bg",
+        "on": "welcome.bg",
+        "rule": "soft"
+      },
+      {
+        "key": "welcome.btnText",
+        "group": "welcome",
+        "label": "Language button text",
+        "kind": "text",
+        "on": "welcome.btnBg",
+        "rule": "text"
+      },
+      {
+        "key": "welcome.activeBg",
+        "group": "welcome",
+        "label": "Remembered language button",
+        "kind": "bg",
+        "on": "welcome.bg",
+        "rule": "ink",
+        "note": "The language chosen last time."
+      },
+      {
+        "key": "welcome.activeText",
+        "group": "welcome",
+        "label": "Remembered language button text",
+        "kind": "text",
+        "on": "welcome.activeBg",
+        "rule": "ink"
+      },
+      {
+        "key": "welcome.leaves",
+        "group": "welcome",
+        "label": "Fall leaves",
+        "kind": "decor",
+        "on": "welcome.bg",
+        "rule": "leaves",
+        "note": "September to November."
+      },
+      {
+        "key": "welcome.snow",
+        "group": "welcome",
+        "label": "Winter snow",
+        "kind": "decor",
+        "on": "welcome.bg",
+        "rule": "snow",
+        "note": "December to February."
+      },
+      {
+        "key": "welcome.blossoms",
+        "group": "welcome",
+        "label": "Spring blossoms",
+        "kind": "decor",
+        "on": "welcome.bg",
+        "rule": "blossoms",
+        "note": "March to May."
+      },
+      {
+        "key": "welcome.light",
+        "group": "welcome",
+        "label": "Summer light",
+        "kind": "decor",
+        "on": "welcome.bg",
+        "rule": "light",
+        "note": "June to August."
+      }
+    ],
+    "palette": [
+      {
+        "label": "Text",
+        "value": "#ffffff"
+      },
+      {
+        "label": "Muted",
+        "value": "#a3a3a3"
+      },
+      {
+        "label": "Price",
+        "value": "#ffc14d"
+      },
+      {
+        "label": "Accent",
+        "value": "#b92e2e"
+      },
+      {
+        "label": "Button",
+        "value": "#f8512f"
+      },
+      {
+        "label": "Logo Red",
+        "value": "#e80808"
+      },
+      {
+        "label": "Background",
+        "value": "#141414"
+      }
+    ],
+    "layout": [
+      {
+        "key": "welcome",
+        "type": "switch",
+        "label": "Welcome screen",
+        "default": true,
+        "hint": "Before the menu, on every visit and refresh: the logo, a greeting, the language buttons and the season scene. Off: the menu opens directly."
+      },
+      {
+        "key": "photos",
+        "type": "switch",
+        "label": "Photos in the list",
+        "default": true,
+        "hint": "Off: the list shows text only; the photo still opens with the item."
+      }
+    ]
+  }
+}

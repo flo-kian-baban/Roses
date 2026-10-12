@@ -1,0 +1,2584 @@
+{
+  "base": "http://127.0.0.1:49799",
+  "dist": ".next-check",
+  "copy": ".next-transition",
+  "at": "2026-10-12T06:06:04.023Z",
+  "mode": "fast",
+  "chosen": {
+    "fall": "T6",
+    "winter": "T4",
+    "spring": "T3",
+    "summer": "T6"
+  },
+  "pass": false,
+  "rows": [
+    {
+      "id": "T1",
+      "season": "fall",
+      "key": "T1-fall",
+      "name": "Dissolve",
+      "level": "subtle",
+      "nominalMs": 540,
+      "text": "The welcome fades into the menu; each leaf fades as it falls, the far ones first.",
+      "sizeGz": 1469,
+      "shallow": true
+    },
+    {
+      "id": "T2",
+      "season": "fall",
+      "key": "T2-fall",
+      "name": "Lift",
+      "level": "subtle",
+      "nominalMs": 660,
+      "text": "The card floats up and away while the leaves are let go and drop out of view.",
+      "sizeGz": 1480,
+      "shallow": true
+    },
+    {
+      "id": "T3",
+      "season": "fall",
+      "key": "T3-fall",
+      "name": "Step inside",
+      "level": "subtle",
+      "nominalMs": 700,
+      "text": "You step through the leaves: the card opens toward you and the leaves brush past.",
+      "sizeGz": 1561,
+      "shallow": true
+    },
+    {
+      "id": "T4",
+      "season": "fall",
+      "key": "T4-fall",
+      "name": "Curtain",
+      "level": "expressive",
+      "nominalMs": 790,
+      "text": "The cream drops like a curtain with a row of leaves tumbling along its edge.",
+      "sizeGz": 1546,
+      "shallow": true
+    },
+    {
+      "id": "T5",
+      "season": "fall",
+      "key": "T5-fall",
+      "name": "Gust",
+      "level": "expressive",
+      "nominalMs": 770,
+      "text": "A gust from the left blows the leaves off the screen, tumbling, and pulls the cream with them.",
+      "sizeGz": 1656,
+      "shallow": true
+    },
+    {
+      "id": "T6",
+      "season": "fall",
+      "key": "T6-fall",
+      "name": "Homecoming",
+      "level": "expressive",
+      "nominalMs": 800,
+      "text": "The logo flies home to the top of the menu; the leaves swirl after it in its wake.",
+      "sizeGz": 2033,
+      "en": {
+        "offMs": 839,
+        "medianFps": 60,
+        "worstGapMs": 33,
+        "longestTaskMs": 0,
+        "animations": 51,
+        "lastEnd": 842
+      },
+      "fa": {
+        "done": true,
+        "offMs": 845,
+        "medianFps": 60,
+        "worstGapMs": 33,
+        "longestTaskMs": 0,
+        "langAtFirstFrame": "fa"
+      },
+      "unthrottledOffMs": 816,
+      "scrollMs": 82,
+      "tapMs": 26,
+      "sheetMs": 32,
+      "reducedMs": 170,
+      "recording": null,
+      "webkit": {
+        "plays": true,
+        "timing": true,
+        "reduced": true,
+        "errors": 36,
+        "off": {
+          "median": 828,
+          "runs": [
+            828,
+            826,
+            831
+          ],
+          "outliers": []
+        },
+        "scrollOff": {
+          "median": 830,
+          "runs": [
+            831,
+            830,
+            829
+          ],
+          "outliers": []
+        },
+        "tapOff": {
+          "median": 830,
+          "runs": [
+            831,
+            830,
+            829
+          ],
+          "outliers": []
+        },
+        "scroll": {
+          "median": 80,
+          "runs": [
+            81,
+            79,
+            80
+          ],
+          "outliers": []
+        },
+        "item": {
+          "median": 42,
+          "runs": [
+            42,
+            41,
+            42
+          ],
+          "outliers": []
+        },
+        "sheet": {
+          "median": 73,
+          "runs": [
+            75,
+            73,
+            73
+          ],
+          "outliers": []
+        },
+        "fade": {
+          "median": 162,
+          "runs": [
+            162,
+            156,
+            164
+          ],
+          "outliers": []
+        },
+        "cut": {
+          "median": -4,
+          "runs": [
+            -4,
+            -1,
+            -5
+          ],
+          "outliers": []
+        },
+        "animations": [
+          51,
+          51,
+          51
+        ],
+        "props": [
+          "opacity",
+          "transform",
+          "scale",
+          "rotate"
+        ],
+        "fps": [
+          59,
+          59,
+          59
+        ],
+        "worstGapMs": [
+          32,
+          23,
+          25
+        ],
+        "outliers": [],
+        "differs": []
+      }
+    },
+    {
+      "id": "T7",
+      "season": "fall",
+      "key": "T7-fall",
+      "name": "Tip back",
+      "level": "expressive",
+      "nominalMs": 800,
+      "text": "The leaves settle at the bottom, then the welcome card tips back and lies down flat.",
+      "sizeGz": 1551,
+      "shallow": true
+    },
+    {
+      "id": "T8",
+      "season": "fall",
+      "key": "T8-fall",
+      "name": "Storm",
+      "level": "bold",
+      "nominalMs": 820,
+      "text": "A flurry of big leaves fills the screen, then the wind blows them apart onto the menu.",
+      "sizeGz": 1754,
+      "shallow": true
+    },
+    {
+      "id": "T9",
+      "season": "fall",
+      "key": "T9-fall",
+      "name": "Window",
+      "level": "bold",
+      "nominalMs": 820,
+      "text": "The leaves gather into a wreath around a clearing that opens out to the edges.",
+      "sizeGz": 1967,
+      "shallow": true
+    },
+    {
+      "id": "T10",
+      "season": "fall",
+      "key": "T10-fall",
+      "name": "Scatter",
+      "level": "bold",
+      "nominalMs": 800,
+      "text": "The welcome screen breaks into cream leaves that flutter away from your tap.",
+      "sizeGz": 2028,
+      "shallow": true
+    },
+    {
+      "id": "T1",
+      "season": "winter",
+      "key": "T1-winter",
+      "name": "Dissolve",
+      "level": "subtle",
+      "nominalMs": 560,
+      "text": "The welcome fades into the menu; each snowflake melts away on its own.",
+      "sizeGz": 1453,
+      "shallow": true
+    },
+    {
+      "id": "T2",
+      "season": "winter",
+      "key": "T2-winter",
+      "name": "Lift",
+      "level": "subtle",
+      "nominalMs": 680,
+      "text": "The card floats up; the warm air from inside carries the snow up and melts it.",
+      "sizeGz": 1693,
+      "shallow": true
+    },
+    {
+      "id": "T3",
+      "season": "winter",
+      "key": "T3-winter",
+      "name": "Step inside",
+      "level": "subtle",
+      "nominalMs": 690,
+      "text": "You step in from the snow: the flakes stream past you from the middle of the screen.",
+      "sizeGz": 1701,
+      "shallow": true
+    },
+    {
+      "id": "T4",
+      "season": "winter",
+      "key": "T4-winter",
+      "name": "Curtain",
+      "level": "expressive",
+      "nominalMs": 800,
+      "text": "The cream slides down like snow off a roof, dusting flakes from its snowy edge.",
+      "sizeGz": 1731,
+      "en": {
+        "offMs": 829,
+        "medianFps": 60,
+        "worstGapMs": 17,
+        "longestTaskMs": 0,
+        "animations": 22,
+        "lastEnd": 815
+      },
+      "fa": {
+        "done": true,
+        "offMs": 812,
+        "medianFps": 60,
+        "worstGapMs": 33,
+        "longestTaskMs": 0,
+        "langAtFirstFrame": "fa"
+      },
+      "unthrottledOffMs": 815,
+      "scrollMs": 82,
+      "tapMs": 25,
+      "sheetMs": 30,
+      "reducedMs": 177,
+      "recording": null,
+      "webkit": {
+        "plays": true,
+        "timing": true,
+        "reduced": true,
+        "errors": 36,
+        "off": {
+          "median": 797,
+          "runs": [
+            797,
+            813,
+            797
+          ],
+          "outliers": []
+        },
+        "scrollOff": {
+          "median": 808,
+          "runs": [
+            808,
+            814,
+            805
+          ],
+          "outliers": []
+        },
+        "tapOff": {
+          "median": 828,
+          "runs": [
+            828,
+            807,
+            832
+          ],
+          "outliers": []
+        },
+        "scroll": {
+          "median": 80,
+          "runs": [
+            79,
+            80,
+            80
+          ],
+          "outliers": []
+        },
+        "item": {
+          "median": 50,
+          "runs": [
+            52,
+            47,
+            50
+          ],
+          "outliers": []
+        },
+        "sheet": {
+          "median": 82,
+          "runs": [
+            85,
+            81,
+            82
+          ],
+          "outliers": []
+        },
+        "fade": {
+          "median": 156,
+          "runs": [
+            153,
+            156,
+            165
+          ],
+          "outliers": []
+        },
+        "cut": {
+          "median": -11,
+          "runs": [
+            -13,
+            -11,
+            -9
+          ],
+          "outliers": []
+        },
+        "animations": [
+          22,
+          22,
+          22
+        ],
+        "props": [
+          "opacity",
+          "transform"
+        ],
+        "fps": [
+          59,
+          59,
+          59
+        ],
+        "worstGapMs": [
+          27,
+          26,
+          22
+        ],
+        "outliers": [],
+        "differs": []
+      }
+    },
+    {
+      "id": "T5",
+      "season": "winter",
+      "key": "T5-winter",
+      "name": "Gust",
+      "level": "expressive",
+      "nominalMs": 760,
+      "text": "A gust of blowing snow streaks across the screen and sweeps the cream away.",
+      "sizeGz": 1819,
+      "shallow": true
+    },
+    {
+      "id": "T6",
+      "season": "winter",
+      "key": "T6-winter",
+      "name": "Homecoming",
+      "level": "expressive",
+      "nominalMs": 820,
+      "text": "The logo flies home to the top of the menu and lands in a soft puff of snow.",
+      "sizeGz": 1887,
+      "shallow": true
+    },
+    {
+      "id": "T7",
+      "season": "winter",
+      "key": "T7-winter",
+      "name": "Tip back",
+      "level": "expressive",
+      "nominalMs": 810,
+      "text": "The snow settles into a drift, then the welcome card tips back and lies down flat.",
+      "sizeGz": 1703,
+      "shallow": true
+    },
+    {
+      "id": "T8",
+      "season": "winter",
+      "key": "T8-winter",
+      "name": "Storm",
+      "level": "bold",
+      "nominalMs": 820,
+      "text": "The snow thickens into a soft white-out, then clears onto the menu.",
+      "sizeGz": 1676,
+      "shallow": true
+    },
+    {
+      "id": "T9",
+      "season": "winter",
+      "key": "T9-winter",
+      "name": "Window",
+      "level": "bold",
+      "nominalMs": 820,
+      "text": "The screen frosts over, then the frost recedes from the middle to the edges like a warming window.",
+      "sizeGz": 1890,
+      "shallow": true
+    },
+    {
+      "id": "T10",
+      "season": "winter",
+      "key": "T10-winter",
+      "name": "Scatter",
+      "level": "bold",
+      "nominalMs": 790,
+      "text": "The welcome screen crystallises into ice tiles that fall away from your tap.",
+      "sizeGz": 2047,
+      "shallow": true
+    },
+    {
+      "id": "T1",
+      "season": "spring",
+      "key": "T1-spring",
+      "name": "Dissolve",
+      "level": "subtle",
+      "nominalMs": 560,
+      "text": "The welcome fades into the menu; each blossom closes softly and fades as it drifts down, the far ones first.",
+      "sizeGz": 1504,
+      "shallow": true
+    },
+    {
+      "id": "T2",
+      "season": "spring",
+      "key": "T2-spring",
+      "name": "Lift",
+      "level": "subtle",
+      "nominalMs": 720,
+      "text": "The card floats up; a spring breeze lifts the blossoms up and away with it.",
+      "sizeGz": 1716,
+      "shallow": true
+    },
+    {
+      "id": "T3",
+      "season": "spring",
+      "key": "T3-spring",
+      "name": "Step inside",
+      "level": "subtle",
+      "nominalMs": 700,
+      "text": "You step in under the blossoms: the card opens toward you and the blossoms float past on either side.",
+      "sizeGz": 1767,
+      "en": {
+        "offMs": 758,
+        "medianFps": 60,
+        "worstGapMs": 33,
+        "longestTaskMs": 0,
+        "animations": 70,
+        "lastEnd": 742
+      },
+      "fa": {
+        "done": true,
+        "offMs": 726,
+        "medianFps": 60,
+        "worstGapMs": 33,
+        "longestTaskMs": 0,
+        "langAtFirstFrame": "fa"
+      },
+      "unthrottledOffMs": 699,
+      "scrollMs": 81,
+      "tapMs": 26,
+      "sheetMs": 32,
+      "reducedMs": 170,
+      "recording": null,
+      "webkit": {
+        "plays": true,
+        "timing": true,
+        "reduced": true,
+        "errors": 36,
+        "off": {
+          "median": 728,
+          "runs": [
+            728,
+            730,
+            714
+          ],
+          "outliers": []
+        },
+        "scrollOff": {
+          "median": 714,
+          "runs": [
+            714,
+            730,
+            711
+          ],
+          "outliers": []
+        },
+        "tapOff": {
+          "median": 714,
+          "runs": [
+            729,
+            714,
+            714
+          ],
+          "outliers": []
+        },
+        "scroll": {
+          "median": 109,
+          "runs": [
+            97,
+            112,
+            109
+          ],
+          "outliers": []
+        },
+        "item": {
+          "median": 47,
+          "runs": [
+            47,
+            51,
+            41
+          ],
+          "outliers": []
+        },
+        "sheet": {
+          "median": 86,
+          "runs": [
+            86,
+            90,
+            79
+          ],
+          "outliers": []
+        },
+        "fade": {
+          "median": 161,
+          "runs": [
+            165,
+            155,
+            161
+          ],
+          "outliers": []
+        },
+        "cut": {
+          "median": -11,
+          "runs": [
+            -1,
+            -12,
+            -11
+          ],
+          "outliers": []
+        },
+        "animations": [
+          70,
+          70,
+          70
+        ],
+        "props": [
+          "opacity",
+          "transform",
+          "scale",
+          "rotate"
+        ],
+        "fps": [
+          59,
+          59,
+          59
+        ],
+        "worstGapMs": [
+          49,
+          46,
+          47
+        ],
+        "outliers": [],
+        "differs": []
+      }
+    },
+    {
+      "id": "T4",
+      "season": "spring",
+      "key": "T4-spring",
+      "name": "Curtain",
+      "level": "expressive",
+      "nominalMs": 790,
+      "text": "The cream drops like a curtain with a garland of blossoms along its edge.",
+      "sizeGz": 1559,
+      "shallow": true
+    },
+    {
+      "id": "T5",
+      "season": "spring",
+      "key": "T5-spring",
+      "name": "Gust",
+      "level": "expressive",
+      "nominalMs": 770,
+      "text": "A spring breeze from the left carries the blossoms off, twirling, and pulls the cream away behind them.",
+      "sizeGz": 1654,
+      "shallow": true
+    },
+    {
+      "id": "T6",
+      "season": "spring",
+      "key": "T6-spring",
+      "name": "Homecoming",
+      "level": "expressive",
+      "nominalMs": 820,
+      "text": "The logo flies home to the top of the menu and lands in a little burst of blossoms.",
+      "sizeGz": 1861,
+      "shallow": true
+    },
+    {
+      "id": "T7",
+      "season": "spring",
+      "key": "T7-spring",
+      "name": "Tip back",
+      "level": "expressive",
+      "nominalMs": 800,
+      "text": "The blossoms settle along the bottom like fallen petals, then the welcome card tips back and lies down flat.",
+      "sizeGz": 1568,
+      "shallow": true
+    },
+    {
+      "id": "T8",
+      "season": "spring",
+      "key": "T8-spring",
+      "name": "Storm",
+      "level": "bold",
+      "nominalMs": 820,
+      "text": "A shower of blossoms fills the screen, then the breeze scatters it onto the menu.",
+      "sizeGz": 1754,
+      "shallow": true
+    },
+    {
+      "id": "T9",
+      "season": "spring",
+      "key": "T9-spring",
+      "name": "Window",
+      "level": "bold",
+      "nominalMs": 820,
+      "text": "The blossoms gather into a wreath around a clearing that opens out to the edges.",
+      "sizeGz": 1966,
+      "shallow": true
+    },
+    {
+      "id": "T10",
+      "season": "spring",
+      "key": "T10-spring",
+      "name": "Scatter",
+      "level": "bold",
+      "nominalMs": 800,
+      "text": "The welcome screen breaks into cream petals that flutter away from your tap.",
+      "sizeGz": 2044,
+      "shallow": true
+    },
+    {
+      "id": "T1",
+      "season": "summer",
+      "key": "T1-summer",
+      "name": "Dissolve",
+      "level": "subtle",
+      "nominalMs": 540,
+      "text": "The welcome fades into the menu; the sunlight softens away and the seeds drift off on the breeze.",
+      "sizeGz": 1640,
+      "shallow": true
+    },
+    {
+      "id": "T2",
+      "season": "summer",
+      "key": "T2-summer",
+      "name": "Lift",
+      "level": "subtle",
+      "nominalMs": 720,
+      "text": "The card floats up; warm air carries the dandelion seeds up and out of view.",
+      "sizeGz": 1728,
+      "shallow": true
+    },
+    {
+      "id": "T3",
+      "season": "summer",
+      "key": "T3-summer",
+      "name": "Step inside",
+      "level": "subtle",
+      "nominalMs": 700,
+      "text": "You step in out of the sun: the card opens toward you and the seeds and sparkles drift past you.",
+      "sizeGz": 1850,
+      "shallow": true
+    },
+    {
+      "id": "T4",
+      "season": "summer",
+      "key": "T4-summer",
+      "name": "Curtain",
+      "level": "expressive",
+      "nominalMs": 790,
+      "text": "The cream lowers like a sunshade with sparkles on its edge while the sun sinks away; the menu shows from the top.",
+      "sizeGz": 1669,
+      "shallow": true
+    },
+    {
+      "id": "T5",
+      "season": "summer",
+      "key": "T5-summer",
+      "name": "Gust",
+      "level": "expressive",
+      "nominalMs": 760,
+      "text": "A warm breeze from the left blows the seeds across and sweeps the cream away with them.",
+      "sizeGz": 1720,
+      "shallow": true
+    },
+    {
+      "id": "T6",
+      "season": "summer",
+      "key": "T6-summer",
+      "name": "Homecoming",
+      "level": "expressive",
+      "nominalMs": 820,
+      "text": "The logo flies home to the top of the menu with sparkles in its wake while the sun sets.",
+      "sizeGz": 1925,
+      "en": {
+        "offMs": 811,
+        "medianFps": 60,
+        "worstGapMs": 17,
+        "longestTaskMs": 0,
+        "animations": 33,
+        "lastEnd": 801
+      },
+      "fa": {
+        "done": true,
+        "offMs": 810,
+        "medianFps": 60,
+        "worstGapMs": 17,
+        "longestTaskMs": 0,
+        "langAtFirstFrame": "fa"
+      },
+      "unthrottledOffMs": 800,
+      "scrollMs": 83,
+      "tapMs": 23,
+      "sheetMs": 26,
+      "reducedMs": 184,
+      "recording": null,
+      "webkit": {
+        "plays": true,
+        "timing": true,
+        "reduced": true,
+        "errors": 36,
+        "off": {
+          "median": 814,
+          "runs": [
+            815,
+            814,
+            796
+          ],
+          "outliers": []
+        },
+        "scrollOff": {
+          "median": 782,
+          "runs": [
+            780,
+            782,
+            798
+          ],
+          "outliers": []
+        },
+        "tapOff": {
+          "median": 799,
+          "runs": [
+            814,
+            799,
+            797
+          ],
+          "outliers": []
+        },
+        "scroll": {
+          "median": 63,
+          "runs": [
+            63,
+            64,
+            63
+          ],
+          "outliers": []
+        },
+        "item": {
+          "median": 34,
+          "runs": [
+            34,
+            32,
+            34
+          ],
+          "outliers": []
+        },
+        "sheet": {
+          "median": 60,
+          "runs": [
+            61,
+            59,
+            60
+          ],
+          "outliers": []
+        },
+        "fade": {
+          "median": 164,
+          "runs": [
+            155,
+            168,
+            164
+          ],
+          "outliers": []
+        },
+        "cut": {
+          "median": -7,
+          "runs": [
+            -7,
+            -4,
+            -7
+          ],
+          "outliers": []
+        },
+        "animations": [
+          33,
+          33,
+          33
+        ],
+        "props": [
+          "opacity",
+          "transform"
+        ],
+        "fps": [
+          59,
+          59,
+          59
+        ],
+        "worstGapMs": [
+          18,
+          18,
+          18
+        ],
+        "outliers": [],
+        "differs": []
+      }
+    },
+    {
+      "id": "T7",
+      "season": "summer",
+      "key": "T7-summer",
+      "name": "Tip back",
+      "level": "expressive",
+      "nominalMs": 800,
+      "text": "The seeds settle at the bottom, then the welcome card tips back into the warm light and lies down flat.",
+      "sizeGz": 1558,
+      "shallow": true
+    },
+    {
+      "id": "T8",
+      "season": "summer",
+      "key": "T8-summer",
+      "name": "Storm",
+      "level": "bold",
+      "nominalMs": 820,
+      "text": "A cloud of dandelion seeds fills the screen, then the breeze blows it apart onto the menu.",
+      "sizeGz": 1746,
+      "shallow": true
+    },
+    {
+      "id": "T9",
+      "season": "summer",
+      "key": "T9-summer",
+      "name": "Window",
+      "level": "bold",
+      "nominalMs": 820,
+      "text": "A ring of sparkling light opens a clearing in the middle that spreads out to the edges.",
+      "sizeGz": 1866,
+      "shallow": true
+    },
+    {
+      "id": "T10",
+      "season": "summer",
+      "key": "T10-summer",
+      "name": "Scatter",
+      "level": "bold",
+      "nominalMs": 800,
+      "text": "The welcome screen breaks into cream shards, like rays of the sun, that fall away from your tap.",
+      "sizeGz": 1969,
+      "shallow": true
+    }
+  ],
+  "boundaries": [
+    {
+      "at": "2027-02-28T23:30:00-05:00",
+      "label": "Feb 28 23:30 EST",
+      "want": "winter",
+      "season": "winter",
+      "ships": "T5-winter",
+      "ok": true
+    },
+    {
+      "at": "2027-03-01T00:30:00-05:00",
+      "label": "Mar 1 00:30 EST",
+      "want": "spring",
+      "season": "spring",
+      "ships": "T8-spring",
+      "ok": true
+    },
+    {
+      "at": "2027-05-31T23:30:00-04:00",
+      "label": "May 31 23:30 EDT",
+      "want": "spring",
+      "season": "spring",
+      "ships": "T8-spring",
+      "ok": true
+    },
+    {
+      "at": "2027-06-01T00:30:00-04:00",
+      "label": "Jun 1 00:30 EDT",
+      "want": "summer",
+      "season": "summer",
+      "ships": "T3-summer",
+      "ok": true
+    },
+    {
+      "at": "2026-08-31T23:30:00-04:00",
+      "label": "Aug 31 23:30 EDT",
+      "want": "summer",
+      "season": "summer",
+      "ships": "T3-summer",
+      "ok": true
+    },
+    {
+      "at": "2026-09-01T00:30:00-04:00",
+      "label": "Sep 1 00:30 EDT",
+      "want": "fall",
+      "season": "fall",
+      "ships": "T2-fall",
+      "ok": true
+    },
+    {
+      "at": "2026-11-30T23:30:00-05:00",
+      "label": "Nov 30 23:30 EST",
+      "want": "fall",
+      "season": "fall",
+      "ships": "T2-fall",
+      "ok": true
+    },
+    {
+      "at": "2026-12-01T00:30:00-05:00",
+      "label": "Dec 1 00:30 EST",
+      "want": "winter",
+      "season": "winter",
+      "ships": "T5-winter",
+      "ok": true
+    }
+  ],
+  "results": [
+    {
+      "step": "html-T1-fall",
+      "ok": true,
+      "text": "T1-fall chosen through the Style route (200; venues.style.transitionFall = T1); the page regenerated after 6 ms for the fall scene and carries exactly one transition: data-tx T1-fall, the script names T1-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T1-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T1-fall",
+      "ok": true,
+      "text": "T1-fall: its style and script 1469 B gzipped (3086 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T2-fall",
+      "ok": true,
+      "text": "T2-fall chosen through the Style route (200; venues.style.transitionFall = T2); the page regenerated after 6 ms for the fall scene and carries exactly one transition: data-tx T2-fall, the script names T2-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T2-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T2-fall",
+      "ok": true,
+      "text": "T2-fall: its style and script 1480 B gzipped (3132 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T3-fall",
+      "ok": true,
+      "text": "T3-fall chosen through the Style route (200; venues.style.transitionFall = T3); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T3-fall, the script names T3-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T3-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T3-fall",
+      "ok": true,
+      "text": "T3-fall: its style and script 1561 B gzipped (3276 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T4-fall",
+      "ok": true,
+      "text": "T4-fall chosen through the Style route (200; venues.style.transitionFall = T4); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T4-fall, the script names T4-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T4-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T4-fall",
+      "ok": true,
+      "text": "T4-fall: its style and script 1546 B gzipped (3300 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T5-fall",
+      "ok": true,
+      "text": "T5-fall chosen through the Style route (200; venues.style.transitionFall = T5); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T5-fall, the script names T5-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T5-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T5-fall",
+      "ok": true,
+      "text": "T5-fall: its style and script 1656 B gzipped (3525 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T6-fall",
+      "ok": true,
+      "text": "T6-fall chosen through the Style route (200; venues.style.transitionFall = T6); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T6-fall, the script names T6-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T6-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T6-fall",
+      "ok": true,
+      "text": "T6-fall: its style and script 2033 B gzipped (4344 B raw; ≤ 3072)"
+    },
+    {
+      "step": "smooth-T6-fall",
+      "ok": true,
+      "text": "T6-fall, iPhone 13 viewport, CPU 4×, English tap: 50 frames from the tap to the overlay gone (839 ms), median interval 16.7 ms = 60 fps (≥ 50), worst gap 33 ms; 0 long tasks, the longest 0 ms (≤ 50); page errors 0"
+    },
+    {
+      "step": "motion-T6-fall",
+      "ok": true,
+      "text": "T6-fall: 51 animations on opacity, transform, rotate, scale (transform, opacity and the individual transform properties only: true); the last ends 842 ms after the tap and the overlay goes at 839 ms, when it has finished (nothing cut: true; the two clocks read -5 ms apart, so within one frame counts)"
+    },
+    {
+      "step": "language-first-T6-fall",
+      "ok": true,
+      "text": "T6-fall, Persian tap: at the first frame after the tap (28 ms) the page is already Persian (lang fa, dir rtl) and the transition has moved 0 ms of its time (≤ 34: nothing revealed in the other language)"
+    },
+    {
+      "step": "timing-T6-fall",
+      "ok": true,
+      "text": "T6-fall: the overlay gone 839 ms after the tap at CPU 4× and 816 / 814 ms unthrottled (≤ 900); a touch scroll started right after the tap moved the page from 82 ms (≤ 300; scrolled to 267 px during the transition); on another load a tap on the first item landed 26 ms after the language tap and opened its popup at 32 ms (≤ 300; open true)"
+    },
+    {
+      "step": "reduced-T6-fall",
+      "ok": true,
+      "text": "T6-fall with reduced motion: the 150 ms fade (an opacity between 0 and 1 seen: true; gone after 170 ms, 120–230), 1 animation on welcome (opacity), nothing of the concept built: true"
+    },
+    {
+      "step": "webkit-plays-T6-fall",
+      "ok": true,
+      "text": "WebKit, iPhone 13 device, English tap, 3 runs: T6-fall plays in each (the page names T6-fall / T6-fall / T6-fall), 51 / 51 / 51 animations on opacity, transform, scale, rotate (transform, opacity and the individual transform properties only: true); the last animation's end minus the overlay's going, median -4 ms (runs -4 / -1 / -5) (≤ 17: nothing cut); for information, unthrottled: median fps 59 / 59 / 59, worst gap 32 / 23 / 25 ms"
+    },
+    {
+      "step": "webkit-timing-T6-fall",
+      "ok": true,
+      "text": "WebKit, T6-fall, 3 runs each, judged on the median: the overlay gone median 828 ms (runs 828 / 826 / 831) after the tap (≤ 900; on the scroll loads median 830 ms (runs 831 / 830 / 829), on the tap loads median 830 ms (runs 831 / 830 / 829)); a mouse wheel right after the tap (mobile emulation off for those loads) moved the page from median 80 ms (runs 81 / 79 / 80) (≤ 300; scrolled during the transition in every run: true, to 260 / 260 / 260 px); a touch tap on the first item landed median 42 ms (runs 42 / 41 / 42) after the language tap and opened its popup at median 73 ms (runs 75 / 73 / 73) (≤ 300; open in every run: true)"
+    },
+    {
+      "step": "webkit-reduced-T6-fall",
+      "ok": true,
+      "text": "WebKit, T6-fall with reduced motion, 3 runs: the 150 ms fade gone median 162 ms (runs 162 / 156 / 164) (120–230); in every run an opacity between 0 and 1 seen (true / true / true), one animation on the overlay's opacity (1 on opacity / 1 on opacity / 1 on opacity), nothing of the concept built (true)"
+    },
+    {
+      "step": "webkit-errors-T6-fall",
+      "ok": false,
+      "text": "WebKit, T6-fall: console and page errors on its 12 loads (3 each: play, scroll, tap, reduced motion): console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "step": "html-T7-fall",
+      "ok": true,
+      "text": "T7-fall chosen through the Style route (200; venues.style.transitionFall = T7); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T7-fall, the script names T7-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T7-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T7-fall",
+      "ok": true,
+      "text": "T7-fall: its style and script 1551 B gzipped (3199 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T8-fall",
+      "ok": true,
+      "text": "T8-fall chosen through the Style route (200; venues.style.transitionFall = T8); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T8-fall, the script names T8-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T8-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T8-fall",
+      "ok": true,
+      "text": "T8-fall: its style and script 1754 B gzipped (3713 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T9-fall",
+      "ok": true,
+      "text": "T9-fall chosen through the Style route (200; venues.style.transitionFall = T9); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T9-fall, the script names T9-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T9-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T9-fall",
+      "ok": true,
+      "text": "T9-fall: its style and script 1967 B gzipped (4169 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T10-fall",
+      "ok": true,
+      "text": "T10-fall chosen through the Style route (200; venues.style.transitionFall = T10); the page regenerated after 4 ms for the fall scene and carries exactly one transition: data-tx T10-fall, the script names T10-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T10-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T10-fall",
+      "ok": true,
+      "text": "T10-fall: its style and script 2028 B gzipped (4244 B raw; ≤ 3072)"
+    },
+    {
+      "step": "unchanged-kebab-land-fall",
+      "ok": true,
+      "text": "kebab-land fall (regenerated by a no-op Style save, 200): head script, tap script, the whole overlay (logo as a placeholder) and the public stylesheet byte for byte as the previous commit (1a38e65) served Kebab Land: identical; no transition code in its page: true"
+    },
+    {
+      "step": "unchanged-drill-default-venue-fall",
+      "ok": true,
+      "text": "drill-default-venue fall (regenerated by a no-op Style save, 200): head script, tap script and the public stylesheet byte for byte as the previous commit (1a38e65) served Kebab Land: identical; no transition code in its page: true"
+    },
+    {
+      "step": "html-T1-winter",
+      "ok": true,
+      "text": "T1-winter chosen through the Style route (200; venues.style.transitionWinter = T1); the page regenerated after 5 ms for the winter scene and carries exactly one transition: data-tx T1-winter, the script names T1-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T1-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T1-winter",
+      "ok": true,
+      "text": "T1-winter: its style and script 1453 B gzipped (3073 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T2-winter",
+      "ok": true,
+      "text": "T2-winter chosen through the Style route (200; venues.style.transitionWinter = T2); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T2-winter, the script names T2-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T2-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T2-winter",
+      "ok": true,
+      "text": "T2-winter: its style and script 1693 B gzipped (3646 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T3-winter",
+      "ok": true,
+      "text": "T3-winter chosen through the Style route (200; venues.style.transitionWinter = T3); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T3-winter, the script names T3-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T3-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T3-winter",
+      "ok": true,
+      "text": "T3-winter: its style and script 1701 B gzipped (3573 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T4-winter",
+      "ok": true,
+      "text": "T4-winter chosen through the Style route (200; venues.style.transitionWinter = T4); the page regenerated after 7 ms for the winter scene and carries exactly one transition: data-tx T4-winter, the script names T4-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T4-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T4-winter",
+      "ok": true,
+      "text": "T4-winter: its style and script 1731 B gzipped (3681 B raw; ≤ 3072)"
+    },
+    {
+      "step": "smooth-T4-winter",
+      "ok": true,
+      "text": "T4-winter, iPhone 13 viewport, CPU 4×, English tap: 50 frames from the tap to the overlay gone (829 ms), median interval 16.7 ms = 60 fps (≥ 50), worst gap 17 ms; 0 long tasks, the longest 0 ms (≤ 50); page errors 0"
+    },
+    {
+      "step": "motion-T4-winter",
+      "ok": true,
+      "text": "T4-winter: 22 animations on opacity, transform (transform, opacity and the individual transform properties only: true); the last ends 815 ms after the tap and the overlay goes at 829 ms, when it has finished (nothing cut: true; the two clocks read -3 ms apart, so within one frame counts)"
+    },
+    {
+      "step": "language-first-T4-winter",
+      "ok": true,
+      "text": "T4-winter, Persian tap: at the first frame after the tap (29 ms) the page is already Persian (lang fa, dir rtl) and the transition has moved 0 ms of its time (≤ 34: nothing revealed in the other language)"
+    },
+    {
+      "step": "timing-T4-winter",
+      "ok": true,
+      "text": "T4-winter: the overlay gone 829 ms after the tap at CPU 4× and 815 / 799 ms unthrottled (≤ 900); a touch scroll started right after the tap moved the page from 82 ms (≤ 300; scrolled to 268 px during the transition); on another load a tap on the first item landed 25 ms after the language tap and opened its popup at 30 ms (≤ 300; open true)"
+    },
+    {
+      "step": "reduced-T4-winter",
+      "ok": true,
+      "text": "T4-winter with reduced motion: the 150 ms fade (an opacity between 0 and 1 seen: true; gone after 177 ms, 120–230), 1 animation on welcome (opacity), nothing of the concept built: true"
+    },
+    {
+      "step": "webkit-plays-T4-winter",
+      "ok": true,
+      "text": "WebKit, iPhone 13 device, English tap, 3 runs: T4-winter plays in each (the page names T4-winter / T4-winter / T4-winter), 22 / 22 / 22 animations on opacity, transform (transform, opacity and the individual transform properties only: true); the last animation's end minus the overlay's going, median -11 ms (runs -13 / -11 / -9) (≤ 17: nothing cut); for information, unthrottled: median fps 59 / 59 / 59, worst gap 27 / 26 / 22 ms"
+    },
+    {
+      "step": "webkit-timing-T4-winter",
+      "ok": true,
+      "text": "WebKit, T4-winter, 3 runs each, judged on the median: the overlay gone median 797 ms (runs 797 / 813 / 797) after the tap (≤ 900; on the scroll loads median 808 ms (runs 808 / 814 / 805), on the tap loads median 828 ms (runs 828 / 807 / 832)); a mouse wheel right after the tap (mobile emulation off for those loads) moved the page from median 80 ms (runs 79 / 80 / 80) (≤ 300; scrolled during the transition in every run: true, to 260 / 260 / 260 px); a touch tap on the first item landed median 50 ms (runs 52 / 47 / 50) after the language tap and opened its popup at median 82 ms (runs 85 / 81 / 82) (≤ 300; open in every run: true)"
+    },
+    {
+      "step": "webkit-reduced-T4-winter",
+      "ok": true,
+      "text": "WebKit, T4-winter with reduced motion, 3 runs: the 150 ms fade gone median 156 ms (runs 153 / 156 / 165) (120–230); in every run an opacity between 0 and 1 seen (true / true / true), one animation on the overlay's opacity (1 on opacity / 1 on opacity / 1 on opacity), nothing of the concept built (true)"
+    },
+    {
+      "step": "webkit-errors-T4-winter",
+      "ok": false,
+      "text": "WebKit, T4-winter: console and page errors on its 12 loads (3 each: play, scroll, tap, reduced motion): console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "step": "html-T5-winter",
+      "ok": true,
+      "text": "T5-winter chosen through the Style route (200; venues.style.transitionWinter = T5); the page regenerated after 6 ms for the winter scene and carries exactly one transition: data-tx T5-winter, the script names T5-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T5-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T5-winter",
+      "ok": true,
+      "text": "T5-winter: its style and script 1819 B gzipped (3902 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T6-winter",
+      "ok": true,
+      "text": "T6-winter chosen through the Style route (200; venues.style.transitionWinter = T6); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T6-winter, the script names T6-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T6-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T6-winter",
+      "ok": true,
+      "text": "T6-winter: its style and script 1887 B gzipped (3997 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T7-winter",
+      "ok": true,
+      "text": "T7-winter chosen through the Style route (200; venues.style.transitionWinter = T7); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T7-winter, the script names T7-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T7-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T7-winter",
+      "ok": true,
+      "text": "T7-winter: its style and script 1703 B gzipped (3487 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T8-winter",
+      "ok": true,
+      "text": "T8-winter chosen through the Style route (200; venues.style.transitionWinter = T8); the page regenerated after 5 ms for the winter scene and carries exactly one transition: data-tx T8-winter, the script names T8-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T8-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T8-winter",
+      "ok": true,
+      "text": "T8-winter: its style and script 1676 B gzipped (3552 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T9-winter",
+      "ok": true,
+      "text": "T9-winter chosen through the Style route (200; venues.style.transitionWinter = T9); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T9-winter, the script names T9-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T9-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T9-winter",
+      "ok": true,
+      "text": "T9-winter: its style and script 1890 B gzipped (4021 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T10-winter",
+      "ok": true,
+      "text": "T10-winter chosen through the Style route (200; venues.style.transitionWinter = T10); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T10-winter, the script names T10-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T10-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T10-winter",
+      "ok": true,
+      "text": "T10-winter: its style and script 2047 B gzipped (4444 B raw; ≤ 3072)"
+    },
+    {
+      "step": "unchanged-kebab-land-winter",
+      "ok": true,
+      "text": "kebab-land winter (regenerated by a no-op Style save, 200): head script, tap script, the whole overlay (logo as a placeholder) and the public stylesheet byte for byte as the previous commit (1a38e65) served Kebab Land: identical; no transition code in its page: true"
+    },
+    {
+      "step": "unchanged-drill-default-venue-winter",
+      "ok": true,
+      "text": "drill-default-venue winter (regenerated by a no-op Style save, 200): head script, tap script and the public stylesheet byte for byte as the previous commit (1a38e65) served Kebab Land: identical; no transition code in its page: true"
+    },
+    {
+      "step": "html-T1-spring",
+      "ok": true,
+      "text": "T1-spring chosen through the Style route (200; venues.style.transitionSpring = T1); the page regenerated after 7 ms for the spring scene and carries exactly one transition: data-tx T1-spring, the script names T1-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T1-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T1-spring",
+      "ok": true,
+      "text": "T1-spring: its style and script 1504 B gzipped (3174 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T2-spring",
+      "ok": true,
+      "text": "T2-spring chosen through the Style route (200; venues.style.transitionSpring = T2); the page regenerated after 5 ms for the spring scene and carries exactly one transition: data-tx T2-spring, the script names T2-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T2-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T2-spring",
+      "ok": true,
+      "text": "T2-spring: its style and script 1716 B gzipped (3694 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T3-spring",
+      "ok": true,
+      "text": "T3-spring chosen through the Style route (200; venues.style.transitionSpring = T3); the page regenerated after 6 ms for the spring scene and carries exactly one transition: data-tx T3-spring, the script names T3-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T3-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T3-spring",
+      "ok": true,
+      "text": "T3-spring: its style and script 1767 B gzipped (3679 B raw; ≤ 3072)"
+    },
+    {
+      "step": "smooth-T3-spring",
+      "ok": true,
+      "text": "T3-spring, iPhone 13 viewport, CPU 4×, English tap: 44 frames from the tap to the overlay gone (758 ms), median interval 16.7 ms = 60 fps (≥ 50), worst gap 33 ms; 0 long tasks, the longest 0 ms (≤ 50); page errors 0"
+    },
+    {
+      "step": "motion-T3-spring",
+      "ok": true,
+      "text": "T3-spring: 70 animations on opacity, transform, rotate, scale (transform, opacity and the individual transform properties only: true); the last ends 742 ms after the tap and the overlay goes at 758 ms, when it has finished (nothing cut: true; the two clocks read -18 ms apart, so within one frame counts)"
+    },
+    {
+      "step": "language-first-T3-spring",
+      "ok": true,
+      "text": "T3-spring, Persian tap: at the first frame after the tap (36 ms) the page is already Persian (lang fa, dir rtl) and the transition has moved 0 ms of its time (≤ 34: nothing revealed in the other language)"
+    },
+    {
+      "step": "timing-T3-spring",
+      "ok": true,
+      "text": "T3-spring: the overlay gone 758 ms after the tap at CPU 4× and 699 / 698 ms unthrottled (≤ 900); a touch scroll started right after the tap moved the page from 81 ms (≤ 300; scrolled to 267 px during the transition); on another load a tap on the first item landed 26 ms after the language tap and opened its popup at 32 ms (≤ 300; open true)"
+    },
+    {
+      "step": "reduced-T3-spring",
+      "ok": true,
+      "text": "T3-spring with reduced motion: the 150 ms fade (an opacity between 0 and 1 seen: true; gone after 170 ms, 120–230), 1 animation on welcome (opacity), nothing of the concept built: true"
+    },
+    {
+      "step": "webkit-plays-T3-spring",
+      "ok": true,
+      "text": "WebKit, iPhone 13 device, English tap, 3 runs: T3-spring plays in each (the page names T3-spring / T3-spring / T3-spring), 70 / 70 / 70 animations on opacity, transform, scale, rotate (transform, opacity and the individual transform properties only: true); the last animation's end minus the overlay's going, median -11 ms (runs -1 / -12 / -11) (≤ 17: nothing cut); for information, unthrottled: median fps 59 / 59 / 59, worst gap 49 / 46 / 47 ms"
+    },
+    {
+      "step": "webkit-timing-T3-spring",
+      "ok": true,
+      "text": "WebKit, T3-spring, 3 runs each, judged on the median: the overlay gone median 728 ms (runs 728 / 730 / 714) after the tap (≤ 900; on the scroll loads median 714 ms (runs 714 / 730 / 711), on the tap loads median 714 ms (runs 729 / 714 / 714)); a mouse wheel right after the tap (mobile emulation off for those loads) moved the page from median 109 ms (runs 97 / 112 / 109) (≤ 300; scrolled during the transition in every run: true, to 260 / 260 / 260 px); a touch tap on the first item landed median 47 ms (runs 47 / 51 / 41) after the language tap and opened its popup at median 86 ms (runs 86 / 90 / 79) (≤ 300; open in every run: true)"
+    },
+    {
+      "step": "webkit-reduced-T3-spring",
+      "ok": true,
+      "text": "WebKit, T3-spring with reduced motion, 3 runs: the 150 ms fade gone median 161 ms (runs 165 / 155 / 161) (120–230); in every run an opacity between 0 and 1 seen (true / true / true), one animation on the overlay's opacity (1 on opacity / 1 on opacity / 1 on opacity), nothing of the concept built (true)"
+    },
+    {
+      "step": "webkit-errors-T3-spring",
+      "ok": false,
+      "text": "WebKit, T3-spring: console and page errors on its 12 loads (3 each: play, scroll, tap, reduced motion): console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "step": "html-T4-spring",
+      "ok": true,
+      "text": "T4-spring chosen through the Style route (200; venues.style.transitionSpring = T4); the page regenerated after 6 ms for the spring scene and carries exactly one transition: data-tx T4-spring, the script names T4-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T4-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T4-spring",
+      "ok": true,
+      "text": "T4-spring: its style and script 1559 B gzipped (3314 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T5-spring",
+      "ok": true,
+      "text": "T5-spring chosen through the Style route (200; venues.style.transitionSpring = T5); the page regenerated after 5 ms for the spring scene and carries exactly one transition: data-tx T5-spring, the script names T5-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T5-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T5-spring",
+      "ok": true,
+      "text": "T5-spring: its style and script 1654 B gzipped (3527 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T6-spring",
+      "ok": true,
+      "text": "T6-spring chosen through the Style route (200; venues.style.transitionSpring = T6); the page regenerated after 8 ms for the spring scene and carries exactly one transition: data-tx T6-spring, the script names T6-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T6-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T6-spring",
+      "ok": true,
+      "text": "T6-spring: its style and script 1861 B gzipped (3954 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T7-spring",
+      "ok": true,
+      "text": "T7-spring chosen through the Style route (200; venues.style.transitionSpring = T7); the page regenerated after 5 ms for the spring scene and carries exactly one transition: data-tx T7-spring, the script names T7-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T7-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T7-spring",
+      "ok": true,
+      "text": "T7-spring: its style and script 1568 B gzipped (3262 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T8-spring",
+      "ok": true,
+      "text": "T8-spring chosen through the Style route (200; venues.style.transitionSpring = T8); the page regenerated after 4 ms for the spring scene and carries exactly one transition: data-tx T8-spring, the script names T8-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T8-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T8-spring",
+      "ok": true,
+      "text": "T8-spring: its style and script 1754 B gzipped (3715 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T9-spring",
+      "ok": true,
+      "text": "T9-spring chosen through the Style route (200; venues.style.transitionSpring = T9); the page regenerated after 5 ms for the spring scene and carries exactly one transition: data-tx T9-spring, the script names T9-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T9-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T9-spring",
+      "ok": true,
+      "text": "T9-spring: its style and script 1966 B gzipped (4207 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T10-spring",
+      "ok": true,
+      "text": "T10-spring chosen through the Style route (200; venues.style.transitionSpring = T10); the page regenerated after 4 ms for the spring scene and carries exactly one transition: data-tx T10-spring, the script names T10-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T10-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T10-spring",
+      "ok": true,
+      "text": "T10-spring: its style and script 2044 B gzipped (4256 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T1-summer",
+      "ok": true,
+      "text": "T1-summer chosen through the Style route (200; venues.style.transitionSummer = T1); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T1-summer, the script names T1-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T1-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T1-summer",
+      "ok": true,
+      "text": "T1-summer: its style and script 1640 B gzipped (3696 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T2-summer",
+      "ok": true,
+      "text": "T2-summer chosen through the Style route (200; venues.style.transitionSummer = T2); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T2-summer, the script names T2-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T2-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T2-summer",
+      "ok": true,
+      "text": "T2-summer: its style and script 1728 B gzipped (3899 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T3-summer",
+      "ok": true,
+      "text": "T3-summer chosen through the Style route (200; venues.style.transitionSummer = T3); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T3-summer, the script names T3-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T3-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T3-summer",
+      "ok": true,
+      "text": "T3-summer: its style and script 1850 B gzipped (4011 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T4-summer",
+      "ok": true,
+      "text": "T4-summer chosen through the Style route (200; venues.style.transitionSummer = T4); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T4-summer, the script names T4-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T4-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T4-summer",
+      "ok": true,
+      "text": "T4-summer: its style and script 1669 B gzipped (3734 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T5-summer",
+      "ok": true,
+      "text": "T5-summer chosen through the Style route (200; venues.style.transitionSummer = T5); the page regenerated after 8 ms for the summer scene and carries exactly one transition: data-tx T5-summer, the script names T5-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T5-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T5-summer",
+      "ok": true,
+      "text": "T5-summer: its style and script 1720 B gzipped (3763 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T6-summer",
+      "ok": true,
+      "text": "T6-summer chosen through the Style route (200; venues.style.transitionSummer = T6); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T6-summer, the script names T6-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T6-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T6-summer",
+      "ok": true,
+      "text": "T6-summer: its style and script 1925 B gzipped (4308 B raw; ≤ 3072)"
+    },
+    {
+      "step": "smooth-T6-summer",
+      "ok": true,
+      "text": "T6-summer, iPhone 13 viewport, CPU 4×, English tap: 49 frames from the tap to the overlay gone (811 ms), median interval 16.7 ms = 60 fps (≥ 50), worst gap 17 ms; 0 long tasks, the longest 0 ms (≤ 50); page errors 0"
+    },
+    {
+      "step": "motion-T6-summer",
+      "ok": true,
+      "text": "T6-summer: 33 animations on opacity, transform (transform, opacity and the individual transform properties only: true); the last ends 801 ms after the tap and the overlay goes at 811 ms, when it has finished (nothing cut: true; the two clocks read -6 ms apart, so within one frame counts)"
+    },
+    {
+      "step": "language-first-T6-summer",
+      "ok": true,
+      "text": "T6-summer, Persian tap: at the first frame after the tap (27 ms) the page is already Persian (lang fa, dir rtl) and the transition has moved 0 ms of its time (≤ 34: nothing revealed in the other language)"
+    },
+    {
+      "step": "timing-T6-summer",
+      "ok": true,
+      "text": "T6-summer: the overlay gone 811 ms after the tap at CPU 4× and 766 / 800 ms unthrottled (≤ 900); a touch scroll started right after the tap moved the page from 83 ms (≤ 300; scrolled to 267 px during the transition); on another load a tap on the first item landed 23 ms after the language tap and opened its popup at 26 ms (≤ 300; open true)"
+    },
+    {
+      "step": "reduced-T6-summer",
+      "ok": true,
+      "text": "T6-summer with reduced motion: the 150 ms fade (an opacity between 0 and 1 seen: true; gone after 184 ms, 120–230), 1 animation on welcome (opacity), nothing of the concept built: true"
+    },
+    {
+      "step": "webkit-plays-T6-summer",
+      "ok": true,
+      "text": "WebKit, iPhone 13 device, English tap, 3 runs: T6-summer plays in each (the page names T6-summer / T6-summer / T6-summer), 33 / 33 / 33 animations on opacity, transform (transform, opacity and the individual transform properties only: true); the last animation's end minus the overlay's going, median -7 ms (runs -7 / -4 / -7) (≤ 17: nothing cut); for information, unthrottled: median fps 59 / 59 / 59, worst gap 18 / 18 / 18 ms"
+    },
+    {
+      "step": "webkit-timing-T6-summer",
+      "ok": true,
+      "text": "WebKit, T6-summer, 3 runs each, judged on the median: the overlay gone median 814 ms (runs 815 / 814 / 796) after the tap (≤ 900; on the scroll loads median 782 ms (runs 780 / 782 / 798), on the tap loads median 799 ms (runs 814 / 799 / 797)); a mouse wheel right after the tap (mobile emulation off for those loads) moved the page from median 63 ms (runs 63 / 64 / 63) (≤ 300; scrolled during the transition in every run: true, to 260 / 260 / 260 px); a touch tap on the first item landed median 34 ms (runs 34 / 32 / 34) after the language tap and opened its popup at median 60 ms (runs 61 / 59 / 60) (≤ 300; open in every run: true)"
+    },
+    {
+      "step": "webkit-reduced-T6-summer",
+      "ok": true,
+      "text": "WebKit, T6-summer with reduced motion, 3 runs: the 150 ms fade gone median 164 ms (runs 155 / 168 / 164) (120–230); in every run an opacity between 0 and 1 seen (true / true / true), one animation on the overlay's opacity (1 on opacity / 1 on opacity / 1 on opacity), nothing of the concept built (true)"
+    },
+    {
+      "step": "webkit-errors-T6-summer",
+      "ok": false,
+      "text": "WebKit, T6-summer: console and page errors on its 12 loads (3 each: play, scroll, tap, reduced motion): console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "step": "html-T7-summer",
+      "ok": true,
+      "text": "T7-summer chosen through the Style route (200; venues.style.transitionSummer = T7); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T7-summer, the script names T7-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T7-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T7-summer",
+      "ok": true,
+      "text": "T7-summer: its style and script 1558 B gzipped (3295 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T8-summer",
+      "ok": true,
+      "text": "T8-summer chosen through the Style route (200; venues.style.transitionSummer = T8); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T8-summer, the script names T8-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T8-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T8-summer",
+      "ok": true,
+      "text": "T8-summer: its style and script 1746 B gzipped (3701 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T9-summer",
+      "ok": true,
+      "text": "T9-summer chosen through the Style route (200; venues.style.transitionSummer = T9); the page regenerated after 6 ms for the summer scene and carries exactly one transition: data-tx T9-summer, the script names T9-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T9-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T9-summer",
+      "ok": true,
+      "text": "T9-summer: its style and script 1866 B gzipped (4130 B raw; ≤ 3072)"
+    },
+    {
+      "step": "html-T10-summer",
+      "ok": true,
+      "text": "T10-summer chosen through the Style route (200; venues.style.transitionSummer = T10); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T10-summer, the script names T10-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T10-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "step": "size-T10-summer",
+      "ok": true,
+      "text": "T10-summer: its style and script 1969 B gzipped (4202 B raw; ≤ 3072)"
+    },
+    {
+      "step": "persian-tap-senso",
+      "ok": true,
+      "text": "Senso, iPhone 13 viewport, CPU 4×, the فارسی tap of the version chosen for each season (fast mode) (4 of 4 taps measured): no long task over 50 ms from the tap to the overlay gone; over 50 ms: 0; the longest task per tap: T6-fall 0, T4-winter 0, T3-spring 0, T6-summer 0 ms",
+      "metric": {
+        "over": 0,
+        "of": 4,
+        "worst": 0,
+        "unit": "ms"
+      }
+    },
+    {
+      "step": "day-one-fall",
+      "ok": true,
+      "text": "Senso fall, day one: with the single choice of 2026-10-10 (restore 200: venues.style.transition = T3, no per-season key) the page ships T3-fall; with T3 saved for each season (200: transitionFall T3, transitionWinter T3, transitionSpring T3, transitionSummer T3) it is byte for byte the same page: true (238328 / 238328 B)"
+    },
+    {
+      "step": "day-one-winter",
+      "ok": true,
+      "text": "Senso winter, day one: with the single choice of 2026-10-10 (restore 200: venues.style.transition = T3, no per-season key) the page ships T3-winter; with T3 saved for each season (200: transitionFall T3, transitionWinter T3, transitionSpring T3, transitionSummer T3) it is byte for byte the same page: true (224553 / 224553 B)"
+    },
+    {
+      "step": "day-one-spring",
+      "ok": true,
+      "text": "Senso spring, day one: with the single choice of 2026-10-10 (restore 200: venues.style.transition = T3, no per-season key) the page ships T3-spring; with T3 saved for each season (200: transitionFall T3, transitionWinter T3, transitionSpring T3, transitionSummer T3) it is byte for byte the same page: true (245218 / 245218 B)"
+    },
+    {
+      "step": "day-one-summer",
+      "ok": true,
+      "text": "Senso summer, day one: with the single choice of 2026-10-10 (restore 200: venues.style.transition = T3, no per-season key) the page ships T3-summer; with T3 saved for each season (200: transitionFall T3, transitionWinter T3, transitionSpring T3, transitionSummer T3) it is byte for byte the same page: true (237577 / 237577 B)"
+    },
+    {
+      "step": "season-choice-feb28",
+      "ok": true,
+      "text": "Feb 28 23:30 EST (server clock 2027-02-28T23:30:00-05:00), choices fall T2, winter T5, spring T8, summer T3: the page renders winter (want winter) and ships exactly T5-winter (named T5-winter, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T5-winter: true / true); another season's choice in the page: none"
+    },
+    {
+      "step": "season-choice-mar1",
+      "ok": true,
+      "text": "Mar 1 00:30 EST (server clock 2027-03-01T00:30:00-05:00), choices fall T2, winter T5, spring T8, summer T3: the page renders spring (want spring) and ships exactly T8-spring (named T8-spring, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T8-spring: true / true); another season's choice in the page: none"
+    },
+    {
+      "step": "season-choice-may31",
+      "ok": true,
+      "text": "May 31 23:30 EDT (server clock 2027-05-31T23:30:00-04:00), choices fall T2, winter T5, spring T8, summer T3: the page renders spring (want spring) and ships exactly T8-spring (named T8-spring, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T8-spring: true / true); another season's choice in the page: none"
+    },
+    {
+      "step": "season-choice-jun1",
+      "ok": true,
+      "text": "Jun 1 00:30 EDT (server clock 2027-06-01T00:30:00-04:00), choices fall T2, winter T5, spring T8, summer T3: the page renders summer (want summer) and ships exactly T3-summer (named T3-summer, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T3-summer: true / true); another season's choice in the page: none"
+    },
+    {
+      "step": "season-choice-aug31",
+      "ok": true,
+      "text": "Aug 31 23:30 EDT (server clock 2026-08-31T23:30:00-04:00), choices fall T2, winter T5, spring T8, summer T3: the page renders summer (want summer) and ships exactly T3-summer (named T3-summer, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T3-summer: true / true); another season's choice in the page: none"
+    },
+    {
+      "step": "season-choice-sep1",
+      "ok": true,
+      "text": "Sep 1 00:30 EDT (server clock 2026-09-01T00:30:00-04:00), choices fall T2, winter T5, spring T8, summer T3: the page renders fall (want fall) and ships exactly T2-fall (named T2-fall, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T2-fall: true / true); another season's choice in the page: none"
+    },
+    {
+      "step": "season-choice-nov30",
+      "ok": true,
+      "text": "Nov 30 23:30 EST (server clock 2026-11-30T23:30:00-05:00), choices fall T2, winter T5, spring T8, summer T3: the page renders fall (want fall) and ships exactly T2-fall (named T2-fall, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T2-fall: true / true); another season's choice in the page: none"
+    },
+    {
+      "step": "season-choice-dec1",
+      "ok": true,
+      "text": "Dec 1 00:30 EST (server clock 2026-12-01T00:30:00-05:00), choices fall T2, winter T5, spring T8, summer T3: the page renders winter (want winter) and ships exactly T5-winter (named T5-winter, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T5-winter: true / true); another season's choice in the page: none"
+    },
+    {
+      "step": "admin-play-laptop",
+      "ok": true,
+      "text": "laptop, Style tab → Welcome → Transition, a row per season: Fall row T6 chosen → saved (venues.style.transitionFall T6) and played in the preview (T6-fall), the bar's screen then menu; the Winter row's Play → the preview switched to winter (the bar: winter) and played that season's choice (T5-winter, want T5-winter); Play again → T5-winter; Spring row T9 chosen → saved (transitionSpring T9) and played as T9-spring; the bar's Summer → the frame carries summer's choice (T3-summer, want T3-summer); page errors 0"
+    },
+    {
+      "step": "admin-play-like-public-laptop",
+      "ok": true,
+      "text": "laptop, each play as on the public page: Fall chosen: T6-fall: tapped at 527 ms after the click, after the card had been settled for 501 ms (≥ 480; settled at the tap: true), the menu 799 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 18 ms worst; Winter's Play: T5-winter: tapped at 1783 ms after the click, after the card had been settled for 519 ms (≥ 480; settled at the tap: true), the menu 730 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 18 ms worst; Play again: T5-winter: tapped at 1790 ms after the click, after the card had been settled for 520 ms (≥ 480; settled at the tap: true), the menu 715 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 18 ms worst; Spring chosen: T9-spring: tapped at 1779 ms after the click, after the card had been settled for 520 ms (≥ 480; settled at the tap: true), the menu 831 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 17 ms worst"
+    },
+    {
+      "step": "admin-play-phone",
+      "ok": true,
+      "text": "iPhone 13 viewport, the Style tab's bottom sheet → Welcome → the Summer row: T7 chosen → the preview above the sheet switched to summer and played T7-summer; the row's Play tapped → played again (T7-summer); page errors 0"
+    },
+    {
+      "step": "admin-play-like-public-phone",
+      "ok": true,
+      "text": "iPhone 13 viewport, each play as on the public page: chosen: T7-summer: tapped at 568 ms after the click, after the card had been settled for 519 ms (≥ 480; settled at the tap: true), the menu 798 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 18 ms worst; Play: T7-summer: tapped at 1849 ms after the click, after the card had been settled for 517 ms (≥ 480; settled at the tap: true), the menu 799 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 18 ms worst"
+    },
+    {
+      "step": "restored",
+      "ok": true,
+      "text": "Senso's style put back as it was (restore 200): transition T3, per season T6 / T4 / (unset) / T6, colours as before: true"
+    }
+  ],
+  "measures": [
+    "T6-fall: 839 ms at CPU 4× (816 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 82 ms, item tap at 26 ms; reduced motion 170 ms; 2033 B gzipped; WebKit (median of 3; runs): gone after 828 ms (828/826/831), 51/51/51 animations, 59/59/59 fps (information), scroll at 80 ms (81/79/80), item tap at 42 ms (42/41/42), reduced motion 162 ms (162/156/164), 36 errors, as Chromium",
+    "T4-winter: 829 ms at CPU 4× (815 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 82 ms, item tap at 25 ms; reduced motion 177 ms; 1731 B gzipped; WebKit (median of 3; runs): gone after 797 ms (797/813/797), 22/22/22 animations, 59/59/59 fps (information), scroll at 80 ms (79/80/80), item tap at 50 ms (52/47/50), reduced motion 156 ms (153/156/165), 36 errors, as Chromium",
+    "T3-spring: 758 ms at CPU 4× (699 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 81 ms, item tap at 26 ms; reduced motion 170 ms; 1767 B gzipped; WebKit (median of 3; runs): gone after 728 ms (728/730/714), 70/70/70 animations, 59/59/59 fps (information), scroll at 109 ms (97/112/109), item tap at 47 ms (47/51/41), reduced motion 161 ms (165/155/161), 36 errors, as Chromium",
+    "T6-summer: 811 ms at CPU 4× (800 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 83 ms, item tap at 23 ms; reduced motion 184 ms; 1925 B gzipped; WebKit (median of 3; runs): gone after 814 ms (815/814/796), 33/33/33 animations, 59/59/59 fps (information), scroll at 63 ms (63/64/63), item tap at 34 ms (34/32/34), reduced motion 164 ms (155/168/164), 36 errors, as Chromium",
+    "WebKit (3 runs per time, the median): 4 versions, 0 passing every functional check; 0 behaving differently from Chromium; 0 outlier run(s)",
+    "Persian tap, Senso (CPU 4×): 0 of 4 taps with a long task over 50 ms, the longest 0 ms"
+  ],
+  "transcript": [
+    {
+      "at": "2026-10-12T06:02:45.129Z",
+      "ms": 8,
+      "step": "db",
+      "text": "connected to database \"roses_check_20261012t055750z\" as application \"roses-check:transition-drill\""
+    },
+    {
+      "at": "2026-10-12T06:02:45.213Z",
+      "ms": 92,
+      "step": "copy",
+      "text": ".next-check → .next-transition"
+    },
+    {
+      "at": "2026-10-12T06:02:45.825Z",
+      "ms": 704,
+      "step": "server",
+      "text": "fall server up after 423 ms (ROSES_NOW 2026-10-15T12:00:00-04:00)"
+    },
+    {
+      "at": "2026-10-12T06:02:45.836Z",
+      "ms": 715,
+      "step": "style",
+      "text": "Senso's style before the drill: transition T3; per season fall T6, winter T4, spring (unset), summer T6; the versions chosen now (what customers get): T6-fall, T4-winter, T3-spring, T6-summer; mode fast"
+    },
+    {
+      "at": "2026-10-12T06:02:45.989Z",
+      "ms": 868,
+      "step": "html-T1-fall",
+      "text": "PASS: T1-fall chosen through the Style route (200; venues.style.transitionFall = T1); the page regenerated after 6 ms for the fall scene and carries exactly one transition: data-tx T1-fall, the script names T1-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T1-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:02:45.989Z",
+      "ms": 868,
+      "step": "size-T1-fall",
+      "text": "PASS: T1-fall: its style and script 1469 B gzipped (3086 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:02:46.037Z",
+      "ms": 916,
+      "step": "html-T2-fall",
+      "text": "PASS: T2-fall chosen through the Style route (200; venues.style.transitionFall = T2); the page regenerated after 6 ms for the fall scene and carries exactly one transition: data-tx T2-fall, the script names T2-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T2-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:02:46.038Z",
+      "ms": 917,
+      "step": "size-T2-fall",
+      "text": "PASS: T2-fall: its style and script 1480 B gzipped (3132 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:02:46.073Z",
+      "ms": 952,
+      "step": "html-T3-fall",
+      "text": "PASS: T3-fall chosen through the Style route (200; venues.style.transitionFall = T3); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T3-fall, the script names T3-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T3-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:02:46.073Z",
+      "ms": 952,
+      "step": "size-T3-fall",
+      "text": "PASS: T3-fall: its style and script 1561 B gzipped (3276 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:02:46.112Z",
+      "ms": 991,
+      "step": "html-T4-fall",
+      "text": "PASS: T4-fall chosen through the Style route (200; venues.style.transitionFall = T4); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T4-fall, the script names T4-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T4-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:02:46.112Z",
+      "ms": 991,
+      "step": "size-T4-fall",
+      "text": "PASS: T4-fall: its style and script 1546 B gzipped (3300 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:02:46.152Z",
+      "ms": 1031,
+      "step": "html-T5-fall",
+      "text": "PASS: T5-fall chosen through the Style route (200; venues.style.transitionFall = T5); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T5-fall, the script names T5-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T5-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:02:46.152Z",
+      "ms": 1031,
+      "step": "size-T5-fall",
+      "text": "PASS: T5-fall: its style and script 1656 B gzipped (3525 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:02:46.188Z",
+      "ms": 1067,
+      "step": "html-T6-fall",
+      "text": "PASS: T6-fall chosen through the Style route (200; venues.style.transitionFall = T6); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T6-fall, the script names T6-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T6-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:02:46.188Z",
+      "ms": 1067,
+      "step": "size-T6-fall",
+      "text": "PASS: T6-fall: its style and script 2033 B gzipped (4344 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:02:49.497Z",
+      "ms": 4376,
+      "step": "smooth-T6-fall",
+      "text": "PASS: T6-fall, iPhone 13 viewport, CPU 4×, English tap: 50 frames from the tap to the overlay gone (839 ms), median interval 16.7 ms = 60 fps (≥ 50), worst gap 33 ms; 0 long tasks, the longest 0 ms (≤ 50); page errors 0"
+    },
+    {
+      "at": "2026-10-12T06:02:49.497Z",
+      "ms": 4376,
+      "step": "motion-T6-fall",
+      "text": "PASS: T6-fall: 51 animations on opacity, transform, rotate, scale (transform, opacity and the individual transform properties only: true); the last ends 842 ms after the tap and the overlay goes at 839 ms, when it has finished (nothing cut: true; the two clocks read -5 ms apart, so within one frame counts)"
+    },
+    {
+      "at": "2026-10-12T06:02:52.797Z",
+      "ms": 7676,
+      "step": "language-first-T6-fall",
+      "text": "PASS: T6-fall, Persian tap: at the first frame after the tap (28 ms) the page is already Persian (lang fa, dir rtl) and the transition has moved 0 ms of its time (≤ 34: nothing revealed in the other language)"
+    },
+    {
+      "at": "2026-10-12T06:02:58.467Z",
+      "ms": 13346,
+      "step": "timing-T6-fall",
+      "text": "PASS: T6-fall: the overlay gone 839 ms after the tap at CPU 4× and 816 / 814 ms unthrottled (≤ 900); a touch scroll started right after the tap moved the page from 82 ms (≤ 300; scrolled to 267 px during the transition); on another load a tap on the first item landed 26 ms after the language tap and opened its popup at 32 ms (≤ 300; open true)"
+    },
+    {
+      "at": "2026-10-12T06:02:59.153Z",
+      "ms": 14032,
+      "step": "reduced-T6-fall",
+      "text": "PASS: T6-fall with reduced motion: the 150 ms fade (an opacity between 0 and 1 seen: true; gone after 170 ms, 120–230), 1 animation on welcome (opacity), nothing of the concept built: true"
+    },
+    {
+      "at": "2026-10-12T06:03:29.254Z",
+      "ms": 44133,
+      "step": "webkit-plays-T6-fall",
+      "text": "PASS: WebKit, iPhone 13 device, English tap, 3 runs: T6-fall plays in each (the page names T6-fall / T6-fall / T6-fall), 51 / 51 / 51 animations on opacity, transform, scale, rotate (transform, opacity and the individual transform properties only: true); the last animation's end minus the overlay's going, median -4 ms (runs -4 / -1 / -5) (≤ 17: nothing cut); for information, unthrottled: median fps 59 / 59 / 59, worst gap 32 / 23 / 25 ms"
+    },
+    {
+      "at": "2026-10-12T06:03:29.254Z",
+      "ms": 44133,
+      "step": "webkit-timing-T6-fall",
+      "text": "PASS: WebKit, T6-fall, 3 runs each, judged on the median: the overlay gone median 828 ms (runs 828 / 826 / 831) after the tap (≤ 900; on the scroll loads median 830 ms (runs 831 / 830 / 829), on the tap loads median 830 ms (runs 831 / 830 / 829)); a mouse wheel right after the tap (mobile emulation off for those loads) moved the page from median 80 ms (runs 81 / 79 / 80) (≤ 300; scrolled during the transition in every run: true, to 260 / 260 / 260 px); a touch tap on the first item landed median 42 ms (runs 42 / 41 / 42) after the language tap and opened its popup at median 73 ms (runs 75 / 73 / 73) (≤ 300; open in every run: true)"
+    },
+    {
+      "at": "2026-10-12T06:03:29.254Z",
+      "ms": 44133,
+      "step": "webkit-reduced-T6-fall",
+      "text": "PASS: WebKit, T6-fall with reduced motion, 3 runs: the 150 ms fade gone median 162 ms (runs 162 / 156 / 164) (120–230); in every run an opacity between 0 and 1 seen (true / true / true), one animation on the overlay's opacity (1 on opacity / 1 on opacity / 1 on opacity), nothing of the concept built (true)"
+    },
+    {
+      "at": "2026-10-12T06:03:29.254Z",
+      "ms": 44133,
+      "step": "webkit-errors-T6-fall",
+      "text": "FAIL: WebKit, T6-fall: console and page errors on its 12 loads (3 each: play, scroll, tap, reduced motion): console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "at": "2026-10-12T06:03:29.322Z",
+      "ms": 44201,
+      "step": "html-T7-fall",
+      "text": "PASS: T7-fall chosen through the Style route (200; venues.style.transitionFall = T7); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T7-fall, the script names T7-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T7-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:03:29.322Z",
+      "ms": 44201,
+      "step": "size-T7-fall",
+      "text": "PASS: T7-fall: its style and script 1551 B gzipped (3199 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:03:29.358Z",
+      "ms": 44237,
+      "step": "html-T8-fall",
+      "text": "PASS: T8-fall chosen through the Style route (200; venues.style.transitionFall = T8); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T8-fall, the script names T8-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T8-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:03:29.358Z",
+      "ms": 44237,
+      "step": "size-T8-fall",
+      "text": "PASS: T8-fall: its style and script 1754 B gzipped (3713 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:03:29.396Z",
+      "ms": 44275,
+      "step": "html-T9-fall",
+      "text": "PASS: T9-fall chosen through the Style route (200; venues.style.transitionFall = T9); the page regenerated after 5 ms for the fall scene and carries exactly one transition: data-tx T9-fall, the script names T9-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T9-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:03:29.396Z",
+      "ms": 44275,
+      "step": "size-T9-fall",
+      "text": "PASS: T9-fall: its style and script 1967 B gzipped (4169 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:03:29.432Z",
+      "ms": 44311,
+      "step": "html-T10-fall",
+      "text": "PASS: T10-fall chosen through the Style route (200; venues.style.transitionFall = T10); the page regenerated after 4 ms for the fall scene and carries exactly one transition: data-tx T10-fall, the script names T10-fall, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T10-fall (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:03:29.432Z",
+      "ms": 44311,
+      "step": "size-T10-fall",
+      "text": "PASS: T10-fall: its style and script 2028 B gzipped (4244 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:03:29.469Z",
+      "ms": 44348,
+      "step": "unchanged-kebab-land-fall",
+      "text": "PASS: kebab-land fall (regenerated by a no-op Style save, 200): head script, tap script, the whole overlay (logo as a placeholder) and the public stylesheet byte for byte as the previous commit (1a38e65) served Kebab Land: identical; no transition code in its page: true"
+    },
+    {
+      "at": "2026-10-12T06:03:29.496Z",
+      "ms": 44375,
+      "step": "unchanged-drill-default-venue-fall",
+      "text": "PASS: drill-default-venue fall (regenerated by a no-op Style save, 200): head script, tap script and the public stylesheet byte for byte as the previous commit (1a38e65) served Kebab Land: identical; no transition code in its page: true"
+    },
+    {
+      "at": "2026-10-12T06:03:29.980Z",
+      "ms": 44859,
+      "step": "server",
+      "text": "winter server up after 394 ms (ROSES_NOW 2026-12-15T12:00:00-05:00)"
+    },
+    {
+      "at": "2026-10-12T06:03:30.109Z",
+      "ms": 44988,
+      "step": "html-T1-winter",
+      "text": "PASS: T1-winter chosen through the Style route (200; venues.style.transitionWinter = T1); the page regenerated after 5 ms for the winter scene and carries exactly one transition: data-tx T1-winter, the script names T1-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T1-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:03:30.109Z",
+      "ms": 44988,
+      "step": "size-T1-winter",
+      "text": "PASS: T1-winter: its style and script 1453 B gzipped (3073 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:03:30.153Z",
+      "ms": 45032,
+      "step": "html-T2-winter",
+      "text": "PASS: T2-winter chosen through the Style route (200; venues.style.transitionWinter = T2); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T2-winter, the script names T2-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T2-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:03:30.153Z",
+      "ms": 45032,
+      "step": "size-T2-winter",
+      "text": "PASS: T2-winter: its style and script 1693 B gzipped (3646 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:03:30.189Z",
+      "ms": 45068,
+      "step": "html-T3-winter",
+      "text": "PASS: T3-winter chosen through the Style route (200; venues.style.transitionWinter = T3); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T3-winter, the script names T3-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T3-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:03:30.189Z",
+      "ms": 45068,
+      "step": "size-T3-winter",
+      "text": "PASS: T3-winter: its style and script 1701 B gzipped (3573 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:03:30.225Z",
+      "ms": 45104,
+      "step": "html-T4-winter",
+      "text": "PASS: T4-winter chosen through the Style route (200; venues.style.transitionWinter = T4); the page regenerated after 7 ms for the winter scene and carries exactly one transition: data-tx T4-winter, the script names T4-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T4-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:03:30.225Z",
+      "ms": 45104,
+      "step": "size-T4-winter",
+      "text": "PASS: T4-winter: its style and script 1731 B gzipped (3681 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:03:33.490Z",
+      "ms": 48369,
+      "step": "smooth-T4-winter",
+      "text": "PASS: T4-winter, iPhone 13 viewport, CPU 4×, English tap: 50 frames from the tap to the overlay gone (829 ms), median interval 16.7 ms = 60 fps (≥ 50), worst gap 17 ms; 0 long tasks, the longest 0 ms (≤ 50); page errors 0"
+    },
+    {
+      "at": "2026-10-12T06:03:33.491Z",
+      "ms": 48370,
+      "step": "motion-T4-winter",
+      "text": "PASS: T4-winter: 22 animations on opacity, transform (transform, opacity and the individual transform properties only: true); the last ends 815 ms after the tap and the overlay goes at 829 ms, when it has finished (nothing cut: true; the two clocks read -3 ms apart, so within one frame counts)"
+    },
+    {
+      "at": "2026-10-12T06:03:36.755Z",
+      "ms": 51634,
+      "step": "language-first-T4-winter",
+      "text": "PASS: T4-winter, Persian tap: at the first frame after the tap (29 ms) the page is already Persian (lang fa, dir rtl) and the transition has moved 0 ms of its time (≤ 34: nothing revealed in the other language)"
+    },
+    {
+      "at": "2026-10-12T06:03:42.423Z",
+      "ms": 57302,
+      "step": "timing-T4-winter",
+      "text": "PASS: T4-winter: the overlay gone 829 ms after the tap at CPU 4× and 815 / 799 ms unthrottled (≤ 900); a touch scroll started right after the tap moved the page from 82 ms (≤ 300; scrolled to 268 px during the transition); on another load a tap on the first item landed 25 ms after the language tap and opened its popup at 30 ms (≤ 300; open true)"
+    },
+    {
+      "at": "2026-10-12T06:03:43.183Z",
+      "ms": 58062,
+      "step": "reduced-T4-winter",
+      "text": "PASS: T4-winter with reduced motion: the 150 ms fade (an opacity between 0 and 1 seen: true; gone after 177 ms, 120–230), 1 animation on welcome (opacity), nothing of the concept built: true"
+    },
+    {
+      "at": "2026-10-12T06:04:12.075Z",
+      "ms": 86954,
+      "step": "webkit-plays-T4-winter",
+      "text": "PASS: WebKit, iPhone 13 device, English tap, 3 runs: T4-winter plays in each (the page names T4-winter / T4-winter / T4-winter), 22 / 22 / 22 animations on opacity, transform (transform, opacity and the individual transform properties only: true); the last animation's end minus the overlay's going, median -11 ms (runs -13 / -11 / -9) (≤ 17: nothing cut); for information, unthrottled: median fps 59 / 59 / 59, worst gap 27 / 26 / 22 ms"
+    },
+    {
+      "at": "2026-10-12T06:04:12.075Z",
+      "ms": 86954,
+      "step": "webkit-timing-T4-winter",
+      "text": "PASS: WebKit, T4-winter, 3 runs each, judged on the median: the overlay gone median 797 ms (runs 797 / 813 / 797) after the tap (≤ 900; on the scroll loads median 808 ms (runs 808 / 814 / 805), on the tap loads median 828 ms (runs 828 / 807 / 832)); a mouse wheel right after the tap (mobile emulation off for those loads) moved the page from median 80 ms (runs 79 / 80 / 80) (≤ 300; scrolled during the transition in every run: true, to 260 / 260 / 260 px); a touch tap on the first item landed median 50 ms (runs 52 / 47 / 50) after the language tap and opened its popup at median 82 ms (runs 85 / 81 / 82) (≤ 300; open in every run: true)"
+    },
+    {
+      "at": "2026-10-12T06:04:12.075Z",
+      "ms": 86954,
+      "step": "webkit-reduced-T4-winter",
+      "text": "PASS: WebKit, T4-winter with reduced motion, 3 runs: the 150 ms fade gone median 156 ms (runs 153 / 156 / 165) (120–230); in every run an opacity between 0 and 1 seen (true / true / true), one animation on the overlay's opacity (1 on opacity / 1 on opacity / 1 on opacity), nothing of the concept built (true)"
+    },
+    {
+      "at": "2026-10-12T06:04:12.075Z",
+      "ms": 86954,
+      "step": "webkit-errors-T4-winter",
+      "text": "FAIL: WebKit, T4-winter: console and page errors on its 12 loads (3 each: play, scroll, tap, reduced motion): console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "at": "2026-10-12T06:04:12.137Z",
+      "ms": 87016,
+      "step": "html-T5-winter",
+      "text": "PASS: T5-winter chosen through the Style route (200; venues.style.transitionWinter = T5); the page regenerated after 6 ms for the winter scene and carries exactly one transition: data-tx T5-winter, the script names T5-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T5-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:12.137Z",
+      "ms": 87016,
+      "step": "size-T5-winter",
+      "text": "PASS: T5-winter: its style and script 1819 B gzipped (3902 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:12.175Z",
+      "ms": 87054,
+      "step": "html-T6-winter",
+      "text": "PASS: T6-winter chosen through the Style route (200; venues.style.transitionWinter = T6); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T6-winter, the script names T6-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T6-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:12.175Z",
+      "ms": 87054,
+      "step": "size-T6-winter",
+      "text": "PASS: T6-winter: its style and script 1887 B gzipped (3997 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:12.215Z",
+      "ms": 87094,
+      "step": "html-T7-winter",
+      "text": "PASS: T7-winter chosen through the Style route (200; venues.style.transitionWinter = T7); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T7-winter, the script names T7-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T7-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:12.215Z",
+      "ms": 87094,
+      "step": "size-T7-winter",
+      "text": "PASS: T7-winter: its style and script 1703 B gzipped (3487 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:12.255Z",
+      "ms": 87134,
+      "step": "html-T8-winter",
+      "text": "PASS: T8-winter chosen through the Style route (200; venues.style.transitionWinter = T8); the page regenerated after 5 ms for the winter scene and carries exactly one transition: data-tx T8-winter, the script names T8-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T8-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:12.255Z",
+      "ms": 87134,
+      "step": "size-T8-winter",
+      "text": "PASS: T8-winter: its style and script 1676 B gzipped (3552 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:12.289Z",
+      "ms": 87168,
+      "step": "html-T9-winter",
+      "text": "PASS: T9-winter chosen through the Style route (200; venues.style.transitionWinter = T9); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T9-winter, the script names T9-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T9-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:12.289Z",
+      "ms": 87168,
+      "step": "size-T9-winter",
+      "text": "PASS: T9-winter: its style and script 1890 B gzipped (4021 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:12.326Z",
+      "ms": 87205,
+      "step": "html-T10-winter",
+      "text": "PASS: T10-winter chosen through the Style route (200; venues.style.transitionWinter = T10); the page regenerated after 4 ms for the winter scene and carries exactly one transition: data-tx T10-winter, the script names T10-winter, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T10-winter (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:12.326Z",
+      "ms": 87205,
+      "step": "size-T10-winter",
+      "text": "PASS: T10-winter: its style and script 2047 B gzipped (4444 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:12.362Z",
+      "ms": 87241,
+      "step": "unchanged-kebab-land-winter",
+      "text": "PASS: kebab-land winter (regenerated by a no-op Style save, 200): head script, tap script, the whole overlay (logo as a placeholder) and the public stylesheet byte for byte as the previous commit (1a38e65) served Kebab Land: identical; no transition code in its page: true"
+    },
+    {
+      "at": "2026-10-12T06:04:12.383Z",
+      "ms": 87262,
+      "step": "unchanged-drill-default-venue-winter",
+      "text": "PASS: drill-default-venue winter (regenerated by a no-op Style save, 200): head script, tap script and the public stylesheet byte for byte as the previous commit (1a38e65) served Kebab Land: identical; no transition code in its page: true"
+    },
+    {
+      "at": "2026-10-12T06:04:12.858Z",
+      "ms": 87737,
+      "step": "server",
+      "text": "spring server up after 387 ms (ROSES_NOW 2027-04-15T12:00:00-04:00)"
+    },
+    {
+      "at": "2026-10-12T06:04:13.002Z",
+      "ms": 87881,
+      "step": "html-T1-spring",
+      "text": "PASS: T1-spring chosen through the Style route (200; venues.style.transitionSpring = T1); the page regenerated after 7 ms for the spring scene and carries exactly one transition: data-tx T1-spring, the script names T1-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T1-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:13.002Z",
+      "ms": 87881,
+      "step": "size-T1-spring",
+      "text": "PASS: T1-spring: its style and script 1504 B gzipped (3174 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:13.042Z",
+      "ms": 87921,
+      "step": "html-T2-spring",
+      "text": "PASS: T2-spring chosen through the Style route (200; venues.style.transitionSpring = T2); the page regenerated after 5 ms for the spring scene and carries exactly one transition: data-tx T2-spring, the script names T2-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T2-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:13.042Z",
+      "ms": 87921,
+      "step": "size-T2-spring",
+      "text": "PASS: T2-spring: its style and script 1716 B gzipped (3694 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:13.079Z",
+      "ms": 87958,
+      "step": "html-T3-spring",
+      "text": "PASS: T3-spring chosen through the Style route (200; venues.style.transitionSpring = T3); the page regenerated after 6 ms for the spring scene and carries exactly one transition: data-tx T3-spring, the script names T3-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T3-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:13.079Z",
+      "ms": 87958,
+      "step": "size-T3-spring",
+      "text": "PASS: T3-spring: its style and script 1767 B gzipped (3679 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:16.320Z",
+      "ms": 91199,
+      "step": "smooth-T3-spring",
+      "text": "PASS: T3-spring, iPhone 13 viewport, CPU 4×, English tap: 44 frames from the tap to the overlay gone (758 ms), median interval 16.7 ms = 60 fps (≥ 50), worst gap 33 ms; 0 long tasks, the longest 0 ms (≤ 50); page errors 0"
+    },
+    {
+      "at": "2026-10-12T06:04:16.320Z",
+      "ms": 91199,
+      "step": "motion-T3-spring",
+      "text": "PASS: T3-spring: 70 animations on opacity, transform, rotate, scale (transform, opacity and the individual transform properties only: true); the last ends 742 ms after the tap and the overlay goes at 758 ms, when it has finished (nothing cut: true; the two clocks read -18 ms apart, so within one frame counts)"
+    },
+    {
+      "at": "2026-10-12T06:04:19.500Z",
+      "ms": 94379,
+      "step": "language-first-T3-spring",
+      "text": "PASS: T3-spring, Persian tap: at the first frame after the tap (36 ms) the page is already Persian (lang fa, dir rtl) and the transition has moved 0 ms of its time (≤ 34: nothing revealed in the other language)"
+    },
+    {
+      "at": "2026-10-12T06:04:24.939Z",
+      "ms": 99818,
+      "step": "timing-T3-spring",
+      "text": "PASS: T3-spring: the overlay gone 758 ms after the tap at CPU 4× and 699 / 698 ms unthrottled (≤ 900); a touch scroll started right after the tap moved the page from 81 ms (≤ 300; scrolled to 267 px during the transition); on another load a tap on the first item landed 26 ms after the language tap and opened its popup at 32 ms (≤ 300; open true)"
+    },
+    {
+      "at": "2026-10-12T06:04:25.661Z",
+      "ms": 100540,
+      "step": "reduced-T3-spring",
+      "text": "PASS: T3-spring with reduced motion: the 150 ms fade (an opacity between 0 and 1 seen: true; gone after 170 ms, 120–230), 1 animation on welcome (opacity), nothing of the concept built: true"
+    },
+    {
+      "at": "2026-10-12T06:04:53.911Z",
+      "ms": 128790,
+      "step": "webkit-plays-T3-spring",
+      "text": "PASS: WebKit, iPhone 13 device, English tap, 3 runs: T3-spring plays in each (the page names T3-spring / T3-spring / T3-spring), 70 / 70 / 70 animations on opacity, transform, scale, rotate (transform, opacity and the individual transform properties only: true); the last animation's end minus the overlay's going, median -11 ms (runs -1 / -12 / -11) (≤ 17: nothing cut); for information, unthrottled: median fps 59 / 59 / 59, worst gap 49 / 46 / 47 ms"
+    },
+    {
+      "at": "2026-10-12T06:04:53.911Z",
+      "ms": 128790,
+      "step": "webkit-timing-T3-spring",
+      "text": "PASS: WebKit, T3-spring, 3 runs each, judged on the median: the overlay gone median 728 ms (runs 728 / 730 / 714) after the tap (≤ 900; on the scroll loads median 714 ms (runs 714 / 730 / 711), on the tap loads median 714 ms (runs 729 / 714 / 714)); a mouse wheel right after the tap (mobile emulation off for those loads) moved the page from median 109 ms (runs 97 / 112 / 109) (≤ 300; scrolled during the transition in every run: true, to 260 / 260 / 260 px); a touch tap on the first item landed median 47 ms (runs 47 / 51 / 41) after the language tap and opened its popup at median 86 ms (runs 86 / 90 / 79) (≤ 300; open in every run: true)"
+    },
+    {
+      "at": "2026-10-12T06:04:53.911Z",
+      "ms": 128790,
+      "step": "webkit-reduced-T3-spring",
+      "text": "PASS: WebKit, T3-spring with reduced motion, 3 runs: the 150 ms fade gone median 161 ms (runs 165 / 155 / 161) (120–230); in every run an opacity between 0 and 1 seen (true / true / true), one animation on the overlay's opacity (1 on opacity / 1 on opacity / 1 on opacity), nothing of the concept built (true)"
+    },
+    {
+      "at": "2026-10-12T06:04:53.911Z",
+      "ms": 128790,
+      "step": "webkit-errors-T3-spring",
+      "text": "FAIL: WebKit, T3-spring: console and page errors on its 12 loads (3 each: play, scroll, tap, reduced motion): console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "at": "2026-10-12T06:04:53.973Z",
+      "ms": 128852,
+      "step": "html-T4-spring",
+      "text": "PASS: T4-spring chosen through the Style route (200; venues.style.transitionSpring = T4); the page regenerated after 6 ms for the spring scene and carries exactly one transition: data-tx T4-spring, the script names T4-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T4-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:53.973Z",
+      "ms": 128852,
+      "step": "size-T4-spring",
+      "text": "PASS: T4-spring: its style and script 1559 B gzipped (3314 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.014Z",
+      "ms": 128893,
+      "step": "html-T5-spring",
+      "text": "PASS: T5-spring chosen through the Style route (200; venues.style.transitionSpring = T5); the page regenerated after 5 ms for the spring scene and carries exactly one transition: data-tx T5-spring, the script names T5-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T5-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:54.015Z",
+      "ms": 128894,
+      "step": "size-T5-spring",
+      "text": "PASS: T5-spring: its style and script 1654 B gzipped (3527 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.054Z",
+      "ms": 128933,
+      "step": "html-T6-spring",
+      "text": "PASS: T6-spring chosen through the Style route (200; venues.style.transitionSpring = T6); the page regenerated after 8 ms for the spring scene and carries exactly one transition: data-tx T6-spring, the script names T6-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T6-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:54.054Z",
+      "ms": 128933,
+      "step": "size-T6-spring",
+      "text": "PASS: T6-spring: its style and script 1861 B gzipped (3954 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.086Z",
+      "ms": 128965,
+      "step": "html-T7-spring",
+      "text": "PASS: T7-spring chosen through the Style route (200; venues.style.transitionSpring = T7); the page regenerated after 5 ms for the spring scene and carries exactly one transition: data-tx T7-spring, the script names T7-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T7-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:54.086Z",
+      "ms": 128965,
+      "step": "size-T7-spring",
+      "text": "PASS: T7-spring: its style and script 1568 B gzipped (3262 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.116Z",
+      "ms": 128995,
+      "step": "html-T8-spring",
+      "text": "PASS: T8-spring chosen through the Style route (200; venues.style.transitionSpring = T8); the page regenerated after 4 ms for the spring scene and carries exactly one transition: data-tx T8-spring, the script names T8-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T8-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:54.116Z",
+      "ms": 128995,
+      "step": "size-T8-spring",
+      "text": "PASS: T8-spring: its style and script 1754 B gzipped (3715 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.149Z",
+      "ms": 129028,
+      "step": "html-T9-spring",
+      "text": "PASS: T9-spring chosen through the Style route (200; venues.style.transitionSpring = T9); the page regenerated after 5 ms for the spring scene and carries exactly one transition: data-tx T9-spring, the script names T9-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T9-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:54.149Z",
+      "ms": 129028,
+      "step": "size-T9-spring",
+      "text": "PASS: T9-spring: its style and script 1966 B gzipped (4207 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.179Z",
+      "ms": 129058,
+      "step": "html-T10-spring",
+      "text": "PASS: T10-spring chosen through the Style route (200; venues.style.transitionSpring = T10); the page regenerated after 4 ms for the spring scene and carries exactly one transition: data-tx T10-spring, the script names T10-spring, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T10-spring (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:54.179Z",
+      "ms": 129058,
+      "step": "size-T10-spring",
+      "text": "PASS: T10-spring: its style and script 2044 B gzipped (4256 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.657Z",
+      "ms": 129536,
+      "step": "server",
+      "text": "summer server up after 391 ms (ROSES_NOW 2027-07-15T12:00:00-04:00)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.789Z",
+      "ms": 129668,
+      "step": "html-T1-summer",
+      "text": "PASS: T1-summer chosen through the Style route (200; venues.style.transitionSummer = T1); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T1-summer, the script names T1-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T1-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:54.789Z",
+      "ms": 129668,
+      "step": "size-T1-summer",
+      "text": "PASS: T1-summer: its style and script 1640 B gzipped (3696 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.856Z",
+      "ms": 129735,
+      "step": "html-T2-summer",
+      "text": "PASS: T2-summer chosen through the Style route (200; venues.style.transitionSummer = T2); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T2-summer, the script names T2-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T2-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:54.856Z",
+      "ms": 129735,
+      "step": "size-T2-summer",
+      "text": "PASS: T2-summer: its style and script 1728 B gzipped (3899 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.896Z",
+      "ms": 129775,
+      "step": "html-T3-summer",
+      "text": "PASS: T3-summer chosen through the Style route (200; venues.style.transitionSummer = T3); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T3-summer, the script names T3-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T3-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:54.896Z",
+      "ms": 129775,
+      "step": "size-T3-summer",
+      "text": "PASS: T3-summer: its style and script 1850 B gzipped (4011 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.937Z",
+      "ms": 129816,
+      "step": "html-T4-summer",
+      "text": "PASS: T4-summer chosen through the Style route (200; venues.style.transitionSummer = T4); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T4-summer, the script names T4-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T4-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:54.937Z",
+      "ms": 129816,
+      "step": "size-T4-summer",
+      "text": "PASS: T4-summer: its style and script 1669 B gzipped (3734 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:54.980Z",
+      "ms": 129859,
+      "step": "html-T5-summer",
+      "text": "PASS: T5-summer chosen through the Style route (200; venues.style.transitionSummer = T5); the page regenerated after 8 ms for the summer scene and carries exactly one transition: data-tx T5-summer, the script names T5-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T5-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:54.980Z",
+      "ms": 129859,
+      "step": "size-T5-summer",
+      "text": "PASS: T5-summer: its style and script 1720 B gzipped (3763 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:55.012Z",
+      "ms": 129891,
+      "step": "html-T6-summer",
+      "text": "PASS: T6-summer chosen through the Style route (200; venues.style.transitionSummer = T6); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T6-summer, the script names T6-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T6-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:04:55.012Z",
+      "ms": 129891,
+      "step": "size-T6-summer",
+      "text": "PASS: T6-summer: its style and script 1925 B gzipped (4308 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:04:58.294Z",
+      "ms": 133173,
+      "step": "smooth-T6-summer",
+      "text": "PASS: T6-summer, iPhone 13 viewport, CPU 4×, English tap: 49 frames from the tap to the overlay gone (811 ms), median interval 16.7 ms = 60 fps (≥ 50), worst gap 17 ms; 0 long tasks, the longest 0 ms (≤ 50); page errors 0"
+    },
+    {
+      "at": "2026-10-12T06:04:58.294Z",
+      "ms": 133173,
+      "step": "motion-T6-summer",
+      "text": "PASS: T6-summer: 33 animations on opacity, transform (transform, opacity and the individual transform properties only: true); the last ends 801 ms after the tap and the overlay goes at 811 ms, when it has finished (nothing cut: true; the two clocks read -6 ms apart, so within one frame counts)"
+    },
+    {
+      "at": "2026-10-12T06:05:01.561Z",
+      "ms": 136440,
+      "step": "language-first-T6-summer",
+      "text": "PASS: T6-summer, Persian tap: at the first frame after the tap (27 ms) the page is already Persian (lang fa, dir rtl) and the transition has moved 0 ms of its time (≤ 34: nothing revealed in the other language)"
+    },
+    {
+      "at": "2026-10-12T06:05:07.161Z",
+      "ms": 142040,
+      "step": "timing-T6-summer",
+      "text": "PASS: T6-summer: the overlay gone 811 ms after the tap at CPU 4× and 766 / 800 ms unthrottled (≤ 900); a touch scroll started right after the tap moved the page from 83 ms (≤ 300; scrolled to 267 px during the transition); on another load a tap on the first item landed 23 ms after the language tap and opened its popup at 26 ms (≤ 300; open true)"
+    },
+    {
+      "at": "2026-10-12T06:05:07.877Z",
+      "ms": 142756,
+      "step": "reduced-T6-summer",
+      "text": "PASS: T6-summer with reduced motion: the 150 ms fade (an opacity between 0 and 1 seen: true; gone after 184 ms, 120–230), 1 animation on welcome (opacity), nothing of the concept built: true"
+    },
+    {
+      "at": "2026-10-12T06:05:36.608Z",
+      "ms": 171487,
+      "step": "webkit-plays-T6-summer",
+      "text": "PASS: WebKit, iPhone 13 device, English tap, 3 runs: T6-summer plays in each (the page names T6-summer / T6-summer / T6-summer), 33 / 33 / 33 animations on opacity, transform (transform, opacity and the individual transform properties only: true); the last animation's end minus the overlay's going, median -7 ms (runs -7 / -4 / -7) (≤ 17: nothing cut); for information, unthrottled: median fps 59 / 59 / 59, worst gap 18 / 18 / 18 ms"
+    },
+    {
+      "at": "2026-10-12T06:05:36.608Z",
+      "ms": 171487,
+      "step": "webkit-timing-T6-summer",
+      "text": "PASS: WebKit, T6-summer, 3 runs each, judged on the median: the overlay gone median 814 ms (runs 815 / 814 / 796) after the tap (≤ 900; on the scroll loads median 782 ms (runs 780 / 782 / 798), on the tap loads median 799 ms (runs 814 / 799 / 797)); a mouse wheel right after the tap (mobile emulation off for those loads) moved the page from median 63 ms (runs 63 / 64 / 63) (≤ 300; scrolled during the transition in every run: true, to 260 / 260 / 260 px); a touch tap on the first item landed median 34 ms (runs 34 / 32 / 34) after the language tap and opened its popup at median 60 ms (runs 61 / 59 / 60) (≤ 300; open in every run: true)"
+    },
+    {
+      "at": "2026-10-12T06:05:36.608Z",
+      "ms": 171487,
+      "step": "webkit-reduced-T6-summer",
+      "text": "PASS: WebKit, T6-summer with reduced motion, 3 runs: the 150 ms fade gone median 164 ms (runs 155 / 168 / 164) (120–230); in every run an opacity between 0 and 1 seen (true / true / true), one animation on the overlay's opacity (1 on opacity / 1 on opacity / 1 on opacity), nothing of the concept built (true)"
+    },
+    {
+      "at": "2026-10-12T06:05:36.608Z",
+      "ms": 171487,
+      "step": "webkit-errors-T6-summer",
+      "text": "FAIL: WebKit, T6-summer: console and page errors on its 12 loads (3 each: play, scroll, tap, reduced motion): console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found) | console error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "at": "2026-10-12T06:05:36.683Z",
+      "ms": 171562,
+      "step": "html-T7-summer",
+      "text": "PASS: T7-summer chosen through the Style route (200; venues.style.transitionSummer = T7); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T7-summer, the script names T7-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T7-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:36.683Z",
+      "ms": 171562,
+      "step": "size-T7-summer",
+      "text": "PASS: T7-summer: its style and script 1558 B gzipped (3295 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:05:36.722Z",
+      "ms": 171601,
+      "step": "html-T8-summer",
+      "text": "PASS: T8-summer chosen through the Style route (200; venues.style.transitionSummer = T8); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T8-summer, the script names T8-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T8-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:36.723Z",
+      "ms": 171602,
+      "step": "size-T8-summer",
+      "text": "PASS: T8-summer: its style and script 1746 B gzipped (3701 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:05:36.762Z",
+      "ms": 171641,
+      "step": "html-T9-summer",
+      "text": "PASS: T9-summer chosen through the Style route (200; venues.style.transitionSummer = T9); the page regenerated after 6 ms for the summer scene and carries exactly one transition: data-tx T9-summer, the script names T9-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T9-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:36.762Z",
+      "ms": 171641,
+      "step": "size-T9-summer",
+      "text": "PASS: T9-summer: its style and script 1866 B gzipped (4130 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:05:36.807Z",
+      "ms": 171686,
+      "step": "html-T10-summer",
+      "text": "PASS: T10-summer chosen through the Style route (200; venues.style.transitionSummer = T10); the page regenerated after 5 ms for the summer scene and carries exactly one transition: data-tx T10-summer, the script names T10-summer, 1 rosesTx definition; its style and its script equal what the admin's scene API renders for T10-summer (true / true); the code of another concept in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:36.807Z",
+      "ms": 171686,
+      "step": "size-T10-summer",
+      "text": "PASS: T10-summer: its style and script 1969 B gzipped (4202 B raw; ≤ 3072)"
+    },
+    {
+      "at": "2026-10-12T06:05:36.807Z",
+      "ms": 171686,
+      "step": "persian-tap-senso",
+      "text": "PASS: Senso, iPhone 13 viewport, CPU 4×, the فارسی tap of the version chosen for each season (fast mode) (4 of 4 taps measured): no long task over 50 ms from the tap to the overlay gone; over 50 ms: 0; the longest task per tap: T6-fall 0, T4-winter 0, T3-spring 0, T6-summer 0 ms"
+    },
+    {
+      "at": "2026-10-12T06:05:41.718Z",
+      "ms": 176597,
+      "step": "day-one-fall",
+      "text": "PASS: Senso fall, day one: with the single choice of 2026-10-10 (restore 200: venues.style.transition = T3, no per-season key) the page ships T3-fall; with T3 saved for each season (200: transitionFall T3, transitionWinter T3, transitionSpring T3, transitionSummer T3) it is byte for byte the same page: true (238328 / 238328 B)"
+    },
+    {
+      "at": "2026-10-12T06:05:41.719Z",
+      "ms": 176598,
+      "step": "day-one-winter",
+      "text": "PASS: Senso winter, day one: with the single choice of 2026-10-10 (restore 200: venues.style.transition = T3, no per-season key) the page ships T3-winter; with T3 saved for each season (200: transitionFall T3, transitionWinter T3, transitionSpring T3, transitionSummer T3) it is byte for byte the same page: true (224553 / 224553 B)"
+    },
+    {
+      "at": "2026-10-12T06:05:41.719Z",
+      "ms": 176598,
+      "step": "day-one-spring",
+      "text": "PASS: Senso spring, day one: with the single choice of 2026-10-10 (restore 200: venues.style.transition = T3, no per-season key) the page ships T3-spring; with T3 saved for each season (200: transitionFall T3, transitionWinter T3, transitionSpring T3, transitionSummer T3) it is byte for byte the same page: true (245218 / 245218 B)"
+    },
+    {
+      "at": "2026-10-12T06:05:41.719Z",
+      "ms": 176598,
+      "step": "day-one-summer",
+      "text": "PASS: Senso summer, day one: with the single choice of 2026-10-10 (restore 200: venues.style.transition = T3, no per-season key) the page ships T3-summer; with T3 saved for each season (200: transitionFall T3, transitionWinter T3, transitionSpring T3, transitionSummer T3) it is byte for byte the same page: true (237577 / 237577 B)"
+    },
+    {
+      "at": "2026-10-12T06:05:42.388Z",
+      "ms": 177267,
+      "step": "season-choice-feb28",
+      "text": "PASS: Feb 28 23:30 EST (server clock 2027-02-28T23:30:00-05:00), choices fall T2, winter T5, spring T8, summer T3: the page renders winter (want winter) and ships exactly T5-winter (named T5-winter, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T5-winter: true / true); another season's choice in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:43.002Z",
+      "ms": 177881,
+      "step": "season-choice-mar1",
+      "text": "PASS: Mar 1 00:30 EST (server clock 2027-03-01T00:30:00-05:00), choices fall T2, winter T5, spring T8, summer T3: the page renders spring (want spring) and ships exactly T8-spring (named T8-spring, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T8-spring: true / true); another season's choice in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:43.623Z",
+      "ms": 178502,
+      "step": "season-choice-may31",
+      "text": "PASS: May 31 23:30 EDT (server clock 2027-05-31T23:30:00-04:00), choices fall T2, winter T5, spring T8, summer T3: the page renders spring (want spring) and ships exactly T8-spring (named T8-spring, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T8-spring: true / true); another season's choice in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:44.185Z",
+      "ms": 179064,
+      "step": "season-choice-jun1",
+      "text": "PASS: Jun 1 00:30 EDT (server clock 2027-06-01T00:30:00-04:00), choices fall T2, winter T5, spring T8, summer T3: the page renders summer (want summer) and ships exactly T3-summer (named T3-summer, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T3-summer: true / true); another season's choice in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:44.753Z",
+      "ms": 179632,
+      "step": "season-choice-aug31",
+      "text": "PASS: Aug 31 23:30 EDT (server clock 2026-08-31T23:30:00-04:00), choices fall T2, winter T5, spring T8, summer T3: the page renders summer (want summer) and ships exactly T3-summer (named T3-summer, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T3-summer: true / true); another season's choice in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:45.329Z",
+      "ms": 180208,
+      "step": "season-choice-sep1",
+      "text": "PASS: Sep 1 00:30 EDT (server clock 2026-09-01T00:30:00-04:00), choices fall T2, winter T5, spring T8, summer T3: the page renders fall (want fall) and ships exactly T2-fall (named T2-fall, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T2-fall: true / true); another season's choice in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:45.996Z",
+      "ms": 180875,
+      "step": "season-choice-nov30",
+      "text": "PASS: Nov 30 23:30 EST (server clock 2026-11-30T23:30:00-05:00), choices fall T2, winter T5, spring T8, summer T3: the page renders fall (want fall) and ships exactly T2-fall (named T2-fall, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T2-fall: true / true); another season's choice in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:46.635Z",
+      "ms": 181514,
+      "step": "season-choice-dec1",
+      "text": "PASS: Dec 1 00:30 EST (server clock 2026-12-01T00:30:00-05:00), choices fall T2, winter T5, spring T8, summer T3: the page renders winter (want winter) and ships exactly T5-winter (named T5-winter, 1 rosesTx definition; its style and script equal what the admin's scene API renders for T5-winter: true / true); another season's choice in the page: none"
+    },
+    {
+      "at": "2026-10-12T06:05:58.223Z",
+      "ms": 193102,
+      "step": "admin-play-laptop",
+      "text": "PASS: laptop, Style tab → Welcome → Transition, a row per season: Fall row T6 chosen → saved (venues.style.transitionFall T6) and played in the preview (T6-fall), the bar's screen then menu; the Winter row's Play → the preview switched to winter (the bar: winter) and played that season's choice (T5-winter, want T5-winter); Play again → T5-winter; Spring row T9 chosen → saved (transitionSpring T9) and played as T9-spring; the bar's Summer → the frame carries summer's choice (T3-summer, want T3-summer); page errors 0"
+    },
+    {
+      "at": "2026-10-12T06:05:58.223Z",
+      "ms": 193102,
+      "step": "admin-play-like-public-laptop",
+      "text": "PASS: laptop, each play as on the public page: Fall chosen: T6-fall: tapped at 527 ms after the click, after the card had been settled for 501 ms (≥ 480; settled at the tap: true), the menu 799 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 18 ms worst; Winter's Play: T5-winter: tapped at 1783 ms after the click, after the card had been settled for 519 ms (≥ 480; settled at the tap: true), the menu 730 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 18 ms worst; Play again: T5-winter: tapped at 1790 ms after the click, after the card had been settled for 520 ms (≥ 480; settled at the tap: true), the menu 715 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 18 ms worst; Spring chosen: T9-spring: tapped at 1779 ms after the click, after the card had been settled for 520 ms (≥ 480; settled at the tap: true), the menu 831 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 17 ms worst"
+    },
+    {
+      "at": "2026-10-12T06:06:03.833Z",
+      "ms": 198712,
+      "step": "admin-play-phone",
+      "text": "PASS: iPhone 13 viewport, the Style tab's bottom sheet → Welcome → the Summer row: T7 chosen → the preview above the sheet switched to summer and played T7-summer; the row's Play tapped → played again (T7-summer); page errors 0"
+    },
+    {
+      "at": "2026-10-12T06:06:03.833Z",
+      "ms": 198712,
+      "step": "admin-play-like-public-phone",
+      "text": "PASS: iPhone 13 viewport, each play as on the public page: chosen: T7-summer: tapped at 568 ms after the click, after the card had been settled for 519 ms (≥ 480; settled at the tap: true), the menu 798 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 18 ms worst; Play: T7-summer: tapped at 1849 ms after the click, after the card had been settled for 517 ms (≥ 480; settled at the tap: true), the menu 799 ms after the tap (≤ 900); the frame on screen throughout (no swap), the preview's outline while playing: none; frames 17 ms median, 18 ms worst"
+    },
+    {
+      "at": "2026-10-12T06:06:03.957Z",
+      "ms": 198836,
+      "step": "restored",
+      "text": "PASS: Senso's style put back as it was (restore 200): transition T3, per season T6 / T4 / (unset) / T6, colours as before: true"
+    }
+  ]
+}

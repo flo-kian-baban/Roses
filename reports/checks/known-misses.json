@@ -1,5 +1,5 @@
 {
-  "about": "Known misses of npm run check (the PM, 2026-10-09). A listed check is still measured and printed, marked KNOWN MISS in report.md; the run fails only on a failure that is not listed here; a listed check that passes is reported as NOW PASSING, and its entry stays until its clearing condition is met. Entries are added or removed only on the PM's or Kian's word. This file decides PASS, so the suite refuses to start while it has uncommitted changes. Fields: id; title; step (the suite step's id); checks (the drill's check ids it covers); target; cause; clears (the condition that removes the entry); listed (when and by whom). Since 2026-10-12 (the PM): every entry records a baseline per listed check, { over: samples over the target, of: samples, worst }, from the run it names; a run in which a listed check measures worse (more over the target, as a rate when the number of samples differs; or a worse worst value beyond the entry's tolerance) fails with KNOWN MISS WORSENED. A baseline is lowered only when a fix improves it.",
+  "about": "Known misses of npm run check (the PM, 2026-10-09). A listed check is still measured and printed, marked KNOWN MISS in report.md; the run fails only on a failure that is not listed here; a listed check that passes is reported as NOW PASSING, and its entry stays until its clearing condition is met. Entries are added or removed only on the PM's or Kian's word. This file decides PASS, so the suite refuses to start while it has uncommitted changes. Fields: id; title; step (the suite step's id); checks (the drill's check ids it covers); target; cause; clears (the condition that removes the entry); listed (when and by whom). Since 2026-10-12 (the PM): every entry records a baseline per listed check, { over: samples over the target, of: samples, worst }, from the run it names; a run in which a listed check measures worse (more over the target, as a rate when the number of samples differs; or a worse worst value beyond the entry's tolerance) fails with KNOWN MISS WORSENED. A baseline is lowered only when a fix improves it. Since 2026-10-12 (the PM's suite fix): every network-dependent timing is measured 3 times and judged on the median; a baseline that records a median is compared on its median (with the tolerance), not on the count over the target or the worst value.",
   "misses": [
     {
       "id": "after-tap-photos-senso",
@@ -9,8 +9,8 @@
         "after-tap-senso-list-photos",
         "after-tap-senso-grid-photos"
       ],
-      "target": "the first section's photos in view loaded within 2500 ms of the language tap, under Slow 4G as DevTools applies it and CPU 4×, on the worse of two repeats (Senso with its first section as a List and as a Grid)",
-      "cause": "Senso's photos are linked at full size from the client's own hosts: the first section's 6 photos weigh 237–367 KB each, 1.70 MB in all (Kebab Land's 2 weigh 72–146 KB). Over Slow 4G the 4 in view loaded 4.7–8.3 s after the tap in the five runs of 2026-10-09 (16-28-47Z to 20-55-53Z); the menu itself was visible within 228–260 ms in every one, and Kebab Land's photos within 262–1062 ms.",
+      "target": "on the performance fixture (scripts/fixtures/perf-fixture.json, 2026-10-12; since the PM's suite fix of 2026-10-12, before that on the live data copy), the first section's photos in view loaded within 2500 ms of the language tap, under Slow 4G as DevTools applies it and CPU 4×, on the median of three repeats (before 2026-10-12: the worse of two) (Senso with its first section as a List and as a Grid)",
+      "cause": "Senso's photos are linked at full size from the client's own hosts: the first section's 6 photos weigh 237–367 KB each, 1.70 MB in all (Kebab Land's 2 weigh 72–146 KB). Over Slow 4G the 4 in view loaded 4.7–8.3 s after the tap in the five runs of 2026-10-09 (16-28-47Z to 20-55-53Z); the menu itself was visible within 228–260 ms in every one, and Kebab Land's photos within 262–1062 ms. Since 2026-10-12 (the PM's suite fix) the check runs on the performance fixture, so the content is frozen and a change here is the code's; Senso on the live data copy is printed as \"content cost\", information only (on 2026-10-12 the live Fall Menu, first in fall with Kian's full-size uploads, measured 13174 / 6146 ms against this baseline's 8043).",
       "clears": "when resized copies of the photos are served from our own storage (the go-live list; downloading the photos needs the owner's written permission first)",
       "listed": "2026-10-09, the PM",
       "baseline": {
@@ -31,7 +31,7 @@
             "unit": "ms"
           }
         },
-        "set": "2026-10-12, the PM: as measured in that run (each check is the worse of 2 repeats over Slow 4G). Tolerance 10 % on the worst value, a decision taken by the build agent for the PM to confirm: the same measurement on unchanged code ranged 7975–8409 ms (List) and 4692–5195 ms (Grid) over the 13 committed runs (2026-10-09 to 2026-10-12), so a strict comparison would fail about half the runs on noise of a few milliseconds"
+        "set": "2026-10-12, the PM: as measured in that run (each check is the worse of 2 repeats over Slow 4G). Tolerance 10 % on the worst value, a decision taken by the build agent for the PM to confirm: the same measurement on unchanged code ranged 7975–8409 ms (List) and 4692–5195 ms (Grid) over the 13 committed runs (2026-10-09 to 2026-10-12), so a strict comparison would fail about half the runs on noise of a few milliseconds The PM's suite fix (2026-10-12): the check now runs on the performance fixture, three repeats judged on the median; this baseline (live data, the worse of two) stands until the first suite run on the fixture, from which it is re-baselined once (the PM: \"the ratchet applies there\")."
       }
     },
     {
@@ -41,7 +41,7 @@
       "checks": [
         "lighthouse-senso-lcp"
       ],
-      "target": "Lighthouse mobile run on /senso on the performance fixture (scripts/fixtures/perf-fixture.json, 2026-10-12), LCP ≤ 2500 ms on each of the three runs (the PM's build decision: Largest Contentful Paint ≤ 2.5 s in a Lighthouse mobile run)",
+      "target": "Lighthouse mobile run on /senso on the performance fixture (scripts/fixtures/perf-fixture.json, 2026-10-12), LCP ≤ 2500 ms on the median of the three runs (since the PM's suite fix of 2026-10-12; before, on each run) (the PM's build decision: Largest Contentful Paint ≤ 2.5 s in a Lighthouse mobile run)",
       "cause": "Since 2026-10-12 Kian has put uploaded photos on Senso's items (33 in the performance fixture of 2026-10-12, 5.45 MB, 1254 × 1254 px JPEG; the admin shrinks only above 1400 px or 700 KB; shown at 96 px in a row and 173 px in a grid card). They are served by the same server and load behind the welcome screen; Lighthouse's simulation counts them on the way to the LCP element, which is still the welcome logo (loaded in about 1.2 s). Not the code: feeb1cc gave the same on the same data (by hand, 2026-10-12), the build before the seasonal code and the seasonal branch gave the same on the data of 2026-10-12 morning (5191 / 8564 / 8562 and 8573 / 8561 / 8564 ms), and run 2026-10-12T03-57-29Z, before the uploads, measured 1503 ms. Since 2026-10-12 (the PM) this check runs on the performance fixture, so the content is frozen and a change here is the code's; Senso on the live data copy is printed as \"content cost\", information only. Kian: no change to photo quality for now.",
       "clears": "when resized photos are served (not scheduled)",
       "listed": "2026-10-12, the PM; re-baselined on the performance fixture the same day (the PM: once; again only when Kian decides to refresh the fixture)",
@@ -55,10 +55,11 @@
             "over": 3,
             "of": 3,
             "worst": 8565,
-            "unit": "ms"
+            "unit": "ms",
+            "median": 8563
           }
         },
-        "set": "2026-10-12, the PM: re-baselined once on the performance fixture 2026-10-12, from run 2026-10-12T17-36-33Z (the fast suite on 1d84bed, the first run on the fixture): LCP 8563 / 8565 / 8563 ms, worst 8565 ms, tolerance 10 % (up to 9422 ms). The live-data baseline it replaces: run 2026-10-12T07-54-45Z, 3 of 3 over, worst 7213 ms (22 uploaded photos). It changes again only when Kian decides to refresh the fixture."
+        "set": "2026-10-12, the PM: re-baselined once on the performance fixture 2026-10-12, from run 2026-10-12T17-36-33Z (the fast suite on 1d84bed, the first run on the fixture): LCP 8563 / 8565 / 8563 ms, worst 8565 ms, tolerance 10 % (up to 9422 ms). The live-data baseline it replaces: run 2026-10-12T07-54-45Z, 3 of 3 over, worst 7213 ms (22 uploaded photos). It changes again only when Kian decides to refresh the fixture. Median added 2026-10-12 (the PM's suite fix: judged on the median of 3): 8563 ms, the median of the same run's 8563 / 8565 / 8563 ms (reports/checks/2026-10-12T17-36-33Z/perf/senso/lighthouse-summary.json); tolerance 10 %: up to 9419 ms."
       }
     },
     {

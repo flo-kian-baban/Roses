@@ -8,11 +8,16 @@
 // section's heading and first row in view (the menu visible), the first row's photo(s) complete (the eager ones), the first
 // section's photos in view complete (decoded), and every photo of the first section complete; the same moments from navigation
 // start, for context, with first paint and the resources down at the tap. Runs: senso with its first section as a List, senso with its first section
-// as a Grid (the first section as served: "Senso Signature", or since 2026-10-12 the Seasonal section in its season, e.g. the Fall Menu), kebab-land as it is; two repeats each. The drill puts the section into the layout a run assumes (through the section API,
+// as a Grid (the first section as served: "Senso Signature", or since 2026-10-12 the Seasonal section in its season, e.g. the Fall Menu), kebab-land as it is; three repeats each,
+// judged on the median (the PM, 2026-10-12: every network-dependent timing is measured 3 times and judged on the median; all three are
+// printed, a repeat over twice the median is flagged as an outlier and still counted; what is not a time, the page settled before the tap
+// and no page error, must hold in all three). Where it runs (the PM, the same day): the suite runs it on the performance fixture (frozen
+// content, its own server and database), where the known-miss ratchet applies, and on the live data copy as "content cost", information
+// only. The drill puts the section into the layout a run assumes (through the section API,
 // as the owner) and restores the original at the end. The eager rule is checked on the served HTML (the first row's photos only:
 // one in a List, the two cards of a Grid's first row; every other photo lazy). Photo sizes: a HEAD request per photo of the first
 // section (Content-Length, Content-Type) and the natural dimensions the page decoded against the rendered ones.
-// Target ≤ 2500 ms from the tap for the menu and for the photos in view, on the worse of the two repeats; a miss is reported as a
+// Target ≤ 2500 ms from the tap for the menu and for the photos in view, on the median of the three repeats; a miss is reported as a
 // miss and fails the step (the PM: never change the design to pass). Two checks per run (the PM, 2026-10-09, for the suite's known
 // misses): after-tap-<run>-menu (the menu visible, the page settled, no page error) and after-tap-<run>-photos (the photos in view),
 // with <run> senso-list, senso-grid or kebab-land; reports/checks/known-misses.json names the ones known to miss.
@@ -29,7 +34,9 @@ const out = path.resolve(args.out || 'reports/after-tap');
 await fs.mkdir(out, { recursive: true });
 const pin = process.env.DRILL_ADMIN_PIN;
 if (!pin) { console.error('DRILL_ADMIN_PIN missing'); process.exit(2); }
-const TARGET = 2500, REPEATS = 2;
+const TARGET = 2500, REPEATS = 3;
+// the median rule (the PM, 2026-10-12): a repeat that never reached the moment within the drill's limit counts as slower than any time
+const median = (xs) => { const s = xs.map((x) => (x == null ? Infinity : x)).sort((a, b) => a - b); return s[Math.floor(s.length / 2)]; };
 // Lighthouse's Slow 4G as DevTools applies it (lighthouse-core/config/constants: requestLatencyMs 150 × 3.75, download 1.6 Mbps × 0.9, upload 750 Kbps × 0.9), CPU 4×.
 const THROTTLE = { latencyMs: 562.5, downloadBytesPerS: Math.round(1.6 * 1024 * 0.9 * 1024 / 8), uploadBytesPerS: Math.round(750 * 0.9 * 1024 / 8), cpu: 4 };
 const transcript = []; const results = []; const measures = [];
@@ -128,15 +135,18 @@ for (const run of RUNS) {
   const repeats = [];
   for (let n = 1; n <= REPEATS; n++) { const r = await runOnce(run.venue); repeats.push(r); log(run.label, `repeat ${n}: first paint ${r.firstPaintMs} ms, DOMContentLoaded ${r.domContentLoadedMs} ms, the tap at ${r.tapAtMs} ms with ${r.imageResourcesAtTap} image(s) of ${r.resourcesAtTap} resources down, settled ${r.settled}; after the tap: menu visible ${r.menuVisibleMs} ms, the ${r.eagerPhotos} eager photo(s) ${r.eagerPhotosMs} ms, the ${r.photosInView} in view ${r.photosInViewMs} ms, all ${r.photosAll} ${r.photosAllMs} ms; page errors ${r.errors.length}`); }
   const worst = (k) => repeats.reduce((m, r) => (r[k] == null ? Infinity : Math.max(m, r[k])), 0);
-  const menuOk = repeats.every((r) => r.settled && r.errors.length === 0) && worst('menuVisibleMs') <= TARGET, photosOk = worst('photosInViewMs') <= TARGET, ok = menuOk && photosOk;
-  const fmt = (k) => repeats.map((r) => (r[k] == null ? 'not within 25 s' : `${r[k]} ms`)).join(' / ');
+  const med = (k) => median(repeats.map((r) => r[k]));
+  const menuOk = repeats.every((r) => r.settled && r.errors.length === 0) && med('menuVisibleMs') <= TARGET, photosOk = med('photosInViewMs') <= TARGET, ok = menuOk && photosOk;
+  // all three values, the median, and any repeat over twice the median flagged as an outlier (still counted)
+  const fmt = (k) => { const m = med(k); return `${repeats.map((r) => (r[k] == null ? 'not within 25 s' : `${r[k]} ms${Number.isFinite(m) && m > 0 && r[k] > 2 * m ? ' (outlier: over 2× the median)' : ''}`)).join(' / ')} (median ${Number.isFinite(m) ? `${m} ms` : 'not reached'})`; };
+  const metricOf = (k) => ({ over: repeats.filter((r) => r[k] == null || r[k] > TARGET).length, of: repeats.length, worst: Number.isFinite(worst(k)) ? worst(k) : null, median: Number.isFinite(med(k)) ? med(k) : null, judged: 'median', unit: 'ms' });
   const abs = (k) => repeats.map((r) => (r[k] == null || r.tapAtMs == null ? '—' : s1(r.tapAtMs + r[k]))).join(' / ');
   const inView = repeats[0].photosInView, total = repeats[0].photosAll;
   const text = `${run.label}, served as a ${served.layout} with ${served.imgs.length} photos (${served.imgs.filter((i) => i.loading === 'eager').length} eager, ${served.eagerOnPage} eager on the whole page): menu visible ${fmt('menuVisibleMs')} after the tap; the ${repeats[0].eagerPhotos} eager photo(s) of the first row loaded ${fmt('eagerPhotosMs')} after the tap; the ${inView} photo(s) in view loaded ${fmt('photosInViewMs')} after the tap (${abs('photosInViewMs')} after navigation); all ${total} first-section photos ${fmt('photosAllMs')} after the tap (${abs('photosAllMs')} after navigation); the tap at ${repeats.map((r) => s1(r.tapAtMs)).join(' / ')} after navigation (first paint ${repeats.map((r) => s1(r.firstPaintMs)).join(' / ')}, ${repeats.map((r) => r.imageResourcesAtTap).join(' / ')} image(s) already down at the tap)`;
   log(run.label, text);
-  check(`after-tap-${run.key}-menu`, menuOk, `${menuOk ? 'within' : 'MISSES'} the ${TARGET} ms target: ${run.label}, the menu visible ${fmt('menuVisibleMs')} after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap ${repeats.map((r) => r.settled).join(' / ')}, page errors ${repeats.map((r) => r.errors.length).join(' / ')}`);
-  check(`after-tap-${run.key}-photos`, photosOk, `${photosOk ? 'within' : 'MISSES'} the ${TARGET} ms target: ${run.label}, the ${inView} photo(s) in view loaded ${fmt('photosInViewMs')} after the tap; the first row's ${repeats[0].eagerPhotos} eager photo(s) ${fmt('eagerPhotosMs')}, all ${total} first-section photos ${fmt('photosAllMs')}; served as a ${served.layout} with ${served.imgs.length} photos (${served.imgs.filter((i) => i.loading === 'eager').length} eager)`, { over: repeats.filter((r) => r.photosInViewMs == null || r.photosInViewMs > TARGET).length, of: repeats.length, worst: Number.isFinite(worst('photosInViewMs')) ? worst('photosInViewMs') : null, unit: 'ms' });
-  measure(`${run.label}: menu visible ${fmt('menuVisibleMs')}, first-row photo(s) ${fmt('eagerPhotosMs')}, the ${inView} photos in view ${fmt('photosInViewMs')}, all ${total} ${fmt('photosAllMs')} after the tap (target ≤ ${TARGET} ms for the menu and the photos in view)${ok ? '' : ' — MISS'}`);
+  check(`after-tap-${run.key}-menu`, menuOk, `${menuOk ? 'within' : 'MISSES'} the ${TARGET} ms target on the median of ${REPEATS}: ${run.label}, the menu visible ${fmt('menuVisibleMs')} after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap ${repeats.map((r) => r.settled).join(' / ')}, page errors ${repeats.map((r) => r.errors.length).join(' / ')} (both must hold in every repeat)`, metricOf('menuVisibleMs'));
+  check(`after-tap-${run.key}-photos`, photosOk, `${photosOk ? 'within' : 'MISSES'} the ${TARGET} ms target on the median of ${REPEATS}: ${run.label}, the ${inView} photo(s) in view loaded ${fmt('photosInViewMs')} after the tap; the first row's ${repeats[0].eagerPhotos} eager photo(s) ${fmt('eagerPhotosMs')}, all ${total} first-section photos ${fmt('photosAllMs')}; served as a ${served.layout} with ${served.imgs.length} photos (${served.imgs.filter((i) => i.loading === 'eager').length} eager)`, metricOf('photosInViewMs'));
+  measure(`${run.label}: menu visible ${fmt('menuVisibleMs')}, first-row photo(s) ${fmt('eagerPhotosMs')}, the ${inView} photos in view ${fmt('photosInViewMs')}, all ${total} ${fmt('photosAllMs')} after the tap (target ≤ ${TARGET} ms on the median of ${REPEATS} for the menu and the photos in view)${ok ? '' : ' — MISS'}`);
   all.push({ ...run, served, repeats, ok });
 }
 // the eager rule on the served HTML: the first row's photos only
@@ -169,7 +179,7 @@ for (const venue of ['senso', 'kebab-land']) {
 
 await browser.close(); await db.end();
 const pass = results.every((r) => r.ok);
-await fs.writeFile(path.join(out, 'after-tap.json'), JSON.stringify({ base, at: new Date().toISOString(), throttle: THROTTLE, targetMs: TARGET, pass, results, measures, runs: all, sizes, transcript }, null, 2));
-await fs.writeFile(path.join(out, 'after-tap.txt'), [`After-tap drill ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length} checks)`, `Throttling: Slow 4G as DevTools applies it (latency ${THROTTLE.latencyMs} ms, ${THROTTLE.downloadBytesPerS} B/s down, ${THROTTLE.uploadBytesPerS} B/s up), CPU ${THROTTLE.cpu}×; target ${TARGET} ms from the tap`, '', 'Measurements:', ...measures.map((m) => `- ${m}`), '', ...results.map((r) => `${r.ok ? 'PASS' : 'FAIL'} ${r.step}: ${r.text}`), '', 'Photos of the first sections:', ...sizes.map((s) => `- ${s.venue}: ${s.src} → ${s.status} ${s.bytes ?? '?'} bytes ${s.type ?? ''} natural ${s.natural ?? '?'} rendered ${s.rendered ?? '?'}`), '', 'Transcript:', ...transcript.map((l) => `${l.at} [${l.step}] ${l.text}`)].join('\n'));
+await fs.writeFile(path.join(out, 'after-tap.json'), JSON.stringify({ base, at: new Date().toISOString(), throttle: THROTTLE, targetMs: TARGET, repeats: REPEATS, judged: 'median', pass, results, measures, runs: all, sizes, transcript }, null, 2));
+await fs.writeFile(path.join(out, 'after-tap.txt'), [`After-tap drill ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length} checks)`, `Throttling: Slow 4G as DevTools applies it (latency ${THROTTLE.latencyMs} ms, ${THROTTLE.downloadBytesPerS} B/s down, ${THROTTLE.uploadBytesPerS} B/s up), CPU ${THROTTLE.cpu}×; target ${TARGET} ms from the tap, on the median of ${REPEATS} repeats`, '', 'Measurements:', ...measures.map((m) => `- ${m}`), '', ...results.map((r) => `${r.ok ? 'PASS' : 'FAIL'} ${r.step}: ${r.text}`), '', 'Photos of the first sections:', ...sizes.map((s) => `- ${s.venue}: ${s.src} → ${s.status} ${s.bytes ?? '?'} bytes ${s.type ?? ''} natural ${s.natural ?? '?'} rendered ${s.rendered ?? '?'}`), '', 'Transcript:', ...transcript.map((l) => `${l.at} [${l.step}] ${l.text}`)].join('\n'));
 console.log(`AFTER-TAP DRILL ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length})`);
 process.exit(pass ? 0 : 1);

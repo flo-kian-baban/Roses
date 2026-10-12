@@ -20,6 +20,11 @@
 // per listed check ({ over, of, worst } of the run it names); a run in which a listed check measures worse (more samples over the
 // target, as a rate when the run measured a different number of samples; or a worse worst value beyond the entry's noise tolerance)
 // fails with KNOWN MISS WORSENED, printed with the baseline and the measurement.
+// The PM's suite fix of 2026-10-12 (to unblock merges): (1) the after-tap drill runs on the performance fixture (its own server, database
+// and uploads), where the ratchet applies; on the live data copy its numbers are printed as "content cost", information only; (2) every
+// network-dependent timing is measured 3 times and judged on the median: the after-tap drill (3 repeats under Slow 4G) and Lighthouse's
+// LCP (3 runs; TBT, a CPU measure, stays on every run). A baseline that records a median is compared on its median (one slow sample of
+// three is what the median absorbs, so the count over the target is not compared for it).
 //   npm run check            npm run check:full            npm run check -- --force
 // 2026-10-08: the colour-literal scan (0 in the public sources) and the Style tab drill (scripts/style-drill.mjs) joined the suite.
 // 2026-10-09: the welcome screen replaced the logo intro: the page checks follow it instead (first visit, reload with the last language
@@ -130,8 +135,12 @@ async function step(name, fn, id = null) {
         if (c.ok !== false) continue;
         if (!m || !Number.isFinite(m.over) || !Number.isFinite(m.of) || m.of === 0) { c.worsened = 'no measurement to compare with the baseline'; continue; }
         const why = [];
-        if (m.of === b.of ? m.over > b.over : m.over / m.of > b.over / b.of) why.push(`${m.over} of ${m.of} over the target (baseline ${b.over} of ${b.of})`);
-        if (m.worst === null || m.worst > b.worst * (1 + tol)) why.push(`worst ${m.worst === null ? 'never reached (not within the drill\'s time limit)' : `${m.worst} ${m.unit ?? ''}`} (baseline ${b.worst} ${m.unit ?? ''}${tol ? `, tolerance ${Math.round(tol * 100)} %: up to ${Math.round(b.worst * (1 + tol))}` : ''})`);
+        if (Number.isFinite(b.median)) { // judged on the median (the PM, 2026-10-12): the median against the baseline's median
+          if (!Number.isFinite(m.median) || m.median > b.median * (1 + tol)) why.push(`median ${Number.isFinite(m.median) ? `${m.median} ${m.unit ?? ''}` : 'never reached (not within the drill\'s time limit)'} (baseline median ${b.median} ${m.unit ?? ''}${tol ? `, tolerance ${Math.round(tol * 100)} %: up to ${Math.round(b.median * (1 + tol))}` : ''})`);
+        } else {
+          if (m.of === b.of ? m.over > b.over : m.over / m.of > b.over / b.of) why.push(`${m.over} of ${m.of} over the target (baseline ${b.over} of ${b.of})`);
+          if (m.worst === null || m.worst > b.worst * (1 + tol)) why.push(`worst ${m.worst === null ? 'never reached (not within the drill\'s time limit)' : `${m.worst} ${m.unit ?? ''}`} (baseline ${b.worst} ${m.unit ?? ''}${tol ? `, tolerance ${Math.round(tol * 100)} %: up to ${Math.round(b.worst * (1 + tol))}` : ''})`);
+        }
         if (why.length) c.worsened = why.join('; ');
       }
       k.run = { checks: got, status: got.some((c) => c.ok === null) ? 'NOT MEASURED' : got.some((c) => c.worsened) ? 'KNOWN MISS WORSENED' : got.every((c) => c.ok) ? 'NOW PASSING' : 'KNOWN MISS' };
@@ -162,6 +171,7 @@ async function photoCost(b, dir) {
   return { photos: up.length + linked.length, uploaded: up.length, uploadedBytes, linked: linked.length };
 }
 const mb = (n) => `${(n / 1024 / 1024).toFixed(2)} MB`;
+const tapLine = (t) => !t ? '' : ` · the menu after the tap on the live data copy (after-tap drill, information only): ${t}`;
 const costLine = (c) => !c ? 'not measured' : [['live data copy', c.live], [`fixture ${c.fixture?.id ?? ''}`, c.fixture]].filter(([, x]) => x).map(([k, x]) => `${k}: Senso's page names ${x.photos} photos, ${x.uploaded} uploaded (${mb(x.uploadedBytes)} on disk) and ${x.linked} linked; LCP ${x.lcpMs ? x.lcpMs.join(' / ') : '—'} ms; images loaded per run ${x.imagesLoaded ? x.imagesLoaded.join(' / ') : '—'} (${x.imageKB ? x.imageKB.map((n) => `${n} KB`).join(' / ') : '—'})`).join(' · ');
 // The suite's servers are its own: a port's listener must be the process it spawned (lsof), or nothing runs against it.
 const listeners = (port) => spawnSync('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'], { encoding: 'utf8' }).stdout.split('\n').filter(Boolean).map(Number);
@@ -373,14 +383,6 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, checks: drillChecks('transition/transition-drill.json', !!(m && m.length)), evidence: ['transition/transition-drill.txt', 'transition/transition-drill.json', 'transition/transition-server.log', 'transition/*.jpg', 'transition/transition-T1-fall.webm … transition-T10-summer.webm, all 40 (on disk only)'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   }, 'transition');
-  // The menu after the tap (the PM, 2026-10-09): the overlay covers the menu, so Lighthouse's LCP measures the welcome screen; what the
-  // customer waits for after the language tap is measured here, under throttled mobile conditions, and reported as measured.
-  await step('menu after the language tap under throttled mobile conditions (Slow 4G as DevTools applies it, CPU 4×): the first section visible and, as a separate check, its photos in view loaded within 2.5 s of the tap, on senso with its first section as a List and as a Grid and on kebab-land; the eager rule (the first row only); first-section photo bytes', async () => {
-    const r = await run('node', ['scripts/after-tap-drill.mjs', '--base', base, '--out', path.join(out, 'after-tap')], { env: drillEnv, logFile: 'after-tap/after-tap-drill.log' });
-    const m = (r.stdout.match(/AFTER-TAP DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
-    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
-    return { pass: r.status === 0, checks: drillChecks('after-tap/after-tap.json', !!(m && m.length)), evidence: ['after-tap/after-tap.txt', 'after-tap/after-tap.json'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
-  }, 'after-tap');
   // Lighthouse (the PM, 2026-10-12): the regression checks for every venue run on the performance fixture, on its own server (a free port picked
   // at start, its own build and database), so the ratchet compares code with code. The server is warmed first (each page and every uploaded
   // photo it names fetched once), and the temporary venue is created in it through the admin API, as on the scratch copy.
@@ -405,12 +407,13 @@ try {
   }, 'perf-server');
   const perfUp = perfReady && results.at(-1).id === 'perf-server' && results.at(-1).pass;
   for (const venue of pageVenues) {
-    await step(`Lighthouse mobile ×3 on the performance fixture ${perf.pointer?.id ?? '(none)'}: ${label(venue)} (LCP ≤ 2.5 s, TBT ≤ 50 ms)`, async () => {
+    await step(`Lighthouse mobile ×3 on the performance fixture ${perf.pointer?.id ?? '(none)'}: ${label(venue)} (LCP ≤ 2.5 s on the median of 3, TBT ≤ 50 ms on every run)`, async () => {
       if (!perfUp) return { pass: false, note: `not measured: ${perfReady ? 'the fixture\'s server did not come up' : perfNote}` };
       const vout = path.join(perfOut, venue);
       const r = await run('node', ['scripts/check-lighthouse.mjs', `${perfBase}/${venue === newVenueId ? perfVenue : venue}`, '--runs', '3', '--out', vout], { logFile: `perf/${venue}/lighthouse.log` });
       const s = JSON.parse(fs.readFileSync(path.join(vout, 'lighthouse-summary.json'), 'utf8'));
       const worst = Math.max(...s.runs.map((x) => x.lcpMs)), worstTbt = Math.max(...s.runs.map((x) => x.tbtMs));
+      const lcpMedian = [...s.runs.map((x) => x.lcpMs)].sort((a, b) => a - b)[Math.floor(s.runs.length / 2)]; // LCP is network-dependent: judged on the median of 3 (the PM, 2026-10-12)
       // Since the welcome screen (2026-10-09) the largest paint is its logo: Lighthouse measures the welcome screen, not the menu behind it.
       const els = [...new Set(s.runs.map((x) => ((x.lcpElement || '').match(/src="([^"]*)"/) || [])[1] || (x.lcpElement || '?').slice(0, 60)))];
       const logoLcp = els.every((e) => /logo/i.test(e));
@@ -418,12 +421,22 @@ try {
       const key = venue === newVenueId ? 'temp-venue' : venue, n = s.runs.length;
       const checks = [
         { id: `lighthouse-${key}-runs`, ok: r.status === 0 && n === 3, text: `${n} of 3 Lighthouse runs finished (exit ${r.status})` },
-        { id: `lighthouse-${key}-lcp`, ok: n === 3 && worst <= 2500, text: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms (target ≤ 2500 on every run)`, metric: { over: s.runs.filter((x) => x.lcpMs > 2500).length, of: n, worst, unit: 'ms' } },
+        { id: `lighthouse-${key}-lcp`, ok: n === 3 && lcpMedian <= 2500, text: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms, median ${lcpMedian} ms (target ≤ 2500 on the median of 3)`, metric: { over: s.runs.filter((x) => x.lcpMs > 2500).length, of: n, worst, median: lcpMedian, judged: 'median', unit: 'ms' } },
         { id: `lighthouse-${key}-tbt`, ok: n === 3 && worstTbt <= 50, text: `TBT ${s.runs.map((x) => x.tbtMs).join(' / ')} ms (target ≤ 50 on every run)`, metric: { over: s.runs.filter((x) => x.tbtMs > 50).length, of: n, worst: worstTbt, unit: 'ms' } },
       ];
-      return { pass: checks.every((c) => c.ok), checks, evidence: [`perf/${venue}/lighthouse-summary.json`, `perf/${venue}/lighthouse.log`], note: `on the fixture ${perf.pointer.id}: LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms, TBT ${s.runs.map((x) => x.tbtMs).join(' / ')} ms, performance ${s.runs.map((x) => x.performance).join(' / ')} (targets LCP ≤ 2500, TBT ≤ 50; local estimates); LCP element ${els.join(' / ')}${logoLcp ? ': the welcome screen\'s logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)' : ': not the welcome logo'}` };
+      return { pass: checks.every((c) => c.ok), checks, evidence: [`perf/${venue}/lighthouse-summary.json`, `perf/${venue}/lighthouse.log`], note: `on the fixture ${perf.pointer.id}: LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms (median ${lcpMedian}), TBT ${s.runs.map((x) => x.tbtMs).join(' / ')} ms, performance ${s.runs.map((x) => x.performance).join(' / ')} (targets LCP ≤ 2500 on the median of 3, TBT ≤ 50 on every run; local estimates); LCP element ${els.join(' / ')}${logoLcp ? ': the welcome screen\'s logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)' : ': not the welcome logo'}` };
     }, `lighthouse-${venue === newVenueId ? 'temp-venue' : venue}`);
   }
+  // The menu after the tap (the PM, 2026-10-09): the overlay covers the menu, so Lighthouse's LCP measures the welcome screen; what the
+  // customer waits for after the language tap is measured here, under throttled mobile conditions. Since 2026-10-12 (the PM's suite fix) on
+  // the performance fixture, where the ratchet applies (frozen content, so a change is the code's), 3 repeats judged on the median.
+  await step(`menu after the language tap under throttled mobile conditions (Slow 4G as DevTools applies it, CPU 4×) on the performance fixture ${perf.pointer?.id ?? '(none)'}: the first section visible and, as a separate check, its photos in view loaded within 2.5 s of the tap, 3 repeats judged on the median, on senso with its first section as a List and as a Grid and on kebab-land; the eager rule (the first row only); first-section photo bytes`, async () => {
+    if (!perfUp) return { pass: false, note: `not measured: ${perfReady ? 'the fixture\'s server did not come up' : perfNote}` };
+    const r = await run('node', ['scripts/after-tap-drill.mjs', '--base', perfBase, '--out', path.join(out, 'after-tap')], { env: { ...drillEnv, DATABASE_URL: perfUrl, ROSES_DB: perfName }, logFile: 'after-tap/after-tap-drill.log' });
+    const m = (r.stdout.match(/AFTER-TAP DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
+    return { pass: r.status === 0, checks: drillChecks('after-tap/after-tap.json', !!(m && m.length)), evidence: ['after-tap/after-tap.txt', 'after-tap/after-tap.json'], note: `on the fixture ${perf.pointer.id}: ${m || `exit ${r.status}`}; ${measures.join('; ')}` };
+  }, 'after-tap');
   // Content cost (the PM, 2026-10-12): Senso on the live data copy, as information that never fails the run: the photos its page names
   // (uploaded, with their bytes on disk, and linked), the images each Lighthouse run loaded, LCP per run; the fixture's numbers beside them.
   await step('Lighthouse mobile ×3 on the live data copy: senso, content cost (information, never fails the run: the photos on the page and the uploaded photos\' bytes, the images each run loaded, LCP per run; the fixture\'s numbers beside them)', async () => {
@@ -436,6 +449,16 @@ try {
       return { pass: true, evidence: ['senso/live/lighthouse-summary.json', 'senso/live/lighthouse.log'], note: `content cost, information only: ${costLine(contentCost)}` };
     } catch (e) { return { pass: true, note: `content cost not measured (information only, does not fail the run): ${e.message}` }; }
   }, 'content-cost-senso');
+  // The after-tap drill on the live data copy (the PM's suite fix, 2026-10-12): content cost, information only, never fails the run.
+  await step('menu after the language tap on the live data copy: content cost (information, never fails the run: the after-tap drill\'s numbers on the working data as it is today, 3 repeats each)', async () => {
+    try {
+      const lout = path.join(out, 'after-tap', 'live'); fs.mkdirSync(lout, { recursive: true });
+      const r = await run('node', ['scripts/after-tap-drill.mjs', '--base', base, '--out', lout], { env: drillEnv, logFile: 'after-tap/live/after-tap-drill.log' });
+      const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]).filter((x) => !/^photo bytes/.test(x));
+      contentCost = { ...(contentCost || {}), afterTap: measures.join('; ') || `no measurement (exit ${r.status})` };
+      return { pass: true, evidence: ['after-tap/live/after-tap.txt', 'after-tap/live/after-tap.json'], note: `content cost, information only (exit ${r.status}): ${measures.join('; ')}` };
+    } catch (e) { return { pass: true, note: `content cost not measured (information only, does not fail the run): ${e.message}` }; }
+  }, 'content-cost-after-tap');
   if (perfServer) { try { perfServer.kill('SIGTERM'); } catch { /* gone */ } }
   await step('admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route and section layout 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)', async () => {
     const r = await run('node', ['scripts/admin-drill.mjs', '--base', base, '--out', path.join(out, 'admin'), '--jpeg'], { env: drillEnv, logFile: 'admin/admin-drill.log' });
@@ -513,7 +536,7 @@ try {
     const names = [...read(`server-${port}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]);
     processes.push({ process: app, source: `server-${port}.log`, databases: [...new Set(names)] });
   }
-  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['preview-drill', 'preview/preview-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['season-server', 'season/season-server.log'], ['transition-server', 'transition/transition-server.log'], ['transition-drill', 'transition/transition-drill.log'], ['after-tap-drill', 'after-tap/after-tap-drill.log'], ['touch-drill', 'touch/touch-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
+  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['preview-drill', 'preview/preview-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['season-server', 'season/season-server.log'], ['transition-server', 'transition/transition-server.log'], ['transition-drill', 'transition/transition-drill.log'], ['after-tap-drill (live data, content cost)', 'after-tap/live/after-tap-drill.log'], ['touch-drill', 'touch/touch-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
     if (!fs.existsSync(path.join(out, file))) continue;
     processes.push({ process: `roses-check:${name}`, source: file, databases: [...new Set([...read(file).matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))] });
   }
@@ -526,6 +549,7 @@ try {
   if (perfUsed) {
     processes.push({ process: 'roses-check:perf-migrate', source: 'perf/migrate.log (DATABASE_URL)', databases: [perfName], allowed: perfName }, { process: 'roses-check:perf-build', source: 'perf/build.log (DATABASE_URL)', databases: [perfName], allowed: perfName });
     if (fs.existsSync(path.join(out, `perf/server-${PERF_PORT}.log`))) processes.push({ process: 'roses-check:perf-server', source: `perf/server-${PERF_PORT}.log`, databases: [...new Set([...read(`perf/server-${PERF_PORT}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]))], allowed: perfName });
+    if (fs.existsSync(path.join(out, 'after-tap/after-tap-drill.log'))) processes.push({ process: 'roses-check:after-tap-drill (fixture)', source: 'after-tap/after-tap-drill.log', databases: [...new Set([...read('after-tap/after-tap-drill.log').matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))], allowed: perfName });
     if (fs.existsSync(path.join(out, 'perf/new-venue-drill.log'))) processes.push({ process: 'roses-check:new-venue (fixture)', source: 'perf/new-venue-drill.log', databases: [...new Set([...read('perf/new-venue-drill.log').matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))], allowed: perfName });
   }
   const wrongProcess = processes.filter((p) => p.databases.length === 0 || p.databases.some((d) => d !== (p.allowed ?? scratchName)));
@@ -585,7 +609,7 @@ const lines = [
   `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, ${KNOWN_FILE} included) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server), ${PERF_PORT} (the performance fixture's server); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
   `Scratch copy: ${scratchName} from a pg_dump of ${workName}; ${uploadsNote}.`, '',
   `Performance fixture (Lighthouse\'s regression checks run on it, the PM 2026-10-12): ${perfNote}; its own build ${PERF_DIST} and server on port ${PERF_PORT}.`, '',
-  `Content cost (Senso on the live data copy, information only, never fails the run): ${costLine(contentCost)}.`, '',
+  `Content cost (Senso on the live data copy, information only, never fails the run): ${costLine(contentCost)}${tapLine(contentCost?.afterTap)}.`, '',
   ...(underLoad ? [`**Run forced past the pre-flight (\`--force\`) under external load**: ${preBad.map(preDescribe).join('; ')}. Every timing check below is marked "under external load"; its times are not evidence.`, ''] : []),
   `**${pass ? 'PASS' : 'FAIL'}** — ${results.filter((r) => outcome(r) === 'PASS').length} of ${results.length} checks passed${knownMissed.length ? `, ${knownMissed.length} KNOWN MISS (listed in \`${KNOWN_FILE}\`, still measured: see Known misses)` : ''}${failed.length ? `, ${failed.length} failed (not listed as known misses)` : ', no unlisted failure'}.${nowPassing.length ? ` Known miss now passing: ${nowPassing.map((k) => k.title).join(', ')} (see Known misses).` : ''}`, '',
   ...(pass ? [] : [`Cause: ${(() => { const f = failed[0]; return `${f.name} — ${(f.note || '').replace(/\s+/g, ' ').slice(0, 300)}`; })()}`, '', 'This failed run is kept on purpose (PM, 2026-10-08): the folder is never deleted, even when a re-run passes.', '']),
@@ -593,7 +617,7 @@ const lines = [
   '## Known misses', '',
   `Listed in \`${KNOWN_FILE}\` (committed; blob ${knownBlob || '?'} in ${commit}). A listed check is still measured and printed, here and as KNOWN MISS in the table; it does not fail the run unless it measures worse than its baseline (the ratchet, the PM 2026-10-12: KNOWN MISS WORSENED). Any failure that is not listed fails it. A listed check that passes is reported here as NOW PASSING.`, '',
   ...(known.length ? ['| Known miss | This run | Baseline → measured | Measured | Cause | Clears when | Listed |', '| --- | --- | --- | --- | --- | --- | --- |',
-    ...known.map((k) => `| ${cell(k.title)} (\`${k.id}\`, step \`${k.step}\`) | ${knownStatus(k)} | ${k.checks.map((id) => { const b = k.baseline.checks[id], c = k.run?.checks.find((x) => x.id === id), m = c?.metric; return `\`${id}\`: baseline ${b.over} of ${b.of} over, worst ${b.worst}${k.baseline.tolerance ? ` (tolerance ${Math.round(k.baseline.tolerance * 100)} %)` : ''} (run ${k.baseline.run}) → ${m ? `measured ${m.over} of ${m.of} over, worst ${m.worst ?? '—'} ${m.unit ?? ''}` : 'no measurement'}${c?.worsened ? ` — **WORSENED**: ${cell(c.worsened)}` : ''}`; }).join('<br>')} | ${k.run ? k.run.checks.map((c) => `${c.ok === null ? 'NOT MEASURED' : c.ok ? 'met' : 'MISSED'}: \`${c.id}\`: ${cell(c.text)}`).join('<br>') : '—'} | ${cell(k.cause)} | ${cell(k.clears)} | ${cell(k.listed)} |`)] : ['None listed.']), '',
+    ...known.map((k) => `| ${cell(k.title)} (\`${k.id}\`, step \`${k.step}\`) | ${knownStatus(k)} | ${k.checks.map((id) => { const b = k.baseline.checks[id], c = k.run?.checks.find((x) => x.id === id), m = c?.metric; return `\`${id}\`: baseline ${b.over} of ${b.of} over, worst ${b.worst}${Number.isFinite(b.median) ? `, median ${b.median} (judged on the median)` : ''}${k.baseline.tolerance ? ` (tolerance ${Math.round(k.baseline.tolerance * 100)} %)` : ''} (run ${k.baseline.run}) → ${m ? `measured ${m.over} of ${m.of} over, worst ${m.worst ?? '—'}${Number.isFinite(m.median) ? `, median ${m.median}` : ''} ${m.unit ?? ''}` : 'no measurement'}${c?.worsened ? ` — **WORSENED**: ${cell(c.worsened)}` : ''}`; }).join('<br>')} | ${k.run ? k.run.checks.map((c) => `${c.ok === null ? 'NOT MEASURED' : c.ok ? 'met' : 'MISSED'}: \`${c.id}\`: ${cell(c.text)}`).join('<br>') : '—'} | ${cell(k.cause)} | ${cell(k.clears)} | ${cell(k.listed)} |`)] : ['None listed.']), '',
   '## Checks', '',
   '| Check | Result | Time | Evidence | Notes |', '| --- | --- | --- | --- | --- |',
   ...results.map((r) => `| ${r.name} | ${outcome(r)}${underLoad && TIMING.test(r.name) ? ' (under external load)' : ''} | ${(r.ms / 1000).toFixed(1)} s | ${r.evidence.map((e) => `\`${e}\``).join(', ')} | ${r.note.replace(/\|/g, '\\|')} |`), '',

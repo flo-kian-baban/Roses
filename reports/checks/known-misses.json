@@ -41,18 +41,12 @@
       "clears": "when the Persian relayout task is ≤ 50 ms (every Persian tap measured with no long task over 50 ms)",
       "listed": "2026-10-11, the PM",
       "baseline": {
-        "run": "2026-10-12T03-57-29Z",
+        "run": "2026-10-12T07-54-45Z",
         "unit": "ms",
         "tolerance": 0,
-        "checks": {
-          "persian-tap-senso": {
-            "over": 16,
-            "of": 40,
-            "worst": 58,
-            "unit": "ms"
-          }
-        },
-        "set": "2026-10-12, the PM: 16 of 40 Persian taps over 50 ms, the longest 58 ms"
+        "checks": { "persian-tap-senso": { "over": 0, "of": 40, "worst": 0, "unit": "ms" } },
+        "set": "2026-10-12, the PM: 16 of 40 Persian taps over 50 ms, the longest 58 ms (run 2026-10-12T03-57-29Z)",
+        "lowered": "2026-10-12, by the fix (d9de277; the PM's rule: a baseline is lowered only when a fix improves it): 0 of 40 Persian taps over 50 ms, no long task on any tap (run 2026-10-12T07-54-45Z, the full suite on 1d77893). The clearing condition is met in that run; the entry stays until the PM or Kian removes it."
       }
     }
   ]

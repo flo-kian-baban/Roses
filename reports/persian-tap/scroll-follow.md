@@ -1,7 +1,7 @@
 | Venue | Language | Active tab = section under the bar (before / after) | Same tab as before | Tab taps landing (before / after) | Positions (px) |
 |---|---|---|---|---|---|
-| senso | en | 10/10 / 10/10 | 10/10 | 5/5 / 5/5 | 0, 2122, 4243, 6365, 8487, 10608, 12730, 14852, 16973, 19095 |
-| senso | fa | 10/10 / 10/10 | 9/10 | 5/5 / 5/5 | 0, 2110, 4221, 6331, 8442, 10552, 12663, 14773, 16884, 18994 |
+| senso | en | 10/10 / 10/10 | 10/10 | 5/5 / 5/5 | 0, 2026, 4053, 6079, 8106, 10132, 12159, 14185, 16212, 18238 |
+| senso | fa | 10/10 / 10/10 | 10/10 | 5/5 / 5/5 | 0, 2015, 4030, 6046, 8061, 10076, 12091, 14107, 16122, 18137 |
 | kebab-land | en | 10/10 / 10/10 | 10/10 | 5/5 / 5/5 | 0, 1385, 2769, 4154, 5539, 6923, 8308, 9693, 11077, 12462 |
 | kebab-land | fa | 10/10 / 10/10 | 10/10 | 5/5 / 5/5 | 0, 1358, 2716, 4075, 5433, 6791, 8149, 9508, 10866, 12224 |
 | drill-default-venue | en | 10/10 / 10/10 | 10/10 | 1/1 / 1/1 | 0, 30, 59, 89, 119, 148, 178, 208, 237, 267 |
@@ -9,29 +9,29 @@
 
 senso en, per position (want y → before: y, active / under the bar; after: y, active / under the bar):
 - 0 → before 0, senso-signature / senso-signature; after 0, senso-signature / senso-signature
-- 2122 → before 2122, hot-beverage / hot-beverage; after 2122, hot-beverage / hot-beverage
-- 4243 → before 4243, tea-herbal-tea / tea-herbal-tea; after 4243, tea-herbal-tea / tea-herbal-tea
-- 6365 → before 6365, fresh-juice / fresh-juice; after 6365, fresh-juice / fresh-juice
-- 8487 → before 8487, dessert / dessert; after 8487, dessert / dessert
-- 10608 → before 10608, milkshake / milkshake; after 10608, milkshake / milkshake
-- 12730 → before 12730, persian-breakfast / persian-breakfast; after 12730, persian-breakfast / persian-breakfast
-- 14852 → before 14852, appetizer / appetizer; after 14852, appetizer / appetizer
-- 16973 → before 16973, senso-pizza / senso-pizza; after 16973, senso-pizza / senso-pizza
-- 19095 → before 19095, extra / extra; after 19095, extra / extra
-- tab taps (offset of the heading from the bar, px): before senso-signature 0, cold-beverage 0, ice-cream 0, salad 0, senso-pizza 0; after senso-signature 0, cold-beverage 0, ice-cream 0, salad 0, senso-pizza 0
+- 2026 → before 2026, hot-beverage / hot-beverage; after 2026, hot-beverage / hot-beverage
+- 4053 → before 4053, tea-herbal-tea / tea-herbal-tea; after 4053, tea-herbal-tea / tea-herbal-tea
+- 6079 → before 6079, fresh-juice / fresh-juice; after 6079, fresh-juice / fresh-juice
+- 8106 → before 8106, dessert / dessert; after 8106, dessert / dessert
+- 10132 → before 10132, persian-breakfast / persian-breakfast; after 10132, persian-breakfast / persian-breakfast
+- 12159 → before 12159, persian-breakfast / persian-breakfast; after 12159, persian-breakfast / persian-breakfast
+- 14185 → before 14185, appetizer / appetizer; after 14185, appetizer / appetizer
+- 16212 → before 16212, senso-pizza / senso-pizza; after 16212, senso-pizza / senso-pizza
+- 18238 → before 18238, extra / extra; after 18238, extra / extra
+- tab taps (offset of the heading from the bar, px): before senso-signature 0, cold-beverage 0, ice-cream -1, salad 0, senso-pizza 0; after senso-signature 0, cold-beverage 0, ice-cream -1, salad 0, senso-pizza 0
 
 senso fa, per position (want y → before: y, active / under the bar; after: y, active / under the bar):
 - 0 → before 0, senso-signature / senso-signature; after 0, senso-signature / senso-signature
-- 2110 → before 2110, hot-beverage / hot-beverage; after 2110, hot-beverage / hot-beverage
-- 4221 → before 4221, tea-herbal-tea / tea-herbal-tea; after 4221, tea-herbal-tea / tea-herbal-tea
-- 6331 → before 6331, fresh-juice / fresh-juice; after 6331, fresh-juice / fresh-juice
-- 8442 → before 8442, dessert / dessert; after 8442, dessert / dessert
-- 10552 → before 10552, milkshake / milkshake; after 10552, milkshake / milkshake
-- 12663 → before 12663, persian-breakfast / persian-breakfast; after 12663, persian-breakfast / persian-breakfast
-- 14773 → before 14773, appetizer / appetizer; after 14773, appetizer / appetizer
-- 16884 → before 16884, senso-pizza / senso-pizza; after 16884, main-course / main-course  ← different tab
-- 18994 → before 18994, extra / extra; after 18994, extra / extra
-- tab taps (offset of the heading from the bar, px): before senso-signature 0, cold-beverage 0, ice-cream 0, salad 0, senso-pizza 0; after senso-signature 0, cold-beverage 0, ice-cream 0, salad 0, senso-pizza 0
+- 2015 → before 2015, hot-beverage / hot-beverage; after 2015, hot-beverage / hot-beverage
+- 4030 → before 4030, tea-herbal-tea / tea-herbal-tea; after 4030, tea-herbal-tea / tea-herbal-tea
+- 6046 → before 6046, fresh-juice / fresh-juice; after 6046, fresh-juice / fresh-juice
+- 8061 → before 8061, dessert / dessert; after 8061, dessert / dessert
+- 10076 → before 10076, milkshake / milkshake; after 10076, milkshake / milkshake
+- 12091 → before 12091, persian-breakfast / persian-breakfast; after 12091, persian-breakfast / persian-breakfast
+- 14107 → before 14107, appetizer / appetizer; after 14107, appetizer / appetizer
+- 16122 → before 16122, senso-pizza / senso-pizza; after 16122, senso-pizza / senso-pizza
+- 18137 → before 18137, extra / extra; after 18137, extra / extra
+- tab taps (offset of the heading from the bar, px): before senso-signature 0, cold-beverage 0, ice-cream -1, salad 0, senso-pizza 0; after senso-signature 0, cold-beverage 0, ice-cream -1, salad 0, senso-pizza 0
 
 kebab-land en, per position (want y → before: y, active / under the bar; after: y, active / under the bar):
 - 0 → before 0, appetizers / appetizers; after 0, appetizers / appetizers

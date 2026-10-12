@@ -153,10 +153,12 @@ for (const vp of VIEWPORTS) {
   await closeAll(p);
   await screen(vp, p, 'menu: add item sheet', async () => { const b = p.locator('button:has-text("Add item")').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=dialog]'); });
   await closeAll(p); await p.waitForSelector('[role=dialog]', { state: 'detached', timeout: 3000 }).catch(() => {});
-  const itemId = await p.getAttribute('[data-item]', 'data-item');
-  await screen(vp, p, 'menu: price being edited', async () => { const b = p.locator(`[data-item="${itemId}"] [data-price]`); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector(`[data-item="${itemId}"] input[aria-label="Price"]`); });
+  // the first item row; an item placed in two sections (e.g. Senso's Fall Menu items, since 2026-10-12, in the Seasonal section and their own)
+  // has a row in each, so every action below is on this row
+  const itemRow = p.locator('[data-item]').first();
+  await screen(vp, p, 'menu: price being edited', async () => { const b = itemRow.locator('[data-price]'); await b.scrollIntoViewIfNeeded(); await b.click(); await itemRow.locator('input[aria-label="Price"]').waitFor(); });
   await p.keyboard.press('Escape'); await sleep(200);
-  await screen(vp, p, 'menu: item editor', async () => { const b = p.locator(`[data-item="${itemId}"] button[aria-label^="Edit"]`); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('.item-panel'); });
+  await screen(vp, p, 'menu: item editor', async () => { const b = itemRow.locator('button[aria-label^="Edit"]'); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('.item-panel'); });
   await screen(vp, p, 'menu: item editor, More and Advanced open', async () => {
     for (const t of ['More', 'Advanced']) { const b = p.locator(`.item-panel button[aria-expanded="false"]:has-text("${t}")`).first(); if (await b.count()) { await b.scrollIntoViewIfNeeded(); await b.click(); await sleep(200); } }
   });
@@ -165,12 +167,12 @@ for (const vp of VIEWPORTS) {
   // the toast on this page load (everything else on it is measured already, so the toast is measured within its 10 s); Undo must put the price back
   let was = null;
   await screen(vp, p, 'menu: Saved · Undo toast', async () => {
-    const b = p.locator(`[data-item="${itemId}"] [data-price]`); await b.scrollIntoViewIfNeeded(); was = (await b.textContent()).trim(); await b.click();
-    const f = p.locator(`[data-item="${itemId}"] input[aria-label="Price"]`); const v = Number((await f.inputValue()) || '0'); await f.fill(String(Math.round((v + 0.25) * 100) / 100)); await f.press('Enter');
+    const b = itemRow.locator('[data-price]'); await b.scrollIntoViewIfNeeded(); was = (await b.textContent()).trim(); await b.click();
+    const f = itemRow.locator('input[aria-label="Price"]'); const v = Number((await f.inputValue()) || '0'); await f.fill(String(Math.round((v + 0.25) * 100) / 100)); await f.press('Enter');
     await p.waitForSelector('[role=status]:has-text("Saved")');
   });
   { const t = Date.now(); await p.click('[role=status] button:has-text("Undo")', { timeout: 5000 }).catch(() => {}); await p.waitForSelector('[role=status]:has-text("Undone")', { timeout: 5000 }).catch(() => {});
-    const back = (await p.locator(`[data-item="${itemId}"] [data-price]`).textContent().catch(() => '')).trim(); undone.push({ viewport: vp.id, was, back, ms: Date.now() - t }); log('toast', `${vp.id}: price ${was} changed for the toast, Undo → ${back}`); }
+    const back = (await itemRow.locator('[data-price]').textContent().catch(() => '')).trim(); undone.push({ viewport: vp.id, was, back, ms: Date.now() - t }); log('toast', `${vp.id}: price ${was} changed for the toast, Undo → ${back}`); }
   await screen(vp, p, 'menu: preview open', async () => { await p.evaluate(() => scrollTo(0, 0)); await p.click('button:has-text("Preview")'); await p.waitForSelector('[data-preview-area] iframe[data-preview-frame]'); });
   await p.goto(`${base}/admin/senso`); await p.waitForSelector('[data-item]'); await markSeen(p);
   const openItem = async (id) => {

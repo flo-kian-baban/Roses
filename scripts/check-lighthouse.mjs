@@ -12,13 +12,15 @@ const runs = Number(args.runs || 3);
 const out = path.resolve(args.out || 'reports/checkpoint-a');
 await fs.mkdir(out, { recursive: true });
 const rows = [];
+// the images the run loaded (count and transferred KB), for the suite's content cost (2026-10-12)
+const images = (a) => { const it = (a['network-requests']?.details?.items || []).filter((x) => x.resourceType === 'Image'); return { images: it.length, imageKB: Math.round(it.reduce((n, x) => n + (x.transferSize || 0), 0) / 1024) }; };
 for (let n = 1; n <= runs; n++) {
   const chrome = await launch({ chromeFlags: ['--headless=new', '--no-sandbox'] });
   try {
     const result = await lighthouse(url, { port: chrome.port, output: 'json', logLevel: 'error', onlyCategories: ['performance'] });
     const lhr = result.lhr;
     const a = lhr.audits;
-    const row = { run: n, formFactor: lhr.configSettings.formFactor, emulated: lhr.configSettings.screenEmulation?.mobile, performance: Math.round((lhr.categories.performance.score || 0) * 100), lcpMs: Math.round(a['largest-contentful-paint'].numericValue), fcpMs: Math.round(a['first-contentful-paint'].numericValue), tbtMs: Math.round(a['total-blocking-time'].numericValue), cls: Number(a['cumulative-layout-shift'].numericValue.toFixed(3)), speedIndexMs: Math.round(a['speed-index'].numericValue), lcpElement: a['largest-contentful-paint-element']?.details?.items?.[0]?.items?.[0]?.node?.snippet?.slice(0, 120) || null };
+    const row = { run: n, formFactor: lhr.configSettings.formFactor, emulated: lhr.configSettings.screenEmulation?.mobile, performance: Math.round((lhr.categories.performance.score || 0) * 100), lcpMs: Math.round(a['largest-contentful-paint'].numericValue), fcpMs: Math.round(a['first-contentful-paint'].numericValue), tbtMs: Math.round(a['total-blocking-time'].numericValue), cls: Number(a['cumulative-layout-shift'].numericValue.toFixed(3)), speedIndexMs: Math.round(a['speed-index'].numericValue), lcpElement: a['largest-contentful-paint-element']?.details?.items?.[0]?.items?.[0]?.node?.snippet?.slice(0, 120) || null, ...images(a) };
     rows.push(row);
     await fs.writeFile(path.join(out, `lighthouse-run-${n}.json`), result.report);
     console.log(JSON.stringify(row));

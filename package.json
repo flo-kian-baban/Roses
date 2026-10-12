@@ -17,6 +17,8 @@
     "check:brand-words": "node scripts/check-brand-words.mjs .next/server/pages/senso.html .next/server/pages/kebab-land.html",
     "admin:create": "node scripts/admin-create.mjs",
     "uploads:clean": "node scripts/uploads-clean.mjs",
+    "perf-fixture:verify": "node scripts/perf-fixture.mjs verify",
+    "perf-fixture:freeze": "node scripts/perf-fixture.mjs freeze",
     "setup": "node scripts/setup.mjs",
     "check": "node scripts/check.mjs",
     "check:full": "node scripts/check.mjs --full"

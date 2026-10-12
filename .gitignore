@@ -28,3 +28,6 @@ reports/**/*.webm
 # Kian's review server on port 3000 serves the newest commit from this dist dir in whichever worktree holds it
 .next-kian/
 .next-fixture/
+# The performance fixture (scripts/perf-fixture.mjs): a dump and a copy of the uploads, stored under this fixed path, never committed
+/perf-fixture/
+.next-perf/

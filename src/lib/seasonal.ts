@@ -13,7 +13,7 @@ export const isSeasonId = (v: unknown): v is SeasonId => typeof v === 'string' &
 // The tags as saved: known seasons only, each once, in the order of the year as the admin shows them.
 export const seasonsOf = (v: unknown): SeasonId[] => (Array.isArray(v) ? SEASON_IDS.filter((s) => v.includes(s)) : []);
 
-// Customers' titles. The Persian ones are drafts for Kian's review (2026-10-12).
+// Customers' titles. The Persian wording is Kian's choice (2026-10-12, via the PM): ویژه‌های… for all four seasons.
 export const SEASONAL_TITLES: Record<SeasonId, Bi> = {
   fall: { en: 'Fall specials', fa: 'ویژه‌های پاییز' },
   winter: { en: 'Winter specials', fa: 'ویژه‌های زمستان' },

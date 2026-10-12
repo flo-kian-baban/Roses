@@ -61,6 +61,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import pg from 'pg';
 import { chromium } from 'playwright';
 import { loadEnv } from './load-env.mjs';
+import { readPointer as readFixture, verify as verifyFixture } from './perf-fixture.mjs';
 import { readings as preReadings, offenders as preOffenders, describe as preDescribe, markdown as preMarkdown, TIMING, LIMIT as CPU_LIMIT } from './preflight.mjs';
 
 loadEnv();
@@ -78,7 +79,7 @@ async function freePort(avoid) {
   }
   throw new Error('no free port found');
 }
-const PORT = await freePort([]), PROXY_PORT = await freePort([PORT]), SEASON_PORT = await freePort([PORT, PROXY_PORT]), TX_PORT = await freePort([PORT, PROXY_PORT, SEASON_PORT]);
+const PORT = await freePort([]), PROXY_PORT = await freePort([PORT]), SEASON_PORT = await freePort([PORT, PROXY_PORT]), TX_PORT = await freePort([PORT, PROXY_PORT, SEASON_PORT]), PERF_PORT = await freePort([PORT, PROXY_PORT, SEASON_PORT, TX_PORT]);
 const base = `http://127.0.0.1:${PORT}`;
 // Known misses (the PM, 2026-10-09).
 const KNOWN_FILE = 'reports/checks/known-misses.json';
@@ -149,6 +150,19 @@ async function step(name, fn, id = null) {
 }
 // a drill's own checks, from the JSON it writes at its end (null when it did not finish: then no failure of it can be a known miss)
 const drillChecks = (file, finished) => { const f = path.join(out, file); if (!finished || !fs.existsSync(f)) return null; try { return JSON.parse(fs.readFileSync(f, 'utf8')).results.map((x) => ({ id: x.step, ok: x.ok, text: x.text, metric: x.metric ?? null })); } catch { return null; } };
+// Content cost (the PM, 2026-10-12): Senso's photos as its page names them in the menu (after <main>): uploaded (served from /uploads/, bytes
+// counted on disk) and linked (the client's hosts; their bytes appear only in what each Lighthouse run loaded).
+let contentCost = null;
+async function photoCost(b, dir) {
+  const html = await fetch(`${b}/senso`, { cache: 'no-store' }).then((x) => x.text());
+  const menu = html.slice(Math.max(0, html.indexOf('<main')));
+  const srcs = [...new Set([...menu.matchAll(/<img\b[^>]*?\ssrc="([^"]+)"/g)].map((m) => m[1].replace(/&amp;/g, '&')))];
+  const up = srcs.filter((u) => u.startsWith('/uploads/')), linked = srcs.filter((u) => /^https?:/.test(u));
+  const uploadedBytes = up.reduce((n, u) => { const f = path.join(dir, decodeURIComponent(u.slice('/uploads/'.length))); return n + (fs.existsSync(f) ? fs.statSync(f).size : 0); }, 0);
+  return { photos: up.length + linked.length, uploaded: up.length, uploadedBytes, linked: linked.length };
+}
+const mb = (n) => `${(n / 1024 / 1024).toFixed(2)} MB`;
+const costLine = (c) => !c ? 'not measured' : [['live data copy', c.live], [`fixture ${c.fixture?.id ?? ''}`, c.fixture]].filter(([, x]) => x).map(([k, x]) => `${k}: Senso's page names ${x.photos} photos, ${x.uploaded} uploaded (${mb(x.uploadedBytes)} on disk) and ${x.linked} linked; LCP ${x.lcpMs ? x.lcpMs.join(' / ') : '—'} ms; images loaded per run ${x.imagesLoaded ? x.imagesLoaded.join(' / ') : '—'} (${x.imageKB ? x.imageKB.map((n) => `${n} KB`).join(' / ') : '—'})`).join(' · ');
 // The suite's servers are its own: a port's listener must be the process it spawned (lsof), or nothing runs against it.
 const listeners = (port) => spawnSync('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'], { encoding: 'utf8' }).stdout.split('\n').filter(Boolean).map(Number);
 async function waitHttp(url, ms = 90000) { const t = Date.now(); while (Date.now() - t < ms) { try { const r = await fetch(url); if (r.status === 200) return true; } catch { /* not yet */ } await new Promise((r) => setTimeout(r, 500)); } return false; }
@@ -219,13 +233,25 @@ const uploadKeys = [...(await db.query(`select photo->>'key' as k from items whe
 const uploadsMissing = uploadKeys.filter((k) => !uploadsCopied.includes(k));
 const uploadsNote = fs.existsSync(WORK_UPLOADS) ? `working uploads ${WORK_UPLOADS}: ${uploadsCopied.length} file(s) copied into the run's uploads; the scratch copy points at ${uploadKeys.length} upload key(s), ${uploadsMissing.length} of them missing${uploadsMissing.length ? ` (${uploadsMissing.join(', ')})` : ''}` : `working uploads ${WORK_UPLOADS}: no such folder, nothing copied; the scratch copy points at ${uploadKeys.length} upload key(s)`;
 log(uploadsNote);
+// The performance fixture (the PM, 2026-10-12): Lighthouse's regression checks run on frozen content (a dump and a copy of the uploads under
+// a fixed path, scripts/perf-fixture.mjs), restored into a database of its own with its own build and server, so the ratchet compares code
+// with code; Kian's growing content is measured on the live data copy as information ("content cost"). Every file is checked against the
+// committed pointer first; a fixture that is missing or differs is never measured (its Lighthouse steps fail and say why).
+let perf;
+try { const pointer = readFixture(); perf = { pointer, ...verifyFixture(pointer) }; } catch (e) { perf = { pointer: null, ok: false, dir: null, problems: [e.message] }; }
+const perfName = `${scratchName}_perf`, perfUrl = (() => { const u = new URL(WORK_URL); u.pathname = `/${perfName}`; return u.toString(); })();
+const PERF_DIST = '.next-perf', perfOut = path.join(out, 'perf'), perfUploads = path.join(perfOut, 'uploads'), perfBase = `http://127.0.0.1:${PERF_PORT}`;
+fs.mkdirSync(perfOut, { recursive: true });
+const perfNote = perf.ok ? `performance fixture ${perf.pointer.id} (${perf.dir}): every file as committed in scripts/fixtures/perf-fixture.json (dump ${perf.pointer.dump.bytes} B, sha256 ${perf.pointer.dump.sha256.slice(0, 12)}…, frozen ${perf.pointer.frozen} at ${perf.pointer.from.migration}; uploads ${perf.pointer.uploads.files} files, ${perf.pointer.uploads.bytes} B, sha256 ${perf.pointer.uploads.sha256.slice(0, 12)}…; Senso ${perf.pointer.content.senso?.uploadedPhotos ?? '?'} uploaded photos), restored into ${perfName}` : `performance fixture NOT usable: ${perf.problems.join('; ')}`;
+log(perfNote);
+let perfDb = null;
 // Isolation (a), database side: who is connected where, sampled through the whole run (every suite process names itself roses-check:*).
 const seen = new Map(); // "application → database" → count of samples
 const sampler = setInterval(async () => {
   try { for (const r of (await db.query(`select application_name as app, datname as db from pg_stat_activity where application_name like 'roses-check:%'`)).rows) seen.set(`${r.app} → ${r.db}`, (seen.get(`${r.app} → ${r.db}`) || 0) + 1); } catch { /* between queries */ }
 }, 400);
 if (!fs.existsSync(chromium.executablePath())) { console.error('Playwright Chromium missing: npx playwright install chromium'); process.exit(2); }
-log(`ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server)`);
+log(`ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server), ${PERF_PORT} (the performance fixture's server)`);
 if (!process.env.CHROME_PATH) { const mac = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'; if (!fs.existsSync(mac) && !spawnSync('which', ['google-chrome']).stdout?.length) process.env.CHROME_PATH = chromium.executablePath(); }
 
 // temporary admin account for the drills (removed at the end; never written to any file)
@@ -249,6 +275,20 @@ try {
   adminId = (await db.query('insert into admins (email, password_hash, pin_hash, name) values ($1,$2,$3,$4) returning id', [adminEmail, adminHash, adminPinHash, SUITE_ADMIN_NAME])).rows[0].id;
   await step('production build (.next-check)', async () => { const r = await run('npx', ['next', 'build'], { env: { NEXT_DIST_DIR: DIST, ROSES_APP_NAME: 'roses-check:build' }, logFile: 'build.log' }); return { pass: r.status === 0, evidence: ['build.log'], note: r.status === 0 ? 'next build ok' : `exit ${r.status}` }; }, 'build');
   if (!results.at(-1).pass) throw new Error('build failed; stopping');
+  await step(`performance fixture ${perf.pointer?.id ?? '(none)'}: verified against its committed pointer, restored into ${perfName}, migrations, its uploads copied, its own production build (${PERF_DIST}) from it`, async () => {
+    if (!perf.ok) return { pass: false, note: perfNote };
+    const pgAdmin = new pg.Client({ connectionString: adminUrl }); await pgAdmin.connect(); await pgAdmin.query(`create database "${perfName}"`); await pgAdmin.end();
+    const d = spawnSync('bash', ['-c', `docker exec -i ${CONTAINER} pg_restore -U roses -d ${perfName} --no-owner --no-privileges --exit-on-error < "${path.join(perf.dir, perf.pointer.dump.file)}"`], { encoding: 'utf8' });
+    if (d.status !== 0) return { pass: false, note: `pg_restore failed: ${d.stderr.slice(0, 300)}` };
+    const m = await run('node', ['scripts/db-migrate.mjs'], { env: { DATABASE_URL: perfUrl, ROSES_DB: perfName, ROSES_APP_NAME: 'roses-check:perf-migrate' }, logFile: 'perf/migrate.log' });
+    if (m.status !== 0) return { pass: false, evidence: ['perf/migrate.log'], note: `migrations failed (exit ${m.status})` };
+    fs.cpSync(path.join(perf.dir, 'uploads'), perfUploads, { recursive: true });
+    perfDb = new pg.Client({ connectionString: perfUrl, application_name: 'roses-check:suite' }); await perfDb.connect();
+    await perfDb.query('insert into admins (email, password_hash, pin_hash, name) values ($1,$2,$3,$4)', [adminEmail, adminHash, adminPinHash, SUITE_ADMIN_NAME]); // for the temporary venue, as on the scratch copy
+    const counts = (await perfDb.query(`select (select count(*) from items)::int as items, (select count(*) from items where photo->>'key' is not null)::int as uploaded`)).rows[0];
+    const b = await run('npx', ['next', 'build'], { env: { NEXT_DIST_DIR: PERF_DIST, DATABASE_URL: perfUrl, ROSES_DB: perfName, UPLOAD_DIR: perfUploads, ROSES_APP_NAME: 'roses-check:perf-build' }, logFile: 'perf/build.log' });
+    return { pass: b.status === 0, evidence: ['perf/migrate.log', 'perf/build.log'], note: `${perfNote}; ${(m.stdout.match(/\d+ migration\(s\) applied, \d+ already present/) || [''])[0]}; ${counts.items} items, ${counts.uploaded} on uploaded photos; ${fs.readdirSync(perfUploads, { recursive: true }).filter((x) => /\.(jpg|png|webp|svg)$/.test(String(x))).length} upload files copied; build ${b.status === 0 ? 'ok' : `exit ${b.status}`}` };
+  }, 'perf-fixture');
   await step('colour literals in the public templates, the menu kit and the public stylesheet (Kian, 2026-10-08: 0 outside src/venues/tokens.ts)', async () => {
     const r = await run('node', ['scripts/check-colour-literals.mjs', '--json', path.join(out, 'colour-literals.json')], { logFile: 'colour-literals.txt' });
     const j = fs.existsSync(path.join(out, 'colour-literals.json')) ? JSON.parse(fs.readFileSync(path.join(out, 'colour-literals.json'), 'utf8')) : null;
@@ -261,7 +301,7 @@ try {
     const up = (await waitHttp(`${base}/senso`)) && (await waitHttp(`http://127.0.0.1:${PROXY_PORT}/senso`));
     const own = [a, b].map((p) => ({ port: p.port, pid: p.pid, alive: p.exitCode === null, listeners: listeners(p.port) }));
     const mine = own.every((o) => o.alive && o.listeners.length > 0 && o.listeners.every((x) => x === o.pid));
-    fs.writeFileSync(path.join(out, 'ports.json'), JSON.stringify({ picked: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT }, servers: own, pass: up && mine }, null, 2));
+    fs.writeFileSync(path.join(out, 'ports.json'), JSON.stringify({ picked: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT, perfServer: PERF_PORT }, servers: own, pass: up && mine }, null, 2));
     return { pass: up && mine, evidence: [`server-${PORT}.log`, `server-${PROXY_PORT}.log`, 'ports.json'], note: `${up ? 'both answer 200 on /senso' : 'a server did not come up'}; ${own.map((o) => `port ${o.port}: listener pid ${o.listeners.join(',') || 'none'}, spawned pid ${o.pid}${o.alive ? '' : ' (exited)'}`).join('; ')}${mine ? ': the suite\'s own processes' : ': NOT the suite\'s own process, so no check ran against it'}` };
   }, 'servers');
   if (!results.at(-1).pass) throw new Error('servers failed; stopping');
@@ -341,10 +381,34 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, checks: drillChecks('after-tap/after-tap.json', !!(m && m.length)), evidence: ['after-tap/after-tap.txt', 'after-tap/after-tap.json'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   }, 'after-tap');
+  // Lighthouse (the PM, 2026-10-12): the regression checks for every venue run on the performance fixture, on its own server (a free port picked
+  // at start, its own build and database), so the ratchet compares code with code. The server is warmed first (each page and every uploaded
+  // photo it names fetched once), and the temporary venue is created in it through the admin API, as on the scratch copy.
+  const perfReady = results.find((r) => r.id === 'perf-fixture')?.pass === true;
+  let perfVenue = null, perfServer = null;
+  if (perfReady) await step(`the performance fixture's server on ${PERF_PORT} (picked free at start, its listener the process the suite spawned), the temporary venue created in it through the admin API, warmed`, async () => {
+    if (!(await portFree(PERF_PORT, '127.0.0.1')) || !(await portFree(PERF_PORT, '::1'))) return { pass: false, note: `port ${PERF_PORT} was taken after it was picked; whatever listens there is left alone` };
+    perfServer = startServer(PERF_PORT, { NEXT_DIST_DIR: PERF_DIST, DATABASE_URL: perfUrl, ROSES_DB: perfName, UPLOAD_DIR: perfUploads, ROSES_APP_NAME: 'roses-check:perf-server' }, `perf/server-${PERF_PORT}.log`);
+    const up = await waitHttp(`${perfBase}/senso`);
+    const pids = listeners(PERF_PORT), mine = perfServer.exitCode === null && pids.length > 0 && pids.every((x) => x === perfServer.pid);
+    if (!up || !mine) return { pass: false, evidence: [`perf/server-${PERF_PORT}.log`], note: `${up ? 'answers on /senso' : 'did not come up'}; listener ${pids.join(',') || 'none'}, spawned pid ${perfServer.pid}` };
+    const r = await run('node', ['scripts/new-venue-drill.mjs', '--base', perfBase, '--out', perfOut], { env: { ...drillEnv, DATABASE_URL: perfUrl, ROSES_DB: perfName }, logFile: 'perf/new-venue-drill.log' });
+    perfVenue = (r.stdout.match(/^NEW VENUE (\S+)$/m) || [])[1] || null;
+    const warmed = [];
+    for (const v of ['senso', 'kebab-land', ...(perfVenue ? [perfVenue] : [])]) {
+      const html = await fetch(`${perfBase}/${v}`).then((x) => x.text()).catch(() => '');
+      const ups = [...new Set(html.match(/\/uploads\/[^"'\s)]+/g) || [])];
+      for (const u of ups) await fetch(`${perfBase}${u}`).then((x) => x.arrayBuffer()).catch(() => {});
+      warmed.push(`/${v} and its ${ups.length} uploaded photo(s)`);
+    }
+    return { pass: !!perfVenue && (!newVenueId || perfVenue === newVenueId), evidence: [`perf/server-${PERF_PORT}.log`, 'perf/new-venue-drill.log'], note: `listener pid ${pids.join(',')} = spawned pid ${perfServer.pid}; temporary venue ${perfVenue ? `/${perfVenue}` : 'NOT created'} in ${perfName}${perfVenue && perfVenue !== newVenueId ? ` (not /${newVenueId} as on the scratch copy)` : ''}; warmed: ${warmed.join(', ')}` };
+  }, 'perf-server');
+  const perfUp = perfReady && results.at(-1).id === 'perf-server' && results.at(-1).pass;
   for (const venue of pageVenues) {
-    await step(`Lighthouse mobile ×3: ${label(venue)} (LCP ≤ 2.5 s, TBT ≤ 50 ms)`, async () => {
-      const vout = path.join(out, venue);
-      const r = await run('node', ['scripts/check-lighthouse.mjs', `${base}/${venue}`, '--runs', '3', '--out', vout], { logFile: `${venue}/lighthouse.log` });
+    await step(`Lighthouse mobile ×3 on the performance fixture ${perf.pointer?.id ?? '(none)'}: ${label(venue)} (LCP ≤ 2.5 s, TBT ≤ 50 ms)`, async () => {
+      if (!perfUp) return { pass: false, note: `not measured: ${perfReady ? 'the fixture\'s server did not come up' : perfNote}` };
+      const vout = path.join(perfOut, venue);
+      const r = await run('node', ['scripts/check-lighthouse.mjs', `${perfBase}/${venue === newVenueId ? perfVenue : venue}`, '--runs', '3', '--out', vout], { logFile: `perf/${venue}/lighthouse.log` });
       const s = JSON.parse(fs.readFileSync(path.join(vout, 'lighthouse-summary.json'), 'utf8'));
       const worst = Math.max(...s.runs.map((x) => x.lcpMs)), worstTbt = Math.max(...s.runs.map((x) => x.tbtMs));
       // Since the welcome screen (2026-10-09) the largest paint is its logo: Lighthouse measures the welcome screen, not the menu behind it.
@@ -357,9 +421,22 @@ try {
         { id: `lighthouse-${key}-lcp`, ok: n === 3 && worst <= 2500, text: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms (target ≤ 2500 on every run)`, metric: { over: s.runs.filter((x) => x.lcpMs > 2500).length, of: n, worst, unit: 'ms' } },
         { id: `lighthouse-${key}-tbt`, ok: n === 3 && worstTbt <= 50, text: `TBT ${s.runs.map((x) => x.tbtMs).join(' / ')} ms (target ≤ 50 on every run)`, metric: { over: s.runs.filter((x) => x.tbtMs > 50).length, of: n, worst: worstTbt, unit: 'ms' } },
       ];
-      return { pass: checks.every((c) => c.ok), checks, evidence: [`${venue}/lighthouse-summary.json`, `${venue}/lighthouse.log`], note: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms, TBT ${s.runs.map((x) => x.tbtMs).join(' / ')} ms, performance ${s.runs.map((x) => x.performance).join(' / ')} (targets LCP ≤ 2500, TBT ≤ 50; local estimates); LCP element ${els.join(' / ')}${logoLcp ? ': the welcome screen\'s logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)' : ': not the welcome logo'}` };
+      return { pass: checks.every((c) => c.ok), checks, evidence: [`perf/${venue}/lighthouse-summary.json`, `perf/${venue}/lighthouse.log`], note: `on the fixture ${perf.pointer.id}: LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms, TBT ${s.runs.map((x) => x.tbtMs).join(' / ')} ms, performance ${s.runs.map((x) => x.performance).join(' / ')} (targets LCP ≤ 2500, TBT ≤ 50; local estimates); LCP element ${els.join(' / ')}${logoLcp ? ': the welcome screen\'s logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)' : ': not the welcome logo'}` };
     }, `lighthouse-${venue === newVenueId ? 'temp-venue' : venue}`);
   }
+  // Content cost (the PM, 2026-10-12): Senso on the live data copy, as information that never fails the run: the photos its page names
+  // (uploaded, with their bytes on disk, and linked), the images each Lighthouse run loaded, LCP per run; the fixture's numbers beside them.
+  await step('Lighthouse mobile ×3 on the live data copy: senso, content cost (information, never fails the run: the photos on the page and the uploaded photos\' bytes, the images each run loaded, LCP per run; the fixture\'s numbers beside them)', async () => {
+    try {
+      const vout = path.join(out, 'senso', 'live');
+      const r = await run('node', ['scripts/check-lighthouse.mjs', `${base}/senso`, '--runs', '3', '--out', vout], { logFile: 'senso/live/lighthouse.log' });
+      const s = JSON.parse(fs.readFileSync(path.join(vout, 'lighthouse-summary.json'), 'utf8'));
+      const fx = perfUp && fs.existsSync(path.join(perfOut, 'senso', 'lighthouse-summary.json')) ? JSON.parse(fs.readFileSync(path.join(perfOut, 'senso', 'lighthouse-summary.json'), 'utf8')) : null;
+      contentCost = { live: { ...(await photoCost(base, scratchEnv.UPLOAD_DIR)), lcpMs: s.runs.map((x) => x.lcpMs), imagesLoaded: s.runs.map((x) => x.images), imageKB: s.runs.map((x) => x.imageKB), exit: r.status }, fixture: perfUp ? { id: perf.pointer.id, ...(await photoCost(perfBase, perfUploads)), lcpMs: fx ? fx.runs.map((x) => x.lcpMs) : null, imagesLoaded: fx ? fx.runs.map((x) => x.images) : null, imageKB: fx ? fx.runs.map((x) => x.imageKB) : null } : null };
+      return { pass: true, evidence: ['senso/live/lighthouse-summary.json', 'senso/live/lighthouse.log'], note: `content cost, information only: ${costLine(contentCost)}` };
+    } catch (e) { return { pass: true, note: `content cost not measured (information only, does not fail the run): ${e.message}` }; }
+  }, 'content-cost-senso');
+  if (perfServer) { try { perfServer.kill('SIGTERM'); } catch { /* gone */ } }
   await step('admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route and section layout 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)', async () => {
     const r = await run('node', ['scripts/admin-drill.mjs', '--base', base, '--out', path.join(out, 'admin'), '--jpeg'], { env: drillEnv, logFile: 'admin/admin-drill.log' });
     const m = (r.stdout.match(/ADMIN DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || []);
@@ -444,18 +521,25 @@ try {
   if (fs.existsSync(path.join(out, 'uploads-clean.txt'))) processes.push({ process: 'roses-uploads-clean', source: 'uploads-clean.txt', databases: [...new Set([...read('uploads-clean.txt').matchAll(/^database "([^"]+)"/gm)].map((m) => m[1]))] });
   processes.push({ process: 'roses-check:migrate', source: 'migrate.log (DATABASE_URL)', databases: [scratchName] }, { process: 'roses-check:build', source: 'build.log (DATABASE_URL)', databases: [scratchName] });
   const samples = [...seen.entries()].map(([k, n]) => ({ connection: k, samples: n })).sort((a, b) => a.connection.localeCompare(b.connection));
-  const wrongProcess = processes.filter((p) => p.databases.length === 0 || p.databases.some((d) => d !== scratchName));
+  // the performance fixture's processes (2026-10-12) work on its own database, restored from the fixture: never the working one
+  const perfUsed = results.some((r) => r.id === 'perf-fixture');
+  if (perfUsed) {
+    processes.push({ process: 'roses-check:perf-migrate', source: 'perf/migrate.log (DATABASE_URL)', databases: [perfName], allowed: perfName }, { process: 'roses-check:perf-build', source: 'perf/build.log (DATABASE_URL)', databases: [perfName], allowed: perfName });
+    if (fs.existsSync(path.join(out, `perf/server-${PERF_PORT}.log`))) processes.push({ process: 'roses-check:perf-server', source: `perf/server-${PERF_PORT}.log`, databases: [...new Set([...read(`perf/server-${PERF_PORT}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]))], allowed: perfName });
+    if (fs.existsSync(path.join(out, 'perf/new-venue-drill.log'))) processes.push({ process: 'roses-check:new-venue (fixture)', source: 'perf/new-venue-drill.log', databases: [...new Set([...read('perf/new-venue-drill.log').matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))], allowed: perfName });
+  }
+  const wrongProcess = processes.filter((p) => p.databases.length === 0 || p.databases.some((d) => d !== (p.allowed ?? scratchName)));
   // Only a connection to the working database is a leak (PM, 2026-10-08). Connections of another session's run on its own
   // scratch copy (<work>_check_<stamp>) or of a hand-run drill on some other copy are listed for the record and do not fail
   // this run: on 2026-10-08 two sessions ran suites at once and the stricter rule failed a run whose every process was on its copy.
   const onWorking = (c) => c.endsWith(`→ ${workName}`);
   const wrongSample = samples.filter((x) => onWorking(x.connection) && !x.connection.startsWith('roses-check:suite-readonly →'));
-  const otherRuns = samples.filter((x) => !onWorking(x.connection) && !x.connection.endsWith(`→ ${scratchName}`));
-  const mustSee = [...Object.values(SERVER_APPS), 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:preview-drill', 'roses-check:style-drill', 'roses-check:welcome-drill', 'roses-check:season-server', 'roses-check:transition-server', 'roses-check:transition-drill', 'roses-check:after-tap-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill'];
+  const otherRuns = samples.filter((x) => !onWorking(x.connection) && !x.connection.endsWith(`→ ${scratchName}`) && !x.connection.endsWith(`→ ${perfName}`));
+  const mustSee = [...Object.values(SERVER_APPS), 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:preview-drill', 'roses-check:style-drill', 'roses-check:welcome-drill', 'roses-check:season-server', 'roses-check:transition-server', 'roses-check:transition-drill', 'roses-check:after-tap-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill', ...(results.some((r) => r.id === 'perf-server' && r.pass) ? ['roses-check:perf-server'] : [])];
   const unseen = mustSee.filter((a) => !samples.some((x) => x.connection.startsWith(`${a} →`)));
   const passA = wrongProcess.length === 0 && wrongSample.length === 0 && processes.length >= 8 && unseen.length === 0;
-  fs.writeFileSync(path.join(out, 'isolation.json'), JSON.stringify({ scratch: scratchName, working: workName, processes, pgStatActivitySamples: samples, otherRunsSeen: otherRuns, pass: passA }, null, 2));
-  results.push({ id: 'isolation-a', outcome: passA ? 'PASS' : 'FAIL', name: `isolation (a): every server and drill process connected to the scratch database ${scratchName} (own log line per process + pg_stat_activity sampled every 400 ms)`, pass: passA, ms: 0, evidence: ['isolation.json', `server-${PORT}.log`, `server-${PROXY_PORT}.log`, '*/…-drill.log'], note: passA ? `${processes.length} processes, every one on the scratch copy by its own log; pg_stat_activity: ${samples.length} distinct connections seen over ${samples.reduce((n, x) => n + x.samples, 0)} samples (servers and drills included), none on ${workName}${otherRuns.length ? `; ${otherRuns.length} connection(s) of other sessions' runs on their own copies seen and listed in isolation.json` : ''}` : `WRONG: ${wrongProcess.map((p) => `${p.process} → ${p.databases.join(',') || 'no log line'}`).join('; ')} ${wrongSample.map((x) => x.connection).join('; ')} ${unseen.length ? `never sampled: ${unseen.join(', ')}` : ''}` });
+  fs.writeFileSync(path.join(out, 'isolation.json'), JSON.stringify({ scratch: scratchName, perfFixture: perfUsed ? perfName : null, working: workName, processes, pgStatActivitySamples: samples, otherRunsSeen: otherRuns, pass: passA }, null, 2));
+  results.push({ id: 'isolation-a', outcome: passA ? 'PASS' : 'FAIL', name: `isolation (a): every server and drill process connected to the scratch database ${scratchName}${perfUsed ? ` (the performance fixture's to its own, ${perfName})` : ''} (own log line per process + pg_stat_activity sampled every 400 ms)`, pass: passA, ms: 0, evidence: ['isolation.json', `server-${PORT}.log`, `server-${PROXY_PORT}.log`, '*/…-drill.log'], note: passA ? `${processes.length} processes, every one on the scratch copy by its own log; pg_stat_activity: ${samples.length} distinct connections seen over ${samples.reduce((n, x) => n + x.samples, 0)} samples (servers and drills included), none on ${workName}${otherRuns.length ? `; ${otherRuns.length} connection(s) of other sessions' runs on their own copies seen and listed in isolation.json` : ''}` : `WRONG: ${wrongProcess.map((p) => `${p.process} → ${p.databases.join(',') || 'no log line'}`).join('; ')} ${wrongSample.map((x) => x.connection).join('; ')} ${unseen.length ? `never sampled: ${unseen.join(', ')}` : ''}` });
   log(`   ${passA ? 'PASS' : 'FAIL'} isolation (a)`);
   // (b) the working database holds no row written by a suite account.
   let b = null;
@@ -478,12 +562,13 @@ try {
   // drop the scratch copy (and the backup drill's scratch, if a failure left it behind)
   try {
     const pgAdmin = new pg.Client({ connectionString: adminUrl }); await pgAdmin.connect();
-    for (const name of [scratchName, `${scratchName}_restore_test`]) {
+    if (perfDb) await perfDb.end().catch(() => {});
+    for (const name of [scratchName, `${scratchName}_restore_test`, perfName]) {
       await pgAdmin.query('select pg_terminate_backend(pid) from pg_stat_activity where datname = $1 and pid <> pg_backend_pid()', [name]);
       await pgAdmin.query(`drop database if exists "${name}"`);
     }
     await pgAdmin.end();
-    log(`scratch database ${scratchName} dropped`);
+    log(`scratch database ${scratchName}${perfUsed ? ` and the fixture's ${perfName}` : ''} dropped`);
   } catch (e) { log(`could not drop the scratch database: ${e.message}`); }
 }
 
@@ -497,8 +582,10 @@ const knownStatus = (k) => !k.run ? '**NOT RUN** (the suite stopped before its s
 const lines = [
   `# Check suite — ${stamp.replace('T', ' ').replace(/-(\d\d)-(\d\d)Z$/, ':$1:$2Z')}`, '',
   `**Suite: ${FULL ? 'full** (`npm run check:full`: the transition drill on all 40 versions; required before every merge to main)' : 'fast** (`npm run check`: the transition drill\'s browser checks on the four versions chosen now, the served HTML and size of all 40; not enough for a merge to main, which needs `npm run check:full`)'}`, '',
-  `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, ${KNOWN_FILE} included) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
+  `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, ${KNOWN_FILE} included) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server), ${PERF_PORT} (the performance fixture's server); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
   `Scratch copy: ${scratchName} from a pg_dump of ${workName}; ${uploadsNote}.`, '',
+  `Performance fixture (Lighthouse\'s regression checks run on it, the PM 2026-10-12): ${perfNote}; its own build ${PERF_DIST} and server on port ${PERF_PORT}.`, '',
+  `Content cost (Senso on the live data copy, information only, never fails the run): ${costLine(contentCost)}.`, '',
   ...(underLoad ? [`**Run forced past the pre-flight (\`--force\`) under external load**: ${preBad.map(preDescribe).join('; ')}. Every timing check below is marked "under external load"; its times are not evidence.`, ''] : []),
   `**${pass ? 'PASS' : 'FAIL'}** — ${results.filter((r) => outcome(r) === 'PASS').length} of ${results.length} checks passed${knownMissed.length ? `, ${knownMissed.length} KNOWN MISS (listed in \`${KNOWN_FILE}\`, still measured: see Known misses)` : ''}${failed.length ? `, ${failed.length} failed (not listed as known misses)` : ', no unlisted failure'}.${nowPassing.length ? ` Known miss now passing: ${nowPassing.map((k) => k.title).join(', ')} (see Known misses).` : ''}`, '',
   ...(pass ? [] : [`Cause: ${(() => { const f = failed[0]; return `${f.name} — ${(f.note || '').replace(/\s+/g, ' ').slice(0, 300)}`; })()}`, '', 'This failed run is kept on purpose (PM, 2026-10-08): the folder is never deleted, even when a re-run passes.', '']),
@@ -513,7 +600,7 @@ const lines = [
   'Every path is relative to this folder. Screenshots, full Lighthouse JSON, the first HTML responses, uploads and the dumps stay on the machine that ran the suite (gitignored); report.md, summary.json, the check JSON files and the text logs are committed. Every server and drill ran against the scratch copy of the working database (isolation.json lists the database each process connected to, from its own log and from pg_stat_activity), which was dropped afterwards; the working database itself was only read (the dump, then the search for suite-account rows in working-db-suite-rows.json). Lighthouse numbers are local estimates; since the welcome screen (2026-10-09) their LCP element is the welcome logo, so the Lighthouse LCP measures the welcome screen, not the menu behind it; the menu after the language tap is measured by the after-tap step under throttled mobile conditions.', '',
 ];
 fs.writeFileSync(path.join(out, 'report.md'), lines.join('\n'));
-fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, suite: FULL ? 'full' : 'fast', pass, uploads: { from: WORK_UPLOADS, copied: uploadsCopied.length, keys: uploadKeys.length, missing: uploadsMissing }, preflight: { ...pre, forced: underLoad, offenders: preBad }, underExternalLoad: underLoad ? results.filter((r) => TIMING.test(r.name)).map((r) => r.name) : [], ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT }, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, baseline: k.baseline, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
+fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, suite: FULL ? 'full' : 'fast', pass, uploads: { from: WORK_UPLOADS, copied: uploadsCopied.length, keys: uploadKeys.length, missing: uploadsMissing }, preflight: { ...pre, forced: underLoad, offenders: preBad }, underExternalLoad: underLoad ? results.filter((r) => TIMING.test(r.name)).map((r) => r.name) : [], ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT, perfServer: PERF_PORT }, perfFixture: { ok: perf.ok, id: perf.pointer?.id ?? null, dir: perf.dir, problems: perf.problems, database: perfName, dump: perf.pointer?.dump ?? null, uploads: perf.pointer?.uploads ?? null }, contentCost, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, baseline: k.baseline, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
 console.log('\n' + lines.slice(4).join('\n'));
 console.log(`\nreport: ${path.relative(process.cwd(), path.join(out, 'report.md'))}`);
 console.log(`CHECK SUITE (${FULL ? 'full' : 'fast'}) ${pass ? 'PASS' : 'FAIL'}${knownMissed.length ? ` (${knownMissed.length} KNOWN MISS)` : ''}${underLoad ? ' (forced: timing checks under external load)' : ''}`);

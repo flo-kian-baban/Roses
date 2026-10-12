@@ -2,16 +2,16 @@
 
 The feature is described in CLAUDE.md ("Seasonal items"). The acceptance checks run in `npm run check` / `check:full` (the editor, season, preview and admin drills). This folder has the hand checks made before the suite.
 
-## Persian titles: drafts for Kian
+## Persian titles: Kian's choice
 
-| Season | English | Persian draft |
+| Season | English | Persian |
 |---|---|---|
 | Fall | Fall specials | ویژه‌های پاییز |
 | Winter | Winter specials | ویژه‌های زمستان |
 | Spring | Spring specials | ویژه‌های بهار |
 | Summer | Summer specials | ویژه‌های تابستان |
 
-The drafts are in `src/lib/seasonal.ts` (`SEASONAL_TITLES`). An alternative wording, if Kian prefers it: پیشنهاد ویژهٔ پاییز (and the same for the other seasons).
+In `src/lib/seasonal.ts` (`SEASONAL_TITLES`). Drafted on 2026-10-12 with an alternative, پیشنهاد ویژهٔ پاییز (and the same for the other seasons); Kian chose ویژه‌های… for all four (the PM's review, the same day).
 
 ## A venue with no seasonal item: the same bytes as before
 

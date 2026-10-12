@@ -1,0 +1,44 @@
+{
+  "about": "The performance fixture (the PM, 2026-10-12): the content Lighthouse's regression checks run on. Stored outside git under `dir` in the main checkout (gitignored); scripts/perf-fixture.mjs verify checks every file against the hashes below, and the suite refuses to measure on anything else. Refreshed only by Kian's decision (a new id), and the known miss on Senso's LCP is re-baselined on it then.",
+  "id": "2026-10-12",
+  "dir": "perf-fixture/2026-10-12",
+  "frozen": "2026-10-12T17:25:54.678Z",
+  "from": {
+    "database": "roses",
+    "migration": "006_seasonal.sql",
+    "uploads": "/Users/kianbaban/Roses/uploads"
+  },
+  "dump": {
+    "file": "db.dump",
+    "bytes": 77824,
+    "sha256": "ff10ccfa16c52c013928606d20324966123ee3f9430de1ff2cbae13d43e6fa2b",
+    "dataLeftOut": [
+      "admins",
+      "pins",
+      "login_failures",
+      "revisions",
+      "admin_alerts"
+    ]
+  },
+  "uploads": {
+    "files": 38,
+    "bytes": 5993438,
+    "sha256": "c5e8b84f41afc75b30ed8b77dfa16560618600bf19888497debe756506643ef9"
+  },
+  "content": {
+    "kebab-land": {
+      "items": 102,
+      "shown": 102,
+      "uploadedPhotos": 0,
+      "uploadedBytes": 0,
+      "linkedPhotos": 45
+    },
+    "senso": {
+      "items": 283,
+      "shown": 140,
+      "uploadedPhotos": 33,
+      "uploadedBytes": 5452840,
+      "linkedPhotos": 97
+    }
+  }
+}

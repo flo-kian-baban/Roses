@@ -218,12 +218,20 @@ export function MenuDialogs({ sections }: { sections: Section[] }) {
 // changes with the language, so its direction is fixed (ltr; nothing in the scene depends on it, all its positions are physical) and
 // a switch of the page's direction no longer restyles its particles (the biggest part on Senso, about 200 animated elements). (2) Every
 // section's list of items (its [data-layout] list) away from the screen is given content-visibility: auto at the size it was last laid
-// out at (contain-intrinsic-block-size: auto <its height>, read from the observer's entry, so nothing is laid out to know it): such a
+// out at (contain-intrinsic-block-size: auto <its content height>: the observer's entry less the list's own padding and border, read
+// before anything is written, since the property sizes the content box; a Grid list has 24 px of bottom padding, which taken in its
+// height made each contained Grid list 24 px taller, found by the Style drill's position check; nothing is laid out to know it): such a
 // list skips its style and layout, a language switch included, and keeps its size, so the section boxes the tabs read (sectionAt) and
 // the scroll targets of a tab tap stay where they were. Within a quarter screen of the screen a list is plain again (the observer's
 // margin), so what is painted on screen is painted exactly as before: the paint containment of content-visibility snaps text to whole
 // pixels and clips at the list's edges (the band between sections reaches past the page's side padding; a Persian glyph can reach past
-// the list's edge), and a list carries it only while it is away from the screen. Measured by the transition drill (no long task over 50 ms on the Persian tap) and,
+// the list's edge), and a list carries it only while it is away from the screen. A list contained in one language keeps that
+// language's height after a switch (that is what spares the tap the relayout), so a tab tap would aim at a section that moves as the
+// lists before it come near and are laid out in the new language (found by hand, 2026-10-12: a fresh page in Persian, a tap on a far tab
+// landed up to 238 px off, 9328 px in WebKit). So, a second after a change of direction (after the transition into the menu, ≤ 880 ms),
+// the lists still contained in the old direction below the screen are laid out again, one per frame, and contained again at their new
+// height; a tap on a link to a section first lays out every list still in the old direction (one forced layout, before the target is
+// read), so it lands exactly. Measured by the transition drill (no long task over 50 ms on the Persian tap) and,
 // before and after, by reports/persian-tap/ (the active tab at ten scroll positions in both languages; screenshots of Kebab Land and
 // the default template in both languages).
 const menuScript = `(function(){var sheet=document.getElementById('sheet'),hero=document.getElementById('sheet-hero'),content=document.getElementById('sheet-content');
@@ -240,15 +248,23 @@ btn.addEventListener('click',function(){if(listClosing){listClosing=false;list.c
 list.addEventListener('click',function(e){if(e.target===list||e.target.closest('a')||e.target.closest('#list-close'))hideList()});list.addEventListener('cancel',function(e){e.preventDefault();hideList()});
 list.addEventListener('close',function(){if(history.state&&history.state.list)history.back()});window.addEventListener('popstate',function(){if(list.open)hideList()})}}
 var nav=document.getElementById('tabs'),strip=nav&&nav.querySelector('ul'),tabs=[].slice.call(document.querySelectorAll('#tabs a[data-tab]')),byId={};tabs.forEach(function(a){byId[a.getAttribute('data-tab')]=a});
-var secs=[].slice.call(document.querySelectorAll('main section[id]')),current=null,lock=null,lockTimer=null,queued=false;
+var secs=[].slice.call(document.querySelectorAll('main section[id]')),current=null,lock=null,lockTimer=null,queued=false,flush=null;
 var setActive=function(id,instant){if(current===id)return;current=id;tabs.forEach(function(a){a.classList.toggle('active',a.getAttribute('data-tab')===id)});var a=byId[id];if(a&&strip){var r=a.getBoundingClientRect(),s=strip.getBoundingClientRect(),d=r.left+r.width/2-(s.left+s.width/2);if(strip.scrollBy)strip.scrollBy({left:d,behavior:instant||reduced?'auto':'smooth'});else strip.scrollLeft+=d}};
 var sectionAt=function(){var b=(nav?nav.getBoundingClientRect().bottom:0)+1,id=secs[0].id;for(var i=0;i<secs.length;i++)if(secs[i].getBoundingClientRect().top<=b)id=secs[i].id;if(window.scrollY>0&&window.scrollY+window.innerHeight>=document.documentElement.scrollHeight-1)id=secs[secs.length-1].id;return id};
 var update=function(instant){if(queued)return;queued=true;requestAnimationFrame(function(){queued=false;if(lock===null&&secs.length)setActive(sectionAt(),instant)})};
 var release=function(){clearTimeout(lockTimer);lockTimer=null;lock=null};var settle=function(){clearTimeout(lockTimer);lockTimer=setTimeout(release,160)};
 window.addEventListener('scroll',function(){if(lock!==null)settle();else update()},{passive:true});window.addEventListener('resize',function(){update()});
 ['touchstart','wheel','keydown','pointerdown'].forEach(function(t){window.addEventListener(t,function(e){if(lock!==null&&!(nav&&nav.contains(e.target))){release();update()}},{passive:true})});
-document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var id=decodeURIComponent(a.getAttribute('href').slice(1)),t=document.getElementById(id);if(!t)return;e.preventDefault();if(byId[id]){lock=id;setActive(id);settle()}window.scrollTo({top:window.scrollY+t.getBoundingClientRect().top-(nav?nav.offsetHeight:0),behavior:reduced?'auto':'smooth'})});
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var id=decodeURIComponent(a.getAttribute('href').slice(1)),t=document.getElementById(id);if(!t)return;e.preventDefault();if(flush)flush();if(byId[id]){lock=id;setActive(id);settle()}window.scrollTo({top:window.scrollY+t.getBoundingClientRect().top-(nav?nav.offsetHeight:0),behavior:reduced?'auto':'smooth'})});
 if(secs.length)update(true);
 var scene=document.querySelector('#welcome .welcome-scene');if(scene)scene.style.direction='ltr';
 var lists=[].slice.call(document.querySelectorAll('main section[id] > [data-layout]'));
-if(lists.length&&window.IntersectionObserver){var io=new IntersectionObserver(function(es){es.forEach(function(e){var x=e.target;if(e.isIntersecting)x.style.contentVisibility='';else{x.style.containIntrinsicBlockSize='auto '+e.boundingClientRect.height.toFixed(2)+'px';x.style.contentVisibility='auto'}})},{rootMargin:'25% 0px'});lists.forEach(function(x){io.observe(x)})}})();`;
+if(lists.length&&window.IntersectionObserver){var de=document.documentElement,laid=[],raf=0,timer=0;
+var inner=function(x,h){var c=getComputedStyle(x);return h-parseFloat(c.paddingTop)-parseFloat(c.paddingBottom)-parseFloat(c.borderTopWidth)-parseFloat(c.borderBottomWidth)};
+var fold=function(x,h){x.style.containIntrinsicBlockSize='auto '+h.toFixed(2)+'px';x.style.contentVisibility='auto';x._dir=de.dir};
+var stale=function(x){return x.style.contentVisibility==='auto'&&x._dir!==de.dir};var relay=function(x){x.style.contentVisibility='';laid.push(x)};
+var frame=function(){raf=0;var h=laid.map(function(x){return x._away?inner(x,x.getBoundingClientRect().height):0});laid.forEach(function(x,i){if(x._away)fold(x,h[i])});laid=[];
+for(var i=0;i<lists.length;i++)if(stale(lists[i])&&lists[i].getBoundingClientRect().top>=innerHeight){relay(lists[i]);break}if(laid.length)raf=requestAnimationFrame(frame)};
+flush=function(){lists.forEach(function(x){if(stale(x))relay(x)});if(laid.length&&!raf)raf=requestAnimationFrame(frame)};
+var io=new IntersectionObserver(function(es){var h=es.map(function(e){e.target._away=!e.isIntersecting;return e.isIntersecting?0:inner(e.target,e.boundingClientRect.height)});es.forEach(function(e,i){if(e.isIntersecting)e.target.style.contentVisibility='';else fold(e.target,h[i])})},{rootMargin:'25% 0px'});lists.forEach(function(x){io.observe(x)});
+if(window.MutationObserver)new MutationObserver(function(){clearTimeout(timer);timer=setTimeout(function(){if(!raf)raf=requestAnimationFrame(frame)},1000)}).observe(de,{attributes:true,attributeFilter:['dir']})}})();`;

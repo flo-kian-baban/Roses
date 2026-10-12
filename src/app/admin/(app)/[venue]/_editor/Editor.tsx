@@ -14,10 +14,10 @@
 // sheet (collapsed / half / full; half while a colour is being edited, so at least 45 % of the screen stays preview); the Menu and
 // Details tabs keep their layout with the Preview button. Compare (Style tab): the venue's default colours in the preview while held.
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
-import type { Bi, EditorItem, EditorSection, EditorVenue, Notes, Photo, SectionLayout } from '@/lib/types';
+import type { Bi, EditorItem, EditorSection, EditorVenue, Notes, Photo, SeasonId, SectionLayout } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
 import { call, type Resp } from './api';
-import { reduce, type Filter, type Menu } from './state';
+import { SEASON_NAMES, reduce, type Filter, type Menu } from './state';
 import { MenuTab } from './MenuTab';
 import { ItemPanel, PhotoField } from './ItemPanel';
 import { NO_REGION, Preview, type Focus, type Pick, type PreviewHandle, type Region, type RegionState } from './Preview';
@@ -40,7 +40,8 @@ const PHONE_TOP = 100; // where the phone Style layout's preview starts: under t
 const TAB_HREF = (venueId: string, t: Tab) => `/admin/${venueId}${t === 'menu' ? '' : `?tab=${t}`}`;
 const SCREEN_OF_REGION = (r: Region): Screen => (r === 'welcome' ? 'welcome' : r === 'sheet' ? 'sheet' : 'menu');
 
-export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueInfo; me: Me; initial: Menu; tab: Tab }) {
+// today: today's season in Toronto, as the public page is rendered for it (seasonal items, Kian, 2026-10-12).
+export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: VenueInfo; me: Me; initial: Menu; tab: Tab; today: SeasonId }) {
   const [menu, dispatch] = useReducer(reduce, initial);
   const [tab, setTab] = useState<Tab>(initialTab);
   const go = (t: Tab) => { setTab(t); setPreviewOpen(false); setCompare(false); try { history.replaceState(null, '', TAB_HREF(venue.id, t)); } catch { /* ignore */ } };
@@ -194,7 +195,7 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
     setPreviewOpen(false);
     if (pk.kind === 'region') { setPicked({ region: pk.region, n: Date.now() }); return; }
     if (pk.kind === 'item' && pk.id && menu.items[pk.id]) { setOpen({ id: pk.id, section: menu.items[pk.id].placements[0]?.section_id ?? null }); setHighlight(pk.id); if (tab !== 'menu') return; requestAnimationFrame(() => document.querySelector(`[data-item="${pk.id}"]`)?.scrollIntoView({ block: 'center' })); }
-    else if (pk.kind === 'section' && pk.id && menu.sections.some((s) => s.id === pk.id)) setRenaming(pk.id);
+    else if (pk.kind === 'section' && pk.id && menu.sections.some((s) => s.id === pk.id && !s.seasonal)) setRenaming(pk.id); // the Seasonal section is titled by the season
     else if (pk.kind === 'header' && me.canManage && tab !== 'details') go('details');
   };
 
@@ -205,7 +206,7 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
   const bar = (phone: boolean) => <PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone={phone} />;
   const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} previewSeason={season ?? now.season} onPlay={playTransition} />;
 
-  const panel = openItem && <ItemPanel item={openItem} venueId={venue.id} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} column={wide} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
+  const panel = openItem && <ItemPanel item={openItem} venueId={venue.id} season={today} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} column={wide} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (
     <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
       <div className="relative min-w-0">
@@ -217,7 +218,7 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
           <span className="flex-1" />
           {!phoneStyle && <button type="button" onClick={() => setPreviewOpen(true)} className="flex h-11 items-center gap-1.5 rounded-full border border-line bg-white px-3 text-[14px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,.04)] lg:hidden"><Icon name="smartphone" className="h-4 w-4" />Preview</button>}
         </div>
-        {tab === 'menu' && <MenuTab menu={menu} filter={filter} setFilter={setFilter} query={query} setQuery={setQuery} highlightId={highlight}
+        {tab === 'menu' && <MenuTab menu={menu} season={today} filter={filter} setFilter={setFilter} query={query} setQuery={setQuery} highlightId={highlight}
               onOpen={(id, section) => setOpen({ id, section })} onAdd={(sid) => setAdding(sid)} onAddSection={() => setAddingSection(true)}
               onToggleItem={(id, listed) => itemUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onPrice={(id, price) => itemUpdate(id, { price })}
               onToggleSection={(id, listed) => sectionUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onRename={(id) => setRenaming(id)} onMoveSection={sectionMove}
@@ -249,10 +250,10 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
         {panel}
       </>}
       {previewOpen && !phoneStyle && <div className="fixed inset-0 z-[60] lg:hidden"><Preview ref={previewB} {...previewProps} frame={false} onClose={() => setPreviewOpen(false)} /></div>}
-      {adding && <AddItemSheet venueId={venue.id} sectionName={menu.sections.find((s) => s.id === adding)?.name.en ?? ''} onClose={() => setAdding(null)} onAdd={async (d) => { await itemCreate(adding, d); setAdding(null); }} />}
+      {adding && <AddItemSheet venueId={venue.id} sectionName={menu.sections.find((s) => s.id === adding)?.name.en ?? ''} seasonNote={menu.sections.find((s) => s.id === adding)?.seasonal ? SEASON_NAMES[today] : null} onClose={() => setAdding(null)} onAdd={async (d) => { await itemCreate(adding, d); setAdding(null); }} />}
       {addingSection && <AddSectionSheet onClose={() => setAddingSection(false)} onAdd={sectionCreate} />}
       {renaming && menu.sections.some((s) => s.id === renaming) && <RenameSheet section={menu.sections.find((s) => s.id === renaming)!} onClose={() => setRenaming(null)} onPatch={(p) => sectionUpdate(renaming, p)} />}
-      {deleting && menu.sections.some((s) => s.id === deleting) && <DeleteSectionSheet section={menu.sections.find((s) => s.id === deleting)!} others={menu.sections.filter((s) => s.id !== deleting)} items={menu.items} onClose={() => setDeleting(null)} onDelete={(mode) => sectionDeleteWith(deleting, mode)} />}
+      {deleting && menu.sections.some((s) => s.id === deleting) && <DeleteSectionSheet section={menu.sections.find((s) => s.id === deleting)!} others={menu.sections.filter((s) => s.id !== deleting && !s.seasonal)} items={menu.items} onClose={() => setDeleting(null)} onDelete={(mode) => sectionDeleteWith(deleting, mode)} />}
       {confirm && <ConfirmSheet title={confirm.title} body={confirm.body} label={confirm.label} onConfirm={confirm.action} onClose={() => setConfirm(null)} />}
       {toast && (
         <div className={`toast fixed bottom-5 left-1/2 z-[80] flex -translate-x-1/2 items-center gap-1 rounded-full py-1.5 pl-4 pr-1.5 text-[15px] font-medium text-white shadow-pop ${toast.error ? 'bg-red-600' : 'bg-ink'}`} role="status" style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}>
@@ -265,7 +266,8 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
 }
 
 // "+ Add item": name, price and an optional photo from the phone (uploaded when the item is added). Created shown when it has a price.
-function AddItemSheet({ venueId, sectionName, onClose, onAdd }: { venueId: string; sectionName: string; onClose: () => void; onAdd: (d: { name: string; price: number | null; photo: Photo | null }) => Promise<void> }) {
+// In the Seasonal section the item is tagged with today's season by the server (seasonNote: its name, said under the fields).
+function AddItemSheet({ venueId, sectionName, seasonNote, onClose, onAdd }: { venueId: string; sectionName: string; seasonNote: string | null; onClose: () => void; onAdd: (d: { name: string; price: number | null; photo: Photo | null }) => Promise<void> }) {
   const [name, setName] = useState(''); const [price, setPrice] = useState(''); const [photo, setPhoto] = useState<Photo | null>(null);
   const [busy, setBusy] = useState(false); const [err, setErr] = useState<string | null>(null);
   const submit = async (e: React.FormEvent) => {
@@ -282,6 +284,7 @@ function AddItemSheet({ venueId, sectionName, onClose, onAdd }: { venueId: strin
         <label className="block"><span className="mb-1 block text-sm font-medium">Name</span><input className={fieldCls} name="name" value={name} onChange={(e) => setName(e.target.value)} autoFocus required aria-label="Name" /></label>
         <label className="block"><span className="mb-1 block text-sm font-medium">Price</span><span className="relative block"><span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-neutral-500">$</span><input className={`${fieldCls} pl-8 tabular-nums`} name="price" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0.00" aria-label="Price" /></span><span className="mt-1 block text-xs text-ink-muted">With a price the item is shown to customers at once; without one it stays hidden.</span></label>
         <div><span className="mb-1 block text-sm font-medium">Photo <span className="font-normal text-ink-muted">(optional)</span></span><PhotoField venueId={venueId} photo={photo} alt={{ en: name, fa: null }} onChange={async (p) => setPhoto(p)} /></div>
+        {seasonNote && <p className="text-xs text-ink-muted">Tagged {seasonNote}: customers see it as a {seasonNote.toLowerCase()} special. Change its seasons in the item.</p>}
         {err && <p role="alert" className="text-sm text-red-600">{err}</p>}
         <button type="submit" className={`${btnPrimary} w-full`} disabled={busy}>Add item</button>
       </form>

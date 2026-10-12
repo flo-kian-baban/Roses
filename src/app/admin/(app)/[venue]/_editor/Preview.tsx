@@ -6,7 +6,8 @@
 // The view (Kian, 2026-10-09, the preview control bar; src/app/admin/(app)/[venue]/_editor/view.ts) is owned by the editor and
 // flows to both previews; the bar itself sits in the Style tab (Kian, 2026-10-10), not here. The screen (Welcome: the overlay shown
 // live with its scene running; Menu; Item popup: the first item's popup; Section list), the language, the season (another season's scene is fetched from the admin API and
-// swapped into the frame, since the customers' page carries only the current season) and the time of day (the greeting), each
+// swapped into the frame, since the customers' page carries only the current season; with it, since 2026-10-12, that season's menu: the
+// Seasonal section and the items tagged for it, so the admin sees each season's specials before they go live) and the time of day (the greeting), each
 // preview-only, plus Replay. After a save the fresh frame is put back on the same screen and position before it is shown.
 // Play (the Style tab's Welcome group, 2026-10-10): the venue's transition from the welcome screen into the menu, played in the frame by
 // the page's own code (a tap on the language button of the preview's language, which the page answers as it does for customers), in
@@ -77,7 +78,7 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
   useEffect(() => { if (!view.replay) return; const d = activeDoc(); if (d) replayWelcome(d); }, [view.replay]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { const d = activeDoc(); if (d) applyLang(d, view.lang); }, [view.lang]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { const d = activeDoc(); if (d) applyGreet(d, view.slot); }, [view.slot]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { const d = activeDoc(); if (d) seasonP.current = applySeason(d, venueId, view.season, () => viewRef.current.season === view.season); }, [view.season]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const d = activeDoc(); if (d) seasonP.current = applySeason(d, venueId, view.season, () => viewRef.current.season === view.season).then((swapped) => { if (swapped && d === activeDoc()) { applyScreen(d, viewRef.current); if (regionRef.current.region) applyRegion(d, regionRef.current.region, false); } }); }, [view.season]); // eslint-disable-line react-hooks/exhaustive-deps
   // The open group's region (or a re-assertion of it): outlined in the loaded frame, scrolled to when out of view.
   useEffect(() => { const d = activeDoc(); if (d) applyRegion(d, region.region, true); }, [region]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -108,7 +109,9 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
     const main = d.querySelector('main'); if (main) main.inert = false; // the page's script made the menu inert behind the overlay; the admin edits it
     previewStyle(d);
     applyLang(d, v.lang); applyGreet(d, v.slot);
-    if (v.season) { const want = v.season; seasonP.current = applySeason(d, venueId, want, () => viewRef.current.season === want); }
+    // With a season of the preview's own, the frame is shown once that season's scene and menu are in (seasonal items, 2026-10-12: no flash of today's menu).
+    const finish = () => {
+    if (slot !== loadingSlot.current) return; // a newer load took over meanwhile
     if (pickRef.current) attachPick(d, (p) => pickRef.current?.(p), () => styleModeRef.current);
     if (varsRef.current) applyVars(d, varsRef.current);
     applyScreen(d, v); // the same screen as before the save: the welcome screen, the popup or the section list open again
@@ -117,6 +120,9 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
     if (playWanted.current) h.classList.add('roses-play-still'); // a transition just chosen plays from this fresh page: its welcome card settled from its first visible frame, as in the frame it replaces (no entrance starting over under the cross-fade)
     activeRef.current = slot; setActive(slot); setLoading(false); reloading.current = false;
     if (playWanted.current) { playWanted.current = false; play(d, true); } // once the preview's season (its scene and transition) is in
+    };
+    if (v.season) { const want = v.season; seasonP.current = applySeason(d, venueId, want, () => viewRef.current.season === want).then(() => undefined); void seasonP.current.then(finish); }
+    else finish();
   };
 
   // Laptop: the phone scales down to fit the column (always whole, never cut).
@@ -334,19 +340,48 @@ async function putTx(d: Document, venueId: string, tx: string) {
 // 2026-10-11): its style replaces the page's, its script redefines the page's w.rosesTx; today's are kept and put back with today's scene.
 type TxPart = { key: string; css: string; js: string } | null;
 type Kept = { html: string; season: string; tx: unknown; txCss: string | null; txKey: string | null };
-async function applySeason(d: Document, venueId: string, season: Season | null, stillWanted: () => boolean) {
+async function applySeason(d: Document, venueId: string, season: Season | null, stillWanted: () => boolean): Promise<boolean> {
   const holder = d.querySelector<HTMLElement>('#welcome .welcome-scene'), w = d.getElementById('welcome') as (HTMLElement & { rosesTx?: unknown }) | null;
-  if (!holder || !w) return;
+  if (!holder || !w) { // the welcome screen switched off: the menu only
+    if (!season) return seasonMenu(d, 'today');
+    const m = await fetch(`/api/admin/welcome-scene?venue=${encodeURIComponent(venueId)}&season=${season}`).then((x) => x.json() as Promise<{ ok: boolean; menu?: string | null }>).catch(() => null);
+    return !!m?.ok && stillWanted() && seasonMenu(d, m.menu ?? 'today');
+  }
   const kept = holder as HTMLElement & { rosesToday?: Kept };
-  if (!season) { if (kept.rosesToday) { const k = kept.rosesToday; holder.innerHTML = k.html; w.dataset.season = k.season; setTx(d, w, k.txCss, null, k.txKey); w.rosesTx = k.tx; delete kept.rosesToday; } return; }
-  if (w.dataset.season === season && !kept.rosesToday) return; // today's season is already up
-  const r = await fetch(`/api/admin/welcome-scene?venue=${encodeURIComponent(venueId)}&season=${season}`).then((x) => x.json() as Promise<{ ok: boolean; html?: string; script?: string | null; tx?: TxPart }>).catch(() => null);
-  if (!r?.ok || !r.html || !stillWanted() || !holder.isConnected) return;
+  if (!season) { if (kept.rosesToday) { const k = kept.rosesToday; holder.innerHTML = k.html; w.dataset.season = k.season; setTx(d, w, k.txCss, null, k.txKey); w.rosesTx = k.tx; delete kept.rosesToday; } return seasonMenu(d, 'today'); }
+  if (w.dataset.season === season && !kept.rosesToday) return seasonMenu(d, 'today'); // today's season is already up
+  const r = await fetch(`/api/admin/welcome-scene?venue=${encodeURIComponent(venueId)}&season=${season}`).then((x) => x.json() as Promise<{ ok: boolean; html?: string; menu?: string | null; script?: string | null; tx?: TxPart }>).catch(() => null);
+  if (!r?.ok || !r.html || !stillWanted() || !holder.isConnected) return false;
   if (!kept.rosesToday) kept.rosesToday = { html: holder.innerHTML, season: w.dataset.season ?? '', tx: w.rosesTx, txCss: d.getElementById('welcome-tx')?.textContent ?? null, txKey: d.getElementById('welcome-tx')?.dataset.tx ?? null };
   holder.innerHTML = r.html; w.dataset.season = season;
   if (r.script) { const s = d.createElement('script'); s.textContent = r.script; holder.appendChild(s); s.remove(); }
   setTx(d, w, r.tx?.css ?? null, r.tx?.js ?? null, r.tx?.key ?? null);
   if (!r.tx) delete w.rosesTx;
+  return seasonMenu(d, r.menu ?? 'today');
+}
+// The season's menu (seasonal items, Kian, 2026-10-12: the preview's season switch shows each season's Seasonal section before it goes
+// live). The page's menu is its <main> and what follows it in the page (the item popup, the section list, the kit's script): the
+// template's own output. Another season's, rendered by the scene route, replaces it and its scripts run again (the language toggle,
+// the kit); today's is kept and put back for today's season. 'today': today's menu (no swap when it is already up). Returns whether
+// the frame's menu changed (the caller puts the screen and the outlined region back on it).
+type MenuHolder = HTMLElement & { rosesTodayMenu?: ChildNode[] };
+function seasonMenu(d: Document, html: string | 'today' | null): boolean {
+  const main = d.querySelector('main'), parent = main?.parentElement as MenuHolder | null;
+  if (!main || !parent || html === null) return false;
+  const current: ChildNode[] = []; for (let n: ChildNode | null = main; n; n = n.nextSibling) current.push(n);
+  if (html === 'today') {
+    if (!parent.rosesTodayMenu) return false;
+    current.forEach((n) => n.remove()); parent.rosesTodayMenu.forEach((n) => parent.appendChild(n)); delete parent.rosesTodayMenu;
+  } else {
+    if (!parent.rosesTodayMenu) parent.rosesTodayMenu = current;
+    current.forEach((n) => n.remove());
+    const t = d.createElement('template'); t.innerHTML = html;
+    const fresh = [...t.content.childNodes]; fresh.forEach((n) => parent.appendChild(n));
+    parent.querySelectorAll('main script, main ~ script').forEach((old) => { const s = d.createElement('script'); s.textContent = old.textContent; old.replaceWith(s); }); // inserted markup does not run its scripts: put fresh copies in their place
+  }
+  const now = d.querySelector('main'); if (now) now.inert = false; // the admin edits the menu behind the welcome screen
+  delete d.documentElement.dataset.rosesSheetItem;
+  return true;
 }
 function setTx(d: Document, w: HTMLElement, css: string | null, js: string | null, key: string | null) {
   let st = d.getElementById('welcome-tx');

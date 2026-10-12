@@ -4,14 +4,17 @@
 // underneath · price edited in place · Shown/Hidden switch). Drag to reorder on a laptop; Move up / Move down on a phone.
 // Items in no section are not a pile in the normal flow (Kian, 2026-10-08): they count in the Needs-attention bar and
 // are listed only when that count is tapped (or a search finds them).
+// Seasonal items (Kian, 2026-10-12): the venue's Seasonal section sits at the top with its switch and "+ Add item" (adding there tags the
+// item with today's season); it cannot be renamed, moved or deleted. Items hidden by their seasons today show "Out of season" (or "No
+// season" in the Seasonal section) and count in the Needs-attention bar.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { EditorItem, EditorSection } from '@/lib/types';
+import type { EditorItem, EditorSection, SeasonId } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
-import { attention, listingProblem, money, needs, priceSummary, type Filter, type Need, type Menu as MenuData } from './state';
+import { SEASON_NAMES, attention, listingProblem, money, needs, priceSummary, seasonState, seasonsCtx, type Filter, type Need, type Menu as MenuData, type Seasons } from './state';
 import { Badge, Menu, Photo, Switch, btnSecondary } from './ui';
 
 export type MenuTabProps = {
-  menu: MenuData; filter: Filter; setFilter: (f: Filter) => void; query: string; setQuery: (q: string) => void; highlightId: string | null;
+  menu: MenuData; season: SeasonId; filter: Filter; setFilter: (f: Filter) => void; query: string; setQuery: (q: string) => void; highlightId: string | null;
   onOpen: (id: string, sectionId: string | null) => void; onAdd: (sectionId: string) => void; onAddSection: () => void;
   onToggleItem: (id: string, listed: boolean) => Promise<void>; onPrice: (id: string, price: number | null) => Promise<void>;
   onToggleSection: (id: string, listed: boolean) => Promise<void>; onRename: (id: string) => void; onMoveSection: (id: string, dir: 'up' | 'down') => Promise<void>;
@@ -19,7 +22,7 @@ export type MenuTabProps = {
 };
 type Drag = { kind: 'item'; id: string; section: string } | { kind: 'section'; id: string };
 type Over = { id: string; after: boolean } | null;
-const LABEL: Record<Exclude<Filter, 'all'>, (n: number) => string> = { none: (n) => `${n} in no section`, price: (n) => `${n} need${n === 1 ? 's' : ''} a price`, draft: (n) => `${n} Persian draft${n === 1 ? '' : 's'}`, fa: (n) => `${n} missing Persian`, photo: (n) => `${n} without a photo` };
+const LABEL: Record<Exclude<Filter, 'all'>, (n: number) => string> = { none: (n) => `${n} in no section`, price: (n) => `${n} need${n === 1 ? 's' : ''} a price`, draft: (n) => `${n} Persian draft${n === 1 ? '' : 's'}`, fa: (n) => `${n} missing Persian`, photo: (n) => `${n} without a photo`, season: (n) => `${n} out of season` };
 
 export function MenuTab(p: MenuTabProps) {
   const { menu, filter, setFilter, query, setQuery } = p;
@@ -28,17 +31,18 @@ export function MenuTab(p: MenuTabProps) {
   const drag = useRef<Drag | null>(null);
   const [over, setOver] = useState<Over>(null);
   useEffect(() => { setFine(window.matchMedia('(pointer: fine)').matches); }, []);
-  const counts = useMemo(() => attention(menu), [menu]);
+  const ctx = useMemo(() => seasonsCtx(menu, p.season), [menu, p.season]);
+  const counts = useMemo(() => attention(menu, ctx), [menu, ctx]);
   const anyAttention = Object.values(counts).some((n) => n > 0);
   const q = query.trim().toLowerCase();
   const matches = (i: EditorItem) => !q || (i.name.en ?? '').toLowerCase().includes(q) || (i.name.fa ?? '').includes(query.trim());
-  const keep = (i: EditorItem, orphan: boolean) => (filter === 'all' || (filter === 'none' ? orphan : needs(i)[filter as Need])) && matches(i);
+  const keep = (i: EditorItem, orphan: boolean) => (filter === 'all' || (filter === 'none' ? orphan : needs(i, ctx)[filter as Need])) && matches(i);
   const narrowing = filter !== 'all' || !!q;
   const groups = useMemo(() => {
     const g = menu.sections.map((s) => ({ s, ids: s.item_ids.filter((id) => menu.items[id] && keep(menu.items[id], false)) }));
     const o = narrowing ? menu.orphans.filter((id) => menu.items[id] && keep(menu.items[id], true)) : []; // in no section: only when asked for
     return { sections: narrowing ? g.filter((x) => x.ids.length > 0) : g, orphans: o };
-  }, [menu, filter, q]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [menu, filter, q, ctx]); // eslint-disable-line react-hooks/exhaustive-deps
   const shown = groups.sections.reduce((n, g) => n + g.ids.length, 0) + groups.orphans.length;
   const toggle = (id: string) => setCollapsed((c) => { const n = new Set(c); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const jump = (id: string) => { setCollapsed((c) => { const n = new Set(c); n.delete(id); return n; }); requestAnimationFrame(() => document.getElementById(`sec-${id}`)?.scrollIntoView({ block: 'start', behavior: 'smooth' })); };
@@ -47,19 +51,19 @@ export function MenuTab(p: MenuTabProps) {
   const dnd = {
     start: (d: Drag) => (e: React.DragEvent) => { drag.current = d; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', d.id); },
     overRow: (kind: Drag['kind'], id: string, section?: string) => (e: React.DragEvent) => {
-      const d = drag.current; if (!d || d.kind !== kind || (d.kind === 'item' && d.section !== section) || d.id === id) return;
+      const d = drag.current; if (!d || d.kind !== kind || (d.kind === 'item' && d.section !== section) || d.id === id || (kind === 'section' && id === ctx.seasonalId)) return;
       e.preventDefault(); const r = (e.currentTarget as HTMLElement).getBoundingClientRect(); setOver({ id, after: e.clientY > r.top + r.height / 2 });
     },
     drop: (kind: Drag['kind'], id: string, section?: string) => async (e: React.DragEvent) => {
       e.preventDefault(); const d = drag.current; drag.current = null; setOver(null);
-      if (!d || d.kind !== kind || d.id === id || (d.kind === 'item' && d.section !== section)) return;
+      if (!d || d.kind !== kind || d.id === id || (d.kind === 'item' && d.section !== section) || (kind === 'section' && id === ctx.seasonalId)) return;
       const r = (e.currentTarget as HTMLElement).getBoundingClientRect(); const after = e.clientY > r.top + r.height / 2; // read at the drop itself, not from state
       if (d.kind === 'item' && section) {
         const ids = menu.sections.find((s) => s.id === section)!.item_ids.filter((x) => x !== d.id);
         const idx = ids.indexOf(id) + (after ? 1 : 0);
         await p.onMoveItem(section, d.id, idx).catch(() => undefined);
       } else if (d.kind === 'section') {
-        const ids = menu.sections.map((s) => s.id).filter((x) => x !== d.id);
+        const ids = menu.sections.filter((s) => !s.seasonal).map((s) => s.id).filter((x) => x !== d.id);
         ids.splice(ids.indexOf(id) + (after ? 1 : 0), 0, d.id);
         await p.onReorderSections(ids).catch(() => undefined);
       }
@@ -67,6 +71,7 @@ export function MenuTab(p: MenuTabProps) {
     end: () => { drag.current = null; setOver(null); },
   };
   const dropCls = (id: string) => (over?.id === id ? (over.after ? 'drop-after' : 'drop-before') : '');
+  const regular = menu.sections.filter((s) => !s.seasonal).map((s) => s.id); // the order the section menus move in
 
   return (
     <div className="mx-auto w-full max-w-4xl px-3 pb-32 sm:px-5">
@@ -100,7 +105,7 @@ export function MenuTab(p: MenuTabProps) {
       {groups.sections.map(({ s, ids }, n) => (
         <section key={s.id} id={`sec-${s.id}`} className={`relative mt-3 scroll-mt-40 rounded-2xl border border-line bg-white shadow-card ${dropCls(s.id)}`}
           onDragOver={dnd.overRow('section', s.id)} onDrop={dnd.drop('section', s.id)}>
-          <header className={`flex items-center gap-1 py-1.5 pl-1 pr-2 ${s.listed ? '' : 'opacity-70'}`} draggable={fine} onDragStart={dnd.start({ kind: 'section', id: s.id })} onDragEnd={dnd.end}>
+          <header className={`flex items-center gap-1 py-1.5 pl-1 pr-2 ${s.listed ? '' : 'opacity-70'}`} draggable={fine && !s.seasonal} onDragStart={dnd.start({ kind: 'section', id: s.id })} onDragEnd={dnd.end}>
             <button type="button" onClick={() => toggle(s.id)} aria-expanded={!collapsed.has(s.id)} aria-label={collapsed.has(s.id) ? `Expand ${s.name.en}` : `Collapse ${s.name.en}`} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-fill"><Icon name="down" className={`h-5 w-5 transition ${collapsed.has(s.id) ? '-rotate-90' : ''}`} /></button>
             <button type="button" onClick={() => toggle(s.id)} className="flex min-h-11 min-w-0 flex-1 items-center gap-x-2 text-left">
               <span className="truncate text-[17px] font-semibold leading-6">{s.name.en}</span>
@@ -113,19 +118,20 @@ export function MenuTab(p: MenuTabProps) {
             </button>
             <span className="flex shrink-0 items-center gap-0.5">
               <button type="button" onClick={() => p.onAdd(s.id)} className="ml-1 flex h-11 min-w-11 items-center gap-1 rounded-full px-2.5 text-[14px] font-semibold text-accent-strong hover:bg-accent-soft" aria-label={`Add item to ${s.name.en}`}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} /><span className="hidden sm:inline">Add item</span><span className="sm:hidden">Add</span></button>
-              <Menu label={`Section menu: ${s.name.en}`} items={[
+              {!s.seasonal && <Menu label={`Section menu: ${s.name.en}`} items={[
                 { text: 'Rename', onClick: () => p.onRename(s.id) },
-                { text: 'Move up', disabled: n === 0, onClick: () => { void p.onMoveSection(s.id, 'up'); } },
-                { text: 'Move down', disabled: n === menu.sections.length - 1, onClick: () => { void p.onMoveSection(s.id, 'down'); } },
+                { text: 'Move up', disabled: regular.indexOf(s.id) <= 0, onClick: () => { void p.onMoveSection(s.id, 'up'); } },
+                { text: 'Move down', disabled: regular.indexOf(s.id) === regular.length - 1, onClick: () => { void p.onMoveSection(s.id, 'down'); } },
                 { text: 'Delete section', danger: true, onClick: () => p.onDeleteSection(s.id) },
-              ]} />
+              ]} />}
               <span className="ml-1 flex items-center"><Switch checked={s.listed} label={s.listed ? `${s.name.en}: shown. Tap to hide` : `${s.name.en}: hidden. Tap to show`} onChange={(v) => p.onToggleSection(s.id, v)} /></span>
             </span>
           </header>
+          {s.seasonal && !collapsed.has(s.id) && <p className="border-t border-line px-4 py-2 text-[13px] text-ink-muted">Customers see it first, as “{SEASON_NAMES[p.season]} specials”, with the items here tagged {SEASON_NAMES[p.season]}. An item added here is tagged {SEASON_NAMES[p.season]}; change its seasons in the item.</p>}
           {!collapsed.has(s.id) && (
             ids.length === 0
               ? <p className="border-t border-line px-4 py-4 text-sm text-ink-muted">{narrowing ? 'No matching item here.' : <>No items yet. <button type="button" onClick={() => p.onAdd(s.id)} className="inline-flex min-h-11 items-center font-medium text-accent-strong underline-offset-4 hover:underline">Add the first item</button></>}</p>
-              : <ul className="border-t border-line px-1 pb-1">{ids.map((id) => <Row key={id} item={menu.items[id]} sectionId={s.id} fine={fine} dropCls={dropCls(id)} highlighted={p.highlightId === id} onOpen={p.onOpen} onToggle={p.onToggleItem} onPrice={p.onPrice}
+              : <ul className="border-t border-line px-1 pb-1">{ids.map((id) => <Row key={id} item={menu.items[id]} ctx={ctx} sectionId={s.id} fine={fine} dropCls={dropCls(id)} highlighted={p.highlightId === id} onOpen={p.onOpen} onToggle={p.onToggleItem} onPrice={p.onPrice}
                   dragProps={{ draggable: fine, onDragStart: dnd.start({ kind: 'item', id, section: s.id }), onDragOver: dnd.overRow('item', id, s.id), onDrop: dnd.drop('item', id, s.id), onDragEnd: dnd.end }} />)}</ul>
           )}
         </section>
@@ -134,7 +140,7 @@ export function MenuTab(p: MenuTabProps) {
       {groups.orphans.length > 0 && (
         <section id="sec-none" className="mt-3 scroll-mt-40 rounded-2xl border border-amber-200 bg-white shadow-card">
           <header className="flex flex-wrap items-center gap-2 px-4 py-3"><span className="text-[17px] font-semibold">In no section</span><span className="text-sm tabular-nums text-ink-muted">{groups.orphans.length}</span><Badge tone="amber">Not shown to customers</Badge><span className="basis-full text-xs text-ink-muted">Open an item and tick a section under “Also show in…” to put it back on the menu.</span></header>
-          <ul className="border-t border-line px-1 pb-1">{groups.orphans.map((id) => <Row key={id} item={menu.items[id]} sectionId={null} fine={false} dropCls="" highlighted={p.highlightId === id} onOpen={p.onOpen} onToggle={p.onToggleItem} onPrice={p.onPrice} dragProps={{}} />)}</ul>
+          <ul className="border-t border-line px-1 pb-1">{groups.orphans.map((id) => <Row key={id} item={menu.items[id]} ctx={ctx} sectionId={null} fine={false} dropCls="" highlighted={p.highlightId === id} onOpen={p.onOpen} onToggle={p.onToggleItem} onPrice={p.onPrice} dragProps={{}} />)}</ul>
         </section>
       )}
 
@@ -144,10 +150,11 @@ export function MenuTab(p: MenuTabProps) {
   );
 }
 
-function Row({ item, sectionId, fine, dropCls, highlighted, onOpen, onToggle, onPrice, dragProps }: { item: EditorItem; sectionId: string | null; fine: boolean; dropCls: string; highlighted: boolean; onOpen: MenuTabProps['onOpen']; onToggle: MenuTabProps['onToggleItem']; onPrice: MenuTabProps['onPrice']; dragProps: React.HTMLAttributes<HTMLLIElement> & { draggable?: boolean } }) {
+function Row({ item, ctx, sectionId, fine, dropCls, highlighted, onOpen, onToggle, onPrice, dragProps }: { item: EditorItem; ctx: Seasons; sectionId: string | null; fine: boolean; dropCls: string; highlighted: boolean; onOpen: MenuTabProps['onOpen']; onToggle: MenuTabProps['onToggleItem']; onPrice: MenuTabProps['onPrice']; dragProps: React.HTMLAttributes<HTMLLIElement> & { draggable?: boolean } }) {
   const [reason, setReason] = useState<string | null>(null);
   useEffect(() => { if (!reason) return; const t = setTimeout(() => setReason(null), 5000); return () => clearTimeout(t); }, [reason]);
-  const n = needs(item);
+  const n = needs(item, ctx);
+  const st = seasonState(item, ctx), off = st === 'none' && sectionId !== ctx.seasonalId ? null : st; // "No season" only where it is not shown: in the Seasonal section
   return (
     <li {...dragProps} data-item={item.id} className={`group relative flex flex-wrap items-center gap-x-2 rounded-xl px-1 py-1 ${dropCls} ${highlighted ? 'bg-accent-soft' : ''}`}>
       {fine && <span className="hidden h-8 w-4 shrink-0 cursor-grab items-center justify-center text-neutral-300 group-hover:text-neutral-400 sm:flex" aria-hidden="true"><Icon name="grip" className="h-4 w-4" /></span>}
@@ -156,8 +163,8 @@ function Row({ item, sectionId, fine, dropCls, highlighted, onOpen, onToggle, on
         <span className="min-w-0 flex-1">
           <span className={`block truncate text-[15px] font-medium leading-5 ${item.listed ? '' : 'text-ink-muted'}`}>{item.name.en}</span>
           {item.name.fa && <span lang="fa" dir="rtl" className="block truncate text-left text-[13px] leading-4 text-ink-muted">{item.name.fa}</span>}
-          {(!item.listed || n.price || n.draft || n.photo) && (
-            <span className="mt-0.5 flex flex-wrap gap-1">{!item.listed && <Badge>Hidden</Badge>}{n.price && <Badge tone="amber">Needs price</Badge>}{n.draft && <Badge tone="blue">Persian draft</Badge>}{n.photo && <Badge>No photo</Badge>}</span>
+          {(!item.listed || n.price || n.draft || n.photo || off) && (
+            <span className="mt-0.5 flex flex-wrap gap-1">{!item.listed && <Badge>Hidden</Badge>}{off === 'out' && <Badge tone="amber">Out of season</Badge>}{off === 'none' && <Badge tone="amber">No season</Badge>}{n.price && <Badge tone="amber">Needs price</Badge>}{n.draft && <Badge tone="blue">Persian draft</Badge>}{n.photo && <Badge>No photo</Badge>}</span>
           )}
         </span>
       </button>

@@ -31,7 +31,7 @@ import zlib from 'node:zlib';
 import net from 'node:net';
 import { spawn, execFileSync, spawnSync } from 'node:child_process';
 import { chromium, devices } from 'playwright';
-import { loadEnv } from './load-env.mjs';
+import { connectDb, loadEnv } from './load-env.mjs';
 import { compare, compareCss, extract } from './welcome-fixture.mjs';
 
 loadEnv();
@@ -117,6 +117,55 @@ const INSTANTS = [
   { at: '2027-05-31T23:30:00-04:00', label: 'May 31 23:30 EDT', want: 'spring' },
   { at: '2027-06-01T00:30:00-04:00', label: 'Jun 1 00:30 EDT', want: 'summer' },
 ];
+// ---- seasonal items (Kian, 2026-10-12): first Kebab Land without seasonal items, its page byte for byte the same with its (empty)
+// Seasonal section and without one (a venue without the feature); then items tagged per season on every venue, checked at each
+// boundary instant below; removed again before the artwork checks, so the later drills of the suite see the data as it was.
+const db = await connectDb('season', (l) => log('db', l));
+const TITLES = { fall: { en: 'Fall specials', fa: 'ویژه‌های پاییز' }, winter: { en: 'Winter specials', fa: 'ویژه‌های زمستان' }, spring: { en: 'Spring specials', fa: 'ویژه‌های بهار' }, summer: { en: 'Summer specials', fa: 'ویژه‌های تابستان' } };
+async function regen(v) { // a fresh render of the page at the server's instant (the cache aged first): the entry rewritten, then read
+  age(3601); const before = stamp(v); await get(v);
+  for (let t = Date.now(); stamp(v) === before && Date.now() - t < 15000;) await sleep(100);
+  return (await get(v)).html;
+}
+if (venues.includes('kebab-land')) {
+  await restart(INSTANTS[0].at);
+  const n = (await db.query(`select count(*)::int as n from items where venue_id = 'kebab-land' and cardinality(seasons) > 0`)).rows[0].n;
+  const row = (await db.query(`select * from sections where venue_id = 'kebab-land' and seasonal`)).rows[0];
+  const withSection = await regen('kebab-land');
+  await db.query('delete from sections where id = $1', [row.id]);
+  const without = await regen('kebab-land');
+  const cols = Object.keys(row); await db.query(`insert into sections (${cols.join(', ')}) values (${cols.map((_, i) => `$${i + 1}`).join(', ')})`, cols.map((k) => (k === 'name' || k === 'note' || k === 'source' || k === 'updated_by') && row[k] !== null ? JSON.stringify(row[k]) : row[k]));
+  const same = withSection === without && withSection.length > 0;
+  let at = -1; if (!same) for (let i = 0; i < Math.max(withSection.length, without.length); i++) if (withSection[i] !== without[i]) { at = i; break; }
+  check('seasonal-empty-identical', same && n === 0 && !/class="[^"]*\bseasonal\b/.test(withSection), `Kebab Land with ${n} seasonal items: the page with its Seasonal section (shown, empty) and with no Seasonal section at all (a venue without the feature), rendered at ${INSTANTS[0].label}: ${same ? `byte for byte the same (${withSection.length} B)` : `different from byte ${at}: ${JSON.stringify(withSection.slice(Math.max(0, at - 60), at + 60))} vs ${JSON.stringify(without.slice(Math.max(0, at - 60), at + 60))}`}; no seasonal section in the HTML`);
+}
+// the fixtures: on each venue, items of its own (listed, priced, with Persian names where it has them) put in its Seasonal section, one per
+// season; a winter-only item left in its own section; an item in the Seasonal section with no season (never shown there)
+const fx = {}, placed = [], tagged = [];
+for (const v of venues) {
+  const sid = (await db.query(`select id from sections where venue_id = $1 and seasonal`, [v])).rows[0]?.id;
+  const cand = (await db.query(`select i.id, i.name from items i where i.venue_id = $1 and i.listed and cardinality(i.seasons) = 0 and exists (select 1 from item_sections x join sections s on s.id = x.section_id where x.item_id = i.id and s.listed and not s.seasonal) order by (i.name->>'fa' is null), i.name->>'en' limit 6`, [v])).rows;
+  if (!sid || cand.length < 4) { log('seasonal', `${v}: no Seasonal section or fewer than 4 items (${cand.length}); not seeded`); continue; }
+  const f = { section: sid, bySeason: {}, names: {}, winterOnly: cand[4]?.id ?? null, untagged: cand[5]?.id ?? null };
+  ['fall', 'winter', 'spring', 'summer'].forEach((season, i) => { f.bySeason[season] = cand[i].id; f.names[cand[i].id] = cand[i].name; });
+  let pos = 0;
+  for (const season of ['fall', 'winter', 'spring', 'summer']) { const id = f.bySeason[season]; await db.query('insert into item_sections (item_id, section_id, position) values ($1, $2, $3)', [id, sid, pos++]); placed.push([id, sid]); await db.query('update items set seasons = $2 where id = $1', [id, [season]]); tagged.push(id); }
+  if (f.winterOnly) { await db.query(`update items set seasons = '{winter}' where id = $1`, [f.winterOnly]); tagged.push(f.winterOnly); }
+  if (f.untagged) { await db.query('insert into item_sections (item_id, section_id, position) values ($1, $2, $3)', [f.untagged, sid, pos++]); placed.push([f.untagged, sid]); }
+  fx[v] = f;
+  log('seasonal', `${v}: seeded ${Object.entries(f.bySeason).map(([k, id]) => `${k} ${f.names[id].en}`).join(', ')}${f.winterOnly ? `; winter only in its own section ${cand[4].name.en}` : ''}${f.untagged ? `; in the Seasonal section with no season ${cand[5].name.en}` : ''}`);
+}
+// what a render shows: the Seasonal section (first, its title, its items) and every item on the page
+function seasonalOf(html) {
+  const main = html.slice(html.indexOf('<main'), html.indexOf('</main>'));
+  const sec = main.match(/<section[^>]*class="[^"]*\bseasonal\b[^"]*"[^>]*>[\s\S]*?<\/section>/);
+  const firstSection = (main.match(/<section[^>]*data-id="([^"]+)"/) || [])[1] || null;
+  const firstTab = (main.match(/<nav[^>]*id="tabs"[\s\S]*?<a[^>]*href="#([^"]+)"/) || [])[1] || null;
+  const items = (h) => new Set([...h.matchAll(/<li[^>]*class="item[^"]*"[^>]*data-id="([^"]+)"|<li[^>]*data-id="([^"]+)"[^>]*class="item/g)].map((m) => m[1] || m[2]));
+  const h2 = sec ? (sec[0].match(/<h2[^>]*>([\s\S]*?)<\/h2>/) || [])[1] || '' : '';
+  return { section: !!sec, sectionId: sec ? (sec[0].match(/data-id="([^"]+)"/) || [])[1] : null, firstSection, firstTab, title: { en: (h2.match(/<span lang="en">([^<]*)<\/span>/) || [])[1] ?? null, fa: (h2.match(/<span lang="fa" dir="rtl">([^<]*)<\/span>/) || [])[1] ?? null }, inSection: sec ? [...items(sec[0])] : [], onPage: items(main) };
+}
+const seasonalRows = [];
 const renders = []; // one row per instant and venue
 let previousSeason = {}; // what the cache held before each instant
 for (const v of venues) { const f = cacheFiles(v).find((x) => x.endsWith('.html')); previousSeason[v] = f ? seasonOf(fs.readFileSync(f, 'utf8')) : null; } // a venue on the default template has no build seed, only its route-cache entry
@@ -135,8 +184,29 @@ for (const inst of INSTANTS) {
     renders.push(row);
     previousSeason[v] = seasonOf(fresh.html) ?? previousSeason[v];
     if (fresh.ok) { artPages[v] = artPages[v] || {}; artPages[v][inst.want] = fresh.html; }
+    if (fx[v] && fresh.ok) { // seasonal items at this instant
+      // read once the cache entry is rewritten: when the season is the same as the previous render's (the first instant, after the
+      // Kebab Land check above), the response the season wait accepted can still be that render
+      const settled = after !== before ? (await get(v)).html : fresh.html;
+      const f = fx[v], S = inst.want, a = seasonalOf(settled), want = f.bySeason[S];
+      const others = Object.entries(f.bySeason).filter(([k]) => k !== S).map(([, id]) => id);
+      const problems = [];
+      if (!a.section || a.sectionId !== f.section) problems.push('no Seasonal section');
+      if (a.firstSection !== f.section) problems.push(`first section ${a.firstSection}`);
+      if (a.title.en !== TITLES[S].en || a.title.fa !== TITLES[S].fa) problems.push(`title ${a.title.en} / ${a.title.fa}`);
+      if (a.firstTab !== TITLES[S].en.toLowerCase().replace(/[^a-z0-9]+/g, '-')) problems.push(`first tab #${a.firstTab}`);
+      if (a.inSection.join() !== want) problems.push(`in the section: ${a.inSection.join(', ') || 'nothing'}`);
+      const leaked = others.filter((id) => a.onPage.has(id)); if (leaked.length) problems.push(`out of season on the page: ${leaked.map((id) => f.names[id].en).join(', ')}`);
+      if (f.winterOnly && a.onPage.has(f.winterOnly) !== (S === 'winter')) problems.push(`winter-only item ${a.onPage.has(f.winterOnly) ? 'shown' : 'hidden'}`);
+      if (f.untagged && (a.inSection.includes(f.untagged) || !a.onPage.has(f.untagged))) problems.push('the item with no season: wrong place');
+      seasonalRows.push({ instant: inst.label, venue: v, season: S, ok: problems.length === 0, problems, title: a.title, items: a.inSection.map((id) => f.names[id]?.en ?? id) });
+    }
     log('render', `${inst.label} ${v}: first response ${firstSeason} (the previous render: ${row.stale}), fresh ${row.fresh} after ${fresh.ms} ms, cache entry rewritten ${row.regenerated} (${row.entry.map((e) => `${e.file} stamp ${e.stamp ?? 'none'}`).join(', ')})`);
   }
+}
+for (const v of Object.keys(fx)) {
+  const rs = seasonalRows.filter((r) => r.venue === v);
+  check(`seasonal-boundaries-${v}`, rs.length === INSTANTS.length && rs.every((r) => r.ok), `${v}, items tagged per season (one per season in the Seasonal section${fx[v].winterOnly ? ', one winter-only in its own section' : ''}${fx[v].untagged ? ', one in the Seasonal section with no season' : ''}), ${rs.length} renders at the Toronto instants: ${rs.map((r) => `${r.instant} → ${r.ok ? `“${r.title.en}” / “${r.title.fa}”: ${r.items.join(', ')}` : `FAIL (${r.problems.join('; ')})`}`).join(' · ')}; out-of-season items absent from the whole page every time`);
 }
 const rows = renders.filter((r) => r.venue === venues[0]);
 check('season-boundaries', renders.every((r) => r.fresh === r.want && r.regenerated), `rendered with a fixed clock (America/Toronto): ${rows.map((r) => `${r.label} → ${r.fresh}${r.fresh === r.want ? '' : ` (wanted ${r.want})`}`).join('; ')}; the same on ${venues.slice(1).join(', ') || 'no other venue'}: ${renders.filter((r) => r.venue !== venues[0]).every((r) => r.fresh === r.want)}`);
@@ -151,6 +221,28 @@ measure(`regeneration interval: ${interval.senso} s configured (revalidate; the 
   const after = stamp(v);
   check('within-the-hour', after === before, `${v}: the cached page aged 3000 s, two requests 2.5 s apart → cache entry unchanged (${after === before})`);
 }
+
+// ---- seasonal items in Persian: the server is at the last instant (summer); on the first seeded venue, a tap on فارسی on the welcome
+// screen shows the Seasonal section's title and its item in Persian (the page's own language switch, as for customers)
+{
+  const v = Object.keys(fx)[0];
+  if (v) {
+    const f = fx[v], S = INSTANTS[INSTANTS.length - 1].want, item = f.names[f.bySeason[S]];
+    const ctx = await browser.newContext(DEVICE); const page = await ctx.newPage();
+    await page.goto(`${base}/${v}`, { waitUntil: 'domcontentloaded' }); await page.waitForLoadState('load', { timeout: 8000 }).catch(() => {});
+    const btn = page.locator('#welcome button[data-lang="fa"]'); if (await btn.count()) { await btn.click(); await sleep(1200); } else await page.click('#lang-toggle');
+    const seen = await page.evaluate(() => { const s = document.querySelector('section.seasonal'); if (!s) return null; return { lang: document.documentElement.lang, title: s.querySelector('h2')?.innerText.trim() ?? null, names: [...s.querySelectorAll('li.item h3')].map((h) => h.innerText.trim()) }; });
+    const wantFa = item.fa ?? item.en;
+    check('seasonal-persian', !!seen && seen.lang === 'fa' && seen.title === TITLES[S].fa && seen.names.length === 1 && seen.names[0] === wantFa, `${v} at ${INSTANTS[INSTANTS.length - 1].label}, after a tap on فارسی: the Seasonal section's title reads “${seen?.title}” (wanted “${TITLES[S].fa}”), its item “${seen?.names.join(', ')}” (wanted “${wantFa}”), page language ${seen?.lang}`);
+    await ctx.close();
+  }
+}
+// the fixtures removed: the data as it was for the artwork checks below and the rest of the suite
+for (const [id, sid] of placed) await db.query('delete from item_sections where item_id = $1 and section_id = $2', [id, sid]);
+if (tagged.length) await db.query(`update items set seasons = '{}' where id = any($1)`, [tagged]);
+const leftover = (await db.query(`select count(*)::int as n from items where venue_id = any($1) and cardinality(seasons) > 0`, [venues])).rows[0].n;
+log('seasonal', `fixtures removed: ${placed.length} placements, ${tagged.length} items' seasons cleared; items with seasons left on these venues: ${leftover}`);
+await db.end();
 
 // ---- Senso's artwork on the fall and winter renders; the old scenes on the other venues, compared with the fixture
 const SEASON_INSTANT = { fall: INSTANTS[2].at, winter: INSTANTS[4].at, spring: INSTANTS[6].at, summer: INSTANTS[8].at };

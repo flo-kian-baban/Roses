@@ -45,7 +45,7 @@ const publicOrder = (html, sectionId) => { const m = html.match(new RegExp(`<sec
 
 const NAME = 'Drill editor item';
 await db.query(`delete from items where venue_id = $1 and name->>'en' = $2`, [VENUE, NAME]);
-const sec = (await db.query(`select id, name->>'en' as name from sections where venue_id = $1 and listed order by position limit 1`, [VENUE])).rows[0];
+const sec = (await db.query(`select id, name->>'en' as name from sections where venue_id = $1 and listed and not seasonal order by position limit 1`, [VENUE])).rows[0]; // a section of the venue's own order (the Seasonal section, 2026-10-12, stays first and has its own drill)
 let itemId = null;
 
 // ---- A. task targets on a phone: tap counts
@@ -68,6 +68,30 @@ let taps = 0; const tap = async (sel) => { taps++; await p.click(sel); };
   await snap(p, 'item-added');
   check('t-add', taps === 1 && !!row && row.listed && Number(row.price) === 4.5 && row.section_id === sec.id && row.position === row.last && pub.ok, `add an item: ${taps} tap (+ Add item) + name + price + Enter → created shown at $4.50, last in "${sec.name}" (position ${row?.position} of ${row?.last}); on the public page ${pub.ms} ms after Enter`);
   measure(`add an item: ${taps} tap + name + price + confirm (Enter); on the public page in ${pub.ms} ms; sheet confirmed at +${Date.now() - tConfirm} ms`);
+}
+{ // seasonal items (Kian, 2026-10-12): add an item from the Seasonal section, target ≤ 2 taps + name + price; it is tagged with today's
+  // season (Toronto) and shown first on the public page under that season's title; removed again afterwards (the drill's later order checks)
+  const m = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'numeric' }).format(new Date())) - 1;
+  const today = m >= 8 && m <= 10 ? 'fall' : m === 11 || m <= 1 ? 'winter' : m <= 4 ? 'spring' : 'summer';
+  const title = { fall: 'Fall specials', winter: 'Winter specials', spring: 'Spring specials', summer: 'Summer specials' }[today];
+  const SNAME = 'Drill seasonal item';
+  await db.query(`delete from items where venue_id = $1 and name->>'en' = $2`, [VENUE, SNAME]);
+  const ss = (await db.query(`select id, name->>'en' as name from sections where venue_id = $1 and seasonal`, [VENUE])).rows[0];
+  taps = 0;
+  await p.evaluate(() => window.scrollTo(0, 0));
+  await tap(`[aria-label="Add item to ${ss.name}"]`);
+  await p.fill('[role=dialog] input[name=name]', SNAME);
+  await p.fill('[role=dialog] input[name=price]', '7');
+  await p.press('[role=dialog] input[name=price]', 'Enter');
+  await p.waitForSelector(`[data-item] >> text=${SNAME}`);
+  const row = (await db.query(`select i.id, i.listed, i.seasons, x.section_id from items i join item_sections x on x.item_id = i.id where i.venue_id = $1 and i.name->>'en' = $2`, [VENUE, SNAME])).rows;
+  const sid = row[0]?.id;
+  const seasonalOf = (h) => { const sec = h.match(/<section[^>]*class="[^"]*\bseasonal\b[^"]*"[^>]*>[\s\S]*?<\/section>/); const first = (h.slice(h.indexOf('<main')).match(/<section[^>]*data-id="([^"]+)"/) || [])[1]; return { has: !!sec && sec[0].includes(`data-id="${sid}"`) && sec[0].includes(`<span lang="en">${title}</span>`), first: first === ss.id }; };
+  const pub = await waitPublic((h) => { const a = seasonalOf(h); return a.has && a.first; });
+  await snap(p, 'seasonal-item-added');
+  check('t-seasonal-add', taps <= 2 && row.length === 1 && row[0].listed && row[0].section_id === ss.id && JSON.stringify(row[0].seasons) === JSON.stringify([today]) && pub.ok, `add a seasonal item on the iPhone 13 viewport: ${taps} tap (+ Add item on the Seasonal section) + name + price + Enter (target ≤ 2 taps + name + price) → in the Seasonal section only (${row.length} placement), shown ${row[0]?.listed}, tagged ${JSON.stringify(row[0]?.seasons)} (today in Toronto: ${today}); on the public page first, under “${title}”, ${pub.ok ? `${pub.ms} ms after Enter` : 'not within the wait'}`);
+  measure(`add a seasonal item from the Seasonal section: ${taps} tap + name + price + confirm (Enter); on the public page under “${title}” in ${pub.ms} ms`);
+  if (sid) { const d = await api('/api/admin/item', { action: 'delete', id: sid }, await cookieOf(phone)); const gone = await waitPublic((h) => !h.includes(`data-id="${sid}"`)); log('seasonal', `the drill's seasonal item deleted (${d.status}), gone from the public page ${gone.ok ? `after ${gone.ms} ms` : 'not within the wait'}`); }
 }
 { // change a price: 1 tap (the price) + typing + Enter
   taps = 0;
@@ -211,16 +235,17 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   measure(`drag an item (laptop): one drag; database and public page in the new order after ${pub.ms} ms`);
 }
 { // drag-and-drop of a section (laptop): the second section dropped onto the upper half of the first
-  const order = () => l.$$eval('section[id^="sec-"]', (els) => els.map((e) => e.id.slice(4)));
+  const seasonalId = (await db.query(`select id from sections where venue_id = $1 and seasonal`, [VENUE])).rows[0]?.id; // pinned first, not draggable (2026-10-12): left out of the order
+  const order = () => l.$$eval('section[id^="sec-"]', (els, sid) => els.map((e) => e.id.slice(4)).filter((id) => id !== sid), seasonalId);
   for (const b of await l.$$('button[aria-label^="Collapse "]')) await b.click(); // headers next to each other, both on screen
   await l.evaluate(() => window.scrollTo(0, 0)); await sleep(150);
   const before = await order(); const src = before[1], dst = before[0];
   const sb = await l.locator(`#sec-${src} header`).boundingBox(); const tb = await l.locator(`#sec-${dst} header`).boundingBox();
   await dragIt(sb, tb, tb.y + 6);
   const expected = [src, dst, ...before.slice(2)];
-  const saved = await waitDb(`select array_agg(id order by position, name->>'en') as ids from sections where venue_id = $1`, [VENUE], (r) => (r?.ids || []).join() === expected.join());
+  const saved = await waitDb(`select array_agg(id order by position, name->>'en') as ids from sections where venue_id = $1 and not seasonal`, [VENUE], (r) => (r?.ids || []).join() === expected.join());
   await sleep(200); const admin = await order();
-  const dbo = (await db.query(`select id from sections where venue_id = $1 order by position, name->>'en'`, [VENUE])).rows.map((r) => r.id);
+  const dbo = (await db.query(`select id from sections where venue_id = $1 and not seasonal order by position, name->>'en'`, [VENUE])).rows.map((r) => r.id);
   const shownSections = new Set((await db.query(`select s.id from sections s where s.venue_id = $1 and s.listed and exists (select 1 from item_sections x join items i on i.id = x.item_id where x.section_id = s.id and i.listed)`, [VENUE])).rows.map((r) => r.id));
   const pubSections = (h) => [...h.matchAll(/<section[^>]*data-id="([^"]+)"/g)].map((m) => m[1]);
   const pub = await waitPublic((h) => pubSections(h).join() === admin.filter((id) => shownSections.has(id)).join());

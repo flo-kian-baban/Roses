@@ -28,8 +28,9 @@ export const getStaticProps: GetStaticProps<Props, { venue: string }> = async ({
   if (!/^[a-z0-9-]{1,40}$/.test(id)) return { notFound: true };
   const venue = await getVenue(id);
   if (!venue || venue.template !== 'default') return { notFound: true };
-  const sections = await getPublicMenu(id, venue.settings?.showPersianDrafts !== false);
-  return { props: JSON.parse(JSON.stringify({ venue, sections, season: seasonNow() })), revalidate: REVALIDATE_SECONDS };
+  const season = seasonNow(); // the welcome scene and the seasonal items (Kian, 2026-10-12) follow the same season
+  const sections = await getPublicMenu(id, venue.settings?.showPersianDrafts !== false, season);
+  return { props: JSON.parse(JSON.stringify({ venue, sections, season })), revalidate: REVALIDATE_SECONDS };
 };
 
 export default function VenuePage({ venue, sections, season }: Props) {

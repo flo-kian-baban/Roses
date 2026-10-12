@@ -1,6 +1,6 @@
 // Editor state: the whole menu of one venue (sections in order, items by id, items in no section) and the small
 // pure helpers the client needs. No database code here (this module runs in the browser).
-import type { Bi, EditorItem, EditorMenu, EditorSection, Variant } from '@/lib/types';
+import type { Bi, EditorItem, EditorMenu, EditorSection, SeasonId, Variant } from '@/lib/types';
 
 export type Menu = EditorMenu;
 export type Action =
@@ -42,11 +42,14 @@ export function reduce(m: Menu, a: Action): Menu {
       return { sections: m.sections.filter((s) => s.id !== a.id), items, orphans: [...m.orphans, ...a.orphaned.filter((x) => !m.orphans.includes(x))] };
     }
     case 'item-order': return { ...m, sections: m.sections.map((s) => (s.id === a.section_id ? { ...s, item_ids: a.item_ids } : s)) };
-    case 'section-order': { const by = new Map(m.sections.map((s) => [s.id, s])); return { ...m, sections: a.section_ids.map((id) => by.get(id)!).filter(Boolean) }; }
+    case 'section-order': { // the Seasonal section stays first, outside the order (Kian, 2026-10-12)
+      const by = new Map(m.sections.map((s) => [s.id, s]));
+      return { ...m, sections: [...m.sections.filter((s) => s.seasonal), ...a.section_ids.map((id) => by.get(id)!).filter((s) => s && !s.seasonal)] };
+    }
   }
 }
 
-export type Filter = 'all' | 'price' | 'draft' | 'fa' | 'photo' | 'none';
+export type Filter = 'all' | 'price' | 'draft' | 'fa' | 'photo' | 'season' | 'none';
 export type Need = Exclude<Filter, 'all' | 'none'>;
 
 export function listingProblem(i: { price: number | null; variants: Variant[] }): string | null {
@@ -57,12 +60,24 @@ export function listingProblem(i: { price: number | null; variants: Variant[] })
 export function persianMissing(i: { name: Bi; description: Bi; variants?: Variant[] }): boolean {
   return !!(i.name.en && !i.name.fa) || !!(i.description?.en && !i.description.fa) || !!i.variants?.some((v) => v.label.en && !v.label.fa);
 }
-export const needs = (i: EditorItem) => ({ price: !!listingProblem(i), draft: i.fa_draft.length > 0, fa: persianMissing(i), photo: !i.photo });
+// Seasons (Kian, 2026-10-12): today's season (Toronto, as the public page renders it) and the venue's Seasonal section decide what an item's
+// seasons hide now. 'out': tagged, not for today's season (hidden everywhere until then); 'none': in the Seasonal section without today's
+// season (not shown there; elsewhere as its tags say). Both count in the Needs-attention bar's "out of season".
+export type Seasons = { season: SeasonId; seasonalId: string | null };
+export function seasonState(i: EditorItem, ctx: Seasons | null): 'out' | 'none' | null {
+  if (!ctx) return null;
+  if (i.seasons.length && !i.seasons.includes(ctx.season)) return 'out';
+  if (ctx.seasonalId && i.placements.some((p) => p.section_id === ctx.seasonalId) && !i.seasons.includes(ctx.season)) return 'none';
+  return null;
+}
+export const needs = (i: EditorItem, ctx: Seasons | null = null) => ({ price: !!listingProblem(i), draft: i.fa_draft.length > 0, fa: persianMissing(i), photo: !i.photo, season: !!seasonState(i, ctx) });
+export const seasonsCtx = (m: Menu, season: SeasonId): Seasons => ({ season, seasonalId: m.sections.find((s) => s.seasonal)?.id ?? null });
+export const SEASON_NAMES: Record<SeasonId, string> = { fall: 'Fall', winter: 'Winter', spring: 'Spring', summer: 'Summer' };
 
 // Counts for the Needs-attention bar; "none" = items in no section (hidden from customers until moved; Kian, 2026-10-08).
-export function attention(m: Menu): Record<Exclude<Filter, 'all'>, number> {
-  const c = { price: 0, draft: 0, fa: 0, photo: 0, none: m.orphans.filter((id) => m.items[id]).length };
-  for (const i of Object.values(m.items)) { const n = needs(i); if (n.price) c.price++; if (n.draft) c.draft++; if (n.fa) c.fa++; if (n.photo) c.photo++; }
+export function attention(m: Menu, ctx: Seasons | null = null): Record<Exclude<Filter, 'all'>, number> {
+  const c = { price: 0, draft: 0, fa: 0, photo: 0, season: 0, none: m.orphans.filter((id) => m.items[id]).length };
+  for (const i of Object.values(m.items)) { const n = needs(i, ctx); if (n.price) c.price++; if (n.draft) c.draft++; if (n.fa) c.fa++; if (n.photo) c.photo++; if (n.season) c.season++; }
   return c;
 }
 

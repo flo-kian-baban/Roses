@@ -5,7 +5,10 @@
 //   GET ?venue=<id>&season=<fall|winter|spring|summer>[&transition=<T1…T10>]
 //       → { season, html: the scene's markup as the page renders it, script: the artwork engine to run on it (Senso's fall, winter and
 //           summer), else null, tx: the transition into the menu as the page ships it for that season ({ id, key, css, js }: the venue's
-//           choice for that season, or the one asked for; Senso's, every season since 2026-10-11; with its name, level, time and line), else null }
+//           choice for that season, or the one asked for; Senso's, every season since 2026-10-11; with its name, level, time and line), else null,
+//           menu: the page's menu as it renders in that season (its <main>, the item popup and section list with the kit's script: the
+//           template's own output), when the venue has an item tagged with seasons (Kian, 2026-10-12: the preview's season switch shows each
+//           season's Seasonal section before it goes live); else null, nothing in the menu changes with the season }
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { jsonRoute, ApiError, str } from '@/lib/admin/api';
@@ -16,6 +19,11 @@ import { TRANSITION_BY_ID, isTransitionId } from '@/lib/transitions';
 import { styleOf, transitionOf } from '@/venues/styles';
 import { artScene } from '@/components/welcome-art';
 import { SEASONS, type Season } from '@/lib/welcome';
+import { getPublicMenu, getVenue } from '@/lib/menu';
+import { query } from '@/lib/db';
+import { SensoPage } from '@/venues/senso';
+import { KebabLandPage } from '@/venues/kebab-land';
+import { DefaultPage } from '@/venues/default';
 
 export default jsonRoute(async ({ session, body }) => {
   const venue = await getVenueRow(str(body.venue) ?? '');
@@ -30,5 +38,18 @@ export default jsonRoute(async ({ session, body }) => {
   if (asked && !isTransitionId(asked)) throw new ApiError(400, 'unknown transition');
   const tx = txFor(art, asked ?? transitionOf(styleOf(venue), season as Season), season as Season);
   const def = tx && TRANSITION_BY_ID[tx.id];
-  return { season, html, script: a ? engineFor(a.kind) : null, tx: tx && def && { id: tx.id, key: tx.key, css: tx.css, js: tx.js, name: def.name, level: def.level, ms: def[tx.season].ms, text: def[tx.season].text } };
+  // The menu of that season (only when some item has seasons: otherwise it is the same in every season and nothing is swapped).
+  let menu: string | null = null;
+  if ((await query<{ n: number }>('select count(*)::int as n from items where venue_id = $1 and cardinality(seasons) > 0', [venue.id]))[0]?.n) {
+    const v = await getVenue(venue.id);
+    if (v) {
+      const sections = await getPublicMenu(v.id, v.settings?.showPersianDrafts !== false, season as Season);
+      const style = styleOf(v);
+      const page = v.id === 'senso' ? createElement(SensoPage, { venue: v, sections, season: season as Season, photos: style.photos !== false })
+        : v.id === 'kebab-land' ? createElement(KebabLandPage, { venue: v, sections, photos: style.photos !== false })
+        : createElement(DefaultPage, { venue: v, sections, style });
+      menu = renderToStaticMarkup(page);
+    }
+  }
+  return { season, html, menu, script: a ? engineFor(a.kind) : null, tx: tx && def && { id: tx.id, key: tx.key, css: tx.css, js: tx.js, name: def.name, level: def.level, ms: def[tx.season].ms, text: def[tx.season].text } };
 }, { get: true });

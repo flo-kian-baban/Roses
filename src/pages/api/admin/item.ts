@@ -1,6 +1,8 @@
 // Items, JSON (the page editor). Every action answers { ok, revisions: [record ids], item? } and regenerates the public page.
-//   create  { action:'create', venue, section_id, name:{en,fa}, price, photo:{url,key,width,height} | photo_url }   shown when it has a price
-//   update  { action:'update', id, patch:{ name, description, price, variants, add_ons, components, serves, photo:{url,alt}, listed, section_ids } }
+//   create  { action:'create', venue, section_id, name:{en,fa}, price, photo:{url,key,width,height} | photo_url, seasons? }   shown when it has a price;
+//           added to the Seasonal section without seasons, it is tagged with the season of today in Toronto (Kian, 2026-10-12)
+//   update  { action:'update', id, patch:{ name, description, price, variants, add_ons, components, serves, photo:{url,alt}, listed, section_ids, seasons } }
+//           seasons: any of fall, winter, spring, summer (none = all year)
 //   notes   { action:'notes', id, notes }                                            owner or admin only (403)
 //   move    { action:'move', id, section_id, index }                                 order within one section
 //   delete  { action:'delete', id }
@@ -9,6 +11,9 @@ import { canEditNotes, canEditVenue } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
 import { createItem, deleteItem, editorItem, getItem, moveItem, updateItem, type ItemPatch, type Notes } from '@/lib/admin/items';
 import type { AddOn, Component, Variant } from '@/lib/types';
+import { getSection } from '@/lib/admin/sections';
+import { seasonsOf } from '@/lib/seasonal';
+import { seasonNow } from '@/lib/welcome';
 
 const arr = (v: unknown): Record<string, unknown>[] => (Array.isArray(v) ? v.filter((x) => x && typeof x === 'object') : []);
 
@@ -24,6 +29,7 @@ function readPatch(p: JsonBody): ItemPatch {
   if ('components' in p) out.components = arr(p.components).map((r): Component => ({ ...r, item_id: str(r.item_id), label: biOf(r.label), qty: Math.max(1, Math.trunc(Number(r.qty) || 1)) })).filter((c) => c.label.en || c.label.fa);
   if ('photo' in p) out.photo = photoOf(p.photo, { en: null, fa: null });
   if ('section_ids' in p) out.section_ids = Array.isArray(p.section_ids) ? p.section_ids.map(idOf) : [];
+  if ('seasons' in p) out.seasons = seasonsOf(p.seasons);
   return out;
 }
 
@@ -40,7 +46,8 @@ export default jsonRoute(async ({ res, session, body }) => {
     if (!canEditVenue(session, venueId)) throw new ApiError(403, 'no access to this venue');
     const name = biOf(body.name); if (!name.en) throw new ApiError(400, 'The name is required');
     const price = moneyOf(body.price);
-    const r = await createItem(venueId, { name, price, photo: photoOf(body.photo ?? body.photo_url, { en: name.en, fa: name.fa }), listed: price != null, section_ids: [sectionId] }, by);
+    const seasons = 'seasons' in body ? seasonsOf(body.seasons) : (await getSection(sectionId))?.seasonal ? [seasonNow()] : [];
+    const r = await createItem(venueId, { name, price, photo: photoOf(body.photo ?? body.photo_url, { en: name.en, fa: name.fa }), listed: price != null, section_ids: [sectionId], seasons }, by);
     if (!r.ok) throw new ApiError(400, r.error);
     await revalidateVenue(res, venueId);
     return { revisions: [r.revision], item: await editorItem(r.id) };

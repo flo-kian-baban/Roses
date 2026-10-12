@@ -231,11 +231,11 @@ const ownerCookie = await cookieOf(ownerCtx);
   await ap.waitForURL((u) => /^\/admin\/drill-venue(-\d+)?$/.test(u.pathname)); const id = new URL(ap.url()).pathname.split('/')[2];
   await ap.waitForSelector('[data-details-tab]'); const landed = Date.now() - t0;
   const row = (await db.query(`select template, name->>'en' as name from venues where id=$1`, [id])).rows[0];
-  const secs = (await db.query('select count(*)::int as n from sections where venue_id=$1', [id])).rows[0].n;
+  const sc = (await db.query('select count(*) filter (where not seasonal)::int as n, count(*) filter (where seasonal)::int as s from sections where venue_id=$1', [id])).rows[0], secs = sc.n, seasonalSecs = sc.s; // one section of its own and its Seasonal section (2026-10-12)
   const tPub = Date.now(); const pub = await fetch(`${base}/${id}`); const html = await pub.text(); const pubMs = Date.now() - tPub;
   await snap(ap, 'venue-added');
   const dd = await ap.$$eval('header details a[href^="/admin/"]', (els) => els.map((e) => e.getAttribute('href')));
-  check('add-venue', taps === 3 && row?.template === 'default' && secs === 1 && pub.status === 200 && html.includes('Drill venue') && html.includes('--c-page-bg:') && dd.includes(`/admin/${id}`), `+ Add venue: ${taps} taps (venue menu, Add venue, Create) + the name → /admin/${id} (Details tab) ${landed} ms after Create; venues row template=${row?.template}, ${secs} starting section; GET /${id} → ${pub.status} in ${pubMs} ms (default template, name on the page: ${html.includes('Drill venue')}); in the venue dropdown: ${dd.includes(`/admin/${id}`)}`);
+  check('add-venue', taps === 3 && row?.template === 'default' && secs === 1 && seasonalSecs === 1 && pub.status === 200 && html.includes('Drill venue') && html.includes('--c-page-bg:') && dd.includes(`/admin/${id}`), `+ Add venue: ${taps} taps (venue menu, Add venue, Create) + the name → /admin/${id} (Details tab) ${landed} ms after Create; venues row template=${row?.template}, ${secs} starting section and ${seasonalSecs} Seasonal section; GET /${id} → ${pub.status} in ${pubMs} ms (default template, name on the page: ${html.includes('Drill venue')}); in the venue dropdown: ${dd.includes(`/admin/${id}`)}`);
   measure(`+ Add venue: ${taps} taps + the name; Details tab open ${landed} ms after Create; the new page answers ${pub.status} (${pubMs} ms)`);
   await ap.close(); await actx.close(); }
 

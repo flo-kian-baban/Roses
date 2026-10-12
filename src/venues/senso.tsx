@@ -2,13 +2,16 @@
 // header (its logo and name), navy phone links and locations footer. Kian, 2026-10-07. Redesign replaces this file only.
 // Colours are tokens (src/venues/tokens.ts) read through CSS variables; Senso's defaults: the white kit with the brand
 // navy on the phone links.
-import type { Section, Venue } from '@/lib/types';
+import type { Section, SeasonId, Venue } from '@/lib/types';
 import { Bi } from '@/components/Bi';
 import { LangToggle } from '@/components/LangToggle';
 import { ItemList, MenuDialogs, SectionTabs, slug } from '@/components/menu-kit';
+import { seasonalCss, seasonalMotif } from '@/lib/seasonal';
 
-export function SensoPage({ venue, sections, photos = true }: { venue: Venue; sections: Section[]; photos?: boolean }) {
+// The Seasonal section (Kian, 2026-10-12), first when shown: a small motif of the season's picked artwork before its title.
+export function SensoPage({ venue, sections, season, photos = true }: { venue: Venue; sections: Section[]; season: SeasonId; photos?: boolean }) {
   const logo = venue.brand.logo;
+  const motif = sections.some((s) => s.seasonal) ? seasonalMotif(season) : null;
   return (
     <>
       <main>
@@ -25,9 +28,12 @@ export function SensoPage({ venue, sections, photos = true }: { venue: Venue; se
 
         <div className="mx-auto max-w-2xl px-4 pb-16">
           {sections.map((s, n) => (
-            <section key={s.id} id={slug(s.name.en ?? s.id)} data-id={s.id} className="scroll-mt-12">
+            <section key={s.id} id={slug(s.name.en ?? s.id)} data-id={s.id} className={s.seasonal ? 'scroll-mt-12 seasonal' : 'scroll-mt-12'}>
+              {s.seasonal && <style dangerouslySetInnerHTML={{ __html: seasonalCss('senso') }} />}
               {n > 0 && <div className="section-divider" aria-hidden="true" />}
-              <Bi as="h2" text={s.name} className="pt-6 text-[24px] font-bold leading-tight text-(--c-headings-title)" />
+              {s.seasonal
+                ? <div className="seasonal-head">{motif && <svg className="seasonal-mark" viewBox={motif.box} aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: motif.inner }} />}<Bi as="h2" text={s.name} className="pt-6 text-[24px] font-bold leading-tight text-(--c-headings-title)" /></div>
+                : <Bi as="h2" text={s.name} className="pt-6 text-[24px] font-bold leading-tight text-(--c-headings-title)" />}
               <Bi as="p" text={s.note} className="mt-1 text-[14px] text-(--c-headings-note)" />
               <ItemList section={s} first={n === 0} photos={photos} />
             </section>

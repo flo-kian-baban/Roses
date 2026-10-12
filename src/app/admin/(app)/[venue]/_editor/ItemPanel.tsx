@@ -1,21 +1,22 @@
 'use client';
 // The item editor: a side panel on laptops, full screen on phones. Three layers: Basics (always visible), More (one
 // tap: description, sizes, other sections, order) and Advanced (collapsed: add-ons, combo parts, notes for owner and
-// admin, delete). Every field saves itself on change; there is no Save button.
+// admin, delete). Every field saves itself on change; there is no Save button. Seasons (Kian, 2026-10-12): four chips in Basics, Fall /
+// Winter / Spring / Summer; none selected = all year; a season chosen hides the item everywhere outside it.
 import { useEffect, useState } from 'react';
-import type { AddOn, Bi, Component, EditorItem, EditorSection, Notes, Photo as PhotoData, Variant } from '@/lib/types';
+import type { AddOn, Bi, Component, EditorItem, EditorSection, Notes, Photo as PhotoData, SeasonId, Variant } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
-import { listingProblem } from './state';
+import { SEASON_NAMES, listingProblem, seasonState } from './state';
 import { uploadImage } from './upload';
 import { Badge, MoneyField, Photo, Switch, TextField, btnDanger, btnGhost, btnSecondary, fieldCls } from './ui';
 
 export type ItemPanelProps = {
-  item: EditorItem; venueId: string; sections: EditorSection[]; sectionId: string | null; canNotes: boolean; column?: boolean;
+  item: EditorItem; venueId: string; sections: EditorSection[]; sectionId: string | null; canNotes: boolean; column?: boolean; season: SeasonId;
   onPatch: (patch: Record<string, unknown>) => Promise<void>; onNotes: (notes: Notes) => Promise<void>; onDelete: () => void;
   onMove: (sectionId: string, id: string, index: number) => Promise<void>; onClose: () => void;
 };
 
-export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column, onPatch, onNotes, onDelete, onMove, onClose }: ItemPanelProps) {
+export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column, season, onPatch, onNotes, onDelete, onMove, onClose }: ItemPanelProps) {
   const [more, setMore] = useState(false);
   const [advanced, setAdvanced] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -27,6 +28,7 @@ export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column
   const draft = (f: string) => item.fa_draft.includes(f);
   const inSections = new Set(item.placements.map((p) => p.section_id));
   const orderIn = sections.filter((s) => inSections.has(s.id));
+  const seasonalId = sections.find((s) => s.seasonal)?.id ?? null;
 
   return (
     <div className={`item-panel panel-in flex flex-col bg-white ${column ? 'sticky top-14 h-[calc(100dvh-3.5rem)] border-l border-line' : 'fixed inset-0 z-50 lg:inset-auto lg:bottom-0 lg:right-[520px] lg:top-14 lg:w-[440px] lg:border-l lg:border-line lg:shadow-[-12px_0_32px_-24px_rgba(0,0,0,.3)]'}`} role="dialog" aria-modal={column ? undefined : true} aria-label={`Edit ${item.name.en ?? 'item'}`}>
@@ -48,6 +50,7 @@ export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column
             <span className="mb-1 block text-sm font-medium">Photo</span>
             <PhotoField venueId={venueId} photo={item.photo} alt={{ en: item.name.en, fa: item.name.fa }} onChange={(p) => patch({ photo: p })} />
           </div>
+          <Seasons item={item} season={season} seasonalId={seasonalId} onPatch={patch} />
           <label className="flex min-h-14 items-center justify-between gap-4 rounded-2xl border border-line px-4 py-3">
             <span><span className="block font-medium">{item.listed ? 'Shown to customers' : 'Hidden from customers'}</span>{reason ? <span className="block text-xs text-red-600">{reason}</span> : problem && !item.listed ? <span className="block text-xs text-ink-muted">{problem}</span> : null}</span>
             <Switch checked={item.listed} label={item.listed ? 'Shown. Tap to hide' : 'Hidden. Tap to show'} onChange={async (v) => { setReason(null); try { await onPatch({ listed: v }); } catch (e) { setReason((e as Error).message); } }} />
@@ -66,7 +69,7 @@ export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column
               <div className="grid gap-1.5">
                 {sections.map((s) => (
                   <label key={s.id} className="flex min-h-11 items-center gap-3 rounded-xl border border-line px-3">
-                    <input type="checkbox" className="check" checked={inSections.has(s.id)} onChange={(e) => { const ids = sections.filter((x) => (x.id === s.id ? e.target.checked : inSections.has(x.id))).map((x) => x.id); void patch({ section_ids: ids }); }} />
+                    <input type="checkbox" className="check" checked={inSections.has(s.id)} onChange={(e) => { const ids = sections.filter((x) => (x.id === s.id ? e.target.checked : inSections.has(x.id))).map((x) => x.id); void patch(s.seasonal && e.target.checked && !item.seasons.length ? { section_ids: ids, seasons: [season] } : { section_ids: ids }); }} />
                     <span className="min-w-0 flex-1 truncate text-[15px]">{s.name.en}</span>{!s.listed && <Badge>Hidden</Badge>}
                   </label>
                 ))}
@@ -107,6 +110,35 @@ export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column
 }
 
 const sameJson = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+
+// Seasons (Kian, 2026-10-12): the four chips save on every tap; none selected = all year. Today's season decides what the line under
+// them says: out of season now (hidden everywhere until one of its seasons), or in the Seasonal section without today's season.
+const SEASON_ORDER: SeasonId[] = ['fall', 'winter', 'spring', 'summer'];
+function Seasons({ item, season, seasonalId, onPatch }: { item: EditorItem; season: SeasonId; seasonalId: string | null; onPatch: (p: Record<string, unknown>) => Promise<void> }) {
+  const [busy, setBusy] = useState(false);
+  const st = seasonState(item, { season, seasonalId });
+  const toggle = async (x: SeasonId) => {
+    const next = SEASON_ORDER.filter((y) => (y === x ? !item.seasons.includes(x) : item.seasons.includes(y)));
+    setBusy(true); try { await onPatch({ seasons: next }); } catch { /* the panel shows the error */ } finally { setBusy(false); }
+  };
+  return (
+    <div role="group" aria-label="Seasons">
+      <span className="mb-1 block text-sm font-medium">Seasons</span>
+      <div className="flex flex-wrap gap-2">
+        {SEASON_ORDER.map((x) => {
+          const on = item.seasons.includes(x);
+          return <button key={x} type="button" aria-pressed={on} disabled={busy} onClick={() => { void toggle(x); }} data-season-chip={x}
+            className={`min-h-11 min-w-11 rounded-full border px-4 text-[15px] font-medium ${on ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'}`}>{SEASON_NAMES[x]}</button>;
+        })}
+      </div>
+      <p className={`mt-1 text-xs ${st ? 'text-amber-800' : 'text-ink-muted'}`}>
+        {st === 'out' ? `Out of season now (it is ${SEASON_NAMES[season].toLowerCase()}): hidden from customers until ${item.seasons.map((x) => SEASON_NAMES[x].toLowerCase()).join(' or ')}.`
+          : st === 'none' ? `In the Seasonal section without ${SEASON_NAMES[season]}: not shown there. Pick ${SEASON_NAMES[season]} to show it as a ${SEASON_NAMES[season].toLowerCase()} special.`
+          : item.seasons.length ? `Shown in ${item.seasons.map((x) => SEASON_NAMES[x].toLowerCase()).join(', ')} only.` : 'None selected: all year.'}
+      </p>
+    </div>
+  );
+}
 
 // The photo (step 2): uploaded from the phone's camera or photos, shrunk on the device first (see upload.ts); one tap
 // opens the chooser. A linked photo from the import keeps working and can be replaced or removed the same way.

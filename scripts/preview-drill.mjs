@@ -181,6 +181,34 @@ const cookie = await cookieOf(laptop);
   await l.click('[data-preview-screen="menu"]');
   if (sec.layout !== 'list') await api('/api/admin/section', { action: 'update', id: sec.id, patch: { layout: sec.layout } }, cookie); // as it was, so the customers' page compares byte for byte
 }
+{ // seasonal items (Kian, 2026-10-12): the bar's season switch shows each season's Seasonal section in the preview; the customers' page
+  // is unchanged by it. Four of Senso's items put in its Seasonal section through the admin, one per season; removed again afterwards.
+  const ck = await cookieOf(laptop);
+  const TITLE = { fall: 'Fall specials', winter: 'Winter specials', spring: 'Spring specials', summer: 'Summer specials' };
+  const ss = (await db.query(`select id from sections where venue_id = $1 and seasonal`, [VENUE])).rows[0].id;
+  const its = (await db.query(`select i.id, i.name->>'en' as name, array(select section_id from item_sections where item_id = i.id order by position) as secs from items i where i.venue_id = $1 and i.listed and cardinality(i.seasons) = 0 and not exists (select 1 from item_sections x where x.item_id = i.id and x.section_id = $2) and exists (select 1 from item_sections x join sections s on s.id = x.section_id where x.item_id = i.id and s.listed) order by i.name->>'en' limit 4`, [VENUE, ss])).rows;
+  const SEAS = ['fall', 'winter', 'spring', 'summer'], by = {};
+  for (let i = 0; i < 4; i++) { by[SEAS[i]] = its[i]; await api('/api/admin/item', { action: 'update', id: its[i].id, patch: { seasons: [SEAS[i]], section_ids: [...its[i].secs, ss] } }, ck); }
+  const seasonalIn = (h) => { const m = h.match(/<section[^>]*class="[^"]*\bseasonal\b[^"]*"[^>]*>[\s\S]*?<\/section>/); return m ? m[0] : null; };
+  for (let t = Date.now(); Date.now() - t < 10000 && !(seasonalIn(await publicHtml(VENUE)) || '').includes(by[pageSeason].id);) await sleep(150);
+  const pubBefore = await publicHtml(VENUE);
+  // the items were saved through the API, not the editor: the admin page reloaded (Style tab), its frame shows the page as saved
+  await l.click(STYLE_TAB).catch(() => {}); await l.reload(); await l.waitForSelector('[data-preview-season]'); await frameReady(l); await l.click('[data-preview-screen="menu"]');
+  for (let t = Date.now(); Date.now() - t < 8000;) { const x = await fe(l, (d) => !!d.querySelector('section.seasonal')); if (x) break; await sleep(100); }
+  const rows = [];
+  for (const S of [...SEAS.filter((x) => x !== pageSeason), pageSeason]) {
+    const t0 = Date.now(); await l.click(`[data-preview-season="${S}"]`);
+    let seen = null, ms = null;
+    while (Date.now() - t0 < 5000) { seen = await fe(l, (d) => { const sec = d.querySelector('section.seasonal'); return sec ? { title: sec.querySelector('h2 span[lang="en"]')?.textContent ?? sec.querySelector('h2')?.textContent, ids: [...sec.querySelectorAll('li.item')].map((li) => li.dataset.id), first: d.querySelector('main section[data-id]') === sec } : null; }); if (seen && seen.title === TITLE[S] && seen.ids.join() === by[S].id && seen.first) { ms = Date.now() - t0; break; } await sleep(20); }
+    rows.push({ S, ok: ms !== null, ms, seen });
+  }
+  const pubAfter = await publicHtml(VENUE);
+  await snap(l, 'preview-seasonal');
+  check('preview-seasonal', rows.every((r) => r.ok) && pubAfter === pubBefore && !!seasonalIn(pubBefore), `Style tab on a laptop, the bar's season switched through ${rows.map((r) => r.S).join(', ')} with four of Senso's items in its Seasonal section (one per season): the frame shows ${rows.map((r) => `${r.S} → ${r.ok ? `“${TITLE[r.S]}” with ${by[r.S].name}, first, ${r.ms} ms` : `NOT (${JSON.stringify(r.seen)})`}`).join('; ')}; the customers' page byte for byte the same before and after the switches (${pubAfter === pubBefore}, ${pubBefore.length} B; it shows ${pageSeason}'s section only)`);
+  measure(`the preview's season switch shows that season's Seasonal section within ${Math.max(...rows.map((r) => r.ms ?? 9999))} ms`);
+  for (const S of SEAS) await api('/api/admin/item', { action: 'update', id: by[S].id, patch: { seasons: [], section_ids: by[S].secs } }, ck);
+  for (let t = Date.now(); Date.now() - t < 10000 && seasonalIn(await publicHtml(VENUE));) await sleep(150);
+}
 await laptop.close();
 { // the customers' HTML: no preview markup, identical before and after (nothing of the bar is saved)
   const after = { senso: await publicHtml('senso'), 'kebab-land': await publicHtml('kebab-land') };

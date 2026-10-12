@@ -22,8 +22,9 @@ type Props = { venue: Venue; sections: Section[]; season: Season };
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const venue = await getVenue(VENUE);
   if (!venue) return { notFound: true };
-  const sections = await getPublicMenu(VENUE, venue.settings?.showPersianDrafts !== false);
-  return { props: JSON.parse(JSON.stringify({ venue, sections, season: seasonNow() })), revalidate: REVALIDATE_SECONDS };
+  const season = seasonNow(); // the welcome scene and the seasonal items (Kian, 2026-10-12) follow the same season
+  const sections = await getPublicMenu(VENUE, venue.settings?.showPersianDrafts !== false, season);
+  return { props: JSON.parse(JSON.stringify({ venue, sections, season })), revalidate: REVALIDATE_SECONDS };
 };
 
 export default function KebabLand({ venue, sections, season }: Props) {

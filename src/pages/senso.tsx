@@ -25,8 +25,9 @@ type Props = { venue: Venue; sections: Section[]; season: Season };
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const venue = await getVenue(VENUE);
   if (!venue) return { notFound: true };
-  const sections = await getPublicMenu(VENUE, venue.settings?.showPersianDrafts !== false);
-  return { props: JSON.parse(JSON.stringify({ venue, sections, season: seasonNow() })), revalidate: REVALIDATE_SECONDS };
+  const season = seasonNow(); // the welcome scene and the seasonal items (Kian, 2026-10-12) follow the same season
+  const sections = await getPublicMenu(VENUE, venue.settings?.showPersianDrafts !== false, season);
+  return { props: JSON.parse(JSON.stringify({ venue, sections, season })), revalidate: REVALIDATE_SECONDS };
 };
 
 export default function Senso({ venue, sections, season }: Props) {
@@ -50,7 +51,7 @@ export default function Senso({ venue, sections, season }: Props) {
       {/* In the body so it follows the stylesheet in cascade order. */}
       <style dangerouslySetInnerHTML={{ __html: css }} />
       {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} season={season} art transition={transitionOf(style, season)} />}
-      <SensoPage venue={venue} sections={sections} photos={style.photos !== false} />
+      <SensoPage venue={venue} sections={sections} season={season} photos={style.photos !== false} />
     </>
   );
 }

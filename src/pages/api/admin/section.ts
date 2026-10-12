@@ -3,6 +3,7 @@
 //   update  { action:'update', id, patch:{ name, note, listed, layout } }   layout 'list' | 'grid' (Kian, 2026-10-08): owner and admin only, 403 for staff
 //   move    { action:'move', id, direction:'up'|'down' }       or   reorder { action:'reorder', venue, section_ids }
 //   delete  { action:'delete', id, items:'move'|'delete'|'keep', target_section_id }   move its items to another section (default in the UI) or delete them too
+// The venue's Seasonal section (Kian, 2026-10-12) can be hidden, its note and layout changed; not renamed, moved or deleted (400).
 import { jsonRoute, ApiError, revalidateVenue, biOf, boolOf, idOf, str, type JsonBody } from '@/lib/admin/api';
 import { canEditVenue, canManage } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
@@ -12,7 +13,7 @@ import { editorMenu } from '@/lib/admin/overview';
 import { pool } from '@/lib/db';
 import { sectionOrder } from '@/lib/admin/items';
 
-const sectionOut = async (id: string) => { const s = await getSection(id); return s ? { id: s.id, name: s.name, note: s.note, position: s.position, listed: s.listed, fa_draft: s.fa_draft, layout: s.layout, item_ids: await sectionOrder(pool, id) } : null; };
+const sectionOut = async (id: string) => { const s = await getSection(id); return s ? { id: s.id, name: s.name, note: s.note, position: s.position, listed: s.listed, fa_draft: s.fa_draft, layout: s.layout, seasonal: s.seasonal, item_ids: await sectionOrder(pool, id) } : null; };
 
 export default jsonRoute(async ({ res, session, body }) => {
   const by = byOf(session);
@@ -51,7 +52,8 @@ export default jsonRoute(async ({ res, session, body }) => {
     return { revisions: r.revision ? [r.revision] : [], section: await sectionOut(id) };
   }
   if (body.action === 'move') {
-    const order = (await listSections(sec.venue_id)).map((s) => s.id);
+    if (sec.seasonal) throw new ApiError(400, 'The Seasonal section stays first');
+    const order = (await listSections(sec.venue_id)).filter((s) => !s.seasonal).map((s) => s.id);
     const i = order.indexOf(id); const j = body.direction === 'up' ? i - 1 : i + 1;
     if (j < 0 || j >= order.length) return { revisions: [], section_order: order };
     [order[i], order[j]] = [order[j], order[i]];

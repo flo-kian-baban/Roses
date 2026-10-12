@@ -8,6 +8,7 @@ import { SignIn } from '../../_ui/SignIn';
 import { Forbidden } from '../_forbidden';
 import { adminContext } from '../../_ui/context';
 import { Editor } from './_editor/Editor';
+import { seasonNow } from '@/lib/welcome';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,7 +49,7 @@ export default async function VenueEditor({ params, searchParams }: { params: Pr
       <Editor
         venue={{ id: venue.id, name: venue.name, tagline: venue.tagline, locations: venue.locations, logo: venue.brand?.logo ?? null, settings: venue.settings, template: venue.template, style: venue.style ?? {}, brandColors: venue.brand?.colors ?? {} }}
         me={{ name: session.name, role: session.role, canNotes: canEditNotes(session), canManage: canManage(session) }}
-        initial={menu} tab={tab} />
+        initial={menu} tab={tab} today={seasonNow()} />
     </TopBar>
   );
 }

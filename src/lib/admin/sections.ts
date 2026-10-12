@@ -8,13 +8,15 @@ import type { Bi, SectionLayout } from '@/lib/types';
 import { recordRevision, type By } from './revisions';
 import { dbError, itemSnapshot, sectionOrder, type Result } from './items';
 
-export type SectionRow = { id: string; venue_id: string; name: Bi; note: Bi; position: number; listed: boolean; fa_draft: string[]; layout: SectionLayout; updated_at: string; updated_by: By | null };
+// seasonal: the venue's Seasonal section (Kian, 2026-10-12): it cannot be deleted (it can be hidden), its name is the admin's label (customers
+// see the season's title), and it stays first, outside the venue's order of sections.
+export type SectionRow = { id: string; venue_id: string; name: Bi; note: Bi; position: number; listed: boolean; fa_draft: string[]; layout: SectionLayout; seasonal: boolean; updated_at: string; updated_by: By | null };
 // items: the order of the section's items when it was deleted; moved_to: placements added to another section by the
 // delete (removed again by Undo); deleted_items: items deleted with the section (each has its own delete record).
 export type SectionSnapshot = Pick<SectionRow, 'name' | 'note' | 'position' | 'listed' | 'fa_draft'> & { layout?: SectionLayout } & { items?: string[]; moved_to?: { section_id: string; item_ids: string[] }; deleted_items?: string[] };
 export type DeleteItems = { items: 'keep' } | { items: 'move'; target: string } | { items: 'delete' };
 export type SectionPatch = Partial<Pick<SectionSnapshot, 'name' | 'note' | 'position' | 'listed' | 'layout'>>;
-const COLS = 'id, venue_id, name, note, position, listed, fa_draft, layout, updated_at, updated_by';
+const COLS = 'id, venue_id, name, note, position, listed, fa_draft, layout, seasonal, updated_at, updated_by';
 export const LAYOUTS: SectionLayout[] = ['list', 'grid'];
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
@@ -22,7 +24,7 @@ export async function getSection(id: string): Promise<SectionRow | null> {
   return (await pool.query<SectionRow>(`select ${COLS} from sections where id = $1`, [id])).rows[0] ?? null;
 }
 export async function listSections(venueId: string): Promise<SectionRow[]> {
-  return (await pool.query<SectionRow>(`select ${COLS} from sections where venue_id = $1 order by position, name->>'en'`, [venueId])).rows;
+  return (await pool.query<SectionRow>(`select ${COLS} from sections where venue_id = $1 order by seasonal desc, position, name->>'en'`, [venueId])).rows;
 }
 
 export async function updateSection(id: string, patch: SectionPatch, by: By): Promise<Result> {
@@ -34,6 +36,7 @@ export async function updateSection(id: string, patch: SectionPatch, by: By): Pr
     const before: SectionSnapshot = { name: row.name, note: row.note, position: row.position, listed: row.listed, fa_draft: row.fa_draft, layout: row.layout };
     const next: SectionSnapshot = { ...before, ...Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined)) } as SectionSnapshot;
     if (!next.name?.en) { await client.query('rollback'); return { ok: false, error: 'The English name is required' }; }
+    if (row.seasonal && !same(before.name, next.name)) { await client.query('rollback'); return { ok: false, error: 'The Seasonal section is titled by the season; it cannot be renamed' }; }
     const keep = new Set(row.fa_draft); if (before.name.fa !== next.name.fa) keep.delete('name'); if (before.note?.fa !== next.note?.fa) keep.delete('note'); next.fa_draft = [...keep];
     if (same(before, next)) { await client.query('rollback'); return { ok: true, id }; }
     await client.query(`update sections set name=$2, note=$3, position=$4, listed=$5, fa_draft=$6, layout=$7, updated_at=now(), updated_by=$8 where id=$1`, [id, next.name, next.note, next.position, next.listed, next.fa_draft, next.layout ?? 'list', by]);
@@ -63,6 +66,7 @@ export async function deleteSection(id: string, by: By, mode: DeleteItems = { it
     await client.query('begin');
     const row = (await client.query<SectionRow>(`select ${COLS} from sections where id = $1 for update`, [id])).rows[0];
     if (!row) { await client.query('rollback'); return { ok: false, error: 'section not found' }; }
+    if (row.seasonal) { await client.query('rollback'); return { ok: false, error: 'The Seasonal section cannot be deleted; hide it instead' }; }
     const items = await sectionOrder(client, id);
     const before: SectionSnapshot = { name: row.name, note: row.note, position: row.position, listed: row.listed, fa_draft: row.fa_draft, layout: row.layout, items };
     const itemRevisions: number[] = [];
@@ -101,6 +105,8 @@ export async function reorderSections(venueId: string, order: string[], by: By):
   try {
     await client.query('begin');
     const before = await venueSectionOrder(client, venueId);
+    const seasonal = new Set((await client.query<{ id: string }>('select id from sections where venue_id = $1 and seasonal', [venueId])).rows.map((r) => r.id));
+    order = order.filter((id) => !seasonal.has(id)); // the Seasonal section stays first whatever the order sent
     if (before.length !== order.length || [...before].sort().join() !== [...order].sort().join()) { await client.query('rollback'); return { ok: false, error: 'the order must list every section of the venue once' }; }
     if (same(before, order)) { await client.query('rollback'); return { ok: true, id: venueId, order: before }; }
     await applySectionOrder(client, venueId, order);
@@ -110,10 +116,10 @@ export async function reorderSections(venueId: string, order: string[], by: By):
   } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
 }
 export async function venueSectionOrder(client: Q, venueId: string): Promise<string[]> {
-  return (await client.query<{ id: string }>(`select id from sections where venue_id = $1 order by position, name->>'en'`, [venueId])).rows.map((r) => r.id);
+  return (await client.query<{ id: string }>(`select id from sections where venue_id = $1 and not seasonal order by position, name->>'en'`, [venueId])).rows.map((r) => r.id); // the Seasonal section stays first, outside the order
 }
 export async function applySectionOrder(client: Q, venueId: string, order: string[]): Promise<void> {
-  for (let i = 0; i < order.length; i++) await client.query('update sections set position = $3 where venue_id = $1 and id = $2', [venueId, order[i], i]);
+  for (let i = 0; i < order.length; i++) await client.query('update sections set position = $3 where venue_id = $1 and id = $2 and not seasonal', [venueId, order[i], i]);
 }
 
 // Puts a section back to a snapshot (Undo). A deleted section returns with its items in their old order.

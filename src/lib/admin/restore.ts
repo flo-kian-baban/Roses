@@ -63,7 +63,7 @@ async function undoOne(client: PoolClient, r: Revision, by: By): Promise<Result>
   if (r.table_name === 'sections') {
     const cur = (await client.query<SectionSnapshot>('select name, note, position, listed, fa_draft, layout from sections where id = $1', [r.row_id])).rows[0] ?? null;
     if (cur) cur.items = await sectionOrder(client, r.row_id);
-    if (!target) { if (cur) await client.query('delete from sections where id = $1', [r.row_id]); }
+    if (!target) { if (cur) await client.query('delete from sections where id = $1 and not seasonal', [r.row_id]); } // the Seasonal section is never deleted
     else {
       const snap = target as SectionSnapshot;
       await applySectionSnapshot(client, r.venue_id, r.row_id, snap, by);

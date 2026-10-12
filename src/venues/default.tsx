@@ -7,7 +7,9 @@ import type { Section, Venue, StyleValues } from '@/lib/types';
 import { Bi } from '@/components/Bi';
 import { LangToggle } from '@/components/LangToggle';
 import { ItemList, MenuDialogs, SectionTabs, slug } from '@/components/menu-kit';
+import { seasonalCss } from '@/lib/seasonal';
 
+// The Seasonal section (Kian, 2026-10-12), first when shown: its title in the accent (src/lib/seasonal.ts).
 export function DefaultPage({ venue, sections, style }: { venue: Venue; sections: Section[]; style: StyleValues }) {
   const logo = venue.brand.logo;
   const header = logo ? String(style.header ?? 'name') : 'name';
@@ -29,7 +31,8 @@ export function DefaultPage({ venue, sections, style }: { venue: Venue; sections
 
         <div className="mx-auto max-w-2xl px-4 pb-16">
           {sections.map((s, n) => (
-            <section key={s.id} id={slug(s.name.en ?? s.id)} data-id={s.id} className="scroll-mt-12">
+            <section key={s.id} id={slug(s.name.en ?? s.id)} data-id={s.id} className={s.seasonal ? 'scroll-mt-12 seasonal' : 'scroll-mt-12'}>
+              {s.seasonal && <style dangerouslySetInnerHTML={{ __html: seasonalCss('default') }} />}
               {n > 0 && <div className="section-divider" aria-hidden="true" />}
               <Bi as="h2" text={s.name} className="pt-6 text-[24px] font-bold leading-tight text-(--c-headings-title)" />
               <Bi as="p" text={s.note} className="mt-1 text-[14px] text-(--c-headings-note)" />

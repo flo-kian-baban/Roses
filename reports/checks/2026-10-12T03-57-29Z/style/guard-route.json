@@ -1,0 +1,56 @@
+{
+  "kDark": {
+    "status": 200
+  },
+  "kRed": {
+    "status": 400,
+    "error": "3.1:1 — Price on the row background needs 4.5:1. Use #c85c5c instead.",
+    "guard": {
+      "key": "rows.price",
+      "on": "rows.bg",
+      "ratio": 3.064375653384661,
+      "threshold": 4.5,
+      "suggestion": {
+        "key": "rows.price",
+        "value": "#c85c5c"
+      }
+    }
+  },
+  "kHead": {
+    "status": 200
+  },
+  "sCream": {
+    "status": 200
+  },
+  "sGold": {
+    "status": 400,
+    "error": "2.5:1 — Price on the row background needs 4.5:1. Use #936b25 instead.",
+    "guard": {
+      "key": "rows.price",
+      "on": "rows.bg",
+      "ratio": 2.53578419811646,
+      "threshold": 4.5,
+      "suggestion": {
+        "key": "rows.price",
+        "value": "#936b25"
+      }
+    }
+  },
+  "sGoldHead": {
+    "status": 400,
+    "error": "2.5:1 — Section title on the page background needs 3:1. Use #ba872f instead.",
+    "guard": {
+      "key": "headings.title",
+      "on": "page.bg",
+      "ratio": 2.53578419811646,
+      "threshold": 3,
+      "suggestion": {
+        "key": "headings.title",
+        "value": "#ba872f"
+      }
+    }
+  },
+  "sNavy": {
+    "status": 200
+  }
+}

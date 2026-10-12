@@ -5,7 +5,7 @@ import type { Section, Venue } from '@/lib/types';
 import { Welcome, headScript } from '@/components/Welcome';
 import { REVALIDATE_SECONDS, seasonNow, type Season } from '@/lib/welcome';
 import { SensoPage } from '@/venues/senso';
-import { styleOf } from '@/venues/styles';
+import { styleOf, transitionOf } from '@/venues/styles';
 import { colorCss, resolveColors } from '@/venues/tokens';
 
 // Senso Café & Bites: its own page template and styles (src/venues/senso.tsx). Shared with the other venue:
@@ -13,7 +13,7 @@ import { colorCss, resolveColors } from '@/venues/tokens';
 // 2026-10-07: the venues are separate brands under the Roses parent brand and their pages must not look alike.
 // Pre-rendered at build time from the database, regenerated hourly for the season (the PM, 2026-10-09) and on every admin
 // save, and served as plain HTML with no framework JavaScript. Welcome artwork: Kian's picks of 2026-10-09 (`art`; Senso only), and the
-// transition into the menu chosen in the Style tab (2026-10-10; only that one, for the page's season)
+// transition into the menu chosen in the Style tab for the page's season (2026-10-10; one per season since 2026-10-11; only that one ships)
 // (`runtime` is listed only because Next 16's type validator rejects a config object without one of its known keys).
 export const config = { unstable_runtimeJS: false, runtime: 'nodejs' };
 
@@ -49,7 +49,7 @@ export default function Senso({ venue, sections, season }: Props) {
       </Head>
       {/* In the body so it follows the stylesheet in cascade order. */}
       <style dangerouslySetInnerHTML={{ __html: css }} />
-      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} season={season} art transition={String(style.transition ?? '')} />}
+      {style.welcome !== false && <Welcome logo={venue.brand.logo} name={venue.name} season={season} art transition={transitionOf(style, season)} />}
       <SensoPage venue={venue} sections={sections} photos={style.photos !== false} />
     </>
   );

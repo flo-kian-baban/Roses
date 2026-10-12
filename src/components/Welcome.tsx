@@ -13,14 +13,15 @@
 // No framework JavaScript: inline script, CSS and inline SVG only (src/styles/public.css, the "Welcome screen" block).
 // Senso (2026-10-10, the owner and manager via Kian): instead of the fade, the venue's chosen transition into the menu for this season
 // (src/lib/transitions.ts, src/lib/welcome-transitions.ts): its style and its script are the only ones in the page; the tap applies the
-// language, makes the menu usable and hands over to it (welcomeScriptTx below); spring and summer keep the fade until theirs are built.
+// language, makes the menu usable and hands over to it (welcomeScriptTx below); every season has its own since 2026-10-11, one choice per season.
 //
 // Scenes. Senso (Kian's picks of 2026-10-09, src/components/welcome-art.ts): the fall and winter scenes are the picked artwork
 // with a per-load engine (engineScript): the HTML carries the symbols and an empty scene, and the inline script draws 20 particles
 // (2 near, 9 middle, 9 far) with random designs, columns, sizes, timings, sway and flutter angles, started mid-flight by negative
 // delays, so no two loads look alike; under reduced motion a still composition of designs resting. Senso's summer (Kian's pick of
 // 2026-10-10: the Persian sun with a few dandelion seeds) is artwork too, with its own engine (sunEngineScript), so the fall and
-// winter pages are untouched by it. Every other scene (Kebab Land, the default template, Senso's spring until its batch) is the
+// winter pages are untouched by it. Senso's spring (Kian's picks of 2026-10-11: five blossoms and the rosebud) has its own engine too
+// (src/lib/welcome-bloom.ts), so the other seasons' pages are untouched by it. Every other scene (Kebab Land, the default template) is the
 // engine of 2026-10-09, unchanged: particles generated
 // at build time from a fixed seed, each an HTML element at (--x, --y) animated on transform and opacity only, symbols below.
 // At most 20 particles per scene. Colours are the Welcome group's tokens (the artwork carries its own palette, src/venues/tokens.ts).
@@ -30,6 +31,7 @@ import { GREETINGS, type Season } from '@/lib/welcome';
 import { DEFAULT_TRANSITION, isTransitionId, isTxSeason } from '@/lib/transitions';
 import { artScene, type ArtScene } from './welcome-art';
 import { transitionCode, type TxCode } from '@/lib/welcome-transitions';
+import { bloomEngineScript } from '@/lib/welcome-bloom';
 import { Bi } from './Bi';
 export { usesArtwork } from './welcome-art';
 
@@ -54,8 +56,7 @@ window.scrollTo(0,0)};
 w.querySelectorAll('button[data-lang]').forEach(function(b){b.addEventListener('click',function(){choose(b.getAttribute('data-lang'))})})})();`;
 // The tap on a venue with transitions (Senso, 2026-10-10; src/lib/welcome-transitions.ts): the same as above, except that once
 // the language is applied, the menu reachable and the page at the top, the overlay hands over to the transition the page carries
-// (w.rosesTx: the chosen concept for this season, or the 150 ms fade under reduced motion); a season without one (spring, summer)
-// keeps the fade above. A page without transitions (Kebab Land, the default template) keeps welcomeScript byte for byte.
+// (w.rosesTx: the chosen concept for this season, or the 150 ms fade under reduced motion); a page without one keeps the fade above. A page without transitions (Kebab Land, the default template) keeps welcomeScript byte for byte.
 const welcomeScriptTx = welcomeScript.replace(
   "var off=function(){if(h.dataset.welcome==='done')h.dataset.welcome='off'};if(reduced)off();else{w.addEventListener('transitionend',off,{once:true});setTimeout(off,320)}\nwindow.scrollTo(0,0)};",
   "var off=function(){if(h.dataset.welcome==='done')h.dataset.welcome='off'};window.scrollTo(0,0);if(w.rosesTx)w.rosesTx(off,reduced);else if(reduced)off();else{w.addEventListener('transitionend',off,{once:true});setTimeout(off,320)}};",
@@ -98,8 +99,9 @@ for(i=0;i<10;i++){var n=i<5,d=r1(R(2.6,5.2));h+='<i class="p tw" style="--x:'+r1
 if(!st)for(i=0;i<4;i++){var e=r1(R(14,22));h+='<i class="p mo" style="--x:'+r1(R(4,96))+'vw;--s:'+Math.round(R(5,9))+'px;--d:'+e+'s;--l:'+r1(-R(.5,e))+'s;--o:'+Math.round(R(.5,.8)*100)/100+';--dr:'+r1(R(-4,4))+'vw"><b class="u">'+g('Umote',24)+'</b></i>'}
 var P=[[.1,.86],[.84,.9],[.06,.6]];for(i=0;i<(st?3:5);i++){var f=i<3,t=r1(R(f?28:22,f?38:28)),y=R(4,92);h+='<i class="p sd '+(f?'far':'mid')+'" style="--x:'+(st?r1(P[i][0]*100)+'vw':'0px')+';--y:'+(st?r1(P[i][1]*100)+'vh':'0px')+';--rs:'+Math.round(R(-40,40))+'deg;--s:'+Math.round(64*R(f?.45:.65,f?.6:.8))+'px;--d:'+t+'s;--l:'+r1(-R(.5,t))+'s;--o:'+Math.round(R(f?.35:.55,f?.5:.7)*100)/100+';--y0:'+r1(y)+'vh;--y1:'+r1(y-R(-6,22))+'vh;--sw:'+Math.round(R(f?5:8,f?9:12))+'px;--sp:'+r1(R(f?3.5:3,f?5.5:4.5))+'s;--rz:'+Math.round(R(6,18))+'deg;--fp:'+r1(R(f?5:4,f?8:6.5))+'s"><b class="u"><b class="v">'+g(D[Math.floor(Math.random()*D.length)],64,'t')+'</b></b></i>'}
 if(st)s.className+=' still';s.innerHTML=h})();`;
-// The engine for a kind of artwork scene (the page and the admin API's preview of another season both use it).
-export const engineFor = (kind: ArtScene['kind']) => (kind === 'sun' ? sunEngineScript : engineScript);
+// The engine for a kind of artwork scene (the page and the admin API's preview of another season both use it). Senso's spring (Kian's
+// picks of 2026-10-11) has its own engine in src/lib/welcome-bloom.ts, so the fall, winter and summer pages are unchanged by it.
+export const engineFor = (kind: ArtScene['kind']) => (kind === 'sun' ? sunEngineScript : kind === 'bloom' ? bloomEngineScript : engineScript);
 
 // `tile`: the logo on the venue's tile (the Header group's token), for a white-on-transparent logo on a light welcome background;
 // the page passes it only when the welcome background is light (on a dark one the logo sits straight on it, so nothing cuts the scene).
@@ -208,7 +210,7 @@ export function Scene({ season, art }: { season: Season; art: boolean }) {
         {a ? <defs dangerouslySetInnerHTML={{ __html: a.defs }} /> : <defs>{SYMBOLS[season]}</defs>}
       </svg>
       {a
-        ? <div className={`scene scene-${season}`} data-scene={season} data-engine={a.kind} data-designs={a.designs.join(',')} />
+        ? <div className={`scene scene-${season}`} data-scene={season} data-engine={a.kind} data-designs={a.designs.join(',')} data-buds={a.buds?.join(',')} />
         : <div className={`scene scene-${season}`} data-scene={season}>{particles(season).map((p, i) => <i key={i} className="p" style={p.style}><b className="y"><svg className="w" width={p.size} height={p.size} viewBox="0 0 24 24" focusable="false"><use href={`#${p.sym}`} /></svg></b></i>)}</div>}
     </div>
   );

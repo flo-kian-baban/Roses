@@ -27,8 +27,8 @@ const COLORS = { bg: '#fff8ee', text: '#1d1d1f', btnBg: '#f2ece2', btnText: '#1d
 
 const sizes = [...LEAVES, ...FLAKES, ...SPRING].map((c) => ({ no: c.no, name: c.name, raw: (c.defs + c.symbol).length, gz: gz(c.defs + c.symbol) }));
 const sharedGz = gz(SHARED_DEFS);
-// Kian's picks of 2026-10-09 (CLAUDE.md, "Welcome artwork for Senso"), marked on their cards.
-const PICKED = ['F1', 'F2', 'F4', 'F8', 'F9', 'W1', 'W3', 'W5', 'W7', 'W10'];
+// Kian's picks of 2026-10-09 (CLAUDE.md, "Welcome artwork for Senso") and of 2026-10-11 for spring, marked on their cards.
+const PICKED = ['F1', 'F2', 'F4', 'F8', 'F9', 'W1', 'W3', 'W5', 'W7', 'W10', 'S1', 'S2', 'S3', 'S4', 'S5', 'S9']; // spring: Kian's picks of 2026-10-11
 
 const card = (c, kind) => `<article class="card${kind === 'snow' ? ' snowc' : ''}" id="${c.no}">
   <h3><b>${c.no}</b> ${c.name}${c.fa ? ` <span lang="fa" dir="rtl">${c.fa}</span>` : ''}${PICKED.includes(c.no) ? ' <i class="pick">Kian\'s pick</i>' : ''} <small>${c.note}</small></h3>
@@ -211,7 +211,7 @@ const html = `<!doctype html>
 </head>
 <body>
 <h1>Welcome artwork candidates — Senso</h1>
-<p class="lead"><b>New, 2026-10-11: ten spring candidates (S1–S10: blossoms, petals and buds), <a href="#spring">below</a>.</b> Pick 5 to 7 and reply with the numbers. Above them, the ten fall leaves (F1–F10) and ten snowflakes (W1–W10) of 2026-10-09 with Kian's picks marked; summer was picked from its own gallery (<a href="#summer">note</a>). All original inline SVG, each defined once as a symbol. Built ${new Date().toISOString().slice(0, 10)}${commit ? ` from ${commit.slice(0, 7)}` : ''} by <code>reports/welcome/gallery/build.mjs</code> (the artwork in <code>art.mjs</code>). Our tool, not a public page.</p>
+<p class="lead"><b>2026-10-11: ten spring candidates (S1–S10: blossoms, petals and buds), <a href="#spring">below</a>; Kian picked S1, S2, S3, S4, S5 and S9.</b> Above them, the ten fall leaves (F1–F10) and ten snowflakes (W1–W10) of 2026-10-09 with Kian's picks marked; summer was picked from its own gallery (<a href="#summer">note</a>). All original inline SVG, each defined once as a symbol. Built ${new Date().toISOString().slice(0, 10)}${commit ? ` from ${commit.slice(0, 7)}` : ''} by <code>reports/welcome/gallery/build.mjs</code> (the artwork in <code>art.mjs</code>). Our tool, not a public page.</p>
 <div class="note"><p><b>How to read a card:</b> the design large and still; the same design falling on its own with the step-2 motion (near layer); the design at the far, middle and near sizes on Senso's welcome background (cream <code>${COLORS.bg}</code>). Under each season, the full-scene demo shows all ten together on a replica of Senso's welcome screen; <b>Replay</b> draws a new random scene, <b>Still</b> shows the reduced-motion composition.</p>
 <p><b>Colours:</b> the leaves carry their own natural palettes (orange, rust, gold, red, brown, two-tone turning); they are not tinted by the Style tab's "Fall leaves" token (open question in the reply). The snow is drawn in the "Winter snow" token colour, which is <code>${COLORS.snow}</code> on Senso's cream (the Auto rule); W2 and W4 carry white plates.</p>
 <p><b>Sizes</b> (each candidate alone, gzipped; the step-2 budget is 15 KB gzipped for everything inline, artwork included):</p>${table}</div>
@@ -227,12 +227,12 @@ ${demo('fall', 'leaves', 'Fall, all ten together')}
 ${demo('winter', 'snow', 'Winter, all ten together')}
 
 <h2 id="spring">Spring — S1 to S10 (new, 2026-10-11)</h2>
-<div class="note"><p><b>Pick 5 to 7</b>, any mix of blossoms (S1–S5), petals (S6–S8) and buds (S9, S10), and reply with the numbers. The picks become Senso's spring scene, built like the fall and winter artwork, and the spring versions of the ten transitions (T1–T10) are then built from them.</p>
+<div class="note"><p><b>Kian's picks (2026-10-11): S1 cherry blossom, S2 almond blossom, S3 white trillium, S4 hyacinth floret, S5 forsythia and S9 rosebud</b>, built into Senso's spring scene (its own engine, src/lib/welcome-bloom.ts), and the spring versions of the ten transitions (T1–T10) built from them.</p>
 <p><b>Motion</b> (the demo below and each card's middle pane): spring falls lighter than the leaves: slower, with a wider sway. A whole blossom twirls slowly as it falls (a full turn every 7–15 s, either way) and tilts a little; a single petal flips and floats (it tilts far over in 3D, like a petal in the air); a bud is heavier, drops a quarter faster and barely sways. Same rules as fall and winter: 20 particles (2 near, 9 middle, 9 far), random per load, full on the first frame, transform and opacity only; "Still" shows the blossoms resting low and along the sides.</p>
 <p><b>Colours:</b> natural palettes, like the leaves: pinks, white, violet-blue, gold, scarlet; the rosebud is Senso's own rose (<code>#cc3366</code>, the site pink the spring scene uses today). By analogy with the fall leaves and the summer sun (the PM, 2026-10-09), the picked artwork would carry its own colours, so the Style tab's "Spring blossoms" token would leave Senso's Welcome group (Kebab Land and the default template keep it). White petals carry a thin warm edge so they read on the cream.</p>
 <p><b>Sizes:</b> each design alone ${kb(Math.min(...SPRING.map((c) => sizes.find((x) => x.no === c.no).gz)))}–${kb(Math.max(...SPRING.map((c) => sizes.find((x) => x.no === c.no).gz)))} gzipped; all ten ${kb(gz(SPRING.map((c) => c.defs + c.symbol).join('') + SHARED_DEFS))}. Six picks fit the 15 KB inline budget with room (fall's five leaves ship at 7.1 KB with the engine).</p></div>
 <div class="grid">${SPRING.map((c) => card(c, 'bloom')).join('')}</div>
-${demo('spring', 'bloom', 'Spring, all ten together')}
+${demo('spring', 'bloom', 'Spring, all ten together (the six picks ship)')}
 
 <h2 id="summer">Summer — picked</h2>
 <div class="note"><p>Summer is final: on 2026-10-10 Kian picked, from <a href="summer-gallery.html">summer-gallery.html</a>, the Persian sun with a few dandelion seeds (U5 and U1 there), built into Senso's summer scene the same day. Nothing to pick here.</p></div>

@@ -57,12 +57,14 @@ export default jsonRoute(async ({ req, res, session, body }) => {
     const read = readStylePatch(venue, layoutPart);
     if (!read.ok) throw new ApiError(400, read.error);
     const known = new Set(tokensOf(venue.template).map((t) => t.key));
-    const colors: Record<string, string> = {};
+    const colors: Record<string, string> = {}, kept: Record<string, string> = {};
     if (snapColors !== undefined) {
       if (!snapColors || typeof snapColors !== 'object') throw new ApiError(400, 'colors must be an object of token → colour');
-      for (const [k, v] of Object.entries(snapColors as Record<string, unknown>)) { if (!known.has(k)) throw new ApiError(400, `"${k}" is not a colour of this template`); const h = normHex(v); if (!h) throw new ApiError(400, `${TOKEN_BY_KEY[k].label}: not a colour (use #rrggbb)`); colors[k] = h; }
+      // a colour of a token this template no longer shows (Senso's "Spring blossoms" since 2026-10-11, the PM) is kept as it was: not
+      // rendered, not guarded, like the old keys below; anything that is no token at all is refused
+      for (const [k, v] of Object.entries(snapColors as Record<string, unknown>)) { if (!known.has(k) && TOKEN_BY_KEY[k]) { const h = normHex(v); if (h) kept[k] = h; continue; } if (!known.has(k)) throw new ApiError(400, `"${k}" is not a colour of this template`); const h = normHex(v); if (!h) throw new ApiError(400, `${TOKEN_BY_KEY[k].label}: not a colour (use #rrggbb)`); colors[k] = h; }
     }
-    const restored: Record<string, unknown> = { ...read.values, colors };
+    const restored: Record<string, unknown> = { ...read.values, colors: { ...kept, ...colors } };
     for (const k of ['accent', 'tile']) { const h = normHex(rest[k]); if (h) restored[k] = h; } // the pre-token choices, kept as they were
     for (const [k, v] of Object.entries(rest)) if (!options.has(k) && k !== 'accent' && k !== 'tile' && (typeof v === 'string' || typeof v === 'boolean')) restored[k] = v; // keys the app ignores (an old "intro"), kept as they were
     const full: Record<string, string | null> = {}; for (const t of tokensOf(venue.template)) full[t.key] = colors[t.key] ?? null; // every token: the snapshot's colour or Auto

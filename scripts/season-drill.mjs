@@ -11,8 +11,8 @@
 //     entry under server/route-cache: file times and the routeCacheLastModified stamp in its .meta, which Next's cache reads on a fresh
 //     server), the first request serves the previous render and starts the regeneration, the next one carries the new season; a
 //     control ages it by 3000 s and must not regenerate; the interval comes from the prerender manifest (initialRevalidateSeconds);
-//   Senso's artwork (Kian's picks): on the fall, winter and summer servers (summer since 2026-10-10: the Persian sun with sparkles,
-//     motes and a few dandelion seeds, its own engine), 20 particles of the picked designs at most 2 near, present and
+//   Senso's artwork (Kian's picks): on every season's server (summer since 2026-10-10: the Persian sun with sparkles, motes and a
+//     few dandelion seeds, its own engine; spring since 2026-10-11: five blossoms and the rosebud, its own engine), 20 particles of the picked designs at most 2 near, present and
 //     mid-flight on the first sample (negative delays), transform and opacity only, no other season in the HTML; smoothness on the
 //     iPhone 13 viewport with CPU throttled 4×: 5 s of requestAnimationFrame, median ≥ 50 fps and no long task > 50 ms, reported as
 //     measured; randomness: two loads differ in designs and parameters; the reduced-motion still; recordings (webm, on disk only) and
@@ -169,15 +169,15 @@ const PROBE = () => {
   return { season: w ? w.dataset.season : null, engine: s ? s.dataset.engine : null, designs: s ? s.dataset.designs : null, particles: ps.length, near: ps.filter((p) => p.classList.contains('near')).length, still: s ? s.classList.contains('still') : null, styles: ps.map((p) => p.getAttribute('style')), used: [...new Set(ps.map((p) => (p.querySelector('use') || {}).getAttribute ? p.querySelector('use').getAttribute('href') : ''))], running: anims.filter((a) => a.playState === 'running').length, midFlight: anims.length > 0 && anims.every((a) => a.currentTime > 0), props, inView: ps.filter((p) => { const r = p.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth; }).length };
 };
 for (const v of venues.filter((x) => ART_VENUES.includes(x))) {
-  for (const season of ['fall', 'winter', 'summer']) {
+  for (const season of ['fall', 'winter', 'spring', 'summer']) {
     await restart(SEASON_INSTANT[season]);
     const html = (await waitFresh(v, season)).html;
     const ph = probeHtml(html);
     const overlay = html.slice(html.indexOf('<div id="welcome"'), html.indexOf('<main'));
     const head = (html.match(/<script[^>]*>\(function\(\)\{var h=document\.documentElement,l=null;[\s\S]*?<\/script>/) || [''])[0];
     const inlineGz = gz(overlay + head);
-    measure(`${v} ${season}: inline welcome code with the picked artwork ${(inlineGz / 1024).toFixed(1)} KB gzipped (${((overlay.length + head.length) / 1024).toFixed(1)} KB raw), symbols ${ph.symbols.filter((s) => /^([FWD]\d+|U[a-z]+)$/.test(s)).join(', ')}`);
-    if (season === 'summer') check(`budget-${v}-summer`, inlineGz <= 15360, `${v} summer: inline welcome code with the sun, its sparkles, motes and seeds ${inlineGz} B gzipped (≤ 15 360; the welcome drill measures the season of the day)`);
+    measure(`${v} ${season}: inline welcome code with the picked artwork ${(inlineGz / 1024).toFixed(1)} KB gzipped (${((overlay.length + head.length) / 1024).toFixed(1)} KB raw), symbols ${ph.symbols.filter((s) => /^([FWDS]\d+|U[a-z]+)$/.test(s)).join(', ')}`);
+    if (season === 'summer' || season === 'spring') check(`budget-${v}-${season}`, inlineGz <= 15360, `${v} ${season}: inline welcome code with ${season === 'summer' ? 'the sun, its sparkles, motes and seeds' : 'the five blossoms and the rosebud'} and the season's transition ${inlineGz} B gzipped (≤ 15 360; the welcome drill measures the season of the day)`);
     // first sample after navigation: the scene already full and every animation mid-flight; two loads differ
     const ctx = await browser.newContext(DEVICE); const page = await ctx.newPage();
     const errors = []; page.on('pageerror', (e) => errors.push(e.message));
@@ -187,8 +187,8 @@ for (const v of venues.filter((x) => ART_VENUES.includes(x))) {
     const a = await page.evaluate(PROBE);
     const onlyTO = a.props.every((x) => x === 'transform' || x === 'opacity');
     const picked = ph.designs[season] || [], fixed = season === 'summer' ? ['Uflames', 'Uspark', 'Umote'] : []; // summer: the sun, sparkles and motes are fixed parts of the scene, the seeds are picked
-    check(`artwork-${v}-${season}`, ph.scenes.join() === season && ph.engine[season] === { fall: 'leaves', winter: 'snow', summer: 'sun' }[season] && a.particles === 20 && a.near <= 2 && a.used.every((u) => picked.includes(u.slice(1)) || fixed.includes(u.slice(1))) && first.particles === 20 && first.midFlight && a.running > 0 && onlyTO && errors.length === 0, `${v} ${season} (server clock ${SEASON_INSTANT[season]}): the HTML carries the ${ph.scenes.join('+')} scene only (engine ${ph.engine[season]}, designs ${picked.join(', ')}); on the first frame that shows the card (${first.t} ms after navigation; the engine runs before the card is parsed) the scene already holds ${first.particles} particles with every one of its ${first.animations} animations mid-flight (${first.midFlight}; the earliest ${first.minCurrent} ms into its cycle); ${a.particles} particles (${a.near} near), designs used ${a.used.join(', ')}, ${a.running} animations on ${a.props.join(', ') || 'nothing'} (transform and opacity only: ${onlyTO}); page errors ${errors.length}`);
-    const page2 = await ctx.newPage(); await page2.goto(`${base}/${v}`, { waitUntil: 'load' }); await sleep(300);
+    check(`artwork-${v}-${season}`, ph.scenes.join() === season && ph.engine[season] === { fall: 'leaves', winter: 'snow', spring: 'bloom', summer: 'sun' }[season] && a.particles === 20 && a.near <= 2 && a.used.every((u) => picked.includes(u.slice(1)) || fixed.includes(u.slice(1))) && first.particles === 20 && first.midFlight && a.running > 0 && onlyTO && errors.length === 0, `${v} ${season} (server clock ${SEASON_INSTANT[season]}): the HTML carries the ${ph.scenes.join('+')} scene only (engine ${ph.engine[season]}, designs ${picked.join(', ')}); on the first frame that shows the card (${first.t} ms after navigation; the engine runs before the card is parsed) the scene already holds ${first.particles} particles with every one of its ${first.animations} animations mid-flight (${first.midFlight}; the earliest ${first.minCurrent} ms into its cycle); ${a.particles} particles (${a.near} near), designs used ${a.used.join(', ')}, ${a.running} animations on ${a.props.join(', ') || 'nothing'} (transform and opacity only: ${onlyTO}); page errors ${errors.length}`);
+    const page2 = await ctx.newPage(); await page2.goto(`${base}/${v}`, { waitUntil: 'domcontentloaded' }); await page2.waitForLoadState('load', { timeout: 8000 }).catch(() => {}); await sleep(300);
     const b = await page2.evaluate(PROBE);
     const sameStyles = a.styles.filter((s, i) => s === b.styles[i]).length;
     check(`randomness-${v}-${season}`, a.styles.length === 20 && b.styles.length === 20 && sameStyles === 0 && JSON.stringify(a.styles) !== JSON.stringify(b.styles), `${v} ${season}: two loads → ${sameStyles} of 20 particles with the same parameters (designs ${a.used.join('+')} then ${b.used.join('+')}); first load's first particle: ${a.styles[0]}`);
@@ -204,14 +204,14 @@ for (const v of venues.filter((x) => ART_VENUES.includes(x))) {
     await ctx.close();
     // reduced motion: the still composition
     const rctx = await browser.newContext({ ...DEVICE, reducedMotion: 'reduce' }); const rp = await rctx.newPage();
-    await rp.goto(`${base}/${v}`, { waitUntil: 'load' }); await sleep(200);
+    await rp.goto(`${base}/${v}`, { waitUntil: 'domcontentloaded' }); await rp.waitForLoadState('load', { timeout: 8000 }).catch(() => {}); await sleep(200);
     const r = await rp.evaluate(PROBE);
     await shot(rp, `${v}-${season}-reduced-motion`);
     check(`still-${v}-${season}`, r.still === true && r.running === 0 && r.inView >= 6 && r.particles <= 20, `${v} ${season} with reduced motion: the still composition (${r.particles} designs resting, ${r.inView} in view, ${r.running} animations running)`);
     await rctx.close();
     // recording (on disk only)
     const vctx = await browser.newContext({ ...DEVICE, recordVideo: { dir: out, size: { width: 390, height: 844 } } }); const vp = await vctx.newPage();
-    await vp.goto(`${base}/${v}`, { waitUntil: 'load' }); await sleep(4000); await vp.tap('#welcome button[data-lang="en"]'); await sleep(800);
+    await vp.goto(`${base}/${v}`, { waitUntil: 'domcontentloaded' }); await vp.waitForLoadState('load', { timeout: 8000 }).catch(() => {}); await sleep(4000); await vp.tap('#welcome button[data-lang="en"]'); await sleep(800);
     const video = vp.video(); await vctx.close();
     const file = path.join(out, `${v}-${season}.webm`); await video.saveAs(file); await video.delete().catch(() => {});
     const size = (await fsp.stat(file)).size;
@@ -221,7 +221,7 @@ for (const v of venues.filter((x) => ART_VENUES.includes(x))) {
 // stills of the old scenes on the other venues (spring and summer servers; fall and winter from the pages above)
 for (const season of ['fall', 'winter', 'spring', 'summer']) {
   await restart(SEASON_INSTANT[season]);
-  for (const v of venues) { await waitFresh(v, season); const c = await browser.newContext(DEVICE); const p = await c.newPage(); await p.goto(`${base}/${v}`, { waitUntil: 'load' }); await sleep(1300); await shot(p, `${v}-${season}`); await c.close(); }
+  for (const v of venues) { await waitFresh(v, season); const c = await browser.newContext(DEVICE); const p = await c.newPage(); await p.goto(`${base}/${v}`, { waitUntil: 'domcontentloaded' }); await p.waitForLoadState('load', { timeout: 8000 }).catch(() => {}); await sleep(1300); await shot(p, `${v}-${season}`); await c.close(); }
 }
 // ---- the guard (the PM, 2026-10-09): ROSES_NOW is honoured only together with the suite's flag ROSES_CHECK_SUITE=1. A server started with
 // ROSES_NOW alone must render the real current season (America/Toronto, from the machine's clock), and say in its log that it ignored it;

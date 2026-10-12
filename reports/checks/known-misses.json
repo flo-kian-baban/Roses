@@ -16,7 +16,7 @@
       "title": "Persian tap, Senso",
       "step": "transition",
       "checks": ["persian-tap-senso"],
-      "target": "no long task over 50 ms from the فارسی tap to the overlay gone, on the iPhone 13 viewport at CPU 4×, for every concept T1–T10 in fall and in winter (20 taps, each on a first visit with the page laid out in English)",
+      "target": "no long task over 50 ms from the فارسی tap to the overlay gone, on the iPhone 13 viewport at CPU 4×, for every concept T1–T10 in every season (40 taps since 2026-10-11, when spring and summer got their versions; 20 before, fall and winter; each on a first visit with the page laid out in English)",
       "cause": "The tap applies Persian to a page laid out in English (lang fa, dir rtl, every Persian name and description shown), so the browser lays the whole menu out again in one task: 51–63 ms in 10 of the 20 Persian taps of run 2026-10-11T01-02-00Z and 52–59 ms in 4 of 20 in run 2026-10-11T02-07-07Z (the transition's own setup runs in the next frame since 5d09791). It is the language switch's cost, not a transition's: the 200 ms fade of 2026-10-09 had it too (52–73 ms), and the English tap, a first visit's, has no long task.",
       "clears": "when the Persian relayout task is ≤ 50 ms (every Persian tap measured with no long task over 50 ms)",
       "listed": "2026-10-11, the PM"

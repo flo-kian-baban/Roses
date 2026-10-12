@@ -330,9 +330,8 @@ async function putTx(d: Document, venueId: string, tx: string) {
 // The preview-only season (Kian, 2026-10-09; current season only since the PM's decision of the same day): the customers' page
 // carries only today's scene, so another season's scene is fetched from the admin API and swapped into the frame (today's is
 // kept and put back when the page's own season is chosen again); the artwork engine's script is run again on the new scene. Nothing is saved.
-// The season's transition into the menu comes with its scene (the venue's chosen concept for that season, or none in spring and summer,
-// where the page keeps its plain fade): its style replaces the page's, its script redefines the page's w.rosesTx; today's are kept
-// and put back with today's scene.
+// The season's transition into the menu comes with its scene (the venue's chosen concept for that season; one per season since
+// 2026-10-11): its style replaces the page's, its script redefines the page's w.rosesTx; today's are kept and put back with today's scene.
 type TxPart = { key: string; css: string; js: string } | null;
 type Kept = { html: string; season: string; tx: unknown; txCss: string | null; txKey: string | null };
 async function applySeason(d: Document, venueId: string, season: Season | null, stillWanted: () => boolean) {

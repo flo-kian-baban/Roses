@@ -104,7 +104,10 @@ export function Editor({ venue, me, initial, tab: initialTab }: { venue: VenueIn
     if (p.replay) setReplay((n) => n + 1);
     if (p.play) setPlay((x) => ({ n: x.n + 1, tx: p.playTx ?? null }));
   };
-  const playTransition = useCallback((tx?: string) => setPlay((x) => ({ n: x.n + 1, tx: tx ?? null })), []);
+  // Play a season's transition (Style tab → Welcome → Transition, one per season since 2026-10-11): the preview switches to that season
+  // first (the bar follows; the page's own season stays "its own"), then plays it, or the concept just chosen for it (tx).
+  const nowSeason = useRef<Season | null>(null); nowSeason.current = now.season;
+  const playTransition = useCallback((tx?: string, s?: Season) => { if (s) setSeason(s === nowSeason.current ? null : s); setPlay((x) => ({ n: x.n + 1, tx: tx ?? null })); }, []);
   const played = useCallback(() => setStyleScreen('menu'), []); // a played transition ends on the menu, and the bar says so
 
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), toast.error ? 6000 : 10000); return () => clearTimeout(t); }, [toast]);

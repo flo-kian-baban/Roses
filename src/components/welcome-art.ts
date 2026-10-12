@@ -16,10 +16,11 @@
 // <use> clones. Jitter comes from a fixed seed, so every build renders the same leaf.
 import { ARTWORK } from '@/venues/tokens';
 import type { Season } from '@/lib/welcome';
+import { SPRING_BUDS, SPRING_DESIGNS, springDefs } from '@/lib/welcome-spring-art';
 
 export const ARTWORK_TEMPLATES = ['senso'];
 export const usesArtwork = (template: string | null | undefined): boolean => ARTWORK_TEMPLATES.includes(template ?? '');
-export type ArtScene = { kind: 'leaves' | 'snow' | 'sun'; designs: string[]; defs: string };
+export type ArtScene = { kind: 'leaves' | 'snow' | 'sun' | 'bloom'; designs: string[]; defs: string; buds?: string[] };
 
 type Pt = { x: number; y: number; c?: boolean };
 const f = (n: number) => String(Math.round(n * 10) / 10);
@@ -228,9 +229,11 @@ function dandelion(id: string, seed: number, { n, spread, len, tilt = 0, gap = n
 
 // Built once per process; the markup is the same on every build (fixed seeds).
 // `designs`: the designs the engine picks from at random (summer: the seeds; the sun, sparkles and motes are fixed parts of its scene).
+// Spring (Kian's picks of 2026-10-11): five blossoms and the rosebud, drawn in src/lib/welcome-spring-art.ts; `buds`: those that fall like a bud.
 export const ART_SCENES: Partial<Record<Season, ArtScene>> = {
   fall: { kind: 'leaves', designs: ['F1', 'F2', 'F4', 'F8', 'F9'], defs: SHARED + sugarMaple() + redOak() + aspen() + sweetgum() + beech() },
   winter: { kind: 'snow', designs: ['W1', 'W3', 'W5', 'W7', 'W10'], defs: W1() + W3() + W5() + W7() + W10() },
+  spring: { kind: 'bloom', designs: SPRING_DESIGNS, buds: SPRING_BUDS, defs: springDefs() },
   summer: { kind: 'sun', designs: ['D1', 'D2', 'D3'], defs: sunDisc() + sunRays() + sunFlames() + spark() + mote() + dandelion('D1', 3, { n: 19, spread: 158, len: [15, 18.5] }) + dandelion('D2', 5, { n: 17, spread: 150, len: [14, 18], tilt: 10, gap: [28, 52], lean: 1.5 }) + dandelion('D3', 9, { n: 23, spread: 140, len: [12, 15] }) },
 };
 export const artScene = (season: Season, art: boolean): ArtScene | undefined => (art ? ART_SCENES[season] : undefined);

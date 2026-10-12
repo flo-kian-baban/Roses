@@ -107,6 +107,10 @@ const LEAVES = '#e0782f', SNOW_INK = '#7f98b5', BLOSSOM = '#f2a0b4', LIGHT = '#f
 // seeds): the sun's disc gradient (`disc` light → `disc2` → `disc3` at the rim), its outer ring, dotted inner ring and shine, the
 // straight rays with their light centre lines, the flame rays, the sparkles (`spark` with a `sparkCore`) and the motes of light;
 // the seed's pappus filaments and barbs, its beak, the seed body's gradient (`achene` dark → `achene2` light) and its ridges.
+// Spring (Kian's picks of 2026-10-11 from reports/welcome/gallery.html: S1 cherry blossom, S2 almond blossom, S3 white trillium,
+// S4 hyacinth floret, S5 forsythia, S9 rosebud): per blossom the petal gradient from the heart out (`g0` at the heart → `g3` at the
+// edge), the shade of each petal (`dark`), its edge line, the veins (or the stripe, the crease), the stamens and anthers, the heart;
+// the trillium's sepals; the rosebud's bud, its two wrapping petals, their rim, the spiral, sepals, hip, stem and thorn (Senso's rose).
 export const ARTWORK = {
   spot: '#5a2d0c',
   maple: { tip: '#f4b43e', mid: '#ec7a2c', base: '#c43a1c', dark: '#7a1e0c', vein: '#8c2714', under: '#f6c58a', fold: '#8a2a12', stem: '#8c3a1c' },
@@ -116,6 +120,12 @@ export const ARTWORK = {
   beech: { tip: '#d99a3c', mid: '#c27a2a', base: '#9a5a1e', dark: '#4a2208', vein: '#5a2e0a', under: '#e8c08a', fold: '#5a2e0a', stem: '#6b3a12' },
   sun: { disc: '#ffe08a', disc2: '#f6bf45', disc3: '#e9a531', ring: '#d99a2b', dots: '#fff3cf', rays: '#e9a93a', rayLine: '#fbe3a0', flames: '#f2c14e', spark: '#e2a334', sparkCore: '#fff6d6', mote: '#e8b552', moteCore: '#fff4cf' },
   seed: { filament: '#968a75', barb: '#a89c86', beak: '#b8aa8e', achene: '#5d432c', achene2: '#a07c55', ridge: '#4e3825' },
+  cherry: { g0: '#d94d7a', g1: '#ec84a4', g2: '#f8c4d3', g3: '#fde9f0', dark: '#a33a62', edge: '#c4527a', vein: '#cf4f7b', stamen: '#c8406e', anther: '#f0c040', heart: '#b8305e' },
+  almond: { g0: '#a81c40', g1: '#d6506e', g2: '#f2b0c2', g3: '#fde9ef', dark: '#8a4a5e', edge: '#b47a8c', vein: '#d68ea2', stamen: '#b02848', anther: '#e8b048', heart: '#8c1a38' },
+  trillium: { g0: '#dfe8b0', g1: '#f3f6e0', g3: '#fbe6ee', dark: '#7a7a5a', edge: '#9c977a', vein: '#b8b28e', stamen: '#d4bc3e', anther: '#f0cc3a', heart: '#cfe08a', heartEdge: '#8aa04a', sepal0: '#3f6a22', sepal1: '#86b04e', sepalEdge: '#2e5418' },
+  hyacinth: { g0: '#2e2270', g1: '#4a3aa0', g2: '#7c6cd4', g3: '#b8adf0', dark: '#2a1e6a', edge: '#3e3090', vein: '#3a2c8a', heart: '#2a1e66', stamen: '#ece6bc', anther: '#f4eec8' },
+  forsythia: { g0: '#cf880c', g1: '#edb01e', g2: '#f8cf34', g3: '#ffe46c', dark: '#9a6a08', edge: '#a8740c', vein: '#c48a0e', heart: '#b0901e', stamen: '#d89a10', anther: '#e0a814' },
+  rosebud: { tip: '#f590aa', mid: '#cc3366', base: '#98163f', wrapL0: '#c42a58', wrapL1: '#8e1238', wrapR0: '#e65a82', wrapR1: '#b02656', dark: '#5a0a26', rim: '#ffc2d2', spiral: '#7e1034', sepal0: '#86b04e', sepal1: '#3e6a22', sepalEdge: '#2e5418', hip0: '#8cb850', hip1: '#4a7428', stem: '#4a7428', thorn: '#6a6a2a' },
   // The welcome transitions (2026-10-10, src/lib/welcome-transitions.ts): winter's frosted pane (`pane` towards the clearing,
   // `rim` at the edges); the white of the white-out and of the snow cap is WHITE.
   frost: { pane: '#edf2f7', rim: '#f8fafc' },
@@ -133,11 +143,12 @@ export const TEMPLATE_COLORS: Record<string, TemplateColors> = {
   // remembered button, its site orange as leaves and its price yellow as light; both get Auto snow. The two screens never look alike.
   // Senso's fall leaves are the picked artwork with its own palette (ARTWORK; the PM, 2026-10-09), so its Welcome group has no
   // "Fall leaves" tint; the tint stays on the templates that keep the tinted leaves (Kebab Land until its own artwork, the default template).
-  // Likewise its summer is the picked Persian sun with its own palette (Kian, 2026-10-10), so no "Summer light" tint either.
+  // Likewise its summer is the picked Persian sun with its own palette (Kian, 2026-10-10), so no "Summer light" tint either, and its
+  // spring the picked blossoms (Kian, 2026-10-11; the PM: drop the "Spring blossoms" colour for Senso), so no "Spring blossoms" tint.
   senso: {
-    omit: ['page.subtext', 'header.tile', 'header.title', 'welcome.leaves', 'welcome.light'],
+    omit: ['page.subtext', 'header.tile', 'header.title', 'welcome.leaves', 'welcome.light', 'welcome.blossoms'],
     bases: (b) => ({ 'page.bg': WHITE, 'sheet.dim': BLACK, 'welcome.bg': brandHex(b, 'background', '#fff8ee') }),
-    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', '#042c7c'); return { 'footer.phone': accent, 'welcome.activeBg': accent, 'welcome.blossoms': brandHex(b, 'siteLink', BLOSSOM) }; },
+    pinned: (b, l) => { const accent = legacyHex(l, 'accent') ?? brandHex(b, 'accent', '#042c7c'); return { 'footer.phone': accent, 'welcome.activeBg': accent }; },
   },
   'kebab-land': {
     omit: ['page.subtext', 'header.title'],

@@ -32,3 +32,14 @@ The test put four items in each venue's Seasonal section, one per season, and ta
 - **Admin, item editor (iPhone 13):** the four chips under the photo, with "Shown in fall only." under them (`admin-item-phone.jpg`).
 - **Admin, Style tab preview (laptop):** after Winter was chosen in the bar, the frame's Seasonal section read "Winter specials" 77 ms later; after Spring, 67 ms later. The customers' page still showed fall only.
 - **Admin, Menu tab (iPhone 13):** the Seasonal section's name was cut to "Se…" by a "First on the menu" badge. The badge is removed; the hint line under the header says it.
+
+## The full suite on this branch (run 2026-10-12T10-17-19Z)
+
+Every seasonal check passed, and so did every other check except one: the ratchet failed "Senso LCP with uploaded photos" as worsened (worst 8564 ms against 7934 ms allowed). The data changed during the night: Kian's uploaded photos went from 22 to 33. On a copy of that data, Lighthouse on Senso gives:
+
+| Build | LCP (3 runs) |
+|---|---|
+| `persian` e53a71f (before the seasonal code) | 5191 / 8564 / 8562 ms |
+| this branch | 8573 / 8561 / 8564 ms |
+
+Senso's page is byte for byte the same in both builds (238,321 B).

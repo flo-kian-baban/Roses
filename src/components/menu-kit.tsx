@@ -212,6 +212,20 @@ export function MenuDialogs({ sections }: { sections: Section[] }) {
 // scroll settles (160 ms without a scroll event) or the customer takes over (touch, wheel, keys). The strip scrolls itself to
 // centre the active tab; it never scrolls the page. A tap writes no #hash into the URL (Kian, 2026-10-08: a reload used to jump
 // to the tapped section, hiding the header); a link straight to a section still opens on it.
+// The language switch (the PM, 2026-10-12, with Kian's OK): a tap on فارسی (or English) lays the page out again in the other
+// language and direction, which took one task of 51–96 ms at CPU 4× on Senso (the known miss "Persian tap, Senso"; traced: about half
+// style, a third layout, the rest paint, over every element on the page). Two things cut it. (1) The welcome screen's scene never
+// changes with the language, so its direction is fixed (ltr; nothing in the scene depends on it, all its positions are physical) and
+// a switch of the page's direction no longer restyles its particles (the biggest part on Senso, about 200 animated elements). (2) Every
+// section's list of items (its [data-layout] list) away from the screen is given content-visibility: auto at the size it was last laid
+// out at (contain-intrinsic-block-size: auto <its height>, read from the observer's entry, so nothing is laid out to know it): such a
+// list skips its style and layout, a language switch included, and keeps its size, so the section boxes the tabs read (sectionAt) and
+// the scroll targets of a tab tap stay where they were. Within a quarter screen of the screen a list is plain again (the observer's
+// margin), so what is painted on screen is painted exactly as before: the paint containment of content-visibility snaps text to whole
+// pixels and clips at the list's edges (the band between sections reaches past the page's side padding; a Persian glyph can reach past
+// the list's edge), and a list carries it only while it is away from the screen. Measured by the transition drill (no long task over 50 ms on the Persian tap) and,
+// before and after, by reports/persian-tap/ (the active tab at ten scroll positions in both languages; screenshots of Kebab Land and
+// the default template in both languages).
 const menuScript = `(function(){var sheet=document.getElementById('sheet'),hero=document.getElementById('sheet-hero'),content=document.getElementById('sheet-content');
 var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if(sheet&&sheet.showModal){var closing=false;
@@ -234,4 +248,7 @@ var release=function(){clearTimeout(lockTimer);lockTimer=null;lock=null};var set
 window.addEventListener('scroll',function(){if(lock!==null)settle();else update()},{passive:true});window.addEventListener('resize',function(){update()});
 ['touchstart','wheel','keydown','pointerdown'].forEach(function(t){window.addEventListener(t,function(e){if(lock!==null&&!(nav&&nav.contains(e.target))){release();update()}},{passive:true})});
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var id=decodeURIComponent(a.getAttribute('href').slice(1)),t=document.getElementById(id);if(!t)return;e.preventDefault();if(byId[id]){lock=id;setActive(id);settle()}window.scrollTo({top:window.scrollY+t.getBoundingClientRect().top-(nav?nav.offsetHeight:0),behavior:reduced?'auto':'smooth'})});
-if(secs.length)update(true)})();`;
+if(secs.length)update(true);
+var scene=document.querySelector('#welcome .welcome-scene');if(scene)scene.style.direction='ltr';
+var lists=[].slice.call(document.querySelectorAll('main section[id] > [data-layout]'));
+if(lists.length&&window.IntersectionObserver){var io=new IntersectionObserver(function(es){es.forEach(function(e){var x=e.target;if(e.isIntersecting)x.style.contentVisibility='';else{x.style.containIntrinsicBlockSize='auto '+e.boundingClientRect.height.toFixed(2)+'px';x.style.contentVisibility='auto'}})},{rootMargin:'25% 0px'});lists.forEach(function(x){io.observe(x)})}})();`;

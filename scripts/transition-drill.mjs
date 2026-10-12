@@ -45,6 +45,10 @@
 //     every one of those plays as on the public page (Kian, 2026-10-10: the preview showed a jump): no swap
 //     of the frame during it, the card settled at the tap and seen settled for ≥ 480 ms, none of the preview's outline while it plays,
 //     frames with a median interval ≤ 20 ms, the menu ≤ 900 ms after the tap.
+// Two modes (the PM, 2026-10-12): --mode full (npm run check:full, required before every merge to main) runs all of the above on all
+// 40 versions; --mode fast (npm run check) runs the served-HTML and size checks on all 40 and every browser check, Chromium and the
+// WebKit 3-run timing, on the four versions the venue has chosen now (one per season), without recordings; day one, the season
+// boundaries, the admin's rows and Kebab Land's checks run in both.
 // At the end Senso's style is put back as it was (the Style route's restore). The drill's server is its own: the port must be free
 // before it starts, and its listener must be the process it spawned (lsof).
 //   DRILL_ADMIN_EMAIL=… DRILL_ADMIN_PIN=… node scripts/transition-drill.mjs --dist .next-check --copy .next-transition --port 3103 --out reports/checks/<stamp>/transition [--venues senso,kebab-land,<temp>] [--jpeg]
@@ -64,13 +68,15 @@ const args = Object.fromEntries(process.argv.slice(2).filter((a) => a !== '--jpe
 const dist = args.dist || '.next-check', copy = args.copy || '.next-transition', port = Number(args.port || 3103);
 const out = path.resolve(args.out || 'reports/transition'); fs.mkdirSync(out, { recursive: true });
 const venues = (args.venues || 'senso,kebab-land').split(',').filter(Boolean);
+const MODE = args.mode === 'fast' ? 'fast' : 'full';
 const pin = process.env.DRILL_ADMIN_PIN;
 if (!pin) { console.error('DRILL_ADMIN_PIN missing'); process.exit(2); }
 const base = `http://127.0.0.1:${port}`;
 const transcript = [], results = [], measures = [];
 const t0 = Date.now();
 const log = (step, text) => { const l = { at: new Date().toISOString(), ms: Date.now() - t0, step, text: String(text) }; transcript.push(l); console.log(`${l.at} [${step}] ${l.text}`); };
-const check = (step, ok, text) => { results.push({ step, ok, text }); log(step, `${ok ? 'PASS' : 'FAIL'}: ${text}`); };
+// metric (the PM, 2026-10-12, the known-miss ratchet): { over, of, worst, unit } for the suite to compare with a known miss's baseline
+const check = (step, ok, text, metric) => { results.push({ step, ok, text, ...(metric ? { metric } : {}) }); log(step, `${ok ? 'PASS' : 'FAIL'}: ${text}`); };
 const measure = (text) => { measures.push(text); console.log(`MEASURE: ${text}`); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const gz = (s) => zlib.gzipSync(Buffer.from(s)).length;
@@ -234,13 +240,13 @@ async function record(id, season) {
 }
 
 // ---- the drill
-const rows = [], boundaries = [];
+const rows = [], boundaries = [], CHOSEN = {};
 let original = null;
 try {
   for (const season of ALL4) {
     await stop(); const up = await start(season); await signIn();
     log('server', `${season} server up after ${up} ms (ROSES_NOW ${SEASONS[season]})`);
-    if (!original) { const g = await api('/api/admin/style?venue=senso'); original = g.json?.style ?? {}; log('style', `Senso's style before the drill: transition ${original.transition ?? '(unset)'}; per season ${ALL4.map((x) => `${x} ${original[TXKEY[x]] ?? '(unset)'}`).join(', ')}`); }
+    if (!original) { const g = await api('/api/admin/style?venue=senso'); original = g.json?.style ?? {}; for (const x of ALL4) CHOSEN[x] = String(g.json?.values?.[TXKEY[x]] ?? 'T1'); log('style', `Senso's style before the drill: transition ${original.transition ?? '(unset)'}; per season ${ALL4.map((x) => `${x} ${original[TXKEY[x]] ?? '(unset)'}`).join(', ')}; the versions chosen now (what customers get): ${ALL4.map((x) => `${CHOSEN[x]}-${x}`).join(', ')}; mode ${MODE}`); }
     // what the admin's scene API renders for each concept in this season (the code the page must carry when it is chosen)
     const want = {};
     for (const id of IDS) { const r = await api(`/api/admin/welcome-scene?venue=senso&season=${season}&transition=${id}`); want[id] = r.json?.tx ?? null; }
@@ -263,6 +269,7 @@ try {
       const htmlOk = nominalOk && save.status === 200 && stored === id && served.ok && seasonOf(h) === season && !!w && keys.join() === k && named.join() === k && styleText === w.css && h.includes(w.js) && defs === 1 && others.length === 0;
       check(`html-${k}`, htmlOk, `${k} chosen through the Style route (${save.status}; venues.style.${TXKEY[season]} = ${stored}); the page regenerated after ${served.ms} ms for the ${seasonOf(h)} scene and carries exactly one transition: data-tx ${keys.join(', ') || 'none'}, the script names ${named.join(', ') || 'none'}, ${defs} rosesTx definition; its style and its script equal what the admin's scene API renders for ${k} (${styleText === w?.css} / ${!!w && h.includes(w.js)}); the code of another concept in the page: ${others.join(', ') || 'none'}`);
       check(`size-${k}`, size !== null && size <= BUDGET, `${k}: its style and script ${size} B gzipped (${w ? w.css.length + w.js.length : 0} B raw; ≤ ${BUDGET})`);
+      if (MODE === 'fast' && id !== CHOSEN[season]) { rows.push({ id, season, key: k, name: w?.name, level: w?.level, nominalMs: w?.ms ?? null, text: w?.text ?? null, sizeGz: size, shallow: true }); continue; } // fast: the browser checks on the chosen version only
       const en = await smooth('en');
       const okProps = (en.anims?.props || []).every((p) => ['transform', 'opacity', 'scale', 'rotate', 'translate'].includes(p));
       check(`smooth-${k}`, en.done && en.medianFps >= 50 && en.longestTaskMs <= 50 && en.errors.length === 0, `${k}, iPhone 13 viewport, CPU 4×, English tap: ${en.frames} frames from the tap to the overlay gone (${en.offMs} ms), median interval ${en.medianGapMs} ms = ${en.medianFps} fps (≥ 50), worst gap ${en.worstGapMs} ms; ${en.longTasks} long tasks, the longest ${en.longestTaskMs} ms (≤ 50); page errors ${en.errors.length}`);
@@ -304,7 +311,7 @@ try {
         cReduced !== wReduced && `reduced motion: Chromium ${cReduced ? 'pass' : 'fail'}, WebKit ${wReduced ? 'pass' : 'fail'}`,
         !(Math.abs(wUnthrottled - unthrottled) <= 100) && `gone after ${unthrottled} ms in Chromium and ${Number.isFinite(wUnthrottled) ? wUnthrottled : '—'} ms in WebKit (scroll and tap loads, unthrottled; WebKit's medians)`,
       ].filter(Boolean);
-      let rec = null; { rec = await record(id, season); check(`recording-${k}`, rec.size > 10000, `${path.relative(process.cwd(), rec.file)} (${(rec.size / 1024).toFixed(0)} KB; gitignored, on disk only)`); }
+      let rec = null; if (MODE === 'full') { rec = await record(id, season); check(`recording-${k}`, rec.size > 10000, `${path.relative(process.cwd(), rec.file)} (${(rec.size / 1024).toFixed(0)} KB; gitignored, on disk only)`); }
       rows.push({ id, season, key: k, name: w?.name, level: w?.level, nominalMs: w?.ms ?? null, text: w?.text ?? null, sizeGz: size, en: { offMs: en.offMs, medianFps: en.medianFps, worstGapMs: en.worstGapMs, longestTaskMs: en.longestTaskMs, animations: en.anims?.count, lastEnd: en.anims?.lastEnd }, fa: { done: fa.done, offMs: fa.offMs, medianFps: fa.medianFps, worstGapMs: fa.worstGapMs, longestTaskMs: fa.longestTaskMs, langAtFirstFrame: fa.first?.lang }, unthrottledOffMs: unthrottled, scrollMs: sc.scroll?.t ?? null, tapMs: tp.itemClick?.t ?? null, sheetMs: tp.sheet, reducedMs: rm.ms, recording: rec && path.basename(rec.file),
         webkit: { plays: wPlays, timing: wTiming, reduced: wReduced, errors: wErrors.length, off: j3(mOff), scrollOff: j3(mSOff), tapOff: j3(mTOff), scroll: j3(mScroll), item: j3(mItem), sheet: j3(mSheet), fade: j3(mFade), cut: j3(mCut), animations: wCount, props: wProps, fps: wFps, worstGapMs: wGap, outliers, differs } });
       measure(`${k}: ${en.offMs} ms at CPU 4× (${unthrottled} ms unthrottled), median ${en.medianFps} fps, longest task ${en.longestTaskMs} ms; Persian tap ${fa.medianFps} fps, longest task ${fa.longestTaskMs} ms; scroll at ${sc.scroll?.t} ms, item tap at ${tp.itemClick?.t} ms; reduced motion ${rm.ms} ms; ${size} B gzipped; WebKit (median of 3; runs): gone after ${mOff.m} ms (${mOff.v.join('/')}), ${wCount.join('/')} animations, ${wFps.join('/')} fps (information), scroll at ${mScroll.m} ms (${mScroll.v.join('/')}), item tap at ${mItem.m} ms (${mItem.v.join('/')}), reduced motion ${mFade.m} ms (${mFade.v.join('/')}), ${wErrors.length} errors, ${outliers.length ? `outliers: ${outliers.join('; ')}, ` : ''}${differs.length ? `differs from Chromium: ${differs.join('; ')}` : 'as Chromium'}`);
@@ -323,9 +330,9 @@ try {
   // The Persian tap (the PM, 2026-10-11): a real check over the 40 Persian taps measured above (CPU 4×, from the tap to the overlay gone),
   // listed in reports/checks/known-misses.json as "Persian tap, Senso" until the relayout task is ≤ 50 ms; measured and printed every run.
   {
-    const taps = rows.map((r) => ({ key: r.key, done: !!r.fa.done, ms: r.fa.longestTaskMs })), over = taps.filter((x) => !x.done || x.ms > 50);
-    check('persian-tap-senso', taps.length === IDS.length * 4 && over.length === 0, `Senso, iPhone 13 viewport, CPU 4×, the فارسی tap of every concept in every season (${taps.length} of ${IDS.length * 4} taps measured): no long task over 50 ms from the tap to the overlay gone; over 50 ms: ${over.length}${over.length ? ` (${over.map((x) => `${x.key} ${x.done ? `${x.ms} ms` : 'not measured'}`).join(', ')})` : ''}; the longest task per tap: ${taps.map((x) => `${x.key} ${x.done ? x.ms : '—'}`).join(', ')} ms`);
-    const wkRows = rows.filter((r) => r.webkit);
+    const taps = rows.filter((r) => !r.shallow).map((r) => ({ key: r.key, done: !!r.fa.done, ms: r.fa.longestTaskMs })), over = taps.filter((x) => !x.done || x.ms > 50), want = MODE === 'full' ? IDS.length * 4 : ALL4.length;
+    check('persian-tap-senso', taps.length === want && over.length === 0, `Senso, iPhone 13 viewport, CPU 4×, the فارسی tap of ${MODE === 'full' ? 'every concept in every season' : 'the version chosen for each season (fast mode)'} (${taps.length} of ${want} taps measured): no long task over 50 ms from the tap to the overlay gone; over 50 ms: ${over.length}${over.length ? ` (${over.map((x) => `${x.key} ${x.done ? `${x.ms} ms` : 'not measured'}`).join(', ')})` : ''}; the longest task per tap: ${taps.map((x) => `${x.key} ${x.done ? x.ms : '—'}`).join(', ')} ms`, { over: over.length, of: taps.length, worst: Math.max(0, ...taps.map((x) => (x.done ? x.ms || 0 : Infinity))), unit: 'ms' });
+    const wkRows = rows.filter((r) => r.webkit && !r.shallow);
     measure(`WebKit (3 runs per time, the median): ${wkRows.length} versions, ${wkRows.filter((r) => r.webkit.plays && r.webkit.timing && r.webkit.reduced && !r.webkit.errors).length} passing every functional check; ${wkRows.filter((r) => r.webkit.differs.length).length} behaving differently from Chromium${wkRows.some((r) => r.webkit.differs.length) ? ` (${wkRows.filter((r) => r.webkit.differs.length).map((r) => r.key).join(', ')})` : ''}; ${wkRows.reduce((n, r) => n + r.webkit.outliers.length, 0)} outlier run(s)${wkRows.some((r) => r.webkit.outliers.length) ? ` (${wkRows.filter((r) => r.webkit.outliers.length).map((r) => `${r.key}: ${r.webkit.outliers.join('; ')}`).join(' · ')})` : ''}`);
     measure(`Persian tap, Senso (CPU 4×): ${over.length} of ${taps.length} taps with a long task over 50 ms, the longest ${Math.max(0, ...taps.map((x) => x.ms || 0))} ms`);
   }
@@ -445,12 +452,12 @@ try {
 
 const pass = results.every((r) => r.ok);
 const table = ['| Concept | Level | Season | Time (nominal) | Gone after (CPU 4× / unthrottled) | Median fps (4×) | Longest task (4×) | Scroll / tap after | Reduced motion | Gzipped | Persian tap: fps, longest task |', '|---|---|---|---|---|---|---|---|---|---|---|',
-  ...rows.map((r) => `| ${r.id} ${r.name} | ${r.level} | ${r.season} | ${r.nominalMs} ms | ${r.en.offMs} / ${r.unthrottledOffMs} ms | ${r.en.medianFps} | ${r.en.longestTaskMs} ms | ${r.scrollMs} / ${r.tapMs} ms | ${r.reducedMs} ms | ${r.sizeGz} B | ${r.fa.medianFps}, ${r.fa.longestTaskMs} ms |`)];
+  ...rows.filter((r) => !r.shallow).map((r) => `| ${r.id} ${r.name} | ${r.level} | ${r.season} | ${r.nominalMs} ms | ${r.en.offMs} / ${r.unthrottledOffMs} ms | ${r.en.medianFps} | ${r.en.longestTaskMs} ms | ${r.scrollMs} / ${r.tapMs} ms | ${r.reducedMs} ms | ${r.sizeGz} B | ${r.fa.medianFps}, ${r.fa.longestTaskMs} ms |`)];
 const r3 = (x) => (x ? `${x.median ?? '—'} (${x.runs.map((v) => v ?? '—').join('/')})` : '—');
 const wkTable = ['| Concept | Season | Plays | Gone after, ms: median (3 runs) | Scroll / item tap / popup, ms: medians | Reduced-motion fade, ms: median (3 runs) | Errors | Animations (WebKit runs / Chromium) | fps (runs; information) | Outliers | As Chromium? |', '|---|---|---|---|---|---|---|---|---|---|---|',
   ...rows.filter((r) => r.webkit).map((r) => `| ${r.id} ${r.name} | ${r.season} | ${r.webkit.plays ? 'yes' : '**no**'} | ${r3(r.webkit.off)} | ${r.webkit.scroll.median ?? '—'} / ${r.webkit.item.median ?? '—'} / ${r.webkit.sheet.median ?? '—'} | ${r3(r.webkit.fade)} | ${r.webkit.errors} | ${r.webkit.animations.join('/')} / ${r.en.animations} | ${r.webkit.fps.join('/')} | ${r.webkit.outliers.length ? r.webkit.outliers.join('; ') : '—'} | ${r.webkit.differs.length ? `**differs**: ${r.webkit.differs.join('; ')}` : 'yes'} |`)];
 const wkDiffers = rows.filter((r) => r.webkit?.differs.length), wkOut = rows.filter((r) => r.webkit?.outliers.length);
-fs.writeFileSync(path.join(out, 'transition-drill.json'), JSON.stringify({ base, dist, copy, at: new Date().toISOString(), pass, rows, boundaries, results, measures, transcript }, null, 2));
-fs.writeFileSync(path.join(out, 'transition-drill.txt'), [`Transition drill ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length} checks)`, '', ...table, '', `WebKit (the PM, 2026-10-11; functional checks, every time measured 3 times and judged on the median, fps for information only; ${wkDiffers.length ? `${wkDiffers.length} version(s) behave differently from Chromium: ${wkDiffers.map((r) => `${r.key}: ${r.webkit.differs.join('; ')}`).join(' · ')}` : 'every version behaves as in Chromium'}; outlier runs (over 2× the median, counted): ${wkOut.length ? wkOut.map((r) => `${r.key}: ${r.webkit.outliers.join('; ')}`).join(' · ') : 'none'}):`, '', ...wkTable, '', 'Per-season choices at the Toronto season boundaries (four different concepts: ' + ALL4.map((x) => `${x} ${CHOICE[x]}`).join(', ') + '):', '', '| Instant | Server clock | Season rendered | Ships | Result |', '|---|---|---|---|---|', ...boundaries.map((b0) => `| ${b0.label} | ${b0.at} | ${b0.season} (want ${b0.want}) | ${b0.ships} | ${b0.ok ? 'PASS' : '**FAIL**'} |`), '', 'Measurements:', ...measures.map((m) => `- ${m}`), '', ...results.map((r) => `${r.ok ? 'PASS' : 'FAIL'} ${r.step}: ${r.text}`), '', 'Transcript:', ...transcript.map((l) => `${l.at} [${l.step}] ${l.text}`)].join('\n'));
-console.log(`TRANSITION DRILL ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length})`);
+fs.writeFileSync(path.join(out, 'transition-drill.json'), JSON.stringify({ base, dist, copy, at: new Date().toISOString(), mode: MODE, chosen: CHOSEN, pass, rows, boundaries, results, measures, transcript }, null, 2));
+fs.writeFileSync(path.join(out, 'transition-drill.txt'), [`Transition drill ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length} checks), mode ${MODE}${MODE === 'fast' ? ` (browser checks on the chosen versions ${ALL4.map((x) => `${CHOSEN[x]}-${x}`).join(', ')}; the served HTML and size of all 40)` : ' (all 40 versions)'}`, '', ...table, '', `WebKit (the PM, 2026-10-11; functional checks, every time measured 3 times and judged on the median, fps for information only; ${wkDiffers.length ? `${wkDiffers.length} version(s) behave differently from Chromium: ${wkDiffers.map((r) => `${r.key}: ${r.webkit.differs.join('; ')}`).join(' · ')}` : 'every version behaves as in Chromium'}; outlier runs (over 2× the median, counted): ${wkOut.length ? wkOut.map((r) => `${r.key}: ${r.webkit.outliers.join('; ')}`).join(' · ') : 'none'}):`, '', ...wkTable, '', 'Per-season choices at the Toronto season boundaries (four different concepts: ' + ALL4.map((x) => `${x} ${CHOICE[x]}`).join(', ') + '):', '', '| Instant | Server clock | Season rendered | Ships | Result |', '|---|---|---|---|---|', ...boundaries.map((b0) => `| ${b0.label} | ${b0.at} | ${b0.season} (want ${b0.want}) | ${b0.ships} | ${b0.ok ? 'PASS' : '**FAIL**'} |`), '', 'Measurements:', ...measures.map((m) => `- ${m}`), '', ...results.map((r) => `${r.ok ? 'PASS' : 'FAIL'} ${r.step}: ${r.text}`), '', 'Transcript:', ...transcript.map((l) => `${l.at} [${l.step}] ${l.text}`)].join('\n'));
+console.log(`TRANSITION DRILL ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length}), mode ${MODE}`);
 process.exit(pass ? 0 : 1);

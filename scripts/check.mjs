@@ -13,7 +13,14 @@
 // copy and the build, scripts/preflight.mjs reads the load average, free memory, Docker's memory and the top 5 processes by CPU, all
 // recorded in report.md; when a process the suite did not start is above 100 % CPU the suite prints it (name, PID, port, CPU), leaves
 // it alone and exits 2 before building. `npm run check -- --force` runs anyway and marks every timing check "under external load".
-//   npm run check            npm run check -- --force
+// Fast and full (the PM, 2026-10-12): npm run check (fast, for batches) runs every step, with the transition drill's browser checks
+// (Chromium and the WebKit 3-run timing) on the four versions the venue has chosen now and the served HTML and size of all 40;
+// npm run check:full (--full) runs everything, the transition drill on all 40 versions. check:full is required before every merge to
+// main; report.md says which one ran. Known-miss ratchet (the PM, the same day): every entry of known-misses.json records a baseline
+// per listed check ({ over, of, worst } of the run it names); a run in which a listed check measures worse (more samples over the
+// target, as a rate when the run measured a different number of samples; or a worse worst value beyond the entry's noise tolerance)
+// fails with KNOWN MISS WORSENED, printed with the baseline and the measurement.
+//   npm run check            npm run check:full            npm run check -- --force
 // 2026-10-08: the colour-literal scan (0 in the public sources) and the Style tab drill (scripts/style-drill.mjs) joined the suite.
 // 2026-10-09: the welcome screen replaced the logo intro: the page checks follow it instead (first visit, reload with the last language
 // pre-highlighted, reduced motion still, JavaScript off) and the welcome drill (scripts/welcome-drill.mjs) covers the boundaries, the
@@ -78,8 +85,8 @@ const KNOWN_FILE = 'reports/checks/known-misses.json';
 let known;
 try {
   known = JSON.parse(fs.readFileSync(KNOWN_FILE, 'utf8')).misses;
-  const bad = known.filter((k) => !k.id || !k.title || !k.step || !Array.isArray(k.checks) || !k.checks.length || !k.cause || !k.clears);
-  if (bad.length) throw new Error(`entries without id, title, step, checks, cause or clears: ${bad.map((k) => k.id || '?').join(', ')}`);
+  const bad = known.filter((k) => !k.id || !k.title || !k.step || !Array.isArray(k.checks) || !k.checks.length || !k.cause || !k.clears || !k.baseline || !k.baseline.run || k.checks.some((c) => { const b = k.baseline.checks?.[c]; return !b || !Number.isFinite(b.over) || !Number.isFinite(b.of) || !Number.isFinite(b.worst); }));
+  if (bad.length) throw new Error(`entries without id, title, step, checks, cause, clears or a baseline ({ run, checks: { <check>: { over, of, worst } } }) for every listed check: ${bad.map((k) => k.id || '?').join(', ')}`);
 } catch (e) { console.error(`${KNOWN_FILE}: ${e.message}`); process.exit(2); }
 const started = Date.now();
 const results = [];
@@ -113,13 +120,26 @@ async function step(name, fn, id = null) {
   if (listed.length) {
     const checks = r.checks || null;
     for (const k of listed) {
-      const got = k.checks.map((c) => { const x = checks?.find((y) => y.id === c); return x ? { id: c, ok: x.ok, text: x.text } : { id: c, ok: null, text: 'not measured' }; });
-      k.run = { checks: got, status: got.some((c) => c.ok === null) ? 'NOT MEASURED' : got.every((c) => c.ok) ? 'NOW PASSING' : 'KNOWN MISS' };
+      const got = k.checks.map((c) => { const x = checks?.find((y) => y.id === c); return x ? { id: c, ok: x.ok, text: x.text, metric: x.metric ?? null } : { id: c, ok: null, text: 'not measured', metric: null }; });
+      // the ratchet: a failing listed check is compared with its baseline (more over the target, as a rate when the number of samples
+      // differs, e.g. a fast run; or a worse worst value beyond the entry's tolerance)
+      const tol = Number(k.baseline.tolerance ?? 0);
+      for (const c of got) {
+        const b = k.baseline.checks[c.id], m = c.metric; c.baseline = b;
+        if (c.ok !== false) continue;
+        if (!m || !Number.isFinite(m.over) || !Number.isFinite(m.of) || m.of === 0) { c.worsened = 'no measurement to compare with the baseline'; continue; }
+        const why = [];
+        if (m.of === b.of ? m.over > b.over : m.over / m.of > b.over / b.of) why.push(`${m.over} of ${m.of} over the target (baseline ${b.over} of ${b.of})`);
+        if (m.worst === null || m.worst > b.worst * (1 + tol)) why.push(`worst ${m.worst ?? 'not measured'} ${m.unit ?? ''} (baseline ${b.worst} ${m.unit ?? ''}${tol ? `, tolerance ${Math.round(tol * 100)} %: up to ${Math.round(b.worst * (1 + tol))}` : ''})`);
+        if (why.length) c.worsened = why.join('; ');
+      }
+      k.run = { checks: got, status: got.some((c) => c.ok === null) ? 'NOT MEASURED' : got.some((c) => c.worsened) ? 'KNOWN MISS WORSENED' : got.every((c) => c.ok) ? 'NOW PASSING' : 'KNOWN MISS' };
     }
     const listedIds = new Set(listed.flatMap((k) => k.checks));
     res.unlisted = checks ? checks.filter((c) => !c.ok && !listedIds.has(c.id)).map((c) => c.id) : null;
-    const notMeasured = listed.filter((k) => k.run.status === 'NOT MEASURED');
-    if (notMeasured.length) { res.outcome = 'FAIL'; res.pass = false; res.note = `listed known miss not measured (${notMeasured.map((k) => `${k.id}: ${k.run.checks.filter((c) => c.ok === null).map((c) => c.id).join(', ')}`).join('; ')}); ${res.note}`; }
+    const notMeasured = listed.filter((k) => k.run.status === 'NOT MEASURED'), worsened = listed.filter((k) => k.run.status === 'KNOWN MISS WORSENED');
+    if (worsened.length) { res.outcome = 'FAIL'; res.pass = false; res.note = `KNOWN MISS WORSENED: ${worsened.map((k) => `${k.title}: ${k.run.checks.filter((c) => c.worsened).map((c) => `${c.id} measured ${c.worsened}`).join('; ')}`).join(' · ')}; ${res.note}`; }
+    else if (notMeasured.length) { res.outcome = 'FAIL'; res.pass = false; res.note = `listed known miss not measured (${notMeasured.map((k) => `${k.id}: ${k.run.checks.filter((c) => c.ok === null).map((c) => c.id).join(', ')}`).join('; ')}); ${res.note}`; }
     else if (!res.pass && res.unlisted && res.unlisted.length === 0 && listed.some((k) => k.run.status === 'KNOWN MISS')) res.outcome = 'KNOWN MISS';
     else if (!res.pass && res.unlisted?.length) res.note = `failing and not listed as known misses: ${res.unlisted.join(', ')}; ${res.note}`;
   }
@@ -128,7 +148,7 @@ async function step(name, fn, id = null) {
   for (const k of listed) log(`   known miss "${k.title}": ${k.run.status}`);
 }
 // a drill's own checks, from the JSON it writes at its end (null when it did not finish: then no failure of it can be a known miss)
-const drillChecks = (file, finished) => { const f = path.join(out, file); if (!finished || !fs.existsSync(f)) return null; try { return JSON.parse(fs.readFileSync(f, 'utf8')).results.map((x) => ({ id: x.step, ok: x.ok, text: x.text })); } catch { return null; } };
+const drillChecks = (file, finished) => { const f = path.join(out, file); if (!finished || !fs.existsSync(f)) return null; try { return JSON.parse(fs.readFileSync(f, 'utf8')).results.map((x) => ({ id: x.step, ok: x.ok, text: x.text, metric: x.metric ?? null })); } catch { return null; } };
 // The suite's servers are its own: a port's listener must be the process it spawned (lsof), or nothing runs against it.
 const listeners = (port) => spawnSync('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'], { encoding: 'utf8' }).stdout.split('\n').filter(Boolean).map(Number);
 async function waitHttp(url, ms = 90000) { const t = Date.now(); while (Date.now() - t < ms) { try { const r = await fetch(url); if (r.status === 200) return true; } catch { /* not yet */ } await new Promise((r) => setTimeout(r, 500)); } return false; }
@@ -153,6 +173,7 @@ function startServer(port, env, logFile) {
 // Pre-flight (the PM, 2026-10-11): no process the suite did not start above 100 % CPU (only the suite and npm run at this point), or
 // stop before building; --force runs anyway with every timing check marked "under external load". Other processes are only read.
 const FORCE = process.argv.includes('--force');
+const FULL = process.argv.includes('--full'); // npm run check:full
 const pre = preReadings(process.env.ROSES_DB_CONTAINER || 'roses-db');
 const preBad = preOffenders(pre, [process.pid, process.ppid]);
 const underLoad = preBad.length > 0; // only reachable past here with --force
@@ -295,8 +316,8 @@ try {
     return { pass: r.status === 0, checks: drillChecks('season/season-drill.json', !!(m && m.length)), evidence: ['season/season-drill.txt', 'season/season-drill.json', 'season/season-server.log', 'season/*.jpg', 'season/senso-fall.webm, senso-winter.webm and senso-summer.webm (on disk only)'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   }, 'season');
   // The transitions into the menu (2026-10-10): Senso, fall and winter, every concept; Kebab Land and the default template unchanged.
-  await step('transition drill (Senso, every season (fall and winter since 2026-10-10, spring and summer since 2026-10-11), every concept T1–T10, 40 versions, chosen through the Style route per season on a copy of the build with its own server and a fixed clock: only the chosen transition in the served HTML and ≤ 3 KB gzipped; smoothness on the iPhone 13 viewport with CPU 4× from the tap to the overlay gone, median ≥ 50 fps and no long task > 50 ms, every animation on transform or opacity and none cut; total ≤ 900 ms; the menu scrollable and tappable within 300 ms of the tap, with a real touch scroll and a real tap during the transition; the language applied at the first frame; the 150 ms fade under reduced motion; the Persian tap with no long task > 50 ms (listed known miss "Persian tap, Senso"); every version in WebKit, functionally (it plays, ≤ 900 ms, the menu scrollable and tappable within 300 ms during it, the 150 ms fade, no console or page error), every time measured 3 times and judged on the median, all three printed, outliers over 2× the median flagged and counted, fps for information, compared with Chromium; day one: the pages of all four seasons byte for byte the same with the single choice of 2026-10-10 and with it saved per season; four different choices, one per season, each shipped alone at the Toronto season boundary instants (Feb 28 / Mar 1, May 31 / Jun 1, Aug 31 / Sep 1, Nov 30 / Dec 1); recordings of all 40; the admin preview choosing and playing per season on a laptop and a phone, the bar\'s season carrying that season\'s choice; Kebab Land\'s welcome behaviour and the default template\'s scripts byte for byte as the previous commit served them)', async () => {
-    const r = await run('node', ['scripts/transition-drill.mjs', '--dist', DIST, '--copy', '.next-transition', '--port', String(TX_PORT), '--out', path.join(out, 'transition'), '--venues', pageVenues.join(','), '--jpeg'], { env: drillEnv, logFile: 'transition/transition-drill.log' });
+  await step(`transition drill, ${FULL ? 'full: all 40 versions' : 'fast: the browser checks on the 4 versions chosen now, the served HTML and size of all 40'} ` + '(Senso, every season (fall and winter since 2026-10-10, spring and summer since 2026-10-11), every concept T1–T10, 40 versions, chosen through the Style route per season on a copy of the build with its own server and a fixed clock: only the chosen transition in the served HTML and ≤ 3 KB gzipped; smoothness on the iPhone 13 viewport with CPU 4× from the tap to the overlay gone, median ≥ 50 fps and no long task > 50 ms, every animation on transform or opacity and none cut; total ≤ 900 ms; the menu scrollable and tappable within 300 ms of the tap, with a real touch scroll and a real tap during the transition; the language applied at the first frame; the 150 ms fade under reduced motion; the Persian tap with no long task > 50 ms (listed known miss "Persian tap, Senso"); every version in WebKit, functionally (it plays, ≤ 900 ms, the menu scrollable and tappable within 300 ms during it, the 150 ms fade, no console or page error), every time measured 3 times and judged on the median, all three printed, outliers over 2× the median flagged and counted, fps for information, compared with Chromium; day one: the pages of all four seasons byte for byte the same with the single choice of 2026-10-10 and with it saved per season; four different choices, one per season, each shipped alone at the Toronto season boundary instants (Feb 28 / Mar 1, May 31 / Jun 1, Aug 31 / Sep 1, Nov 30 / Dec 1); recordings of all 40; the admin preview choosing and playing per season on a laptop and a phone, the bar\'s season carrying that season\'s choice; Kebab Land\'s welcome behaviour and the default template\'s scripts byte for byte as the previous commit served them)', async () => {
+    const r = await run('node', ['scripts/transition-drill.mjs', '--dist', DIST, '--copy', '.next-transition', '--port', String(TX_PORT), '--out', path.join(out, 'transition'), '--venues', pageVenues.join(','), '--mode', FULL ? 'full' : 'fast', '--jpeg'], { env: drillEnv, logFile: 'transition/transition-drill.log' });
     const m = (r.stdout.match(/TRANSITION DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, checks: drillChecks('transition/transition-drill.json', !!(m && m.length)), evidence: ['transition/transition-drill.txt', 'transition/transition-drill.json', 'transition/transition-server.log', 'transition/*.jpg', 'transition/transition-T1-fall.webm … transition-T10-summer.webm, all 40 (on disk only)'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
@@ -454,26 +475,27 @@ const pass = results.length > 0 && failed.length === 0; // the run fails only on
 const nowPassing = known.filter((k) => k.run?.status === 'NOW PASSING');
 const knownBlob = spawnSync('git', ['rev-parse', '--short', `HEAD:${KNOWN_FILE}`], { encoding: 'utf8' }).stdout.trim();
 const cell = (t) => String(t ?? '').replace(/\|/g, '\\|').replace(/\s+/g, ' ');
-const knownStatus = (k) => !k.run ? '**NOT RUN** (the suite stopped before its step)' : k.run.status === 'KNOWN MISS' ? `**KNOWN MISS** (${k.run.checks.filter((c) => !c.ok).length} of ${k.run.checks.length} listed checks missed their target)` : k.run.status === 'NOW PASSING' ? '**NOW PASSING**: every listed check met its target in this run (reported; the entry stays until its clearing condition is met)' : `**${k.run.status}** (fails the run)`;
+const knownStatus = (k) => !k.run ? '**NOT RUN** (the suite stopped before its step)' : k.run.status === 'KNOWN MISS WORSENED' ? `**KNOWN MISS WORSENED** (fails the run: ${k.run.checks.filter((c) => c.worsened).length} of ${k.run.checks.length} listed checks measured worse than their baseline)` : k.run.status === 'KNOWN MISS' ? `**KNOWN MISS** (${k.run.checks.filter((c) => !c.ok).length} of ${k.run.checks.length} listed checks missed their target)` : k.run.status === 'NOW PASSING' ? '**NOW PASSING**: every listed check met its target in this run (reported; the entry stays until its clearing condition is met)' : `**${k.run.status}** (fails the run)`;
 const lines = [
   `# Check suite — ${stamp.replace('T', ' ').replace(/-(\d\d)-(\d\d)Z$/, ':$1:$2Z')}`, '',
+  `**Suite: ${FULL ? 'full** (`npm run check:full`: the transition drill on all 40 versions; required before every merge to main)' : 'fast** (`npm run check`: the transition drill\'s browser checks on the four versions chosen now, the served HTML and size of all 40; not enough for a merge to main, which needs `npm run check:full`)'}`, '',
   `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, ${KNOWN_FILE} included) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
   ...(underLoad ? [`**Run forced past the pre-flight (\`--force\`) under external load**: ${preBad.map(preDescribe).join('; ')}. Every timing check below is marked "under external load"; its times are not evidence.`, ''] : []),
   `**${pass ? 'PASS' : 'FAIL'}** — ${results.filter((r) => outcome(r) === 'PASS').length} of ${results.length} checks passed${knownMissed.length ? `, ${knownMissed.length} KNOWN MISS (listed in \`${KNOWN_FILE}\`, still measured: see Known misses)` : ''}${failed.length ? `, ${failed.length} failed (not listed as known misses)` : ', no unlisted failure'}.${nowPassing.length ? ` Known miss now passing: ${nowPassing.map((k) => k.title).join(', ')} (see Known misses).` : ''}`, '',
   ...(pass ? [] : [`Cause: ${(() => { const f = failed[0]; return `${f.name} — ${(f.note || '').replace(/\s+/g, ' ').slice(0, 300)}`; })()}`, '', 'This failed run is kept on purpose (PM, 2026-10-08): the folder is never deleted, even when a re-run passes.', '']),
   ...preMarkdown(pre, preBad, FORCE),
   '## Known misses', '',
-  `Listed in \`${KNOWN_FILE}\` (committed; blob ${knownBlob || '?'} in ${commit}). A listed check is still measured and printed, here and as KNOWN MISS in the table; it does not fail the run. Any failure that is not listed fails it. A listed check that passes is reported here as NOW PASSING.`, '',
-  ...(known.length ? ['| Known miss | This run | Measured | Cause | Clears when | Listed |', '| --- | --- | --- | --- | --- | --- |',
-    ...known.map((k) => `| ${cell(k.title)} (\`${k.id}\`, step \`${k.step}\`) | ${knownStatus(k)} | ${k.run ? k.run.checks.map((c) => `${c.ok === null ? 'NOT MEASURED' : c.ok ? 'met' : 'MISSED'}: \`${c.id}\`: ${cell(c.text)}`).join('<br>') : '—'} | ${cell(k.cause)} | ${cell(k.clears)} | ${cell(k.listed)} |`)] : ['None listed.']), '',
+  `Listed in \`${KNOWN_FILE}\` (committed; blob ${knownBlob || '?'} in ${commit}). A listed check is still measured and printed, here and as KNOWN MISS in the table; it does not fail the run unless it measures worse than its baseline (the ratchet, the PM 2026-10-12: KNOWN MISS WORSENED). Any failure that is not listed fails it. A listed check that passes is reported here as NOW PASSING.`, '',
+  ...(known.length ? ['| Known miss | This run | Baseline → measured | Measured | Cause | Clears when | Listed |', '| --- | --- | --- | --- | --- | --- | --- |',
+    ...known.map((k) => `| ${cell(k.title)} (\`${k.id}\`, step \`${k.step}\`) | ${knownStatus(k)} | ${k.checks.map((id) => { const b = k.baseline.checks[id], c = k.run?.checks.find((x) => x.id === id), m = c?.metric; return `\`${id}\`: baseline ${b.over} of ${b.of} over, worst ${b.worst}${k.baseline.tolerance ? ` (tolerance ${Math.round(k.baseline.tolerance * 100)} %)` : ''} (run ${k.baseline.run}) → ${m ? `measured ${m.over} of ${m.of} over, worst ${m.worst ?? '—'} ${m.unit ?? ''}` : 'no measurement'}${c?.worsened ? ` — **WORSENED**: ${cell(c.worsened)}` : ''}`; }).join('<br>')} | ${k.run ? k.run.checks.map((c) => `${c.ok === null ? 'NOT MEASURED' : c.ok ? 'met' : 'MISSED'}: \`${c.id}\`: ${cell(c.text)}`).join('<br>') : '—'} | ${cell(k.cause)} | ${cell(k.clears)} | ${cell(k.listed)} |`)] : ['None listed.']), '',
   '## Checks', '',
   '| Check | Result | Time | Evidence | Notes |', '| --- | --- | --- | --- | --- |',
   ...results.map((r) => `| ${r.name} | ${outcome(r)}${underLoad && TIMING.test(r.name) ? ' (under external load)' : ''} | ${(r.ms / 1000).toFixed(1)} s | ${r.evidence.map((e) => `\`${e}\``).join(', ')} | ${r.note.replace(/\|/g, '\\|')} |`), '',
   'Every path is relative to this folder. Screenshots, full Lighthouse JSON, the first HTML responses, uploads and the dumps stay on the machine that ran the suite (gitignored); report.md, summary.json, the check JSON files and the text logs are committed. Every server and drill ran against the scratch copy of the working database (isolation.json lists the database each process connected to, from its own log and from pg_stat_activity), which was dropped afterwards; the working database itself was only read (the dump, then the search for suite-account rows in working-db-suite-rows.json). Lighthouse numbers are local estimates; since the welcome screen (2026-10-09) their LCP element is the welcome logo, so the Lighthouse LCP measures the welcome screen, not the menu behind it; the menu after the language tap is measured by the after-tap step under throttled mobile conditions.', '',
 ];
 fs.writeFileSync(path.join(out, 'report.md'), lines.join('\n'));
-fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, pass, preflight: { ...pre, forced: underLoad, offenders: preBad }, underExternalLoad: underLoad ? results.filter((r) => TIMING.test(r.name)).map((r) => r.name) : [], ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT }, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
+fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, suite: FULL ? 'full' : 'fast', pass, preflight: { ...pre, forced: underLoad, offenders: preBad }, underExternalLoad: underLoad ? results.filter((r) => TIMING.test(r.name)).map((r) => r.name) : [], ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT }, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, baseline: k.baseline, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
 console.log('\n' + lines.slice(4).join('\n'));
 console.log(`\nreport: ${path.relative(process.cwd(), path.join(out, 'report.md'))}`);
-console.log(`CHECK SUITE ${pass ? 'PASS' : 'FAIL'}${knownMissed.length ? ` (${knownMissed.length} KNOWN MISS)` : ''}${underLoad ? ' (forced: timing checks under external load)' : ''}`);
+console.log(`CHECK SUITE (${FULL ? 'full' : 'fast'}) ${pass ? 'PASS' : 'FAIL'}${knownMissed.length ? ` (${knownMissed.length} KNOWN MISS)` : ''}${underLoad ? ' (forced: timing checks under external load)' : ''}`);
 process.exit(pass ? 0 : 1);

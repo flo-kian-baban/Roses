@@ -1,5 +1,5 @@
 {
-  "about": "Known misses of npm run check (the PM, 2026-10-09). A listed check is still measured and printed, marked KNOWN MISS in report.md; the run fails only on a failure that is not listed here; a listed check that passes is reported as NOW PASSING, and its entry stays until its clearing condition is met. Entries are added or removed only on the PM's or Kian's word. This file decides PASS, so the suite refuses to start while it has uncommitted changes. Fields: id; title; step (the suite step's id); checks (the drill's check ids it covers); target; cause; clears (the condition that removes the entry); listed (when and by whom).",
+  "about": "Known misses of npm run check (the PM, 2026-10-09). A listed check is still measured and printed, marked KNOWN MISS in report.md; the run fails only on a failure that is not listed here; a listed check that passes is reported as NOW PASSING, and its entry stays until its clearing condition is met. Entries are added or removed only on the PM's or Kian's word. This file decides PASS, so the suite refuses to start while it has uncommitted changes. Fields: id; title; step (the suite step's id); checks (the drill's check ids it covers); target; cause; clears (the condition that removes the entry); listed (when and by whom). Since 2026-10-12 (the PM): every entry records a baseline per listed check, { over: samples over the target, of: samples, worst }, from the run it names; a run in which a listed check measures worse (more over the target, as a rate when the number of samples differs; or a worse worst value beyond the entry's tolerance) fails with KNOWN MISS WORSENED. A baseline is lowered only when a fix improves it.",
   "misses": [
     {
       "id": "after-tap-photos-senso",
@@ -9,7 +9,27 @@
       "target": "the first section's photos in view loaded within 2500 ms of the language tap, under Slow 4G as DevTools applies it and CPU 4×, on the worse of two repeats (Senso with its first section as a List and as a Grid)",
       "cause": "Senso's photos are linked at full size from the client's own hosts: the first section's 6 photos weigh 237–367 KB each, 1.70 MB in all (Kebab Land's 2 weigh 72–146 KB). Over Slow 4G the 4 in view loaded 4.7–8.3 s after the tap in the five runs of 2026-10-09 (16-28-47Z to 20-55-53Z); the menu itself was visible within 228–260 ms in every one, and Kebab Land's photos within 262–1062 ms.",
       "clears": "when resized copies of the photos are served from our own storage (the go-live list; downloading the photos needs the owner's written permission first)",
-      "listed": "2026-10-09, the PM"
+      "listed": "2026-10-09, the PM",
+      "baseline": {
+        "run": "2026-10-12T03-57-29Z",
+        "unit": "ms",
+        "tolerance": 0.1,
+        "checks": {
+          "after-tap-senso-list-photos": {
+            "over": 2,
+            "of": 2,
+            "worst": 8043,
+            "unit": "ms"
+          },
+          "after-tap-senso-grid-photos": {
+            "over": 2,
+            "of": 2,
+            "worst": 4845,
+            "unit": "ms"
+          }
+        },
+        "set": "2026-10-12, the PM: as measured in that run (each check is the worse of 2 repeats over Slow 4G). Tolerance 10 % on the worst value, a decision taken by the build agent for the PM to confirm: the same measurement on unchanged code ranged 7975–8409 ms (List) and 4692–5195 ms (Grid) over the 13 committed runs (2026-10-09 to 2026-10-12), so a strict comparison would fail about half the runs on noise of a few milliseconds"
+      }
     },
     {
       "id": "persian-tap-senso",
@@ -19,7 +39,21 @@
       "target": "no long task over 50 ms from the فارسی tap to the overlay gone, on the iPhone 13 viewport at CPU 4×, for every concept T1–T10 in every season (40 taps since 2026-10-11, when spring and summer got their versions; 20 before, fall and winter; each on a first visit with the page laid out in English)",
       "cause": "The tap applies Persian to a page laid out in English (lang fa, dir rtl, every Persian name and description shown), so the browser lays the whole menu out again in one task: 51–63 ms in 10 of the 20 Persian taps of run 2026-10-11T01-02-00Z and 52–59 ms in 4 of 20 in run 2026-10-11T02-07-07Z (the transition's own setup runs in the next frame since 5d09791). It is the language switch's cost, not a transition's: the 200 ms fade of 2026-10-09 had it too (52–73 ms), and the English tap, a first visit's, has no long task.",
       "clears": "when the Persian relayout task is ≤ 50 ms (every Persian tap measured with no long task over 50 ms)",
-      "listed": "2026-10-11, the PM"
+      "listed": "2026-10-11, the PM",
+      "baseline": {
+        "run": "2026-10-12T03-57-29Z",
+        "unit": "ms",
+        "tolerance": 0,
+        "checks": {
+          "persian-tap-senso": {
+            "over": 16,
+            "of": 40,
+            "worst": 58,
+            "unit": "ms"
+          }
+        },
+        "set": "2026-10-12, the PM: 16 of 40 Persian taps over 50 ms, the longest 58 ms"
+      }
     }
   ]
 }

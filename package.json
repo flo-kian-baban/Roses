@@ -18,7 +18,8 @@
     "admin:create": "node scripts/admin-create.mjs",
     "uploads:clean": "node scripts/uploads-clean.mjs",
     "setup": "node scripts/setup.mjs",
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "check:full": "node scripts/check.mjs --full"
   },
   "dependencies": {
     "jose": "^5.9.0",

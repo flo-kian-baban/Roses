@@ -1,0 +1,1551 @@
+{
+  "at": "2026-10-12T05:39:05.204Z",
+  "before": "http://127.0.0.1:63074",
+  "after": "http://127.0.0.1:63075",
+  "rows": [
+    {
+      "venue": "senso",
+      "lang": "en",
+      "before": {
+        "ys": [
+          0,
+          2122,
+          4243,
+          6365,
+          8487,
+          10608,
+          12730,
+          14852,
+          16973,
+          19095
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 19759,
+            "active": "senso-signature",
+            "truth": "senso-signature",
+            "bottom": false
+          },
+          {
+            "want": 2122,
+            "y": 2122,
+            "height": 19759,
+            "active": "hot-beverage",
+            "truth": "hot-beverage",
+            "bottom": false
+          },
+          {
+            "want": 4243,
+            "y": 4243,
+            "height": 19759,
+            "active": "tea-herbal-tea",
+            "truth": "tea-herbal-tea",
+            "bottom": false
+          },
+          {
+            "want": 6365,
+            "y": 6365,
+            "height": 19759,
+            "active": "fresh-juice",
+            "truth": "fresh-juice",
+            "bottom": false
+          },
+          {
+            "want": 8487,
+            "y": 8487,
+            "height": 19759,
+            "active": "dessert",
+            "truth": "dessert",
+            "bottom": false
+          },
+          {
+            "want": 10608,
+            "y": 10608,
+            "height": 19759,
+            "active": "milkshake",
+            "truth": "milkshake",
+            "bottom": false
+          },
+          {
+            "want": 12730,
+            "y": 12730,
+            "height": 19759,
+            "active": "persian-breakfast",
+            "truth": "persian-breakfast",
+            "bottom": false
+          },
+          {
+            "want": 14852,
+            "y": 14852,
+            "height": 19759,
+            "active": "appetizer",
+            "truth": "appetizer",
+            "bottom": false
+          },
+          {
+            "want": 16973,
+            "y": 16973,
+            "height": 19759,
+            "active": "senso-pizza",
+            "truth": "senso-pizza",
+            "bottom": false
+          },
+          {
+            "want": 19095,
+            "y": 19095,
+            "height": 19759,
+            "active": "extra",
+            "truth": "extra",
+            "bottom": true
+          }
+        ],
+        "taps": [
+          {
+            "id": "senso-signature",
+            "off": 0,
+            "active": "senso-signature",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "cold-beverage",
+            "off": 0,
+            "active": "cold-beverage",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "ice-cream",
+            "off": 0,
+            "active": "ice-cream",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "salad",
+            "off": 0,
+            "active": "salad",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "senso-pizza",
+            "off": 0,
+            "active": "senso-pizza",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "after": {
+        "ys": [
+          0,
+          2122,
+          4243,
+          6365,
+          8487,
+          10608,
+          12730,
+          14852,
+          16973,
+          19095
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 19807,
+            "active": "senso-signature",
+            "truth": "senso-signature",
+            "bottom": false
+          },
+          {
+            "want": 2122,
+            "y": 2122,
+            "height": 19831,
+            "active": "hot-beverage",
+            "truth": "hot-beverage",
+            "bottom": false
+          },
+          {
+            "want": 4243,
+            "y": 4243,
+            "height": 19831,
+            "active": "tea-herbal-tea",
+            "truth": "tea-herbal-tea",
+            "bottom": false
+          },
+          {
+            "want": 6365,
+            "y": 6365,
+            "height": 19807,
+            "active": "fresh-juice",
+            "truth": "fresh-juice",
+            "bottom": false
+          },
+          {
+            "want": 8487,
+            "y": 8487,
+            "height": 19807,
+            "active": "dessert",
+            "truth": "dessert",
+            "bottom": false
+          },
+          {
+            "want": 10608,
+            "y": 10608,
+            "height": 19807,
+            "active": "milkshake",
+            "truth": "milkshake",
+            "bottom": false
+          },
+          {
+            "want": 12730,
+            "y": 12730,
+            "height": 19807,
+            "active": "persian-breakfast",
+            "truth": "persian-breakfast",
+            "bottom": false
+          },
+          {
+            "want": 14852,
+            "y": 14852,
+            "height": 19783,
+            "active": "appetizer",
+            "truth": "appetizer",
+            "bottom": false
+          },
+          {
+            "want": 16973,
+            "y": 16973,
+            "height": 19783,
+            "active": "senso-pizza",
+            "truth": "senso-pizza",
+            "bottom": false
+          },
+          {
+            "want": 19095,
+            "y": 19095,
+            "height": 19783,
+            "active": "extra",
+            "truth": "extra",
+            "bottom": false
+          }
+        ],
+        "taps": [
+          {
+            "id": "senso-signature",
+            "off": 0,
+            "active": "senso-signature",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "cold-beverage",
+            "off": 0,
+            "active": "cold-beverage",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "ice-cream",
+            "off": 0,
+            "active": "ice-cream",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "salad",
+            "off": 0,
+            "active": "salad",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "senso-pizza",
+            "off": 0,
+            "active": "senso-pizza",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "beforeRight": 10,
+      "afterRight": 10,
+      "sameActive": 10,
+      "tapsBefore": 5,
+      "tapsAfter": 5,
+      "taps": 5
+    },
+    {
+      "venue": "senso",
+      "lang": "fa",
+      "before": {
+        "ys": [
+          0,
+          2110,
+          4221,
+          6331,
+          8442,
+          10552,
+          12663,
+          14773,
+          16884,
+          18994
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 19658,
+            "active": "senso-signature",
+            "truth": "senso-signature",
+            "bottom": false
+          },
+          {
+            "want": 2110,
+            "y": 2110,
+            "height": 19658,
+            "active": "hot-beverage",
+            "truth": "hot-beverage",
+            "bottom": false
+          },
+          {
+            "want": 4221,
+            "y": 4221,
+            "height": 19658,
+            "active": "tea-herbal-tea",
+            "truth": "tea-herbal-tea",
+            "bottom": false
+          },
+          {
+            "want": 6331,
+            "y": 6331,
+            "height": 19658,
+            "active": "fresh-juice",
+            "truth": "fresh-juice",
+            "bottom": false
+          },
+          {
+            "want": 8442,
+            "y": 8442,
+            "height": 19658,
+            "active": "dessert",
+            "truth": "dessert",
+            "bottom": false
+          },
+          {
+            "want": 10552,
+            "y": 10552,
+            "height": 19658,
+            "active": "milkshake",
+            "truth": "milkshake",
+            "bottom": false
+          },
+          {
+            "want": 12663,
+            "y": 12663,
+            "height": 19658,
+            "active": "persian-breakfast",
+            "truth": "persian-breakfast",
+            "bottom": false
+          },
+          {
+            "want": 14773,
+            "y": 14773,
+            "height": 19658,
+            "active": "appetizer",
+            "truth": "appetizer",
+            "bottom": false
+          },
+          {
+            "want": 16884,
+            "y": 16884,
+            "height": 19658,
+            "active": "senso-pizza",
+            "truth": "senso-pizza",
+            "bottom": false
+          },
+          {
+            "want": 18994,
+            "y": 18994,
+            "height": 19658,
+            "active": "extra",
+            "truth": "extra",
+            "bottom": true
+          }
+        ],
+        "taps": [
+          {
+            "id": "senso-signature",
+            "off": 0,
+            "active": "senso-signature",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "cold-beverage",
+            "off": 0,
+            "active": "cold-beverage",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "ice-cream",
+            "off": 0,
+            "active": "ice-cream",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "salad",
+            "off": 0,
+            "active": "salad",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "senso-pizza",
+            "off": 0,
+            "active": "senso-pizza",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "after": {
+        "ys": [
+          0,
+          2110,
+          4221,
+          6331,
+          8442,
+          10552,
+          12663,
+          14773,
+          16884,
+          18994
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 19786,
+            "active": "senso-signature",
+            "truth": "senso-signature",
+            "bottom": false
+          },
+          {
+            "want": 2110,
+            "y": 2110,
+            "height": 19830,
+            "active": "hot-beverage",
+            "truth": "hot-beverage",
+            "bottom": false
+          },
+          {
+            "want": 4221,
+            "y": 4221,
+            "height": 19830,
+            "active": "tea-herbal-tea",
+            "truth": "tea-herbal-tea",
+            "bottom": false
+          },
+          {
+            "want": 6331,
+            "y": 6331,
+            "height": 19806,
+            "active": "fresh-juice",
+            "truth": "fresh-juice",
+            "bottom": false
+          },
+          {
+            "want": 8442,
+            "y": 8442,
+            "height": 19806,
+            "active": "dessert",
+            "truth": "dessert",
+            "bottom": false
+          },
+          {
+            "want": 10552,
+            "y": 10552,
+            "height": 19806,
+            "active": "milkshake",
+            "truth": "milkshake",
+            "bottom": false
+          },
+          {
+            "want": 12663,
+            "y": 12663,
+            "height": 19806,
+            "active": "persian-breakfast",
+            "truth": "persian-breakfast",
+            "bottom": false
+          },
+          {
+            "want": 14773,
+            "y": 14773,
+            "height": 19701,
+            "active": "appetizer",
+            "truth": "appetizer",
+            "bottom": false
+          },
+          {
+            "want": 16884,
+            "y": 16884,
+            "height": 19682,
+            "active": "main-course",
+            "truth": "main-course",
+            "bottom": false
+          },
+          {
+            "want": 18994,
+            "y": 18994,
+            "height": 19682,
+            "active": "extra",
+            "truth": "extra",
+            "bottom": false
+          }
+        ],
+        "taps": [
+          {
+            "id": "senso-signature",
+            "off": 0,
+            "active": "senso-signature",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "cold-beverage",
+            "off": 0,
+            "active": "cold-beverage",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "ice-cream",
+            "off": 0,
+            "active": "ice-cream",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "salad",
+            "off": 0,
+            "active": "salad",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "senso-pizza",
+            "off": 0,
+            "active": "senso-pizza",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "beforeRight": 10,
+      "afterRight": 10,
+      "sameActive": 9,
+      "tapsBefore": 5,
+      "tapsAfter": 5,
+      "taps": 5
+    },
+    {
+      "venue": "kebab-land",
+      "lang": "en",
+      "before": {
+        "ys": [
+          0,
+          1385,
+          2769,
+          4154,
+          5539,
+          6923,
+          8308,
+          9693,
+          11077,
+          12462
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 13126,
+            "active": "appetizers",
+            "truth": "appetizers",
+            "bottom": false
+          },
+          {
+            "want": 1385,
+            "y": 1385,
+            "height": 13126,
+            "active": "main-menu",
+            "truth": "main-menu",
+            "bottom": false
+          },
+          {
+            "want": 2769,
+            "y": 2769,
+            "height": 13126,
+            "active": "main-menu",
+            "truth": "main-menu",
+            "bottom": false
+          },
+          {
+            "want": 4154,
+            "y": 4154,
+            "height": 13126,
+            "active": "mixed-kebabs",
+            "truth": "mixed-kebabs",
+            "bottom": false
+          },
+          {
+            "want": 5539,
+            "y": 5539,
+            "height": 13126,
+            "active": "platters",
+            "truth": "platters",
+            "bottom": false
+          },
+          {
+            "want": 6923,
+            "y": 6923,
+            "height": 13126,
+            "active": "dessert",
+            "truth": "dessert",
+            "bottom": false
+          },
+          {
+            "want": 8308,
+            "y": 8308,
+            "height": 13126,
+            "active": "cocktails",
+            "truth": "cocktails",
+            "bottom": false
+          },
+          {
+            "want": 9693,
+            "y": 9693,
+            "height": 13126,
+            "active": "cocktails",
+            "truth": "cocktails",
+            "bottom": false
+          },
+          {
+            "want": 11077,
+            "y": 11077,
+            "height": 13126,
+            "active": "whiskey",
+            "truth": "whiskey",
+            "bottom": false
+          },
+          {
+            "want": 12462,
+            "y": 12462,
+            "height": 13126,
+            "active": "wine",
+            "truth": "wine",
+            "bottom": true
+          }
+        ],
+        "taps": [
+          {
+            "id": "appetizers",
+            "off": 0,
+            "active": "appetizers",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "mixed-kebabs",
+            "off": 0,
+            "active": "mixed-kebabs",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "dessert",
+            "off": -1,
+            "active": "dessert",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "beer",
+            "off": -1,
+            "active": "beer",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "vodka",
+            "off": -1,
+            "active": "vodka",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "after": {
+        "ys": [
+          0,
+          1385,
+          2769,
+          4154,
+          5539,
+          6923,
+          8308,
+          9693,
+          11077,
+          12462
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 13126,
+            "active": "appetizers",
+            "truth": "appetizers",
+            "bottom": false
+          },
+          {
+            "want": 1385,
+            "y": 1385,
+            "height": 13126,
+            "active": "main-menu",
+            "truth": "main-menu",
+            "bottom": false
+          },
+          {
+            "want": 2769,
+            "y": 2769,
+            "height": 13126,
+            "active": "main-menu",
+            "truth": "main-menu",
+            "bottom": false
+          },
+          {
+            "want": 4154,
+            "y": 4154,
+            "height": 13126,
+            "active": "mixed-kebabs",
+            "truth": "mixed-kebabs",
+            "bottom": false
+          },
+          {
+            "want": 5539,
+            "y": 5539,
+            "height": 13126,
+            "active": "platters",
+            "truth": "platters",
+            "bottom": false
+          },
+          {
+            "want": 6923,
+            "y": 6923,
+            "height": 13126,
+            "active": "dessert",
+            "truth": "dessert",
+            "bottom": false
+          },
+          {
+            "want": 8308,
+            "y": 8308,
+            "height": 13126,
+            "active": "cocktails",
+            "truth": "cocktails",
+            "bottom": false
+          },
+          {
+            "want": 9693,
+            "y": 9693,
+            "height": 13126,
+            "active": "cocktails",
+            "truth": "cocktails",
+            "bottom": false
+          },
+          {
+            "want": 11077,
+            "y": 11077,
+            "height": 13126,
+            "active": "whiskey",
+            "truth": "whiskey",
+            "bottom": false
+          },
+          {
+            "want": 12462,
+            "y": 12462,
+            "height": 13126,
+            "active": "wine",
+            "truth": "wine",
+            "bottom": true
+          }
+        ],
+        "taps": [
+          {
+            "id": "appetizers",
+            "off": 0,
+            "active": "appetizers",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "mixed-kebabs",
+            "off": 0,
+            "active": "mixed-kebabs",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "dessert",
+            "off": -1,
+            "active": "dessert",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "beer",
+            "off": -1,
+            "active": "beer",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "vodka",
+            "off": -1,
+            "active": "vodka",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "beforeRight": 10,
+      "afterRight": 10,
+      "sameActive": 10,
+      "tapsBefore": 5,
+      "tapsAfter": 5,
+      "taps": 5
+    },
+    {
+      "venue": "kebab-land",
+      "lang": "fa",
+      "before": {
+        "ys": [
+          0,
+          1358,
+          2716,
+          4075,
+          5433,
+          6791,
+          8149,
+          9508,
+          10866,
+          12224
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 12888,
+            "active": "appetizers",
+            "truth": "appetizers",
+            "bottom": false
+          },
+          {
+            "want": 1358,
+            "y": 1358,
+            "height": 12888,
+            "active": "main-menu",
+            "truth": "main-menu",
+            "bottom": false
+          },
+          {
+            "want": 2716,
+            "y": 2716,
+            "height": 12888,
+            "active": "main-menu",
+            "truth": "main-menu",
+            "bottom": false
+          },
+          {
+            "want": 4075,
+            "y": 4075,
+            "height": 12888,
+            "active": "chef-s-special",
+            "truth": "chef-s-special",
+            "bottom": false
+          },
+          {
+            "want": 5433,
+            "y": 5433,
+            "height": 12888,
+            "active": "platters",
+            "truth": "platters",
+            "bottom": false
+          },
+          {
+            "want": 6791,
+            "y": 6791,
+            "height": 12888,
+            "active": "dessert",
+            "truth": "dessert",
+            "bottom": false
+          },
+          {
+            "want": 8149,
+            "y": 8149,
+            "height": 12888,
+            "active": "cocktails",
+            "truth": "cocktails",
+            "bottom": false
+          },
+          {
+            "want": 9508,
+            "y": 9508,
+            "height": 12888,
+            "active": "cocktails",
+            "truth": "cocktails",
+            "bottom": false
+          },
+          {
+            "want": 10866,
+            "y": 10866,
+            "height": 12888,
+            "active": "whiskey",
+            "truth": "whiskey",
+            "bottom": false
+          },
+          {
+            "want": 12224,
+            "y": 12224,
+            "height": 12888,
+            "active": "wine",
+            "truth": "wine",
+            "bottom": true
+          }
+        ],
+        "taps": [
+          {
+            "id": "appetizers",
+            "off": 0,
+            "active": "appetizers",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "mixed-kebabs",
+            "off": 0,
+            "active": "mixed-kebabs",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "dessert",
+            "off": 0,
+            "active": "dessert",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "beer",
+            "off": -1,
+            "active": "beer",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "vodka",
+            "off": 0,
+            "active": "vodka",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "after": {
+        "ys": [
+          0,
+          1358,
+          2716,
+          4075,
+          5433,
+          6791,
+          8149,
+          9508,
+          10866,
+          12224
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 13126,
+            "active": "appetizers",
+            "truth": "appetizers",
+            "bottom": false
+          },
+          {
+            "want": 1358,
+            "y": 1358,
+            "height": 13126,
+            "active": "main-menu",
+            "truth": "main-menu",
+            "bottom": false
+          },
+          {
+            "want": 2716,
+            "y": 2716,
+            "height": 13125,
+            "active": "main-menu",
+            "truth": "main-menu",
+            "bottom": false
+          },
+          {
+            "want": 4075,
+            "y": 4075,
+            "height": 13119,
+            "active": "chef-s-special",
+            "truth": "chef-s-special",
+            "bottom": false
+          },
+          {
+            "want": 5433,
+            "y": 5433,
+            "height": 13119,
+            "active": "platters",
+            "truth": "platters",
+            "bottom": false
+          },
+          {
+            "want": 6791,
+            "y": 6791,
+            "height": 12888,
+            "active": "dessert",
+            "truth": "dessert",
+            "bottom": false
+          },
+          {
+            "want": 8149,
+            "y": 8149,
+            "height": 12888,
+            "active": "cocktails",
+            "truth": "cocktails",
+            "bottom": false
+          },
+          {
+            "want": 9508,
+            "y": 9508,
+            "height": 12888,
+            "active": "cocktails",
+            "truth": "cocktails",
+            "bottom": false
+          },
+          {
+            "want": 10866,
+            "y": 10866,
+            "height": 12888,
+            "active": "whiskey",
+            "truth": "whiskey",
+            "bottom": false
+          },
+          {
+            "want": 12224,
+            "y": 12224,
+            "height": 12888,
+            "active": "wine",
+            "truth": "wine",
+            "bottom": true
+          }
+        ],
+        "taps": [
+          {
+            "id": "appetizers",
+            "off": 0,
+            "active": "appetizers",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "mixed-kebabs",
+            "off": 0,
+            "active": "mixed-kebabs",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "dessert",
+            "off": 0,
+            "active": "dessert",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "beer",
+            "off": -1,
+            "active": "beer",
+            "bottom": false,
+            "lands": true
+          },
+          {
+            "id": "vodka",
+            "off": 0,
+            "active": "vodka",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "beforeRight": 10,
+      "afterRight": 10,
+      "sameActive": 10,
+      "tapsBefore": 5,
+      "tapsAfter": 5,
+      "taps": 5
+    },
+    {
+      "venue": "drill-default-venue",
+      "lang": "en",
+      "before": {
+        "ys": [
+          0,
+          30,
+          59,
+          89,
+          119,
+          148,
+          178,
+          208,
+          237,
+          267
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 30,
+            "y": 30,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 59,
+            "y": 59,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 89,
+            "y": 89,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 119,
+            "y": 119,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 148,
+            "y": 148,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 178,
+            "y": 178,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 208,
+            "y": 208,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 237,
+            "y": 237,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 267,
+            "y": 267,
+            "height": 931,
+            "active": "drinks",
+            "truth": "drinks",
+            "bottom": true
+          }
+        ],
+        "taps": [
+          {
+            "id": "breakfast",
+            "off": 0,
+            "active": "breakfast",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "after": {
+        "ys": [
+          0,
+          30,
+          59,
+          89,
+          119,
+          148,
+          178,
+          208,
+          237,
+          267
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 30,
+            "y": 30,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 59,
+            "y": 59,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 89,
+            "y": 89,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 119,
+            "y": 119,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 148,
+            "y": 148,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 178,
+            "y": 178,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 208,
+            "y": 208,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 237,
+            "y": 237,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 267,
+            "y": 267,
+            "height": 931,
+            "active": "drinks",
+            "truth": "drinks",
+            "bottom": true
+          }
+        ],
+        "taps": [
+          {
+            "id": "breakfast",
+            "off": 0,
+            "active": "breakfast",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "beforeRight": 10,
+      "afterRight": 10,
+      "sameActive": 10,
+      "tapsBefore": 1,
+      "tapsAfter": 1,
+      "taps": 1
+    },
+    {
+      "venue": "drill-default-venue",
+      "lang": "fa",
+      "before": {
+        "ys": [
+          0,
+          30,
+          59,
+          89,
+          119,
+          148,
+          178,
+          208,
+          237,
+          267
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 30,
+            "y": 30,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 59,
+            "y": 59,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 89,
+            "y": 89,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 119,
+            "y": 119,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 148,
+            "y": 148,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 178,
+            "y": 178,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 208,
+            "y": 208,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 237,
+            "y": 237,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 267,
+            "y": 267,
+            "height": 931,
+            "active": "drinks",
+            "truth": "drinks",
+            "bottom": true
+          }
+        ],
+        "taps": [
+          {
+            "id": "breakfast",
+            "off": 0,
+            "active": "breakfast",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "after": {
+        "ys": [
+          0,
+          30,
+          59,
+          89,
+          119,
+          148,
+          178,
+          208,
+          237,
+          267
+        ],
+        "samples": [
+          {
+            "want": 0,
+            "y": 0,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 30,
+            "y": 30,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 59,
+            "y": 59,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 89,
+            "y": 89,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 119,
+            "y": 119,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 148,
+            "y": 148,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 178,
+            "y": 178,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 208,
+            "y": 208,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 237,
+            "y": 237,
+            "height": 931,
+            "active": "breakfast",
+            "truth": "breakfast",
+            "bottom": false
+          },
+          {
+            "want": 267,
+            "y": 267,
+            "height": 931,
+            "active": "drinks",
+            "truth": "drinks",
+            "bottom": true
+          }
+        ],
+        "taps": [
+          {
+            "id": "breakfast",
+            "off": 0,
+            "active": "breakfast",
+            "bottom": false,
+            "lands": true
+          }
+        ]
+      },
+      "beforeRight": 10,
+      "afterRight": 10,
+      "sameActive": 10,
+      "tapsBefore": 1,
+      "tapsAfter": 1,
+      "taps": 1
+    }
+  ]
+}

@@ -14,7 +14,7 @@ npm run start
 npm run admin:create -- --email <your email> --name "<your name>"
 ```
 
-- `npm run setup` writes `.env.local` with a random session secret, starts Postgres in Docker, applies the migrations, imports both venues from `data/raw`, applies the committed Persian review records (`data/import/<date>/<venue>/persian-review.json`, so Senso comes up with 0 draft flags) and makes the production build. It is safe to run again.
+- `npm run setup` writes `.env.local` with a random session secret, starts Postgres in Docker, applies the migrations, imports both venues from `data/raw`, applies the committed Persian review records (`data/import/<date>/<venue>/persian-review.json`, so Senso comes up with 0 draft flags), applies the committed seasonal menu records (`data/import/<date>/<venue>/*-menu.json`, Kian's printed seasonal cards, by `tools/import/seasonal-menu-apply.mjs`; the first, Senso's Fall Menu of 2026-10-12) and makes the production build. It is safe to run again.
 - `npm run start` serves http://localhost:3000/senso, http://localhost:3000/kebab-land and http://localhost:3000/admin.
 - `npm run admin:create -- --email <email> --name "<name>" --pin <4 to 6 digits>` creates the main admin account; admins sign in with that PIN on any venue (no email typing). Add `--password` to also set an email + password sign-in. Staff PINs are then created in Admin → PINs.
 - Development with live reload: `npm run dev` instead of `npm run start` (pages are rendered on request there, not pre-built).
@@ -79,6 +79,8 @@ Photos and logos uploaded in the admin are stored on local disk behind one small
 ## Re-import
 
 `npm run import -- senso --load` and `npm run import -- kebab-land --load` rebuild the import files from `data/raw/` and upsert rows that no person has edited yet (rows with `updated_by.kind = 'import'`). Edited rows are left alone. The import is for the first load of a venue only.
+
+**Seasonal menu records** (Kian, 2026-10-12): a printed seasonal card is committed as `data/import/<date>/<venue>/<season>-menu.json` (each line an existing item matched by its import key, its card position, name, price, description and whether it keeps its other sections) with an `import-report.md` beside it (the source photo, the transcription check, the decisions). `node tools/import/seasonal-menu-apply.mjs <record>` (after `npm run db:backup` on the working database; `--dry` to preview) puts each item in the venue's Seasonal section at its card position, tagged with the record's seasons, shown, with the card's name and price, the Persian name as source text and the Persian description as a flagged draft, and writes one revision row per item as the record's author (`by.kind = 'record'`, so the import never overwrites it). It applies an item once: a re-run leaves an item edited since in the admin as it is. It refuses a record whose names another item of the venue already has (no duplicates) and lists other pairs that share a name without touching them. Customers see a direct database write when the page next regenerates (within the hour), or at once after any save in the admin.
 
 ## Moving to hosted Postgres (later, on Kian's decision)
 

@@ -13,12 +13,13 @@ export const isSeasonId = (v: unknown): v is SeasonId => typeof v === 'string' &
 // The tags as saved: known seasons only, each once, in the order of the year as the admin shows them.
 export const seasonsOf = (v: unknown): SeasonId[] => (Array.isArray(v) ? SEASON_IDS.filter((s) => v.includes(s)) : []);
 
-// Customers' titles. The Persian wording is Kian's choice (2026-10-12, via the PM): ویژه‌های… for all four seasons.
+// Customers' titles: Kian, 2026-10-12, matching Senso's printed seasonal card ("Fall Menu"); they replace the "… specials" titles and
+// their Persian of the same day.
 export const SEASONAL_TITLES: Record<SeasonId, Bi> = {
-  fall: { en: 'Fall specials', fa: 'ویژه‌های پاییز' },
-  winter: { en: 'Winter specials', fa: 'ویژه‌های زمستان' },
-  spring: { en: 'Spring specials', fa: 'ویژه‌های بهار' },
-  summer: { en: 'Summer specials', fa: 'ویژه‌های تابستان' },
+  fall: { en: 'Fall Menu', fa: 'منوی پاییز' },
+  winter: { en: 'Winter Menu', fa: 'منوی زمستان' },
+  spring: { en: 'Spring Menu', fa: 'منوی بهار' },
+  summer: { en: 'Summer Menu', fa: 'منوی تابستان' },
 };
 
 // Each template styles the section in its own look (Kian, 2026-10-12): Senso a small motif of the season's picked artwork before

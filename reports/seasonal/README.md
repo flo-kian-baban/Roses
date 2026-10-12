@@ -2,7 +2,10 @@
 
 The feature is described in CLAUDE.md ("Seasonal items"). The acceptance checks run in `npm run check` / `check:full` (the editor, season, preview and admin drills). This folder has the hand checks made before the suite.
 
-## Persian titles: Kian's choice
+## Persian titles: Kian's choice (replaced the same day)
+
+Later on 2026-10-12 Kian replaced these titles with the printed card's: "Fall Menu" / "منوی پاییز", "Winter Menu" / "منوی زمستان", "Spring Menu" / "منوی بهار", "Summer Menu" / "منوی تابستان" (CLAUDE.md, "Senso's Fall Menu"). The table below is the batch as it was reviewed.
+
 
 | Season | English | Persian |
 |---|---|---|

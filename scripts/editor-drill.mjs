@@ -73,7 +73,7 @@ let taps = 0; const tap = async (sel) => { taps++; await p.click(sel); };
   // season (Toronto) and shown first on the public page under that season's title; removed again afterwards (the drill's later order checks)
   const m = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'numeric' }).format(new Date())) - 1;
   const today = m >= 8 && m <= 10 ? 'fall' : m === 11 || m <= 1 ? 'winter' : m <= 4 ? 'spring' : 'summer';
-  const title = { fall: 'Fall specials', winter: 'Winter specials', spring: 'Spring specials', summer: 'Summer specials' }[today];
+  const title = { fall: 'Fall Menu', winter: 'Winter Menu', spring: 'Spring Menu', summer: 'Summer Menu' }[today];
   const SNAME = 'Drill seasonal item';
   await db.query(`delete from items where venue_id = $1 and name->>'en' = $2`, [VENUE, SNAME]);
   const ss = (await db.query(`select id, name->>'en' as name from sections where venue_id = $1 and seasonal`, [VENUE])).rows[0];
@@ -247,7 +247,8 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   await sleep(200); const admin = await order();
   const dbo = (await db.query(`select id from sections where venue_id = $1 and not seasonal order by position, name->>'en'`, [VENUE])).rows.map((r) => r.id);
   const shownSections = new Set((await db.query(`select s.id from sections s where s.venue_id = $1 and s.listed and exists (select 1 from item_sections x join items i on i.id = x.item_id where x.section_id = s.id and i.listed)`, [VENUE])).rows.map((r) => r.id));
-  const pubSections = (h) => [...h.matchAll(/<section[^>]*data-id="([^"]+)"/g)].map((m) => m[1]);
+  // the Seasonal section is pinned first on the page when it has items in season (e.g. Senso's Fall Menu since 2026-10-12): left out, as in the admin's order
+  const pubSections = (h) => [...h.matchAll(/<section[^>]*data-id="([^"]+)"/g)].map((m) => m[1]).filter((id) => id !== seasonalId);
   const pub = await waitPublic((h) => pubSections(h).join() === admin.filter((id) => shownSections.has(id)).join());
   await snap(l, 'drag-section');
   check('drag-section', saved.ok && admin.join() === expected.join() && admin.join() === dbo.join() && pub.ok, `dragged the second section above the first: database in the expected order ${saved.ms} ms after the drop (${saved.ok}); admin order = expected: ${admin.join() === expected.join()}; = database: ${admin.join() === dbo.join()} (${admin.length} sections); the public page shows its ${admin.filter((id) => shownSections.has(id)).length} shown sections in the same order after ${pub.ms} ms (${pub.ok})`);

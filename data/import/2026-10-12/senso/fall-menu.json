@@ -1,0 +1,64 @@
+{
+  "about": "Senso's printed Fall Menu (Kian, 2026-10-12, via the PM), placed in Senso's Seasonal section in the card's order, tagged fall only, shown. Applied by tools/import/seasonal-menu-apply.mjs (npm run setup applies every data/import/*/<venue>/*-menu.json after the Persian review records). Each item is an existing Senso item, matched by its import key (Kian: reuse, no duplicates); nothing is created. Names in title case; Persian names are the card's text (source, not drafts); Persian descriptions are drafts, flagged per field, for Kian's review in the admin. Photos are left as they are (Kian, 2026-10-12: keep them; he uploads his own in the admin). An item is applied once: a later edit in the admin wins over a re-run. See import-report.md.",
+  "venue": "senso",
+  "section": "seasonal",
+  "seasons": ["fall"],
+  "recordedBy": "Kian",
+  "recordedOn": "2026-10-12",
+  "source": {
+    "kind": "printed card",
+    "photo": "data/raw/senso-fall-menu/2026-10-12/fall-menu-card.jpg",
+    "photoSha256": "6c2180778bf0446464f83ad22ae4c9622267b453eff21e3c1db92d747e521f09",
+    "transcription": "the PM's, 2026-10-12; every name, Persian name, price and description checked against the card photo: all six lines match (import-report.md)"
+  },
+  "items": [
+    {
+      "card": 1,
+      "importKey": "senso:item:pumpkin-soup",
+      "keepOtherSections": true,
+      "name": { "en": "Pumpkin Soup", "fa": "سوپ کدو حلوایی" },
+      "price": "7.99",
+      "description": { "en": "Creamy pumpkin soup with autumn spices.", "fa": "سوپ خامه‌ای کدو حلوایی با ادویه‌های پاییزی." }
+    },
+    {
+      "card": 2,
+      "importKey": "senso:item:pumpkin-omelette",
+      "keepOtherSections": true,
+      "name": { "en": "Senso Pumpkin Omelette", "fa": "املت کدو حلوایی سنسو" },
+      "price": "19.99",
+      "description": { "en": "Pumpkin omelette with date syrup, tahini, walnuts & pistachios.", "fa": "املت کدو حلوایی با شیره خرما، ارده، گردو و پسته." }
+    },
+    {
+      "card": 3,
+      "importKey": "senso:item:pumpkin-cheesecake",
+      "keepOtherSections": true,
+      "name": { "en": "Pumpkin Cheesecake", "fa": "چیزکیک کدو حلوایی" },
+      "price": "13.99",
+      "description": { "en": "Creamy pumpkin cheesecake with warm seasonal spices.", "fa": "چیزکیک خامه‌ای کدو حلوایی با ادویه‌های گرم فصل." }
+    },
+    {
+      "card": 4,
+      "importKey": "senso:item:pumpkin-cake",
+      "keepOtherSections": true,
+      "name": { "en": "Pumpkin Cake", "fa": "کیک کدو حلوایی" },
+      "price": "12.99",
+      "description": { "en": "Soft, moist pumpkin cake with autumn spices.", "fa": "کیک نرم و مرطوب کدو حلوایی با ادویه‌های پاییزی." }
+    },
+    {
+      "card": 5,
+      "importKey": "senso:item:pumpkin-latte",
+      "keepOtherSections": false,
+      "name": { "en": "Pumpkin Latte", "fa": "لاته کدو حلوایی" },
+      "price": "7.99",
+      "description": { "en": "Espresso, steamed milk, pumpkin syrup & autumn spices.", "fa": "اسپرسو، شیر بخارداده، سیروپ کدو حلوایی و ادویه‌های پاییزی." }
+    },
+    {
+      "card": 6,
+      "importKey": "senso:item:pumpkin-sundae",
+      "keepOtherSections": false,
+      "name": { "en": "Warm Pumpkin & Ice Cream", "fa": "کدو حلوایی گرم با بستنی" },
+      "price": "14.99",
+      "description": { "en": "Warm pumpkin & vanilla ice cream with date syrup, tahini, walnuts, pistachios, coconut & sesame.", "fa": "کدو حلوایی گرم و بستنی وانیلی با شیره خرما، ارده، گردو، پسته، نارگیل و کنجد." }
+    }
+  ]
+}

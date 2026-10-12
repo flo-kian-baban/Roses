@@ -7,7 +7,7 @@
 // flows to both previews; the bar itself sits in the Style tab (Kian, 2026-10-10), not here. The screen (Welcome: the overlay shown
 // live with its scene running; Menu; Item popup: the first item's popup; Section list), the language, the season (another season's scene is fetched from the admin API and
 // swapped into the frame, since the customers' page carries only the current season; with it, since 2026-10-12, that season's menu: the
-// Seasonal section and the items tagged for it, so the admin sees each season's specials before they go live) and the time of day (the greeting), each
+// Seasonal section and the items tagged for it, so the admin sees each season's menu before it goes live) and the time of day (the greeting), each
 // preview-only, plus Replay. After a save the fresh frame is put back on the same screen and position before it is shown.
 // Play (the Style tab's Welcome group, 2026-10-10): the venue's transition from the welcome screen into the menu, played in the frame by
 // the page's own code (a tap on the language button of the preview's language, which the page answers as it does for customers), in

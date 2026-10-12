@@ -127,7 +127,7 @@ export function MenuTab(p: MenuTabProps) {
               <span className="ml-1 flex items-center"><Switch checked={s.listed} label={s.listed ? `${s.name.en}: shown. Tap to hide` : `${s.name.en}: hidden. Tap to show`} onChange={(v) => p.onToggleSection(s.id, v)} /></span>
             </span>
           </header>
-          {s.seasonal && !collapsed.has(s.id) && <p className="border-t border-line px-4 py-2 text-[13px] text-ink-muted">Customers see it first, as “{SEASON_NAMES[p.season]} specials”, with the items here tagged {SEASON_NAMES[p.season]}. An item added here is tagged {SEASON_NAMES[p.season]}; change its seasons in the item.</p>}
+          {s.seasonal && !collapsed.has(s.id) && <p className="border-t border-line px-4 py-2 text-[13px] text-ink-muted">Customers see it first, as “{SEASON_NAMES[p.season]} Menu”, with the items here tagged {SEASON_NAMES[p.season]}. An item added here is tagged {SEASON_NAMES[p.season]}; change its seasons in the item.</p>}
           {!collapsed.has(s.id) && (
             ids.length === 0
               ? <p className="border-t border-line px-4 py-4 text-sm text-ink-muted">{narrowing ? 'No matching item here.' : <>No items yet. <button type="button" onClick={() => p.onAdd(s.id)} className="inline-flex min-h-11 items-center font-medium text-accent-strong underline-offset-4 hover:underline">Add the first item</button></>}</p>

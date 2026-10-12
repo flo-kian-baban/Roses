@@ -7,8 +7,8 @@
 // 20–40 s in, once the lazy photos near the viewport are down), then measures from the tap: the overlay gone with the first
 // section's heading and first row in view (the menu visible), the first row's photo(s) complete (the eager ones), the first
 // section's photos in view complete (decoded), and every photo of the first section complete; the same moments from navigation
-// start, for context, with first paint and the resources down at the tap. Runs: senso with its first section as a List, senso with "Senso Signature"
-// as a Grid, kebab-land as it is; two repeats each. The drill puts the section into the layout a run assumes (through the section API,
+// start, for context, with first paint and the resources down at the tap. Runs: senso with its first section as a List, senso with its first section
+// as a Grid (the first section as served: "Senso Signature", or since 2026-10-12 the Seasonal section in its season, e.g. the Fall Menu), kebab-land as it is; two repeats each. The drill puts the section into the layout a run assumes (through the section API,
 // as the owner) and restores the original at the end. The eager rule is checked on the served HTML (the first row's photos only:
 // one in a List, the two cards of a Grid's first row; every other photo lazy). Photo sizes: a HEAD request per photo of the first
 // section (Content-Length, Content-Type) and the natural dimensions the page decoded against the rendered ones.
@@ -105,7 +105,11 @@ async function runOnce(venue) {
 const login = await fetch(`${base}/api/admin/login`, { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ mode: 'pin', venue: 'senso', pin }).toString() });
 const cookie = (login.headers.get('set-cookie') || '').split(';')[0];
 if (!cookie.startsWith('roses_session=')) { console.error('PIN sign-in failed'); process.exit(1); }
-const sec = (await db.query(`select id, layout, name->>'en' as name from sections where venue_id = 'senso' and listed and name->>'en' = 'Senso Signature'`)).rows[0]
+// The section the runs lay out as a List and a Grid is the first one customers see (2026-10-12: in its season the Seasonal section comes
+// first, e.g. Senso's Fall Menu; "Senso Signature", the first otherwise, was the section of the PM's spec), as served now.
+const firstServed = firstSectionOf(await publicHtml('senso')).id;
+const sec = (firstServed ? (await db.query(`select id, layout, case when seasonal then 'the Seasonal section' else name->>'en' end as name from sections where id = $1 and venue_id = 'senso'`, [firstServed])).rows[0] : null)
+  ?? (await db.query(`select id, layout, name->>'en' as name from sections where venue_id = 'senso' and listed and name->>'en' = 'Senso Signature'`)).rows[0]
   ?? (await db.query(`select s.id, s.layout, s.name->>'en' as name from sections s where s.venue_id = 'senso' and s.listed and exists (select 1 from item_sections x join items i on i.id = x.item_id where x.section_id = s.id and i.listed) order by s.position limit 1`)).rows[0];
 const originalLayout = sec.layout;
 log('setup', `senso section "${sec.name}" (${sec.id}) is a ${originalLayout} as found; the runs set it to List, then Grid, and put it back`);
@@ -116,7 +120,7 @@ async function setLayout(layout) {
   return waitPublic('senso', (h) => sectionLayoutOf(h, sec.id) === layout);
 }
 
-const RUNS = [{ key: 'senso-list', venue: 'senso', layout: 'list', label: 'senso (first section as a List)' }, { key: 'senso-grid', venue: 'senso', layout: 'grid', label: 'senso ("Senso Signature" as a Grid)' }, { key: 'kebab-land', venue: 'kebab-land', layout: null, label: 'kebab-land (as it is)' }];
+const RUNS = [{ key: 'senso-list', venue: 'senso', layout: 'list', label: 'senso (first section as a List)' }, { key: 'senso-grid', venue: 'senso', layout: 'grid', label: `senso (its first section, ${sec.name}, as a Grid)` }, { key: 'kebab-land', venue: 'kebab-land', layout: null, label: 'kebab-land (as it is)' }];
 const all = [];
 for (const run of RUNS) {
   if (run.layout) { const s = await setLayout(run.layout); log('layout', `${run.venue}: ${sec.name} → ${run.layout}: ${s.ok ? `on the public page after ${s.ms} ms` : `FAILED (${s.error})`}`); }

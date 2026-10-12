@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Local setup from a fresh clone, in one command: .env.local with a random session secret, Postgres in Docker,
-// migrations, both venue imports from data/raw, the committed Persian review records, production build.
+// migrations, both venue imports from data/raw, the committed Persian review records, the committed seasonal menu records (Kian's printed
+// seasonal cards, e.g. data/import/2026-10-12/senso/fall-menu.json), production build.
 // Safe to re-run (every step is idempotent).
 //   npm run setup            then: npm run start
 //   npm run setup -- --no-build
@@ -14,7 +15,7 @@ const noBuild = process.argv.includes('--no-build');
 const say = (s) => console.log(`\n== ${s}`);
 const run = (cmd, args, env = {}) => { const r = spawnSync(cmd, args, { stdio: 'inherit', env: { ...process.env, ...env } }); if (r.status !== 0) { console.error(`\n${cmd} ${args.join(' ')} failed (exit ${r.status})`); process.exit(r.status || 1); } };
 
-say('1/6 .env.local');
+say('1/7 .env.local');
 if (!fs.existsSync('.env.local')) {
   const example = fs.readFileSync('.env.example', 'utf8');
   fs.writeFileSync('.env.local', example.replace(/^SESSION_SECRET=.*$/m, `SESSION_SECRET=${randomBytes(48).toString('hex')}`));
@@ -26,7 +27,7 @@ if (!fs.existsSync('.env.local')) {
 }
 loadEnv();
 
-say('2/6 Postgres in Docker (docker compose up -d)');
+say('2/7 Postgres in Docker (docker compose up -d)');
 const up = spawnSync('docker', ['compose', 'up', '-d'], { stdio: 'inherit' });
 if (up.status !== 0) { console.error('docker compose failed: is Docker Desktop running?'); process.exit(1); }
 process.stdout.write('waiting for the database ');
@@ -38,14 +39,14 @@ while (Date.now() < deadline) {
 console.log(ready ? ' ready' : ' not reachable');
 if (!ready) { console.error(`cannot reach ${process.env.DATABASE_URL?.replace(/\/\/.*@/, '//<user>@')} after 90 s`); process.exit(1); }
 
-say('3/6 migrations');
+say('3/7 migrations');
 run('node', ['scripts/db-migrate.mjs']);
 
-say('4/6 imports (senso, kebab-land) from data/raw');
+say('4/7 imports (senso, kebab-land) from data/raw');
 run('node', ['tools/import/run.mjs', 'senso', '--load']);
 run('node', ['tools/import/run.mjs', 'kebab-land', '--load']);
 
-say('5/6 Persian review records (data/import/*/<venue>/persian-review.json)');
+say('5/7 Persian review records (data/import/*/<venue>/persian-review.json)');
 const records = fs.readdirSync('data/import', { withFileTypes: true }).filter((d) => d.isDirectory()).flatMap((d) => fs.readdirSync(`data/import/${d.name}`, { withFileTypes: true }).filter((v) => v.isDirectory()).map((v) => `data/import/${d.name}/${v.name}/persian-review.json`)).filter((f) => fs.existsSync(f));
 if (!records.length) console.log('none');
 for (const f of records) {
@@ -60,8 +61,13 @@ for (const f of records) {
   console.log('rows with Persian drafts per venue: ' + rows.map((r) => `${r.id} ${r.draft_flags}`).join(', '));
 }
 
-if (noBuild) { say('6/6 build skipped (--no-build)'); }
-else { say('6/6 production build'); run('npx', ['next', 'build']); }
+say('6/7 seasonal menu records (data/import/*/<venue>/*-menu.json: Kian\'s printed seasonal cards)');
+const menus = fs.readdirSync('data/import', { withFileTypes: true }).filter((d) => d.isDirectory()).flatMap((d) => fs.readdirSync(`data/import/${d.name}`, { withFileTypes: true }).filter((v) => v.isDirectory()).flatMap((v) => fs.readdirSync(`data/import/${d.name}/${v.name}`).filter((f) => /-menu\.json$/.test(f)).map((f) => `data/import/${d.name}/${v.name}/${f}`))).sort();
+if (!menus.length) console.log('none');
+for (const f of menus) run('node', ['tools/import/seasonal-menu-apply.mjs', f]);
+
+if (noBuild) { say('7/7 build skipped (--no-build)'); }
+else { say('7/7 production build'); run('npx', ['next', 'build']); }
 
 console.log(`
 Done. Next:

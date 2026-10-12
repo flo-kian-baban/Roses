@@ -32,21 +32,20 @@
       }
     },
     {
-      "id": "persian-tap-senso",
-      "title": "Persian tap, Senso",
-      "step": "transition",
-      "checks": ["persian-tap-senso"],
-      "target": "no long task over 50 ms from the فارسی tap to the overlay gone, on the iPhone 13 viewport at CPU 4×, for every concept T1–T10 in every season (40 taps since 2026-10-11, when spring and summer got their versions; 20 before, fall and winter; each on a first visit with the page laid out in English)",
-      "cause": "The tap applies Persian to a page laid out in English (lang fa, dir rtl, every Persian name and description shown), so the browser lays the whole menu out again in one task: 51–63 ms in 10 of the 20 Persian taps of run 2026-10-11T01-02-00Z and 52–59 ms in 4 of 20 in run 2026-10-11T02-07-07Z (the transition's own setup runs in the next frame since 5d09791). It is the language switch's cost, not a transition's: the 200 ms fade of 2026-10-09 had it too (52–73 ms), and the English tap, a first visit's, has no long task.",
-      "clears": "when the Persian relayout task is ≤ 50 ms (every Persian tap measured with no long task over 50 ms)",
-      "listed": "2026-10-11, the PM",
+      "id": "lcp-senso-uploads",
+      "title": "Senso LCP with uploaded photos",
+      "step": "lighthouse-senso",
+      "checks": ["lighthouse-senso-lcp"],
+      "target": "Lighthouse mobile run on /senso, LCP ≤ 2500 ms on each of the three runs (the PM's build decision: Largest Contentful Paint ≤ 2.5 s in a Lighthouse mobile run)",
+      "cause": "Since 2026-10-12 Kian has put uploaded photos on Senso's items (22 by 04:00, 1254 × 1254 px JPEG, 122–223 KB each; the admin shrinks only above 1400 px or 700 KB; shown at 96 px in a row and 173 px in a grid card). They are served by the same server and load behind the welcome screen; Lighthouse's simulation counts them on the way to the LCP element, which is still the welcome logo (loaded in about 1.2 s), adding a render delay of about 6 s. Not the code: feeb1cc gives the same on the same data (7208 / 4730 / 7210 ms, by hand), and run 2026-10-12T03-57-29Z, before the uploads, measured 1503 ms. Kian: no change to photo quality for now.",
+      "clears": "when resized photos are served (not scheduled)",
+      "listed": "2026-10-12, the PM",
       "baseline": {
         "run": "2026-10-12T07-54-45Z",
         "unit": "ms",
-        "tolerance": 0,
-        "checks": { "persian-tap-senso": { "over": 0, "of": 40, "worst": 0, "unit": "ms" } },
-        "set": "2026-10-12, the PM: 16 of 40 Persian taps over 50 ms, the longest 58 ms (run 2026-10-12T03-57-29Z)",
-        "lowered": "2026-10-12, by the fix (d9de277; the PM's rule: a baseline is lowered only when a fix improves it): 0 of 40 Persian taps over 50 ms, no long task on any tap (run 2026-10-12T07-54-45Z, the full suite on 1d77893). The clearing condition is met in that run; the entry stays until the PM or Kian removes it."
+        "tolerance": 0.1,
+        "checks": { "lighthouse-senso-lcp": { "over": 3, "of": 3, "worst": 7213, "unit": "ms" } },
+        "set": "2026-10-12, the PM: run 2026-10-12T07-54-45Z (the full suite on 1d77893), LCP 4805 / 7213 / 7212 ms, worst 7213 ms, tolerance 10 %"
       }
     }
   ]

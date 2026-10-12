@@ -350,7 +350,14 @@ try {
       // Since the welcome screen (2026-10-09) the largest paint is its logo: Lighthouse measures the welcome screen, not the menu behind it.
       const els = [...new Set(s.runs.map((x) => ((x.lcpElement || '').match(/src="([^"]*)"/) || [])[1] || (x.lcpElement || '?').slice(0, 60)))];
       const logoLcp = els.every((e) => /logo/i.test(e));
-      return { pass: r.status === 0 && s.runs.length === 3 && worst <= 2500 && worstTbt <= 50, evidence: [`${venue}/lighthouse-summary.json`, `${venue}/lighthouse.log`], note: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms, TBT ${s.runs.map((x) => x.tbtMs).join(' / ')} ms, performance ${s.runs.map((x) => x.performance).join(' / ')} (targets LCP ≤ 2500, TBT ≤ 50; local estimates); LCP element ${els.join(' / ')}${logoLcp ? ': the welcome screen\'s logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)' : ': not the welcome logo'}` };
+      // its checks, so a known miss can list one of them (the ratchet compares the LCP or TBT runs over the target and the worst value)
+      const key = venue === newVenueId ? 'temp-venue' : venue, n = s.runs.length;
+      const checks = [
+        { id: `lighthouse-${key}-runs`, ok: r.status === 0 && n === 3, text: `${n} of 3 Lighthouse runs finished (exit ${r.status})` },
+        { id: `lighthouse-${key}-lcp`, ok: n === 3 && worst <= 2500, text: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms (target ≤ 2500 on every run)`, metric: { over: s.runs.filter((x) => x.lcpMs > 2500).length, of: n, worst, unit: 'ms' } },
+        { id: `lighthouse-${key}-tbt`, ok: n === 3 && worstTbt <= 50, text: `TBT ${s.runs.map((x) => x.tbtMs).join(' / ')} ms (target ≤ 50 on every run)`, metric: { over: s.runs.filter((x) => x.tbtMs > 50).length, of: n, worst: worstTbt, unit: 'ms' } },
+      ];
+      return { pass: checks.every((c) => c.ok), checks, evidence: [`${venue}/lighthouse-summary.json`, `${venue}/lighthouse.log`], note: `LCP ${s.runs.map((x) => x.lcpMs).join(' / ')} ms, TBT ${s.runs.map((x) => x.tbtMs).join(' / ')} ms, performance ${s.runs.map((x) => x.performance).join(' / ')} (targets LCP ≤ 2500, TBT ≤ 50; local estimates); LCP element ${els.join(' / ')}${logoLcp ? ': the welcome screen\'s logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)' : ': not the welcome logo'}` };
     }, `lighthouse-${venue === newVenueId ? 'temp-venue' : venue}`);
   }
   await step('admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route and section layout 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)', async () => {

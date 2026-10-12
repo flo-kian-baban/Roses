@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // One-command acceptance suite. Never touches the working database: it copies it (pg_dump → scratch database),
-// applies pending migrations to the copy, points the build, the servers and every drill at the copy (and their uploads
+// applies pending migrations to the copy, points the build, the servers and every drill at the copy (and their uploads, a copy of the working uploads,
 // at the run folder), and drops the copy at the end. Isolation is proven, not counted (PM, 2026-10-08): (a) every server
 // and drill process names itself to Postgres and logs the database it connected to, and pg_stat_activity is sampled
 // throughout the run: any suite process on the working database fails the run; (b) the working database holds no row
@@ -130,7 +130,7 @@ async function step(name, fn, id = null) {
         if (!m || !Number.isFinite(m.over) || !Number.isFinite(m.of) || m.of === 0) { c.worsened = 'no measurement to compare with the baseline'; continue; }
         const why = [];
         if (m.of === b.of ? m.over > b.over : m.over / m.of > b.over / b.of) why.push(`${m.over} of ${m.of} over the target (baseline ${b.over} of ${b.of})`);
-        if (m.worst === null || m.worst > b.worst * (1 + tol)) why.push(`worst ${m.worst ?? 'not measured'} ${m.unit ?? ''} (baseline ${b.worst} ${m.unit ?? ''}${tol ? `, tolerance ${Math.round(tol * 100)} %: up to ${Math.round(b.worst * (1 + tol))}` : ''})`);
+        if (m.worst === null || m.worst > b.worst * (1 + tol)) why.push(`worst ${m.worst === null ? 'never reached (not within the drill\'s time limit)' : `${m.worst} ${m.unit ?? ''}`} (baseline ${b.worst} ${m.unit ?? ''}${tol ? `, tolerance ${Math.round(tol * 100)} %: up to ${Math.round(b.worst * (1 + tol))}` : ''})`);
         if (why.length) c.worsened = why.join('; ');
       }
       k.run = { checks: got, status: got.some((c) => c.ok === null) ? 'NOT MEASURED' : got.some((c) => c.worsened) ? 'KNOWN MISS WORSENED' : got.every((c) => c.ok) ? 'NOW PASSING' : 'KNOWN MISS' };
@@ -208,6 +208,17 @@ const dumpFile = path.join(out, 'working-db-copy.dump');
 }
 const db = new pg.Client({ connectionString: scratchUrl, application_name: 'roses-check:suite' }); await db.connect();
 const scratchEnv = { DATABASE_URL: scratchUrl, ROSES_DB: scratchName, BACKUP_DIR: out, UPLOAD_DIR: path.join(out, 'uploads') };
+// The working uploads (photos and logos saved in the admin; gitignored, so not in the commit) copied with the dump into the run's own
+// uploads folder, so every photo the scratch copy points at is served as on the working server (2026-10-12: two photos Kian uploaded
+// that night answered 404 in a run). Read only from here: UPLOAD_DIR as the working server is started with, else ./uploads.
+const WORK_UPLOADS = path.resolve(process.env.UPLOAD_DIR || 'uploads');
+const listUploads = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir, { recursive: true }).map(String).filter((f) => /\.(jpg|png|webp|svg)$/.test(f)).map((f) => f.split(path.sep).join('/')) : []);
+if (fs.existsSync(WORK_UPLOADS)) fs.cpSync(WORK_UPLOADS, scratchEnv.UPLOAD_DIR, { recursive: true });
+const uploadsCopied = listUploads(scratchEnv.UPLOAD_DIR);
+const uploadKeys = [...(await db.query(`select photo->>'key' as k from items where photo->>'key' is not null union select brand->'logo'->>'key' from venues where brand->'logo'->>'key' is not null`)).rows.map((r) => r.k)];
+const uploadsMissing = uploadKeys.filter((k) => !uploadsCopied.includes(k));
+const uploadsNote = fs.existsSync(WORK_UPLOADS) ? `working uploads ${WORK_UPLOADS}: ${uploadsCopied.length} file(s) copied into the run's uploads; the scratch copy points at ${uploadKeys.length} upload key(s), ${uploadsMissing.length} of them missing${uploadsMissing.length ? ` (${uploadsMissing.join(', ')})` : ''}` : `working uploads ${WORK_UPLOADS}: no such folder, nothing copied; the scratch copy points at ${uploadKeys.length} upload key(s)`;
+log(uploadsNote);
 // Isolation (a), database side: who is connected where, sampled through the whole run (every suite process names itself roses-check:*).
 const seen = new Map(); // "application → database" → count of samples
 const sampler = setInterval(async () => {
@@ -395,7 +406,7 @@ try {
     const after = fs.existsSync(scratchEnv.UPLOAD_DIR) ? fs.readdirSync(scratchEnv.UPLOAD_DIR, { recursive: true }).filter((f) => /\.(jpg|png|webp|svg)$/.test(String(f))).map(String) : [];
     const logoKey = newVenueId && fs.existsSync(path.join(nvout, 'new-venue.json')) ? JSON.parse(fs.readFileSync(path.join(nvout, 'new-venue.json'), 'utf8')).logo.key : null;
     const logoKept = !!logoKey && after.includes(logoKey) && !removed.includes(logoKey);
-    const orphanGone = removed.some((k) => /\/photo-/.test(k)) && removed.every((k) => !after.includes(k));
+    const orphanGone = removed.some((k) => /\/photo-/.test(k) && !uploadsCopied.includes(k)) && removed.every((k) => !after.includes(k)); // the drill's own orphan, not a copied one
     const ok = r.status === 0 && !!m && Number(m[1]) >= 1 && logoKept && orphanGone && before.length - after.length === removed.length;
     return { pass: ok, evidence: ['uploads-clean.txt'], note: m ? `${before.length} files before, ${after.length} after; kept ${m[1]} referenced (the venue logo: ${logoKept}), removed ${m[4]} (${m[5]} bytes: ${removed.join(', ') || 'none'}); the scratch copy references ${m[6]} key(s)` : `exit ${r.status}` };
   }, 'uploads-clean');
@@ -480,6 +491,7 @@ const lines = [
   `# Check suite — ${stamp.replace('T', ' ').replace(/-(\d\d)-(\d\d)Z$/, ':$1:$2Z')}`, '',
   `**Suite: ${FULL ? 'full** (`npm run check:full`: the transition drill on all 40 versions; required before every merge to main)' : 'fast** (`npm run check`: the transition drill\'s browser checks on the four versions chosen now, the served HTML and size of all 40; not enough for a merge to main, which needs `npm run check:full`)'}`, '',
   `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, ${KNOWN_FILE} included) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
+  `Scratch copy: ${scratchName} from a pg_dump of ${workName}; ${uploadsNote}.`, '',
   ...(underLoad ? [`**Run forced past the pre-flight (\`--force\`) under external load**: ${preBad.map(preDescribe).join('; ')}. Every timing check below is marked "under external load"; its times are not evidence.`, ''] : []),
   `**${pass ? 'PASS' : 'FAIL'}** — ${results.filter((r) => outcome(r) === 'PASS').length} of ${results.length} checks passed${knownMissed.length ? `, ${knownMissed.length} KNOWN MISS (listed in \`${KNOWN_FILE}\`, still measured: see Known misses)` : ''}${failed.length ? `, ${failed.length} failed (not listed as known misses)` : ', no unlisted failure'}.${nowPassing.length ? ` Known miss now passing: ${nowPassing.map((k) => k.title).join(', ')} (see Known misses).` : ''}`, '',
   ...(pass ? [] : [`Cause: ${(() => { const f = failed[0]; return `${f.name} — ${(f.note || '').replace(/\s+/g, ' ').slice(0, 300)}`; })()}`, '', 'This failed run is kept on purpose (PM, 2026-10-08): the folder is never deleted, even when a re-run passes.', '']),
@@ -494,7 +506,7 @@ const lines = [
   'Every path is relative to this folder. Screenshots, full Lighthouse JSON, the first HTML responses, uploads and the dumps stay on the machine that ran the suite (gitignored); report.md, summary.json, the check JSON files and the text logs are committed. Every server and drill ran against the scratch copy of the working database (isolation.json lists the database each process connected to, from its own log and from pg_stat_activity), which was dropped afterwards; the working database itself was only read (the dump, then the search for suite-account rows in working-db-suite-rows.json). Lighthouse numbers are local estimates; since the welcome screen (2026-10-09) their LCP element is the welcome logo, so the Lighthouse LCP measures the welcome screen, not the menu behind it; the menu after the language tap is measured by the after-tap step under throttled mobile conditions.', '',
 ];
 fs.writeFileSync(path.join(out, 'report.md'), lines.join('\n'));
-fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, suite: FULL ? 'full' : 'fast', pass, preflight: { ...pre, forced: underLoad, offenders: preBad }, underExternalLoad: underLoad ? results.filter((r) => TIMING.test(r.name)).map((r) => r.name) : [], ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT }, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, baseline: k.baseline, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
+fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, suite: FULL ? 'full' : 'fast', pass, uploads: { from: WORK_UPLOADS, copied: uploadsCopied.length, keys: uploadKeys.length, missing: uploadsMissing }, preflight: { ...pre, forced: underLoad, offenders: preBad }, underExternalLoad: underLoad ? results.filter((r) => TIMING.test(r.name)).map((r) => r.name) : [], ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT }, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, baseline: k.baseline, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
 console.log('\n' + lines.slice(4).join('\n'));
 console.log(`\nreport: ${path.relative(process.cwd(), path.join(out, 'report.md'))}`);
 console.log(`CHECK SUITE (${FULL ? 'full' : 'fast'}) ${pass ? 'PASS' : 'FAIL'}${knownMissed.length ? ` (${knownMissed.length} KNOWN MISS)` : ''}${underLoad ? ' (forced: timing checks under external load)' : ''}`);

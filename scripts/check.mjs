@@ -397,7 +397,7 @@ try {
     const warmed = [];
     for (const v of ['senso', 'kebab-land', ...(perfVenue ? [perfVenue] : [])]) {
       const html = await fetch(`${perfBase}/${v}`).then((x) => x.text()).catch(() => '');
-      const ups = [...new Set(html.match(/\/uploads\/[^"'\s)]+/g) || [])];
+      const ups = [...new Set(html.match(/(?<=["'(\s])\/uploads\/[^"'\s)]+/g) || [])]; // the page's own uploads (not a linked address with /uploads/ in it, e.g. wp-content/uploads)
       for (const u of ups) await fetch(`${perfBase}${u}`).then((x) => x.arrayBuffer()).catch(() => {});
       warmed.push(`/${v} and its ${ups.length} uploaded photo(s)`);
     }

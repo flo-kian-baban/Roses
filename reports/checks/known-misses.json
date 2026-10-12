@@ -41,23 +41,24 @@
       "checks": [
         "lighthouse-senso-lcp"
       ],
-      "target": "Lighthouse mobile run on /senso, LCP ≤ 2500 ms on each of the three runs (the PM's build decision: Largest Contentful Paint ≤ 2.5 s in a Lighthouse mobile run)",
-      "cause": "Since 2026-10-12 Kian has put uploaded photos on Senso's items (22 by 04:00, 1254 × 1254 px JPEG, 122–223 KB each; the admin shrinks only above 1400 px or 700 KB; shown at 96 px in a row and 173 px in a grid card). They are served by the same server and load behind the welcome screen; Lighthouse's simulation counts them on the way to the LCP element, which is still the welcome logo (loaded in about 1.2 s), adding a render delay of about 6 s. Not the code: feeb1cc gives the same on the same data (7208 / 4730 / 7210 ms, by hand), and run 2026-10-12T03-57-29Z, before the uploads, measured 1503 ms. Kian: no change to photo quality for now.",
+      "target": "Lighthouse mobile run on /senso on the performance fixture (scripts/fixtures/perf-fixture.json, 2026-10-12), LCP ≤ 2500 ms on each of the three runs (the PM's build decision: Largest Contentful Paint ≤ 2.5 s in a Lighthouse mobile run)",
+      "cause": "Since 2026-10-12 Kian has put uploaded photos on Senso's items (33 in the performance fixture of 2026-10-12, 5.45 MB, 1254 × 1254 px JPEG; the admin shrinks only above 1400 px or 700 KB; shown at 96 px in a row and 173 px in a grid card). They are served by the same server and load behind the welcome screen; Lighthouse's simulation counts them on the way to the LCP element, which is still the welcome logo (loaded in about 1.2 s). Not the code: feeb1cc gave the same on the same data (by hand, 2026-10-12), the build before the seasonal code and the seasonal branch gave the same on the data of 2026-10-12 morning (5191 / 8564 / 8562 and 8573 / 8561 / 8564 ms), and run 2026-10-12T03-57-29Z, before the uploads, measured 1503 ms. Since 2026-10-12 (the PM) this check runs on the performance fixture, so the content is frozen and a change here is the code's; Senso on the live data copy is printed as \"content cost\", information only. Kian: no change to photo quality for now.",
       "clears": "when resized photos are served (not scheduled)",
-      "listed": "2026-10-12, the PM",
+      "listed": "2026-10-12, the PM; re-baselined on the performance fixture the same day (the PM: once; again only when Kian decides to refresh the fixture)",
       "baseline": {
-        "run": "2026-10-12T07-54-45Z",
+        "run": "2026-10-12T17-36-33Z",
+        "fixture": "2026-10-12",
         "unit": "ms",
         "tolerance": 0.1,
         "checks": {
           "lighthouse-senso-lcp": {
             "over": 3,
             "of": 3,
-            "worst": 7213,
+            "worst": 8565,
             "unit": "ms"
           }
         },
-        "set": "2026-10-12, the PM: run 2026-10-12T07-54-45Z (the full suite on 1d77893), LCP 4805 / 7213 / 7212 ms, worst 7213 ms, tolerance 10 %"
+        "set": "2026-10-12, the PM: re-baselined once on the performance fixture 2026-10-12, from run 2026-10-12T17-36-33Z (the fast suite on 1d84bed, the first run on the fixture): LCP 8563 / 8565 / 8563 ms, worst 8565 ms, tolerance 10 % (up to 9422 ms). The live-data baseline it replaces: run 2026-10-12T07-54-45Z, 3 of 3 over, worst 7213 ms (22 uploaded photos). It changes again only when Kian decides to refresh the fixture."
       }
     },
     {

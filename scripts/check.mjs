@@ -11,8 +11,11 @@
 // any check fails; a failed run's folder is kept (its report carries a one-line cause), never deleted.
 // Pre-flight (the PM, 2026-10-11, after a run whose timings another project's server at ~590 % CPU made invalid): before the scratch
 // copy and the build, scripts/preflight.mjs reads the load average, free memory, Docker's memory and the top 5 processes by CPU, all
-// recorded in report.md; when a process the suite did not start is above 100 % CPU the suite prints it (name, PID, port, CPU), leaves
-// it alone and exits 2 before building. `npm run check -- --force` runs anyway and marks every timing check "under external load".
+// recorded in report.md. Standing rule (Kian, 2026-10-13, replacing the stop at 100 %): before building, the suite waits, it does not
+// fail, until no process it did not start has been above 50 % CPU for 30 s, reading every 30 s and printing what it waits on (name, PID,
+// port, CPU; never touched); `npm run check -- --force` skips the wait and marks every timing check "under external load". Through the
+// run, every 30 s, it records the top process by CPU (and the top one it did not start) and fetches one linked photo from each outside
+// photo host (the network probe): load-watch.txt, summarised in report.md.
 // Fast and full (the PM, 2026-10-12): npm run check (fast, for batches) runs every step, with the transition drill's browser checks
 // (Chromium and the WebKit 3-run timing) on the four versions the venue has chosen now and the served HTML and size of all 40;
 // npm run check:full (--full) runs everything, the transition drill on all 40 versions. check:full is required before every merge to
@@ -67,7 +70,7 @@ import pg from 'pg';
 import { chromium } from 'playwright';
 import { loadEnv } from './load-env.mjs';
 import { readPointer as readFixture, verify as verifyFixture } from './perf-fixture.mjs';
-import { readings as preReadings, offenders as preOffenders, describe as preDescribe, markdown as preMarkdown, TIMING, LIMIT as CPU_LIMIT } from './preflight.mjs';
+import { readings as preReadings, offenders as preOffenders, describe as preDescribe, markdown as preMarkdown, waitQuiet, sample as loadSample, TIMING, LIMIT as CPU_LIMIT } from './preflight.mjs';
 
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
@@ -194,22 +197,17 @@ function startServer(port, env, logFile) {
     process.exit(2);
   }
 }
-// Pre-flight (the PM, 2026-10-11): no process the suite did not start above 100 % CPU (only the suite and npm run at this point), or
-// stop before building; --force runs anyway with every timing check marked "under external load". Other processes are only read.
+// Pre-flight (the PM, 2026-10-11; a wait since Kian's standing rule of 2026-10-13): no process the suite did not start above 50 % CPU for
+// 30 s before the build (only the suite and its parent run at this point); --force skips the wait and marks every timing check "under
+// external load". Other processes are only read.
 const FORCE = process.argv.includes('--force');
 const FULL = process.argv.includes('--full'); // npm run check:full
-const pre = preReadings(process.env.ROSES_DB_CONTAINER || 'roses-db');
-const preBad = preOffenders(pre, [process.pid, process.ppid]);
-const underLoad = preBad.length > 0; // only reachable past here with --force
-log(`pre-flight: load average ${pre.load1.toFixed(2)} (1 min) on ${pre.cpus} CPUs; memory free ${(pre.free / 1024 ** 3).toFixed(1)} GB, available ${pre.available === null ? '—' : (pre.available / 1024 ** 3).toFixed(1)} GB; Docker VM ${pre.dockerTotal === null ? '—' : (pre.dockerTotal / 1024 ** 3).toFixed(1)} GB; top by CPU: ${pre.top.map(preDescribe).join('; ')}`);
-if (underLoad && !FORCE) {
-  console.error(`npm run check stopped before building (pre-flight, the PM, 2026-10-11): a process the suite did not start is above ${CPU_LIMIT} % CPU, so the run's timings would not be valid. It is left alone:`);
-  for (const p of preBad) console.error(`  ${p.name}  PID ${p.pid}  port ${p.ports.join(', ') || '—'}  ${p.cpu.toFixed(0)} % CPU  (${p.command})`);
-  console.error('Run the suite again when it is quiet, or run `npm run check -- --force` to run anyway (every timing check is then marked "under external load").');
-  const files = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? files(path.join(d, e.name)) : [e.name]));
-  if (files(out).length === 0) fs.rmSync(out, { recursive: true, force: true }); // nothing ran: the run folder holds only empty folders
-  process.exit(2);
-}
+const OWN = [process.pid, process.ppid];
+const preWait = FORCE ? null : await waitQuiet({ own: OWN, log, container: process.env.ROSES_DB_CONTAINER || 'roses-db' });
+const pre = preWait ? preWait.readings : preReadings(process.env.ROSES_DB_CONTAINER || 'roses-db');
+const preBad = preOffenders(pre, OWN);
+const underLoad = preBad.length > 0; // only with --force: the wait returns on clean readings only
+log(`pre-flight: load average ${pre.load1.toFixed(2)} (1 min) on ${pre.cpus} CPUs; memory free ${(pre.free / 1024 ** 3).toFixed(1)} GB, available ${pre.available === null ? '—' : (pre.available / 1024 ** 3).toFixed(1)} GB; Docker VM ${pre.dockerTotal === null ? '—' : (pre.dockerTotal / 1024 ** 3).toFixed(1)} GB; top by CPU: ${pre.top.map(preDescribe).join('; ')}${preWait ? `; waited ${Math.round(preWait.waitedMs / 1000)} s${preWait.waited.length ? ` on ${[...new Set(preWait.waited.flatMap((w) => w.on.map((p) => `${p.name} (PID ${p.pid})`)))].join(', ')}` : ''}` : ''}`);
 if (underLoad) log(`pre-flight: FORCED (--force) past ${preBad.map(preDescribe).join('; ')}: every timing check is marked "under external load"`);
 if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) { console.error('DATABASE_URL / SESSION_SECRET missing: run npm run setup'); process.exit(2); }
 const WORK_URL = process.env.DATABASE_URL;
@@ -221,6 +219,21 @@ const CONTAINER = process.env.ROSES_DB_CONTAINER || 'roses-db';
 const work = new pg.Client({ connectionString: WORK_URL, application_name: 'roses-check:suite-readonly' }); // reads only: the dump and check (b)
 try { await work.connect(); } catch (e) { console.error(`database not reachable: ${e.message} (npm run db:up)`); process.exit(2); }
 log(`working database ${workName} (read only from here: copied, then checked for suite-account rows at the end)`);
+// Load and network through the run (Kian, 2026-10-13): every 30 s, the top process by CPU (the suite's own or not) and the top one the
+// suite did not start, and one linked photo fetched from each outside host the menus link to (the network probe); load-watch.txt.
+const PROBES = (await work.query(`select distinct on (h) h, u from (select substring(photo->>'url' from '^https?://[^/]+') as h, photo->>'url' as u from items where photo->>'url' like 'http%') x order by h, u`)).rows.map((r) => ({ host: r.h.replace(/^https?:\/\//, ''), url: r.u }));
+const loadWatch = [], LOAD_FILE = path.join(out, 'load-watch.txt');
+fs.writeFileSync(LOAD_FILE, `# every 30 s: the top process by CPU (own = started by the suite), the top one the suite did not start, and each outside photo host's answer to one linked photo (${PROBES.map((p) => p.host).join(', ') || 'no linked photo'})\n`);
+const probeOnce = async () => {
+  const s = loadSample(process.pid);
+  const net = await Promise.all(PROBES.map(async (p) => { const t = Date.now(); try { const r = await fetch(p.url, { method: 'GET', headers: { range: 'bytes=0-0' }, signal: AbortSignal.timeout(10_000), cache: 'no-store' }); await r.body?.cancel().catch(() => null); return { host: p.host, status: r.status, ms: Date.now() - t }; } catch (e) { return { host: p.host, status: 0, ms: Date.now() - t, error: String(e.cause?.code || e.name || e.message) }; } }));
+  const row = { ...s, net };
+  loadWatch.push(row);
+  const who = (p) => (p ? `${p.name} (PID ${p.pid}${p.ports?.length ? `, port ${p.ports.join(', ')}` : ''}) ${p.cpu.toFixed(0)} %` : '—');
+  fs.appendFileSync(LOAD_FILE, `${row.at} top ${who(s.top)}${s.top?.own ? ' own' : ''} | not the suite's: ${who(s.foreign)} | ${net.map((n) => `${n.host} ${n.status || n.error} ${n.ms} ms`).join(' · ')}\n`);
+};
+await probeOnce();
+const loadTimer = setInterval(() => { void probeOnce(); }, 30_000);
 // scratch copy: pg_dump of the working database restored into a new database
 const dumpFile = path.join(out, 'working-db-copy.dump');
 {
@@ -603,6 +616,13 @@ try {
   } catch (e) { log(`could not drop the scratch database: ${e.message}`); }
 }
 
+clearInterval(loadTimer); await probeOnce();
+// Load and network through the run, for report.md (information: the timing checks above are judged as always)
+const loadOver = loadWatch.filter((w) => w.foreign && w.foreign.cpu > CPU_LIMIT);
+const netBad = loadWatch.flatMap((w) => w.net.filter((n) => !(n.status >= 200 && n.status < 400)).map((n) => ({ at: w.at, ...n })));
+const loadLines = ['## Load and network through the run', '',
+  `Every 30 s from the start of the build to the report (Kian, 2026-10-13): ${loadWatch.length} readings in \`load-watch.txt\`. A process the suite did not start above ${CPU_LIMIT} % CPU in ${loadOver.length} of them${loadOver.length ? `: ${loadOver.map((w) => `${w.at.slice(11, 19)}Z ${w.foreign.name} (PID ${w.foreign.pid}) ${w.foreign.cpu.toFixed(0)} %`).join(', ')}` : ''}; the highest such reading ${(() => { const m = loadWatch.filter((w) => w.foreign).sort((a, b) => b.foreign.cpu - a.foreign.cpu)[0]; return m ? `${m.foreign.name} (PID ${m.foreign.pid}) ${m.foreign.cpu.toFixed(0)} % at ${m.at.slice(11, 19)}Z` : '—'; })()}.`,
+  `Network probe (one linked photo per outside host, ${PROBES.map((p) => p.host).join(', ') || 'none'}): ${loadWatch.length * PROBES.length - netBad.length} of ${loadWatch.length * PROBES.length} fetches answered${netBad.length ? `; not answered: ${netBad.map((n) => `${n.at.slice(11, 19)}Z ${n.host} ${n.status || n.error}`).join(', ')}` : ''}.`, ''];
 const outcome = (r) => r.outcome || (r.pass ? 'PASS' : 'FAIL');
 const failed = results.filter((r) => outcome(r) === 'FAIL'), knownMissed = results.filter((r) => outcome(r) === 'KNOWN MISS');
 const pass = results.length > 0 && failed.length === 0; // the run fails only on a failure that is not listed as a known miss
@@ -620,7 +640,8 @@ const lines = [
   ...(underLoad ? [`**Run forced past the pre-flight (\`--force\`) under external load**: ${preBad.map(preDescribe).join('; ')}. Every timing check below is marked "under external load"; its times are not evidence.`, ''] : []),
   `**${pass ? 'PASS' : 'FAIL'}** — ${results.filter((r) => outcome(r) === 'PASS').length} of ${results.length} checks passed${knownMissed.length ? `, ${knownMissed.length} KNOWN MISS (listed in \`${KNOWN_FILE}\`, still measured: see Known misses)` : ''}${failed.length ? `, ${failed.length} failed (not listed as known misses)` : ', no unlisted failure'}.${nowPassing.length ? ` Known miss now passing: ${nowPassing.map((k) => k.title).join(', ')} (see Known misses).` : ''}`, '',
   ...(pass ? [] : [`Cause: ${(() => { const f = failed[0]; return `${f.name} — ${(f.note || '').replace(/\s+/g, ' ').slice(0, 300)}`; })()}`, '', 'This failed run is kept on purpose (PM, 2026-10-08): the folder is never deleted, even when a re-run passes.', '']),
-  ...preMarkdown(pre, preBad, FORCE),
+  ...preMarkdown(pre, preBad, FORCE, preWait),
+  ...loadLines,
   '## Known misses', '',
   `Listed in \`${KNOWN_FILE}\` (committed; blob ${knownBlob || '?'} in ${commit}). A listed check is still measured and printed, here and as KNOWN MISS in the table; it does not fail the run unless it measures worse than its baseline (the ratchet, the PM 2026-10-12: KNOWN MISS WORSENED). Any failure that is not listed fails it. A listed check that passes is reported here as NOW PASSING.`, '',
   ...(known.length ? ['| Known miss | This run | Baseline → measured | Measured | Cause | Clears when | Listed |', '| --- | --- | --- | --- | --- | --- | --- |',
@@ -631,7 +652,7 @@ const lines = [
   'Every path is relative to this folder. Screenshots, full Lighthouse JSON, the first HTML responses, uploads and the dumps stay on the machine that ran the suite (gitignored); report.md, summary.json, the check JSON files and the text logs are committed. Every server and drill ran against the scratch copy of the working database (isolation.json lists the database each process connected to, from its own log and from pg_stat_activity), which was dropped afterwards; the working database itself was only read (the dump, then the search for suite-account rows in working-db-suite-rows.json). Lighthouse numbers are local estimates; since the welcome screen (2026-10-09) their LCP element is the welcome logo, so the Lighthouse LCP measures the welcome screen, not the menu behind it; the menu after the language tap is measured by the after-tap step under throttled mobile conditions.', '',
 ];
 fs.writeFileSync(path.join(out, 'report.md'), lines.join('\n'));
-fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, suite: FULL ? 'full' : 'fast', pass, uploads: { from: WORK_UPLOADS, copied: uploadsCopied.length, keys: uploadKeys.length, missing: uploadsMissing }, preflight: { ...pre, forced: underLoad, offenders: preBad }, underExternalLoad: underLoad ? results.filter((r) => TIMING.test(r.name)).map((r) => r.name) : [], ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT, perfServer: PERF_PORT }, perfFixture: { ok: perf.ok, id: perf.pointer?.id ?? null, dir: perf.dir, problems: perf.problems, database: perfName, dump: perf.pointer?.dump ?? null, uploads: perf.pointer?.uploads ?? null }, contentCost, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, baseline: k.baseline, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
+fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, suite: FULL ? 'full' : 'fast', pass, uploads: { from: WORK_UPLOADS, copied: uploadsCopied.length, keys: uploadKeys.length, missing: uploadsMissing }, preflight: { ...pre, forced: underLoad, offenders: preBad, waited: preWait?.waited ?? null, waitedMs: preWait?.waitedMs ?? null }, loadWatch: { readings: loadWatch.length, foreignOver: loadOver.length, netNotAnswered: netBad.length, probes: PROBES.map((p) => p.host) }, underExternalLoad: underLoad ? results.filter((r) => TIMING.test(r.name)).map((r) => r.name) : [], ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT, perfServer: PERF_PORT }, perfFixture: { ok: perf.ok, id: perf.pointer?.id ?? null, dir: perf.dir, problems: perf.problems, database: perfName, dump: perf.pointer?.dump ?? null, uploads: perf.pointer?.uploads ?? null }, contentCost, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, baseline: k.baseline, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
 console.log('\n' + lines.slice(4).join('\n'));
 console.log(`\nreport: ${path.relative(process.cwd(), path.join(out, 'report.md'))}`);
 console.log(`CHECK SUITE (${FULL ? 'full' : 'fast'}) ${pass ? 'PASS' : 'FAIL'}${knownMissed.length ? ` (${knownMissed.length} KNOWN MISS)` : ''}${underLoad ? ' (forced: timing checks under external load)' : ''}`);

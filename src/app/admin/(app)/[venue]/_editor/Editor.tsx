@@ -45,7 +45,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const [menu, dispatch] = useReducer(reduce, initial);
   const [tab, setTab] = useState<Tab>(initialTab);
   const go = (t: Tab) => { setTab(t); setPreviewOpen(false); setCompare(false); try { history.replaceState(null, '', TAB_HREF(venue.id, t)); } catch { /* ignore */ } };
-  const [open, setOpen] = useState<{ id: string; section: string | null } | null>(null);
+  const [open, setOpen] = useState<{ id: string; section: string | null; fresh?: boolean } | null>(null); // fresh: just added, opens with More open
   const [adding, setAdding] = useState<string | null>(null);
   const [addingSection, setAddingSection] = useState(false);
   const [renaming, setRenaming] = useState<string | null>(null);
@@ -145,7 +145,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const itemCreate = async (sectionId: string, data: { name: string; price: number | null; photo: Photo | null }) => {
     const r = await call('/api/admin/item', { action: 'create', venue: venue.id, section_id: sectionId, name: { en: data.name, fa: null }, price: data.price, photo: data.photo });
     apply(r); const item = r.item as EditorItem; done(r, 'Added', { id: item.id, alt: sectionId }); setHighlight(item.id);
-    setOpen({ id: item.id, section: sectionId }); // the editor opens on the new item, for its description, sizes and the rest (Kian via the PM, 2026-10-13)
+    setOpen({ id: item.id, section: sectionId, fresh: true }); // the editor opens on the new item, More open for its description and sizes (Kian via the PM, 2026-10-13)
   };
   // Copy a choice group to other items (Kian via the PM, 2026-10-13): one call, one record per item, one toast whose Undo puts them all back.
   const itemCopyChoices = async (id: string, group: string, targets: string[]) => {
@@ -215,7 +215,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const bar = (phone: boolean) => <PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone={phone} />;
   const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} previewSeason={season ?? now.season} onPlay={playTransition} />;
 
-  const panel = openItem && <ItemPanel item={openItem} venueId={venue.id} season={today} sections={menu.sections} sectionId={open?.section ?? null} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
+  const panel = openItem && <ItemPanel key={openItem.id} fresh={!!open?.fresh} item={openItem} venueId={venue.id} season={today} sections={menu.sections} sectionId={open?.section ?? null} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (
     <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
       <div className="relative min-w-0">

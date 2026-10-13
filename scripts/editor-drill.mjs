@@ -62,11 +62,15 @@ let taps = 0; const tap = async (sel) => { taps++; await p.click(sel); };
   const tConfirm = Date.now();
   await p.press('[role=dialog] input[name=price]', 'Enter');
   await p.waitForSelector(`[data-item] >> text=${NAME}`);
+  // since 2026-10-13 (Kian via the PM) the editor opens on the new item, More open; Done closes it
+  const opened = await p.waitForSelector(`.item-panel[aria-label="Edit ${NAME}"]`, { timeout: 5000 }).then(() => true).catch(() => false);
+  const moreOpen = opened && (await p.locator('.item-panel button[aria-expanded="true"]:has-text("More")').count()) > 0;
+  if (opened) { await p.click('.item-panel button:has-text("Done")'); await p.waitForSelector('.item-panel', { state: 'detached', timeout: 5000 }).catch(() => {}); }
   const row = (await db.query(`select i.id, i.listed, i.price, x.section_id, x.position, (select max(position) from item_sections where section_id = x.section_id) as last from items i join item_sections x on x.item_id = i.id where i.venue_id = $1 and i.name->>'en' = $2`, [VENUE, NAME])).rows[0];
   itemId = row?.id;
   const pub = await waitPublic((h) => h.includes(`data-id="${itemId}"`));
   await snap(p, 'item-added');
-  check('t-add', taps === 1 && !!row && row.listed && Number(row.price) === 4.5 && row.section_id === sec.id && row.position === row.last && pub.ok, `add an item: ${taps} tap (+ Add item) + name + price + Enter → created shown at $4.50, last in "${sec.name}" (position ${row?.position} of ${row?.last}); on the public page ${pub.ms} ms after Enter`);
+  check('t-add', taps === 1 && opened && moreOpen && !!row && row.listed && Number(row.price) === 4.5 && row.section_id === sec.id && row.position === row.last && pub.ok, `add an item: ${taps} tap (+ Add item) + name + price + Enter → the editor opened on it (${opened}, More open ${moreOpen}); created shown at $4.50, last in "${sec.name}" (position ${row?.position} of ${row?.last}); on the public page ${pub.ms} ms after Enter`);
   measure(`add an item: ${taps} tap + name + price + confirm (Enter); on the public page in ${pub.ms} ms; sheet confirmed at +${Date.now() - tConfirm} ms`);
 }
 { // seasonal items (Kian, 2026-10-12): add an item from the Seasonal section, target ≤ 2 taps + name + price; it is tagged with today's
@@ -84,6 +88,7 @@ let taps = 0; const tap = async (sel) => { taps++; await p.click(sel); };
   await p.fill('[role=dialog] input[name=price]', '7');
   await p.press('[role=dialog] input[name=price]', 'Enter');
   await p.waitForSelector(`[data-item] >> text=${SNAME}`);
+  if (await p.waitForSelector(`.item-panel[aria-label="Edit ${SNAME}"]`, { timeout: 5000 }).then(() => true).catch(() => false)) { await p.click('.item-panel button:has-text("Done")'); await p.waitForSelector('.item-panel', { state: 'detached', timeout: 5000 }).catch(() => {}); }
   const row = (await db.query(`select i.id, i.listed, i.seasons, x.section_id from items i join item_sections x on x.item_id = i.id where i.venue_id = $1 and i.name->>'en' = $2`, [VENUE, SNAME])).rows;
   const sid = row[0]?.id;
   const seasonalOf = (h) => { const sec = h.match(/<section[^>]*class="[^"]*\bseasonal\b[^"]*"[^>]*>[\s\S]*?<\/section>/); const first = (h.slice(h.indexOf('<main')).match(/<section[^>]*data-id="([^"]+)"/) || [])[1]; return { has: !!sec && sec[0].includes(`data-id="${sid}"`) && sec[0].includes(`<span lang="en">${title}</span>`), first: first === ss.id }; };

@@ -181,6 +181,11 @@ for (const vp of VIEWPORTS) {
     for (const t of ['More', 'Advanced']) { const x = p.locator(`.item-panel button[aria-expanded="false"]:has-text("${t}")`).first(); if (await x.count()) { await x.scrollIntoViewIfNeeded(); await x.click(); await sleep(200); } }
   };
   await screen(vp, p, 'menu: item editor, an item with add-ons', async () => { await openItem(ITEMS.addOns); await p.waitForSelector('.item-panel button[aria-label^="Remove add-on"]'); });
+  // the sheets of the build after the admin audit (Kian via the PM, 2026-10-13): copy choices to other items, the section picker with "Also show in"
+  await screen(vp, p, 'menu: item editor, copy choices to other items', async () => { const b = p.locator('.item-panel button:has-text("Copy to other items")').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=dialog][aria-label^="Copy “"]'); });
+  await p.locator('[role=dialog][aria-label^="Copy “"] button[aria-label="Close"]').last().click().catch(() => {}); await p.waitForSelector('[role=dialog][aria-label^="Copy “"]', { state: 'detached', timeout: 3000 }).catch(() => {});
+  await screen(vp, p, 'menu: item editor, the section picker with "Also show in"', async () => { const b = p.locator('.item-panel [data-section-picker]').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=dialog][aria-label^="Move “"]'); await p.click('[role=dialog][aria-label^="Move “"] summary'); await p.waitForSelector('[role=dialog][aria-label^="Move “"] details[open]'); });
+  await p.locator('[role=dialog][aria-label^="Move “"] button[aria-label="Close"]').last().click().catch(() => {}); await p.waitForSelector('[role=dialog][aria-label^="Move “"]', { state: 'detached', timeout: 3000 }).catch(() => {});
   await done();
   await screen(vp, p, 'kebab-land menu', async () => { await p.goto(`${base}/admin/kebab-land`); await p.waitForSelector('[data-item]'); });
   await screen(vp, p, 'kebab-land: item editor, an item with sizes', async () => { await openItem(ITEMS.sizes); await p.waitForSelector('.item-panel button[aria-label^="Remove size"]'); });

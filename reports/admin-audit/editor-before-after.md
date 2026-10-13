@@ -19,11 +19,22 @@ Cells: taps (fields · keys · scrolls, px scrolled). Taps include focusing a fi
 | t8 Iced Americano: Cold Beverage → Hot Beverage | 2 (0 · 0 · 0) | 2 (0 · 0 · 0) | — | — | 4 (1 · 0 · 0) | 4 (1 · 0 · 0) | yes (equal) |
 | t9 hide the Milkshake section (not in the editor) | — | — | — | — | 3 (0 · 0 · 0) | 3 (0 · 0 · 0) | yes (equal) |
 
-All six numeric targets met in the editor. From the Menu tab every task is equal or better except t6, one tap more; the PM's next batch (Allergens & diet open by default while drafts wait for Confirm) addresses it, measured in `editor-after-2/` with that batch, target ≤ 3 from the Menu tab.
+All six numeric targets met in the editor. From the Menu tab every task is equal or better except t6, one tap more; batch 2 below (Allergens & diet open while drafts wait for Confirm) brings it back to 3, equal to before.
+
+## Batch 2: Allergens & diet open while drafts wait for Confirm (the PM, 2026-10-13)
+
+The same drill, the same data copy reset again, a build of 200516c → `editor-after-2/` (Turkish Coffee has allergen and dietary drafts waiting, so the group opens with the editor; Latte too). Menu tab, before → after → after batch 2; in the editor, the same:
+
+| Task | Menu tab: before | after | after batch 2 | In the editor: before | after | after batch 2 |
+| --- | --- | --- | --- | --- | --- | --- |
+| t6 Turkish Coffee: allergens "milk" (target ≤ 3 from the Menu tab, drafts waiting) | 3 (1 · 0 · 1, 853 px) | 4 (1 · 0 · 0) | **3 (1 · 0 · 1, 562 px)**: met, equal to before | 1 (0 · 0 · 1, 853 px) | 2 (0 · 0 · 0) | 1 (0 · 0 · 1, 562 px) |
+| t12 Latte: duplicate it | not in that build | 4 (1 · 0 · 2, 949 px) | 4 (1 · 0 · 2, 1735 px) | not in that build | 2 (0 · 0 · 1, 590 px) | 2 (0 · 0 · 1, 1376 px) |
+
+Every other task measured exactly as in the first "after" run (t1 3, t2 11, t3 3, t4 3, t5 5, t7 9, t8 4, t9 3, t10 3, t11 2 from the Menu tab; in the editor t3 1 with 0 scroll, t5 3, t10 1 with 0 scroll, t11 0). With batch 2 every task from the Menu tab is equal to or better than the "before" column, and every numeric target is met in the editor. The cost: Duplicate's tap count is unchanged, but Other now sits under the open allergen chips on an item with drafts, so reaching it scrolls 786 px more (1376 px in the editor). Every task done, page errors 0.
 
 Every task done in both runs (the final state read back from the public page and the scratch database), except t12 before, which that build cannot do. Page errors: before 0, after 0. App wait (first tap to the change on the public page), before / after: t1 907 / 878 ms, t2 2250 / 2247, t3 597 / 426, t4 638 / 679, t5 708 / 567, t6 352 / 458, t7 2270 / 2211, t8 455 / 452, t9 1562 / 1568, t10 351 / 316, t11 827 / 266 (no save: until the sections were seen), t12 — / 525.
 
-**t6, the one full count that grew (3 → 4).** Allergens & diet is a closed group by the ruling (1e), so from the Menu tab it is search, item, Allergens & diet, chip; before, the chips sat open at the bottom of the editor (one tap fewer, one scroll of 853 px more). In the editor it is 2 taps. The PM's next batch opens the group by default while the item has allergen or dietary drafts waiting for Confirm (Turkish Coffee has), measured again from the Menu tab with that batch (`editor-after-2/`). An item opened from the "Allergens to confirm" filter still opens with the group open (the research drill's Confirm path is unchanged: chip, item, Confirm).
+**t6, the one full count that grew (3 → 4).** Allergens & diet is a closed group by the ruling (1e), so from the Menu tab it is search, item, Allergens & diet, chip; before, the chips sat open at the bottom of the editor (one tap fewer, one scroll of 853 px more). In the editor it is 2 taps. Batch 2 opens the group by default while the item has allergen or dietary drafts waiting for Confirm (Turkish Coffee has): 3 taps from the Menu tab again (`editor-after-2/`, above). An item opened from the "Allergens to confirm" filter still opens with the group open (the research drill's Confirm path is unchanged: chip, item, Confirm).
 
 **t12, the copy, checked field by field in the database**: "Latte (copy)" / "لاته (کپی)", hidden, in Hot Beverage right after Latte, the same description, price, sizes, choices (both groups, the copied Milk included), combo parts, serves, photo reference, notes, draft flags and seasons; off the public page; the editor opened on it with its name selected. One Undo: the copy gone from the database 114 ms after the tap, its editor closed, Latte untouched. The scroll in the editor is the one to reach Other, which sits under Latte's two choice groups; Duplicate is the first thing inside it.
 

@@ -15,7 +15,11 @@
 // fail, until no process it did not start has been above 50 % CPU for 30 s, reading every 30 s and printing what it waits on (name, PID,
 // port, CPU; never touched); `npm run check -- --force` skips the wait and marks every timing check "under external load". Through the
 // run, every 30 s, it records the top process by CPU (and the top one it did not start) and fetches one linked photo from each outside
-// photo host (the network probe): load-watch.txt, summarised in report.md.
+// photo host (the network probe): load-watch.txt, summarised in report.md. The network (the PM, 2026-10-13; scripts/network-watch.mjs):
+// before building, the suite also waits until every photo host answers, re-reading every 30 s and printing what it waits on; during the
+// run, a step that fails while the load watch records a host not answering is marked "invalid: network" and run once more after the
+// hosts answer again, both attempts printed; it passes only if the second attempt passes with no outage recorded during it; any other
+// failure fails the run as before. The rules are proven on simulated readings at the start of every run (network-watch-selftest.mjs).
 // Fast and full (the PM, 2026-10-12): npm run check (fast, for batches) runs every step, with the transition drill's browser checks
 // (Chromium and the WebKit 3-run timing) on the four versions the venue has chosen now and the served HTML and size of all 40;
 // npm run check:full (--full) runs everything, the transition drill on all 40 versions. check:full is required before every merge to
@@ -71,6 +75,7 @@ import { chromium } from 'playwright';
 import { loadEnv } from './load-env.mjs';
 import { readPointer as readFixture, verify as verifyFixture } from './perf-fixture.mjs';
 import { readings as preReadings, offenders as preOffenders, describe as preDescribe, markdown as preMarkdown, waitQuiet, sample as loadSample, TIMING, LIMIT as CPU_LIMIT } from './preflight.mjs';
+import { down, probeHosts, retryOnOutage, waitNetwork } from './network-watch.mjs';
 
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
@@ -99,6 +104,7 @@ try {
 } catch (e) { console.error(`${KNOWN_FILE}: ${e.message}`); process.exit(2); }
 const started = Date.now();
 const results = [];
+const loadWatch = []; // the load watch's readings, every 30 s from before the build (Kian and the PM, 2026-10-13; below)
 const servers = [];
 const SERVER_APPS = { [PORT]: `roses-check:server-${PORT}`, [PROXY_PORT]: `roses-check:server-${PROXY_PORT}` };
 const log = (s) => console.log(`${new Date().toISOString()} ${s}`);
@@ -120,11 +126,20 @@ function run(cmd, args, { env = {}, logFile } = {}) {
 // A step's outcome is PASS, FAIL or KNOWN MISS. A step that runs a drill hands over the drill's own checks ({ id, ok, text }, from its JSON,
 // only when the drill finished); a failed step is a KNOWN MISS when every failing check of it is listed in known-misses.json for that step.
 // A listed check that passes makes its entry NOW PASSING (reported, never hidden); a listed check the drill did not measure fails the step.
+// Invalid: network (the PM, 2026-10-13): a step that fails while the load watch records a photo host not answering is marked "invalid:
+// network" and run once more after every host answers again (scripts/network-watch.mjs retryOnOutage); both attempts are printed and kept;
+// it passes only if the second attempt passes with no outage recorded during it. Any other failure fails the run as before.
 async function step(name, fn, id = null) {
-  const t0 = Date.now(); log(`-- ${name}`);
-  let r;
-  try { r = (await fn()) || {}; } catch (e) { r = { pass: false, note: `error: ${e.message}` }; }
-  const res = { id, name, pass: r.pass !== false, outcome: r.pass !== false ? 'PASS' : 'FAIL', ms: Date.now() - t0, evidence: r.evidence || [], note: r.note || '' };
+  log(`-- ${name}`);
+  const attempt = async () => { const t0 = Date.now(); let r; try { r = (await fn()) || {}; } catch (e) { r = { pass: false, note: `error: ${e.message}` }; } return { r, t0, t1: Date.now() }; };
+  const res = await retryOnOutage({ name, attempt, judge: (a) => judge(name, id, a), readings: loadWatch, probes: PROBES, log });
+  results.push(res);
+  log(`   ${res.outcome}${res.attempts ? ' (attempt 2; attempt 1 invalid: network)' : ''} (${(res.ms / 1000).toFixed(1)} s) ${res.note}`);
+  for (const k of known.filter((x) => x.step === id)) log(`   known miss "${k.title}": ${k.run.status}`);
+}
+// one attempt's outcome: PASS, FAIL or KNOWN MISS (the known-miss ratchet below)
+function judge(name, id, { r, t0, t1 }) {
+  const res = { id, name, pass: r.pass !== false, outcome: r.pass !== false ? 'PASS' : 'FAIL', ms: t1 - t0, evidence: r.evidence || [], note: r.note || '' };
   const listed = known.filter((k) => k.step === id);
   if (listed.length) {
     const checks = r.checks || null;
@@ -156,9 +171,7 @@ async function step(name, fn, id = null) {
     else if (!res.pass && res.unlisted && res.unlisted.length === 0 && listed.some((k) => k.run.status === 'KNOWN MISS')) res.outcome = 'KNOWN MISS';
     else if (!res.pass && res.unlisted?.length) res.note = `failing and not listed as known misses: ${res.unlisted.join(', ')}; ${res.note}`;
   }
-  results.push(res);
-  log(`   ${res.outcome} (${(res.ms / 1000).toFixed(1)} s) ${res.note}`);
-  for (const k of listed) log(`   known miss "${k.title}": ${k.run.status}`);
+  return res;
 }
 // a drill's own checks, from the JSON it writes at its end (null when it did not finish: then no failure of it can be a known miss)
 const drillChecks = (file, finished) => { const f = path.join(out, file); if (!finished || !fs.existsSync(f)) return null; try { return JSON.parse(fs.readFileSync(f, 'utf8')).results.map((x) => ({ id: x.step, ok: x.ok, text: x.text, metric: x.metric ?? null })); } catch { return null; } };
@@ -222,11 +235,14 @@ log(`working database ${workName} (read only from here: copied, then checked for
 // Load and network through the run (Kian, 2026-10-13): every 30 s, the top process by CPU (the suite's own or not) and the top one the
 // suite did not start, and one linked photo fetched from each outside host the menus link to (the network probe); load-watch.txt.
 const PROBES = (await work.query(`select distinct on (h) h, u from (select substring(photo->>'url' from '^https?://[^/]+') as h, photo->>'url' as u from items where photo->>'url' like 'http%') x order by h, u`)).rows.map((r) => ({ host: r.h.replace(/^https?:\/\//, ''), url: r.u }));
-const loadWatch = [], LOAD_FILE = path.join(out, 'load-watch.txt');
+const LOAD_FILE = path.join(out, 'load-watch.txt');
 fs.writeFileSync(LOAD_FILE, `# every 30 s: the top process by CPU (own = started by the suite), the top one the suite did not start, and each outside photo host's answer to one linked photo (${PROBES.map((p) => p.host).join(', ') || 'no linked photo'})\n`);
+// the network wait and the probes: scripts/network-watch.mjs (the PM, 2026-10-13)
+const netWait = PROBES.length ? await waitNetwork({ probes: PROBES, log, why: 'before the build (the PM, 2026-10-13: every photo host must answer)' }) : { waitedMs: 0, waited: [] };
+if (!netWait.waited.length) log(`network: every photo host answers (${PROBES.map((p) => p.host).join(', ') || 'none linked'})`);
 const probeOnce = async () => {
   const s = loadSample(process.pid);
-  const net = await Promise.all(PROBES.map(async (p) => { const t = Date.now(); try { const r = await fetch(p.url, { method: 'GET', headers: { range: 'bytes=0-0' }, signal: AbortSignal.timeout(10_000), cache: 'no-store' }); await r.body?.cancel().catch(() => null); return { host: p.host, status: r.status, ms: Date.now() - t }; } catch (e) { return { host: p.host, status: 0, ms: Date.now() - t, error: String(e.cause?.code || e.name || e.message) }; } }));
+  const net = await probeHosts(PROBES);
   const row = { ...s, net };
   loadWatch.push(row);
   const who = (p) => (p ? `${p.name} (PID ${p.pid}${p.ports?.length ? `, port ${p.ports.join(', ')}` : ''}) ${p.cpu.toFixed(0)} %` : '—');
@@ -317,6 +333,11 @@ try {
     const j = fs.existsSync(path.join(out, 'colour-literals.json')) ? JSON.parse(fs.readFileSync(path.join(out, 'colour-literals.json'), 'utf8')) : null;
     return { pass: r.status === 0 && j?.count === 0, evidence: ['colour-literals.txt', 'colour-literals.json'], note: j ? `${j.count} colour literal(s) in ${j.files.length} public files; ${j.tokensFileHexLiterals} hex values live in the token defaults file` : `exit ${r.status}` };
   }, 'colour-literals');
+
+  await step('the network rules, self-test (the PM, 2026-10-13: wait for the photo hosts; a failure during an outage marked "invalid: network" and run once more, counting only on a clean second attempt), on simulated readings', async () => {
+    const r = await run('node', ['scripts/network-watch-selftest.mjs'], { logFile: 'network-watch-selftest.txt' });
+    return { pass: r.status === 0, evidence: ['network-watch-selftest.txt'], note: (r.stdout.trim().split('\n').pop() || '').trim() };
+  }, 'network-selftest');
 
   await step(`servers on ${PORT} and ${PROXY_PORT} (TRUST_PROXY=1), ports picked free at start, each port's listener the process the suite spawned`, async () => {
     for (const p of [PORT, PROXY_PORT]) if (!(await portFree(p, '127.0.0.1')) || !(await portFree(p, '::1'))) return { pass: false, note: `port ${p} was taken after it was picked; whatever listens there is left alone` };
@@ -619,10 +640,12 @@ try {
 clearInterval(loadTimer); await probeOnce();
 // Load and network through the run, for report.md (information: the timing checks above are judged as always)
 const loadOver = loadWatch.filter((w) => w.foreign && w.foreign.cpu > CPU_LIMIT);
-const netBad = loadWatch.flatMap((w) => w.net.filter((n) => !(n.status >= 200 && n.status < 400)).map((n) => ({ at: w.at, ...n })));
+const netBad = loadWatch.flatMap((w) => down(w.net).map((n) => ({ at: w.at, ...n })));
+const rerun = results.filter((r) => r.attempts);
 const loadLines = ['## Load and network through the run', '',
   `Every 30 s from the start of the build to the report (Kian, 2026-10-13): ${loadWatch.length} readings in \`load-watch.txt\`. A process the suite did not start above ${CPU_LIMIT} % CPU in ${loadOver.length} of them${loadOver.length ? `: ${loadOver.map((w) => `${w.at.slice(11, 19)}Z ${w.foreign.name} (PID ${w.foreign.pid}) ${w.foreign.cpu.toFixed(0)} %`).join(', ')}` : ''}; the highest such reading ${(() => { const m = loadWatch.filter((w) => w.foreign).sort((a, b) => b.foreign.cpu - a.foreign.cpu)[0]; return m ? `${m.foreign.name} (PID ${m.foreign.pid}) ${m.foreign.cpu.toFixed(0)} % at ${m.at.slice(11, 19)}Z` : '—'; })()}.`,
-  `Network probe (one linked photo per outside host, ${PROBES.map((p) => p.host).join(', ') || 'none'}): ${loadWatch.length * PROBES.length - netBad.length} of ${loadWatch.length * PROBES.length} fetches answered${netBad.length ? `; not answered: ${netBad.map((n) => `${n.at.slice(11, 19)}Z ${n.host} ${n.status || n.error}`).join(', ')}` : ''}.`, ''];
+  `Network probe (one linked photo per outside host, ${PROBES.map((p) => p.host).join(', ') || 'none'}): ${loadWatch.length * PROBES.length - netBad.length} of ${loadWatch.length * PROBES.length} fetches answered${netBad.length ? `; not answered: ${netBad.map((n) => `${n.at.slice(11, 19)}Z ${n.host} ${n.error || n.status}`).join(', ')}` : ''}. Before the build (the PM, 2026-10-13: every host must answer): ${netWait.waited.length ? `waited ${Math.round(netWait.waitedMs / 1000)} s, reading every 30 s, on ${netWait.waited.map((w) => `${w.at.slice(11, 19)}Z ${w.down.join(', ')}`).join('; ')}` : 'every host answered at once'}.`,
+  `Steps marked "invalid: network" and run once more (a failure while a host was not answering; the step counts only if its second attempt passes with no outage recorded during it): ${rerun.length ? rerun.map((r) => `${r.name.split(' (')[0]}: attempt 1 INVALID: NETWORK (${r.attempts[0].outages.map((o) => o.at.slice(11, 19) + 'Z').join(', ')}), attempt 2 ${r.attempts[1].outcome}`).join('; ') : 'none'}.`, ''];
 const outcome = (r) => r.outcome || (r.pass ? 'PASS' : 'FAIL');
 const failed = results.filter((r) => outcome(r) === 'FAIL'), knownMissed = results.filter((r) => outcome(r) === 'KNOWN MISS');
 const pass = results.length > 0 && failed.length === 0; // the run fails only on a failure that is not listed as a known miss
@@ -648,11 +671,11 @@ const lines = [
     ...known.map((k) => `| ${cell(k.title)} (\`${k.id}\`, step \`${k.step}\`) | ${knownStatus(k)} | ${k.checks.map((id) => { const b = k.baseline.checks[id], c = k.run?.checks.find((x) => x.id === id), m = c?.metric; return `\`${id}\`: baseline ${b.over} of ${b.of} over, worst ${b.worst}${Number.isFinite(b.median) ? `, median ${b.median} (judged on the median)` : ''}${k.baseline.tolerance ? ` (tolerance ${Math.round(k.baseline.tolerance * 100)} %)` : ''} (run ${k.baseline.run}) → ${m ? `measured ${m.over} of ${m.of} over, worst ${m.worst ?? '—'}${Number.isFinite(m.median) ? `, median ${m.median}` : ''} ${m.unit ?? ''}` : 'no measurement'}${c?.worsened ? ` — **WORSENED**: ${cell(c.worsened)}` : ''}`; }).join('<br>')} | ${k.run ? k.run.checks.map((c) => `${c.ok === null ? 'NOT MEASURED' : c.ok ? 'met' : 'MISSED'}: \`${c.id}\`: ${cell(c.text)}`).join('<br>') : '—'} | ${cell(k.cause)} | ${cell(k.clears)} | ${cell(k.listed)} |`)] : ['None listed.']), '',
   '## Checks', '',
   '| Check | Result | Time | Evidence | Notes |', '| --- | --- | --- | --- | --- |',
-  ...results.map((r) => `| ${r.name} | ${outcome(r)}${underLoad && TIMING.test(r.name) ? ' (under external load)' : ''} | ${(r.ms / 1000).toFixed(1)} s | ${r.evidence.map((e) => `\`${e}\``).join(', ')} | ${r.note.replace(/\|/g, '\\|')} |`), '',
+  ...results.map((r) => `| ${r.name} | ${outcome(r)}${r.attempts ? ' (attempt 2; attempt 1 invalid: network)' : ''}${underLoad && TIMING.test(r.name) ? ' (under external load)' : ''} | ${(r.ms / 1000).toFixed(1)} s | ${r.evidence.map((e) => `\`${e}\``).join(', ')} | ${r.note.replace(/\|/g, '\\|')} |`), '',
   'Every path is relative to this folder. Screenshots, full Lighthouse JSON, the first HTML responses, uploads and the dumps stay on the machine that ran the suite (gitignored); report.md, summary.json, the check JSON files and the text logs are committed. Every server and drill ran against the scratch copy of the working database (isolation.json lists the database each process connected to, from its own log and from pg_stat_activity), which was dropped afterwards; the working database itself was only read (the dump, then the search for suite-account rows in working-db-suite-rows.json). Lighthouse numbers are local estimates; since the welcome screen (2026-10-09) their LCP element is the welcome logo, so the Lighthouse LCP measures the welcome screen, not the menu behind it; the menu after the language tap is measured by the after-tap step under throttled mobile conditions.', '',
 ];
 fs.writeFileSync(path.join(out, 'report.md'), lines.join('\n'));
-fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, suite: FULL ? 'full' : 'fast', pass, uploads: { from: WORK_UPLOADS, copied: uploadsCopied.length, keys: uploadKeys.length, missing: uploadsMissing }, preflight: { ...pre, forced: underLoad, offenders: preBad, waited: preWait?.waited ?? null, waitedMs: preWait?.waitedMs ?? null }, loadWatch: { readings: loadWatch.length, foreignOver: loadOver.length, netNotAnswered: netBad.length, probes: PROBES.map((p) => p.host) }, underExternalLoad: underLoad ? results.filter((r) => TIMING.test(r.name)).map((r) => r.name) : [], ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT, perfServer: PERF_PORT }, perfFixture: { ok: perf.ok, id: perf.pointer?.id ?? null, dir: perf.dir, problems: perf.problems, database: perfName, dump: perf.pointer?.dump ?? null, uploads: perf.pointer?.uploads ?? null }, contentCost, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, baseline: k.baseline, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
+fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify({ stamp, commit, suite: FULL ? 'full' : 'fast', pass, uploads: { from: WORK_UPLOADS, copied: uploadsCopied.length, keys: uploadKeys.length, missing: uploadsMissing }, preflight: { ...pre, forced: underLoad, offenders: preBad, waited: preWait?.waited ?? null, waitedMs: preWait?.waitedMs ?? null }, loadWatch: { readings: loadWatch.length, foreignOver: loadOver.length, netNotAnswered: netBad.length, probes: PROBES.map((p) => p.host), networkWaitMs: netWait.waitedMs, networkWaited: netWait.waited, rerunForNetwork: rerun.map((r) => ({ name: r.name, attempts: r.attempts })) }, underExternalLoad: underLoad ? results.filter((r) => TIMING.test(r.name)).map((r) => r.name) : [], ports: { server: PORT, proxyServer: PROXY_PORT, seasonServer: SEASON_PORT, transitionServer: TX_PORT, perfServer: PERF_PORT }, perfFixture: { ok: perf.ok, id: perf.pointer?.id ?? null, dir: perf.dir, problems: perf.problems, database: perfName, dump: perf.pointer?.dump ?? null, uploads: perf.pointer?.uploads ?? null }, contentCost, knownMisses: known.map((k) => ({ id: k.id, title: k.title, step: k.step, baseline: k.baseline, status: k.run?.status ?? 'NOT RUN', checks: k.run?.checks ?? [] })), results }, null, 2));
 console.log('\n' + lines.slice(4).join('\n'));
 console.log(`\nreport: ${path.relative(process.cwd(), path.join(out, 'report.md'))}`);
 console.log(`CHECK SUITE (${FULL ? 'full' : 'fast'}) ${pass ? 'PASS' : 'FAIL'}${knownMissed.length ? ` (${knownMissed.length} KNOWN MISS)` : ''}${underLoad ? ' (forced: timing checks under external load)' : ''}`);

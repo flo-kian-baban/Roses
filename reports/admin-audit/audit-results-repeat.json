@@ -1,0 +1,1818 @@
+{
+  "at": "2026-10-13T00:09:40.961Z",
+  "base": "http://127.0.0.1:63367",
+  "viewport": {
+    "width": 390,
+    "height": 664
+  },
+  "commit": "0273a84",
+  "pageErrors": [],
+  "results": [
+    {
+      "task": "t1-sizes",
+      "title": "Americano: one price → Small 5.49 / Large 6.49",
+      "taps": 9,
+      "fields": 5,
+      "keys": 1,
+      "scrolls": 1,
+      "scrollPx": 660,
+      "scrollMinPx": 372,
+      "appWaitMs": 1180,
+      "waitingForSavesMs": 24,
+      "waitingForPublicPageMs": 17,
+      "rawWallMs": 2526,
+      "screenshotMsExcluded": 1346,
+      "done": true,
+      "path": "search \"Americano\" → row → More → Add size (price becomes \"Regular\") → overwrite Regular→Small, 5.99→5.49 → Add size again → Large, 6.49 → Enter",
+      "overwrites": [
+        "Size 1 name: \"Regular\"",
+        "Size 1 price: \"5.99\""
+      ],
+      "lost": [
+        "Add size: below the fold (350 px under the screen's bottom edge); scrolled the item panel 660 px (to mid-screen; at least 372 px to bring it fully on screen)"
+      ],
+      "notes": [
+        "\"Add size\" on a one-price item shows 1 size row once its save is answered (the one price became the size \"Regular\"); no blank second row stays, so \"Add size\" has to be tapped again"
+      ],
+      "detail": {
+        "variants": [
+          {
+            "label": {
+              "en": "Small",
+              "fa": null
+            },
+            "price": 5.49
+          },
+          {
+            "label": {
+              "en": "Large",
+              "fa": null
+            },
+            "price": 6.49
+          }
+        ],
+        "price": null,
+        "toast": "Saved·Undo"
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 85,
+          "text": "TYPE \"Americano\""
+        },
+        {
+          "ms": 120,
+          "text": "TAP the \"Americano\" row in Hot Beverage"
+        },
+        {
+          "ms": 232,
+          "text": "TAP More"
+        },
+        {
+          "ms": 349,
+          "text": "SCROLL 660 px (the item panel) to reach Add size: below the fold (350 px under the screen's bottom edge); at least 372 px needed"
+        },
+        {
+          "ms": 374,
+          "text": "TAP Add size"
+        },
+        {
+          "ms": 524,
+          "text": "after \"Add size\": 1 size row(s) on screen: [\"Size 1=Regular\",\"Size 1 (Persian)=\",\"Size 1 price=5.99\"]"
+        },
+        {
+          "ms": 553,
+          "text": "TAP Size 1 name (field)"
+        },
+        {
+          "ms": 637,
+          "text": "TYPE \"Small\" over \"Regular\""
+        },
+        {
+          "ms": 671,
+          "text": "TAP Size 1 price (field)"
+        },
+        {
+          "ms": 754,
+          "text": "TYPE \"5.49\" over \"5.99\""
+        },
+        {
+          "ms": 792,
+          "text": "TAP Add size (again, for row 2)"
+        },
+        {
+          "ms": 908,
+          "text": "TAP Size 2 name (field)"
+        },
+        {
+          "ms": 989,
+          "text": "TYPE \"Large\""
+        },
+        {
+          "ms": 1024,
+          "text": "TAP Size 2 price (field)"
+        },
+        {
+          "ms": 1105,
+          "text": "TYPE \"6.49\""
+        },
+        {
+          "ms": 1129,
+          "text": "KEY Enter (saves the last price)"
+        }
+      ],
+      "shots": [
+        "t1-sizes-01-start.jpg",
+        "t1-sizes-02-search.jpg",
+        "t1-sizes-03-panel.jpg",
+        "t1-sizes-04-more.jpg",
+        "t1-sizes-05-add-size.jpg",
+        "t1-sizes-06-size-1.jpg",
+        "t1-sizes-07-size-2.jpg",
+        "t1-sizes-08-saved.jpg"
+      ],
+      "line": "MEASURE: t1-sizes | taps 9 | fields 5 | keys 1 | scrolls 1 (660 px) | app wait 1180 ms | done yes | search \"Americano\" → row → More → Add size (price becomes \"Regular\") → overwrite Regular→Small, 5.99→5.49 → Add size again → Large, 6.49 → Enter"
+    },
+    {
+      "task": "t2-milk",
+      "title": "Milk (Whole milk 0, Lactose-free 0, Oat milk +1) on the 7 lattes of Hot Beverage: Latte, Vanilla Latte, Hazelnut Latte, Organic Beet Latte, Matcha Latte, Pumpkin Spice Latte, Pumpkin Latte",
+      "taps": 91,
+      "fields": 50,
+      "keys": 7,
+      "scrolls": 23,
+      "scrollPx": 6902,
+      "scrollMinPx": 1688,
+      "appWaitMs": 11657,
+      "waitingForSavesMs": 180,
+      "waitingForPublicPageMs": 7,
+      "rawWallMs": 19027,
+      "screenshotMsExcluded": 7370,
+      "done": true,
+      "path": "search \"Latte\" → for each of 7: row → Advanced → 3 × (Add a choice → group \"Milk\" → choice → [extra price]) → Enter → Done",
+      "overwrites": [
+        "Add-on 5 extra price: \"0\"",
+        "Add-on 3 extra price: \"0\"",
+        "Add-on 3 extra price: \"0\"",
+        "Add-on 3 extra price: \"0\"",
+        "Add-on 3 extra price: \"0\"",
+        "Add-on 3 extra price: \"0\"",
+        "Add-on 3 extra price: \"0\""
+      ],
+      "lost": [
+        "the \"Latte\" row in Hot Beverage: below the fold (23 px under the screen's bottom edge); scrolled the page 355 px (to mid-screen; at least 51 px to bring it fully on screen)",
+        "Advanced: below the fold (55 px under the screen's bottom edge); scrolled the item panel 175 px (to mid-screen; at least 79 px to bring it fully on screen)",
+        "Add a choice: below the fold (354 px under the screen's bottom edge); scrolled the item panel 664 px (to mid-screen; at least 376 px to bring it fully on screen)",
+        "Add a choice: below the fold (46 px under the screen's bottom edge); scrolled the item panel 356 px (to mid-screen; at least 68 px to bring it fully on screen)",
+        "Advanced: below the fold (55 px under the screen's bottom edge); scrolled the item panel 175 px (to mid-screen; at least 79 px to bring it fully on screen)",
+        "Add a choice: below the fold (10 px under the screen's bottom edge); scrolled the item panel 320 px (to mid-screen; at least 32 px to bring it fully on screen)",
+        "Add a choice: below the fold (34 px under the screen's bottom edge); scrolled the item panel 344 px (to mid-screen; at least 56 px to bring it fully on screen)",
+        "Advanced: below the fold (55 px under the screen's bottom edge); scrolled the item panel 175 px (to mid-screen; at least 79 px to bring it fully on screen)",
+        "Add a choice: below the fold (10 px under the screen's bottom edge); scrolled the item panel 320 px (to mid-screen; at least 32 px to bring it fully on screen)",
+        "Add a choice: below the fold (34 px under the screen's bottom edge); scrolled the item panel 344 px (to mid-screen; at least 56 px to bring it fully on screen)",
+        "Advanced: below the fold (55 px under the screen's bottom edge); scrolled the item panel 175 px (to mid-screen; at least 79 px to bring it fully on screen)",
+        "Add a choice: below the fold (10 px under the screen's bottom edge); scrolled the item panel 320 px (to mid-screen; at least 32 px to bring it fully on screen)",
+        "Add a choice: below the fold (34 px under the screen's bottom edge); scrolled the item panel 344 px (to mid-screen; at least 56 px to bring it fully on screen)",
+        "the \"Matcha Latte\" row in Hot Beverage: covered by the Saved · Undo toast; scrolled the page 273 px (to mid-screen; at least 67 px to bring it fully on screen)",
+        "Advanced: below the fold (55 px under the screen's bottom edge); scrolled the item panel 175 px (to mid-screen; at least 79 px to bring it fully on screen)",
+        "Add a choice: below the fold (10 px under the screen's bottom edge); scrolled the item panel 320 px (to mid-screen; at least 32 px to bring it fully on screen)",
+        "Add a choice: below the fold (34 px under the screen's bottom edge); scrolled the item panel 344 px (to mid-screen; at least 56 px to bring it fully on screen)",
+        "Advanced: below the fold (100 px under the screen's bottom edge); scrolled the item panel 220 px (to mid-screen; at least 124 px to bring it fully on screen)",
+        "Add a choice: below the fold (10 px under the screen's bottom edge); scrolled the item panel 320 px (to mid-screen; at least 32 px to bring it fully on screen)",
+        "Add a choice: below the fold (34 px under the screen's bottom edge); scrolled the item panel 344 px (to mid-screen; at least 56 px to bring it fully on screen)",
+        "Advanced: below the fold (55 px under the screen's bottom edge); scrolled the item panel 175 px (to mid-screen; at least 79 px to bring it fully on screen)",
+        "Add a choice: below the fold (10 px under the screen's bottom edge); scrolled the item panel 320 px (to mid-screen; at least 32 px to bring it fully on screen)",
+        "Add a choice: below the fold (34 px under the screen's bottom edge); scrolled the item panel 344 px (to mid-screen; at least 56 px to bring it fully on screen)"
+      ],
+      "notes": [],
+      "detail": {
+        "lattes": [
+          {
+            "name": "Latte",
+            "listed": true,
+            "milkGroupCorrect": true
+          },
+          {
+            "name": "Vanilla Latte",
+            "listed": false,
+            "milkGroupCorrect": true
+          },
+          {
+            "name": "Hazelnut Latte",
+            "listed": false,
+            "milkGroupCorrect": true
+          },
+          {
+            "name": "Organic Beet Latte",
+            "listed": true,
+            "milkGroupCorrect": true
+          },
+          {
+            "name": "Matcha Latte",
+            "listed": true,
+            "milkGroupCorrect": true
+          },
+          {
+            "name": "Pumpkin Spice Latte",
+            "listed": false,
+            "milkGroupCorrect": true
+          },
+          {
+            "name": "Pumpkin Latte",
+            "listed": true,
+            "milkGroupCorrect": true
+          }
+        ],
+        "publicOk": true
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 88,
+          "text": "TYPE \"Latte\""
+        },
+        {
+          "ms": 125,
+          "text": "SCROLL 355 px (the page) to reach the \"Latte\" row in Hot Beverage: below the fold (23 px under the screen's bottom edge); at least 51 px needed"
+        },
+        {
+          "ms": 154,
+          "text": "TAP the \"Latte\" row in Hot Beverage"
+        },
+        {
+          "ms": 267,
+          "text": "SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed"
+        },
+        {
+          "ms": 298,
+          "text": "TAP Advanced"
+        },
+        {
+          "ms": 412,
+          "text": "SCROLL 664 px (the item panel) to reach Add a choice: below the fold (354 px under the screen's bottom edge); at least 376 px needed"
+        },
+        {
+          "ms": 440,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 558,
+          "text": "TAP Add-on 3 group (field)"
+        },
+        {
+          "ms": 638,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 675,
+          "text": "TAP Add-on 3 choice (field)"
+        },
+        {
+          "ms": 756,
+          "text": "TYPE \"Whole milk\""
+        },
+        {
+          "ms": 784,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 900,
+          "text": "TAP Add-on 4 group (field)"
+        },
+        {
+          "ms": 981,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 1017,
+          "text": "TAP Add-on 4 choice (field)"
+        },
+        {
+          "ms": 1097,
+          "text": "TYPE \"Lactose-free\""
+        },
+        {
+          "ms": 1130,
+          "text": "SCROLL 356 px (the item panel) to reach Add a choice: below the fold (46 px under the screen's bottom edge); at least 68 px needed"
+        },
+        {
+          "ms": 1159,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 1277,
+          "text": "TAP Add-on 5 group (field)"
+        },
+        {
+          "ms": 1358,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 1393,
+          "text": "TAP Add-on 5 choice (field)"
+        },
+        {
+          "ms": 1475,
+          "text": "TYPE \"Oat milk\""
+        },
+        {
+          "ms": 1510,
+          "text": "TAP Add-on 5 extra price (field)"
+        },
+        {
+          "ms": 1594,
+          "text": "TYPE \"1\" over \"0\""
+        },
+        {
+          "ms": 1622,
+          "text": "KEY Enter (saves the last field)"
+        },
+        {
+          "ms": 1693,
+          "text": "TAP Done (back to the list)"
+        },
+        {
+          "ms": 1809,
+          "text": "TAP the \"Vanilla Latte\" row in Hot Beverage"
+        },
+        {
+          "ms": 1920,
+          "text": "SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed"
+        },
+        {
+          "ms": 1950,
+          "text": "TAP Advanced"
+        },
+        {
+          "ms": 2063,
+          "text": "SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed"
+        },
+        {
+          "ms": 2092,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 2211,
+          "text": "TAP Add-on 1 group (field)"
+        },
+        {
+          "ms": 2293,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 2328,
+          "text": "TAP Add-on 1 choice (field)"
+        },
+        {
+          "ms": 2409,
+          "text": "TYPE \"Whole milk\""
+        },
+        {
+          "ms": 2438,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 2553,
+          "text": "TAP Add-on 2 group (field)"
+        },
+        {
+          "ms": 2635,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 2670,
+          "text": "TAP Add-on 2 choice (field)"
+        },
+        {
+          "ms": 2751,
+          "text": "TYPE \"Lactose-free\""
+        },
+        {
+          "ms": 2781,
+          "text": "SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed"
+        },
+        {
+          "ms": 2809,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 2927,
+          "text": "TAP Add-on 3 group (field)"
+        },
+        {
+          "ms": 3008,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 3045,
+          "text": "TAP Add-on 3 choice (field)"
+        },
+        {
+          "ms": 3126,
+          "text": "TYPE \"Oat milk\""
+        },
+        {
+          "ms": 3161,
+          "text": "TAP Add-on 3 extra price (field)"
+        },
+        {
+          "ms": 3244,
+          "text": "TYPE \"1\" over \"0\""
+        },
+        {
+          "ms": 3272,
+          "text": "KEY Enter (saves the last field)"
+        },
+        {
+          "ms": 3335,
+          "text": "TAP Done (back to the list)"
+        },
+        {
+          "ms": 3449,
+          "text": "TAP the \"Hazelnut Latte\" row in Hot Beverage"
+        },
+        {
+          "ms": 3563,
+          "text": "SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed"
+        },
+        {
+          "ms": 3593,
+          "text": "TAP Advanced"
+        },
+        {
+          "ms": 3706,
+          "text": "SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed"
+        },
+        {
+          "ms": 3735,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 3853,
+          "text": "TAP Add-on 1 group (field)"
+        },
+        {
+          "ms": 3934,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 3971,
+          "text": "TAP Add-on 1 choice (field)"
+        },
+        {
+          "ms": 4051,
+          "text": "TYPE \"Whole milk\""
+        },
+        {
+          "ms": 4082,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 4198,
+          "text": "TAP Add-on 2 group (field)"
+        },
+        {
+          "ms": 4280,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 4316,
+          "text": "TAP Add-on 2 choice (field)"
+        },
+        {
+          "ms": 4396,
+          "text": "TYPE \"Lactose-free\""
+        },
+        {
+          "ms": 4440,
+          "text": "SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed"
+        },
+        {
+          "ms": 4468,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 4587,
+          "text": "TAP Add-on 3 group (field)"
+        },
+        {
+          "ms": 4669,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 4704,
+          "text": "TAP Add-on 3 choice (field)"
+        },
+        {
+          "ms": 4784,
+          "text": "TYPE \"Oat milk\""
+        },
+        {
+          "ms": 4821,
+          "text": "TAP Add-on 3 extra price (field)"
+        },
+        {
+          "ms": 4903,
+          "text": "TYPE \"1\" over \"0\""
+        },
+        {
+          "ms": 4933,
+          "text": "KEY Enter (saves the last field)"
+        },
+        {
+          "ms": 4994,
+          "text": "TAP Done (back to the list)"
+        },
+        {
+          "ms": 5111,
+          "text": "TAP the \"Organic Beet Latte\" row in Hot Beverage"
+        },
+        {
+          "ms": 5221,
+          "text": "SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed"
+        },
+        {
+          "ms": 5252,
+          "text": "TAP Advanced"
+        },
+        {
+          "ms": 5368,
+          "text": "SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed"
+        },
+        {
+          "ms": 5397,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 5514,
+          "text": "TAP Add-on 1 group (field)"
+        },
+        {
+          "ms": 5597,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 5632,
+          "text": "TAP Add-on 1 choice (field)"
+        },
+        {
+          "ms": 5713,
+          "text": "TYPE \"Whole milk\""
+        },
+        {
+          "ms": 5744,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 5860,
+          "text": "TAP Add-on 2 group (field)"
+        },
+        {
+          "ms": 5941,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 5978,
+          "text": "TAP Add-on 2 choice (field)"
+        },
+        {
+          "ms": 6059,
+          "text": "TYPE \"Lactose-free\""
+        },
+        {
+          "ms": 6098,
+          "text": "SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed"
+        },
+        {
+          "ms": 6129,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 6247,
+          "text": "TAP Add-on 3 group (field)"
+        },
+        {
+          "ms": 6328,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 6363,
+          "text": "TAP Add-on 3 choice (field)"
+        },
+        {
+          "ms": 6445,
+          "text": "TYPE \"Oat milk\""
+        },
+        {
+          "ms": 6480,
+          "text": "TAP Add-on 3 extra price (field)"
+        },
+        {
+          "ms": 6564,
+          "text": "TYPE \"1\" over \"0\""
+        },
+        {
+          "ms": 6592,
+          "text": "KEY Enter (saves the last field)"
+        },
+        {
+          "ms": 6652,
+          "text": "TAP Done (back to the list)"
+        },
+        {
+          "ms": 6770,
+          "text": "SCROLL 273 px (the page) to reach the \"Matcha Latte\" row in Hot Beverage: covered by the Saved · Undo toast; at least 67 px needed"
+        },
+        {
+          "ms": 6801,
+          "text": "TAP the \"Matcha Latte\" row in Hot Beverage"
+        },
+        {
+          "ms": 6916,
+          "text": "SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed"
+        },
+        {
+          "ms": 6945,
+          "text": "TAP Advanced"
+        },
+        {
+          "ms": 7058,
+          "text": "SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed"
+        },
+        {
+          "ms": 7088,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 7205,
+          "text": "TAP Add-on 1 group (field)"
+        },
+        {
+          "ms": 7288,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 7323,
+          "text": "TAP Add-on 1 choice (field)"
+        },
+        {
+          "ms": 7404,
+          "text": "TYPE \"Whole milk\""
+        },
+        {
+          "ms": 7438,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 7551,
+          "text": "TAP Add-on 2 group (field)"
+        },
+        {
+          "ms": 7632,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 7668,
+          "text": "TAP Add-on 2 choice (field)"
+        },
+        {
+          "ms": 7749,
+          "text": "TYPE \"Lactose-free\""
+        },
+        {
+          "ms": 7793,
+          "text": "SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed"
+        },
+        {
+          "ms": 7821,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 7940,
+          "text": "TAP Add-on 3 group (field)"
+        },
+        {
+          "ms": 8020,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 8056,
+          "text": "TAP Add-on 3 choice (field)"
+        },
+        {
+          "ms": 8138,
+          "text": "TYPE \"Oat milk\""
+        },
+        {
+          "ms": 8172,
+          "text": "TAP Add-on 3 extra price (field)"
+        },
+        {
+          "ms": 8256,
+          "text": "TYPE \"1\" over \"0\""
+        },
+        {
+          "ms": 8285,
+          "text": "KEY Enter (saves the last field)"
+        },
+        {
+          "ms": 8356,
+          "text": "TAP Done (back to the list)"
+        },
+        {
+          "ms": 8473,
+          "text": "TAP the \"Pumpkin Spice Latte\" row in Hot Beverage"
+        },
+        {
+          "ms": 8583,
+          "text": "SCROLL 220 px (the item panel) to reach Advanced: below the fold (100 px under the screen's bottom edge); at least 124 px needed"
+        },
+        {
+          "ms": 8613,
+          "text": "TAP Advanced"
+        },
+        {
+          "ms": 8725,
+          "text": "SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed"
+        },
+        {
+          "ms": 8754,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 8871,
+          "text": "TAP Add-on 1 group (field)"
+        },
+        {
+          "ms": 8953,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 8988,
+          "text": "TAP Add-on 1 choice (field)"
+        },
+        {
+          "ms": 9069,
+          "text": "TYPE \"Whole milk\""
+        },
+        {
+          "ms": 9102,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 9217,
+          "text": "TAP Add-on 2 group (field)"
+        },
+        {
+          "ms": 9299,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 9334,
+          "text": "TAP Add-on 2 choice (field)"
+        },
+        {
+          "ms": 9416,
+          "text": "TYPE \"Lactose-free\""
+        },
+        {
+          "ms": 9446,
+          "text": "SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed"
+        },
+        {
+          "ms": 9477,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 9594,
+          "text": "TAP Add-on 3 group (field)"
+        },
+        {
+          "ms": 9675,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 9711,
+          "text": "TAP Add-on 3 choice (field)"
+        },
+        {
+          "ms": 9792,
+          "text": "TYPE \"Oat milk\""
+        },
+        {
+          "ms": 9827,
+          "text": "TAP Add-on 3 extra price (field)"
+        },
+        {
+          "ms": 9911,
+          "text": "TYPE \"1\" over \"0\""
+        },
+        {
+          "ms": 9956,
+          "text": "KEY Enter (saves the last field)"
+        },
+        {
+          "ms": 10015,
+          "text": "TAP Done (back to the list)"
+        },
+        {
+          "ms": 10133,
+          "text": "TAP the \"Pumpkin Latte\" row in Hot Beverage"
+        },
+        {
+          "ms": 10246,
+          "text": "SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed"
+        },
+        {
+          "ms": 10275,
+          "text": "TAP Advanced"
+        },
+        {
+          "ms": 10390,
+          "text": "SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed"
+        },
+        {
+          "ms": 10420,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 10538,
+          "text": "TAP Add-on 1 group (field)"
+        },
+        {
+          "ms": 10619,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 10653,
+          "text": "TAP Add-on 1 choice (field)"
+        },
+        {
+          "ms": 10736,
+          "text": "TYPE \"Whole milk\""
+        },
+        {
+          "ms": 10768,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 10882,
+          "text": "TAP Add-on 2 group (field)"
+        },
+        {
+          "ms": 10964,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 10999,
+          "text": "TAP Add-on 2 choice (field)"
+        },
+        {
+          "ms": 11081,
+          "text": "TYPE \"Lactose-free\""
+        },
+        {
+          "ms": 11124,
+          "text": "SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed"
+        },
+        {
+          "ms": 11153,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 11271,
+          "text": "TAP Add-on 3 group (field)"
+        },
+        {
+          "ms": 11352,
+          "text": "TYPE \"Milk\""
+        },
+        {
+          "ms": 11386,
+          "text": "TAP Add-on 3 choice (field)"
+        },
+        {
+          "ms": 11469,
+          "text": "TYPE \"Oat milk\""
+        },
+        {
+          "ms": 11504,
+          "text": "TAP Add-on 3 extra price (field)"
+        },
+        {
+          "ms": 11587,
+          "text": "TYPE \"1\" over \"0\""
+        },
+        {
+          "ms": 11617,
+          "text": "KEY Enter (saves the last field)"
+        }
+      ],
+      "shots": [
+        "t2-milk-01-start.jpg",
+        "t2-milk-02-search.jpg",
+        "t2-milk-03-open-1.jpg",
+        "t2-milk-04-advanced-1.jpg",
+        "t2-milk-05-choice-3.jpg",
+        "t2-milk-06-choice-4.jpg",
+        "t2-milk-07-choice-5.jpg",
+        "t2-milk-08-open-2.jpg",
+        "t2-milk-09-advanced-2.jpg",
+        "t2-milk-10-choice-1.jpg",
+        "t2-milk-11-choice-2.jpg",
+        "t2-milk-12-choice-3.jpg",
+        "t2-milk-13-open-3.jpg",
+        "t2-milk-14-advanced-3.jpg",
+        "t2-milk-15-choice-1.jpg",
+        "t2-milk-16-choice-2.jpg",
+        "t2-milk-17-choice-3.jpg",
+        "t2-milk-18-open-4.jpg",
+        "t2-milk-19-advanced-4.jpg",
+        "t2-milk-20-choice-1.jpg",
+        "t2-milk-21-choice-2.jpg",
+        "t2-milk-22-choice-3.jpg",
+        "t2-milk-23-open-5.jpg",
+        "t2-milk-24-advanced-5.jpg",
+        "t2-milk-25-choice-1.jpg",
+        "t2-milk-26-choice-2.jpg",
+        "t2-milk-27-choice-3.jpg",
+        "t2-milk-28-open-6.jpg",
+        "t2-milk-29-advanced-6.jpg",
+        "t2-milk-30-choice-1.jpg",
+        "t2-milk-31-choice-2.jpg",
+        "t2-milk-32-choice-3.jpg",
+        "t2-milk-33-open-7.jpg",
+        "t2-milk-34-advanced-7.jpg",
+        "t2-milk-35-choice-1.jpg",
+        "t2-milk-36-choice-2.jpg",
+        "t2-milk-37-choice-3.jpg",
+        "t2-milk-38-saved.jpg"
+      ],
+      "line": "MEASURE: t2-milk | taps 91 | fields 50 | keys 7 | scrolls 23 (6902 px) | app wait 11657 ms | done yes | search \"Latte\" → for each of 7: row → Advanced → 3 × (Add a choice → group \"Milk\" → choice → [extra price]) → Enter → Done"
+    },
+    {
+      "task": "t3-option-price",
+      "title": "Latte: Oat milk +1 → +1.25",
+      "taps": 4,
+      "fields": 2,
+      "keys": 1,
+      "scrolls": 3,
+      "scrollPx": 1667,
+      "scrollMinPx": 980,
+      "appWaitMs": 597,
+      "waitingForSavesMs": 4,
+      "waitingForPublicPageMs": 7,
+      "rawWallMs": 1351,
+      "screenshotMsExcluded": 754,
+      "done": true,
+      "path": "search \"Latte\" → row → Advanced → Oat milk's extra price: overwrite 1→1.25 → Enter",
+      "overwrites": [
+        "Add-on 5 (Oat milk) extra price: \"1\""
+      ],
+      "lost": [
+        "the \"Latte\" row in Hot Beverage: below the fold (23 px under the screen's bottom edge); scrolled the page 355 px (to mid-screen; at least 51 px to bring it fully on screen)",
+        "Advanced: below the fold (55 px under the screen's bottom edge); scrolled the item panel 175 px (to mid-screen; at least 79 px to bring it fully on screen)",
+        "Add-on 5 (Oat milk) extra price (field): below the fold (827 px under the screen's bottom edge); scrolled the item panel 1137 px (to mid-screen; at least 850 px to bring it fully on screen)"
+      ],
+      "notes": [
+        "Latte's add-on rows on screen: Vanilla, Hazelnut, Whole milk, Lactose-free, Oat milk; Oat milk is row 5"
+      ],
+      "detail": {
+        "oat": {
+          "group": {
+            "en": "Milk",
+            "fa": null
+          },
+          "label": {
+            "en": "Oat milk",
+            "fa": null
+          },
+          "price": 1.25,
+          "required": false
+        }
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 85,
+          "text": "TYPE \"Latte\""
+        },
+        {
+          "ms": 124,
+          "text": "SCROLL 355 px (the page) to reach the \"Latte\" row in Hot Beverage: below the fold (23 px under the screen's bottom edge); at least 51 px needed"
+        },
+        {
+          "ms": 152,
+          "text": "TAP the \"Latte\" row in Hot Beverage"
+        },
+        {
+          "ms": 267,
+          "text": "SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed"
+        },
+        {
+          "ms": 297,
+          "text": "TAP Advanced"
+        },
+        {
+          "ms": 413,
+          "text": "SCROLL 1137 px (the item panel) to reach Add-on 5 (Oat milk) extra price (field): below the fold (827 px under the screen's bottom edge); at least 850 px needed"
+        },
+        {
+          "ms": 443,
+          "text": "TAP Add-on 5 (Oat milk) extra price (field)"
+        },
+        {
+          "ms": 526,
+          "text": "TYPE \"1.25\" over \"1\""
+        },
+        {
+          "ms": 556,
+          "text": "KEY Enter (saves)"
+        }
+      ],
+      "shots": [
+        "t3-option-price-01-start.jpg",
+        "t3-option-price-02-search.jpg",
+        "t3-option-price-03-panel.jpg",
+        "t3-option-price-04-advanced.jpg",
+        "t3-option-price-05-saved.jpg"
+      ],
+      "line": "MEASURE: t3-option-price | taps 4 | fields 2 | keys 1 | scrolls 3 (1667 px) | app wait 597 ms | done yes | search \"Latte\" → row → Advanced → Oat milk's extra price: overwrite 1→1.25 → Enter"
+    },
+    {
+      "task": "t4-extra",
+      "title": "Cappuccino: optional add-on \"Extra shot\" +$1.50",
+      "taps": 6,
+      "fields": 3,
+      "keys": 1,
+      "scrolls": 2,
+      "scrollPx": 495,
+      "scrollMinPx": 111,
+      "appWaitMs": 796,
+      "waitingForSavesMs": 7,
+      "waitingForPublicPageMs": 6,
+      "rawWallMs": 1824,
+      "screenshotMsExcluded": 1028,
+      "done": true,
+      "path": "search \"Cappuccino\" → row → Advanced → Add a choice → choice \"Extra shot\" → extra price overwrite 0→1.50 → Enter (group left empty)",
+      "overwrites": [
+        "Add-on 1 extra price: \"0\""
+      ],
+      "lost": [
+        "Advanced: below the fold (55 px under the screen's bottom edge); scrolled the item panel 175 px (to mid-screen; at least 79 px to bring it fully on screen)",
+        "Add a choice: below the fold (10 px under the screen's bottom edge); scrolled the item panel 320 px (to mid-screen; at least 32 px to bring it fully on screen)"
+      ],
+      "notes": [
+        "Group left empty (shortest path): the customers' popup then titles it \"Options · Optional\"",
+        "public popup group title: Options  گزینه‌ها / Optional  اختیاری"
+      ],
+      "detail": {
+        "add_ons": [
+          {
+            "group": {
+              "en": null,
+              "fa": null
+            },
+            "label": {
+              "en": "Extra shot",
+              "fa": null
+            },
+            "price": 1.5,
+            "required": false
+          }
+        ]
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 87,
+          "text": "TYPE \"Cappuccino\""
+        },
+        {
+          "ms": 124,
+          "text": "TAP the \"Cappuccino\" row in Hot Beverage"
+        },
+        {
+          "ms": 236,
+          "text": "SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed"
+        },
+        {
+          "ms": 266,
+          "text": "TAP Advanced"
+        },
+        {
+          "ms": 381,
+          "text": "SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed"
+        },
+        {
+          "ms": 411,
+          "text": "TAP Add a choice"
+        },
+        {
+          "ms": 528,
+          "text": "TAP Add-on 1 choice (field)"
+        },
+        {
+          "ms": 609,
+          "text": "TYPE \"Extra shot\""
+        },
+        {
+          "ms": 644,
+          "text": "TAP Add-on 1 extra price (field)"
+        },
+        {
+          "ms": 730,
+          "text": "TYPE \"1.50\" over \"0\""
+        },
+        {
+          "ms": 758,
+          "text": "KEY Enter (saves the last field)"
+        }
+      ],
+      "shots": [
+        "t4-extra-01-start.jpg",
+        "t4-extra-02-search.jpg",
+        "t4-extra-03-panel.jpg",
+        "t4-extra-04-advanced.jpg",
+        "t4-extra-05-choice-1.jpg",
+        "t4-extra-06-saved.jpg"
+      ],
+      "line": "MEASURE: t4-extra | taps 6 | fields 3 | keys 1 | scrolls 2 (495 px) | app wait 796 ms | done yes | search \"Cappuccino\" → row → Advanced → Add a choice → choice \"Extra shot\" → extra price overwrite 0→1.50 → Enter (group left empty)"
+    },
+    {
+      "task": "t5-description",
+      "title": "Turkish Coffee: an English and a Persian description",
+      "taps": 6,
+      "fields": 3,
+      "keys": 0,
+      "scrolls": 1,
+      "scrollPx": 398,
+      "scrollMinPx": 136,
+      "appWaitMs": 679,
+      "waitingForSavesMs": 6,
+      "waitingForPublicPageMs": 7,
+      "rawWallMs": 1784,
+      "screenshotMsExcluded": 1105,
+      "done": true,
+      "path": "search \"Turkish\" → row → More → Description → Description (فارسی) → Done",
+      "overwrites": [],
+      "lost": [
+        "Description (field): below the fold (88 px under the screen's bottom edge); scrolled the item panel 398 px (to mid-screen; at least 136 px to bring it fully on screen)"
+      ],
+      "notes": [
+        "A description box is multi-line: Enter adds a new line and does not save; it saves when the box loses focus (here: the tap on Done)"
+      ],
+      "detail": {
+        "description": {
+          "en": "Strong coffee brewed in a copper pot, served with a sweet.",
+          "fa": "قهوه غلیظ دم شده در قهوه جوش مسی با یک شیرینی"
+        }
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 86,
+          "text": "TYPE \"Turkish\""
+        },
+        {
+          "ms": 119,
+          "text": "TAP the \"Turkish Coffee\" row in Hot Beverage"
+        },
+        {
+          "ms": 231,
+          "text": "TAP More"
+        },
+        {
+          "ms": 340,
+          "text": "SCROLL 398 px (the item panel) to reach Description (field): below the fold (88 px under the screen's bottom edge); at least 136 px needed"
+        },
+        {
+          "ms": 371,
+          "text": "TAP Description (field)"
+        },
+        {
+          "ms": 453,
+          "text": "TYPE \"Strong coffee brewed in a copper pot, served with a sweet.\""
+        },
+        {
+          "ms": 487,
+          "text": "TAP Description (فارسی) (field)"
+        },
+        {
+          "ms": 569,
+          "text": "TYPE \"قهوه غلیظ دم شده در قهوه جوش مسی با یک شیرینی\""
+        },
+        {
+          "ms": 592,
+          "text": "TAP Done (the Persian box saves when it loses focus)"
+        }
+      ],
+      "shots": [
+        "t5-description-01-start.jpg",
+        "t5-description-02-search.jpg",
+        "t5-description-03-panel.jpg",
+        "t5-description-04-more.jpg",
+        "t5-description-05-typed.jpg",
+        "t5-description-06-saved.jpg"
+      ],
+      "line": "MEASURE: t5-description | taps 6 | fields 3 | keys 0 | scrolls 1 (398 px) | app wait 679 ms | done yes | search \"Turkish\" → row → More → Description → Description (فارسی) → Done"
+    },
+    {
+      "task": "t6-allergens",
+      "title": "Turkish Coffee: allergens \"milk\"",
+      "taps": 4,
+      "fields": 2,
+      "keys": 1,
+      "scrolls": 2,
+      "scrollPx": 740,
+      "scrollMinPx": 357,
+      "appWaitMs": 584,
+      "waitingForSavesMs": 17,
+      "waitingForPublicPageMs": 5,
+      "rawWallMs": 1350,
+      "screenshotMsExcluded": 766,
+      "done": true,
+      "path": "search \"Turkish\" → row → Advanced → Allergens (free text, comma separated) → \"milk\" → Enter",
+      "overwrites": [],
+      "lost": [
+        "Advanced: below the fold (55 px under the screen's bottom edge); scrolled the item panel 175 px (to mid-screen; at least 79 px to bring it fully on screen)",
+        "Allergens (field): below the fold (255 px under the screen's bottom edge); scrolled the item panel 565 px (to mid-screen; at least 278 px to bring it fully on screen)"
+      ],
+      "notes": [
+        "the Allergens field: free text, placeholder \"nuts, dairy, gluten\", hint \"Comma separated.\"",
+        "public popup: | Contains  | milk | حاوی  | milk |"
+      ],
+      "detail": {
+        "notes": {
+          "text": {
+            "en": null,
+            "fa": null
+          },
+          "halal": null,
+          "dietary": [],
+          "allergens": [
+            "milk"
+          ]
+        }
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 86,
+          "text": "TYPE \"Turkish\""
+        },
+        {
+          "ms": 140,
+          "text": "TAP the \"Turkish Coffee\" row in Hot Beverage"
+        },
+        {
+          "ms": 248,
+          "text": "SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed"
+        },
+        {
+          "ms": 272,
+          "text": "TAP Advanced"
+        },
+        {
+          "ms": 401,
+          "text": "SCROLL 565 px (the item panel) to reach Allergens (field): below the fold (255 px under the screen's bottom edge); at least 278 px needed"
+        },
+        {
+          "ms": 431,
+          "text": "TAP Allergens (field)"
+        },
+        {
+          "ms": 514,
+          "text": "TYPE \"milk\""
+        },
+        {
+          "ms": 545,
+          "text": "KEY Enter (saves)"
+        }
+      ],
+      "shots": [
+        "t6-allergens-01-start.jpg",
+        "t6-allergens-02-search.jpg",
+        "t6-allergens-03-panel.jpg",
+        "t6-allergens-04-advanced.jpg",
+        "t6-allergens-05-saved.jpg"
+      ],
+      "line": "MEASURE: t6-allergens | taps 4 | fields 2 | keys 1 | scrolls 2 (740 px) | app wait 584 ms | done yes | search \"Turkish\" → row → Advanced → Allergens (free text, comma separated) → \"milk\" → Enter"
+    },
+    {
+      "task": "t7-new-item",
+      "title": "Cold Beverage: new \"Audit Iced Tea\", Small 4.99 / Large 5.99, a description, a photo",
+      "taps": 15,
+      "fields": 6,
+      "keys": 1,
+      "scrolls": 2,
+      "scrollPx": 1026,
+      "scrollMinPx": 434,
+      "appWaitMs": 2678,
+      "waitingForSavesMs": 51,
+      "waitingForPublicPageMs": 7,
+      "rawWallMs": 4701,
+      "screenshotMsExcluded": 2023,
+      "done": true,
+      "path": "Jump to section → Cold Beverage → + Add → name, price 4.99, Add photo + choose → Add item → find the new row → More → Description → Add size → overwrite Regular→Small → Add size again → Large, 5.99 → Enter",
+      "overwrites": [
+        "Size 1 name: \"Regular\""
+      ],
+      "lost": [
+        "the \"Audit Iced Tea\" row in Cold Beverage: below the fold (202 px under the screen's bottom edge); scrolled the page 534 px (to mid-screen; at least 230 px to bring it fully on screen)",
+        "Add size: below the fold (182 px under the screen's bottom edge); scrolled the item panel 492 px (to mid-screen; at least 204 px to bring it fully on screen)"
+      ],
+      "notes": [
+        "Jump to section scrolled the page itself to Cold Beverage (y 4141 px)",
+        "the Add item sheet opens with the Name field focused (Chromium; on an iPhone the keyboard may need a tap on the field)",
+        "After \"Add item\" the sheet closes and the new row is highlighted in the list; the editor does not open, so the description and sizes need the row to be found and opened",
+        "\"Add size\" on a one-price item shows 1 size row once its save is answered (the one price became the size \"Regular\"); no blank second row stays, so \"Add size\" has to be tapped again"
+      ],
+      "detail": {
+        "id": "ebe5c738-f82f-46fb-a5fa-47c878bd64d0",
+        "listed": true,
+        "photo": {
+          "alt": {
+            "en": "Audit Iced Tea",
+            "fa": null
+          },
+          "key": "senso/photo-434bd583-6d9d-4241-83c9-4edef6dd8393.jpg",
+          "url": "/uploads/senso/photo-434bd583-6d9d-4241-83c9-4edef6dd8393.jpg",
+          "width": 480,
+          "height": 360
+        },
+        "variants": [
+          {
+            "label": {
+              "en": "Small",
+              "fa": null
+            },
+            "price": 4.99
+          },
+          {
+            "label": {
+              "en": "Large",
+              "fa": null
+            },
+            "price": 5.99
+          }
+        ],
+        "description": {
+          "en": "Black tea over ice with lemon.",
+          "fa": null
+        }
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Jump to section + choose \"Cold Beverage\" (2 taps)"
+        },
+        {
+          "ms": 1009,
+          "text": "TAP + Add on Cold Beverage"
+        },
+        {
+          "ms": 1092,
+          "text": "TYPE \"Audit Iced Tea\" (the Name field has the focus already)"
+        },
+        {
+          "ms": 1119,
+          "text": "TAP Price (the Small price; the sheet has one price only) (field)"
+        },
+        {
+          "ms": 1200,
+          "text": "TYPE \"4.99\""
+        },
+        {
+          "ms": 1206,
+          "text": "TAP Add photo (opens the phone's chooser)"
+        },
+        {
+          "ms": 1252,
+          "text": "TAP choose the photo in the phone's chooser (counted as 1; iOS may add one more)"
+        },
+        {
+          "ms": 1363,
+          "text": "TAP Add item"
+        },
+        {
+          "ms": 1470,
+          "text": "created ebe5c738-f82f-46fb-a5fa-47c878bd64d0"
+        },
+        {
+          "ms": 1511,
+          "text": "SCROLL 534 px (the page) to reach the \"Audit Iced Tea\" row in Cold Beverage: below the fold (202 px under the screen's bottom edge); at least 230 px needed"
+        },
+        {
+          "ms": 1538,
+          "text": "TAP the \"Audit Iced Tea\" row in Cold Beverage"
+        },
+        {
+          "ms": 1650,
+          "text": "TAP More"
+        },
+        {
+          "ms": 1843,
+          "text": "TAP Description (field)"
+        },
+        {
+          "ms": 1923,
+          "text": "TYPE \"Black tea over ice with lemon.\""
+        },
+        {
+          "ms": 1964,
+          "text": "SCROLL 492 px (the item panel) to reach Add size: below the fold (182 px under the screen's bottom edge); at least 204 px needed"
+        },
+        {
+          "ms": 1990,
+          "text": "TAP Add size"
+        },
+        {
+          "ms": 2156,
+          "text": "after \"Add size\": 1 size row(s) on screen: [\"Size 1=Regular\",\"Size 1 (Persian)=\",\"Size 1 price=4.99\"]"
+        },
+        {
+          "ms": 2186,
+          "text": "TAP Size 1 name (field)"
+        },
+        {
+          "ms": 2270,
+          "text": "TYPE \"Small\" over \"Regular\""
+        },
+        {
+          "ms": 2300,
+          "text": "TAP Add size (again, for row 2)"
+        },
+        {
+          "ms": 2415,
+          "text": "TAP Size 2 name (field)"
+        },
+        {
+          "ms": 2497,
+          "text": "TYPE \"Large\""
+        },
+        {
+          "ms": 2533,
+          "text": "TAP Size 2 price (field)"
+        },
+        {
+          "ms": 2613,
+          "text": "TYPE \"5.99\""
+        },
+        {
+          "ms": 2637,
+          "text": "KEY Enter (saves the last price)"
+        }
+      ],
+      "shots": [
+        "t7-new-item-01-start.jpg",
+        "t7-new-item-02-jumped.jpg",
+        "t7-new-item-03-sheet.jpg",
+        "t7-new-item-04-sheet-filled.jpg",
+        "t7-new-item-05-added.jpg",
+        "t7-new-item-06-panel.jpg",
+        "t7-new-item-07-more.jpg",
+        "t7-new-item-08-add-size.jpg",
+        "t7-new-item-09-size-1.jpg",
+        "t7-new-item-10-size-2.jpg",
+        "t7-new-item-11-saved.jpg"
+      ],
+      "line": "MEASURE: t7-new-item | taps 15 | fields 6 | keys 1 | scrolls 2 (1026 px) | app wait 2678 ms | done yes | Jump to section → Cold Beverage → + Add → name, price 4.99, Add photo + choose → Add item → find the new row → More → Description → Add size → overwrite Regular→Small → Add size again → Large, 5.99 → Enter"
+    },
+    {
+      "task": "t8-move",
+      "title": "Iced Americano: Cold Beverage → Hot Beverage (ends in Hot Beverage only)",
+      "taps": 5,
+      "fields": 1,
+      "keys": 0,
+      "scrolls": 1,
+      "scrollPx": 848,
+      "scrollMinPx": 549,
+      "appWaitMs": 608,
+      "waitingForSavesMs": 5,
+      "waitingForPublicPageMs": 6,
+      "rawWallMs": 1693,
+      "screenshotMsExcluded": 1085,
+      "done": true,
+      "path": "search \"Iced Americano\" → row → More → scroll to \"Also show in…\" → tick Hot Beverage (wait for the tick) → untick Cold Beverage",
+      "overwrites": [],
+      "lost": [
+        "\"Also show in…\" Hot Beverage: below the fold (538 px under the screen's bottom edge); scrolled the item panel 848 px (to mid-screen; at least 549 px to bring it fully on screen)"
+      ],
+      "notes": [
+        "No \"Move to\" control: the item's sections are checkboxes under \"Also show in…\"; moving = tick the new section, then untick the old one",
+        "it lands at the end of Hot Beverage (position 18 of 18); placing it elsewhere needs Move up / Move down (one tap per place)"
+      ],
+      "detail": {
+        "placements": [
+          "Hot Beverage"
+        ],
+        "order": {
+          "position": 18,
+          "last": 18
+        }
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 88,
+          "text": "TYPE \"Iced Americano\""
+        },
+        {
+          "ms": 110,
+          "text": "TAP the \"Iced Americano\" row in Cold Beverage"
+        },
+        {
+          "ms": 222,
+          "text": "TAP More"
+        },
+        {
+          "ms": 335,
+          "text": "SCROLL 848 px (the item panel) to reach \"Also show in…\" Hot Beverage: below the fold (538 px under the screen's bottom edge); at least 549 px needed"
+        },
+        {
+          "ms": 364,
+          "text": "TAP \"Also show in…\" Hot Beverage"
+        },
+        {
+          "ms": 469,
+          "text": "the Hot Beverage box shows its tick 25 ms after the tap (it waits for the server: no optimistic tick)"
+        },
+        {
+          "ms": 500,
+          "text": "TAP \"Also show in…\" Cold Beverage (untick)"
+        }
+      ],
+      "shots": [
+        "t8-move-01-start.jpg",
+        "t8-move-02-search.jpg",
+        "t8-move-03-panel.jpg",
+        "t8-move-04-more.jpg",
+        "t8-move-05-ticked.jpg",
+        "t8-move-06-saved.jpg"
+      ],
+      "line": "MEASURE: t8-move | taps 5 | fields 1 | keys 0 | scrolls 1 (848 px) | app wait 608 ms | done yes | search \"Iced Americano\" → row → More → scroll to \"Also show in…\" → tick Hot Beverage (wait for the tick) → untick Cold Beverage"
+    },
+    {
+      "task": "t9-hide-section",
+      "title": "hide the Milkshake section",
+      "taps": 3,
+      "fields": 0,
+      "keys": 0,
+      "scrolls": 0,
+      "scrollPx": 0,
+      "scrollMinPx": 0,
+      "appWaitMs": 1563,
+      "waitingForSavesMs": 4,
+      "waitingForPublicPageMs": 5,
+      "rawWallMs": 1684,
+      "screenshotMsExcluded": 121,
+      "done": true,
+      "path": "Jump to section → Milkshake → the section's switch",
+      "overwrites": [],
+      "lost": [],
+      "notes": [],
+      "detail": {
+        "listed": false,
+        "toast": "Hidden·Undo"
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Jump to section + choose \"Milkshake\" (2 taps)"
+        },
+        {
+          "ms": 1480,
+          "text": "TAP the Milkshake section switch"
+        }
+      ],
+      "shots": [
+        "t9-hide-section-01-start.jpg",
+        "t9-hide-section-02-jumped.jpg",
+        "t9-hide-section-03-saved.jpg"
+      ],
+      "line": "MEASURE: t9-hide-section | taps 3 | fields 0 | keys 0 | scrolls 0 (0 px) | app wait 1563 ms | done yes | Jump to section → Milkshake → the section's switch"
+    },
+    {
+      "task": "p1-fast-sizes",
+      "title": "probe: Mocha one price → Small 7.49 / Large 8.49, typed without waiting for any save to be answered",
+      "taps": 9,
+      "fields": 5,
+      "keys": 1,
+      "scrolls": 1,
+      "scrollPx": 660,
+      "scrollMinPx": 372,
+      "appWaitMs": 855,
+      "waitingForSavesMs": 1,
+      "waitingForPublicPageMs": 7,
+      "rawWallMs": 2213,
+      "screenshotMsExcluded": 1358,
+      "done": true,
+      "path": "as task 1, no wait for the saves",
+      "overwrites": [
+        "Size 1 name: \"Regular\"",
+        "Size 1 price: \"7.99\""
+      ],
+      "lost": [
+        "Add size: below the fold (350 px under the screen's bottom edge); scrolled the item panel 660 px (to mid-screen; at least 372 px to bring it fully on screen)"
+      ],
+      "notes": [
+        "\"Add size\" on a one-price item shows 1 size row once its save is answered (the one price became the size \"Regular\"); no blank second row stays, so \"Add size\" has to be tapped again",
+        "saved in the database: [{\"label\":{\"en\":\"Small\",\"fa\":null},\"price\":7.49},{\"label\":{\"en\":\"Large\",\"fa\":null},\"price\":8.49}]; on screen after the saves were answered: [\"Size 1=Small\",\"Size 1 (Persian)=\",\"Size 1 price=7.49\",\"Size 2=Large\",\"Size 2 (Persian)=\",\"Size 2 price=8.49\"]"
+      ],
+      "detail": {
+        "variants": [
+          {
+            "label": {
+              "en": "Small",
+              "fa": null
+            },
+            "price": 7.49
+          },
+          {
+            "label": {
+              "en": "Large",
+              "fa": null
+            },
+            "price": 8.49
+          }
+        ],
+        "onScreen": [
+          "Size 1=Small",
+          "Size 1 (Persian)=",
+          "Size 1 price=7.49",
+          "Size 2=Large",
+          "Size 2 (Persian)=",
+          "Size 2 price=8.49"
+        ],
+        "revisions": [
+          {
+            "id": "86",
+            "at": "15:09:44.238",
+            "v": null
+          },
+          {
+            "id": "979",
+            "at": "00:09:38.111",
+            "v": [
+              {
+                "label": {
+                  "en": "Regular",
+                  "fa": null
+                },
+                "price": 7.99
+              }
+            ]
+          },
+          {
+            "id": "980",
+            "at": "00:09:38.627",
+            "v": [
+              {
+                "label": {
+                  "en": "Small",
+                  "fa": null
+                },
+                "price": 7.99
+              }
+            ]
+          },
+          {
+            "id": "981",
+            "at": "00:09:38.843",
+            "v": [
+              {
+                "label": {
+                  "en": "Small",
+                  "fa": null
+                },
+                "price": 7.49
+              }
+            ]
+          },
+          {
+            "id": "982",
+            "at": "00:09:39.200",
+            "v": [
+              {
+                "label": {
+                  "en": "Small",
+                  "fa": null
+                },
+                "price": 7.49
+              },
+              {
+                "label": {
+                  "en": "Large",
+                  "fa": null
+                },
+                "price": 8.49
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 82,
+          "text": "TYPE \"Mocha\""
+        },
+        {
+          "ms": 86,
+          "text": "TAP the \"Mocha\" row in Hot Beverage"
+        },
+        {
+          "ms": 170,
+          "text": "TAP More"
+        },
+        {
+          "ms": 264,
+          "text": "SCROLL 660 px (the item panel) to reach Add size: below the fold (350 px under the screen's bottom edge); at least 372 px needed"
+        },
+        {
+          "ms": 283,
+          "text": "TAP Add size"
+        },
+        {
+          "ms": 400,
+          "text": "after \"Add size\": 1 size row(s) on screen: [\"Size 1=Regular\",\"Size 1 (Persian)=\",\"Size 1 price=7.99\"]"
+        },
+        {
+          "ms": 406,
+          "text": "TAP Size 1 name (field)"
+        },
+        {
+          "ms": 483,
+          "text": "TYPE \"Small\" over \"Regular\""
+        },
+        {
+          "ms": 488,
+          "text": "TAP Size 1 price (field)"
+        },
+        {
+          "ms": 567,
+          "text": "TYPE \"7.49\" over \"7.99\""
+        },
+        {
+          "ms": 574,
+          "text": "TAP Add size (again, for row 2)"
+        },
+        {
+          "ms": 657,
+          "text": "TAP Size 2 name (field)"
+        },
+        {
+          "ms": 737,
+          "text": "TYPE \"Large\""
+        },
+        {
+          "ms": 742,
+          "text": "TAP Size 2 price (field)"
+        },
+        {
+          "ms": 820,
+          "text": "TYPE \"8.49\""
+        },
+        {
+          "ms": 820,
+          "text": "KEY Enter (saves the last price)"
+        }
+      ],
+      "shots": [
+        "p1-fast-sizes-01-start.jpg",
+        "p1-fast-sizes-02-search.jpg",
+        "p1-fast-sizes-03-panel.jpg",
+        "p1-fast-sizes-04-more.jpg",
+        "p1-fast-sizes-05-add-size.jpg",
+        "p1-fast-sizes-06-size-1.jpg",
+        "p1-fast-sizes-07-size-2.jpg",
+        "p1-fast-sizes-08-after.jpg"
+      ],
+      "line": "PROBE: p1-fast-sizes | taps 9 | fields 5 | keys 1 | scrolls 1 (660 px) | app wait 855 ms | done yes | as task 1, no wait for the saves"
+    }
+  ]
+}

@@ -1,0 +1,336 @@
+# run 2026-10-13T00:08:01Z on worktree commit 0273a84, server port 63367, database roses_audit (restored from a scratch dump of the working database taken 2026-10-12T23:48:09Z)
+# machine before: 20:08  up 15 days,  3:14, 2 users, load averages: 7.20 6.85 7.93
+items: {
+  americano: 'dc367ad8-2d34-443f-a469-d00d5be142f0',
+  cappuccino: '05a8ce55-0f70-43b5-aef4-98297df1d34e',
+  turkish: 'f99777de-0dc0-4803-afb4-b33a92d9dd21',
+  latte: '9bcf3913-988c-4709-bdf1-b56a6c94298c',
+  icedAmericano: '9496fd2a-2bb7-4918-ab65-7fc8cee0c769',
+  mocha: '50da0510-52c9-4668-8100-96f27fcf29ca'
+} 
+lattes in Hot Beverage: Latte, Vanilla Latte (hidden), Hazelnut Latte (hidden), Organic Beet Latte, Matcha Latte, Pumpkin Spice Latte (hidden), Pumpkin Latte
+
+== t1-sizes: Americano: one price → Small 5.49 / Large 6.49
+  [t1-sizes] +0 ms  TAP Search items (field)
+  [t1-sizes] +85 ms  TYPE "Americano"
+  [t1-sizes] +127 ms  TAP the "Americano" row in Hot Beverage
+  [t1-sizes] +239 ms  TAP More
+  [t1-sizes] +355 ms  SCROLL 660 px (the item panel) to reach Add size: below the fold (350 px under the screen's bottom edge); at least 372 px needed
+  [t1-sizes] +380 ms  TAP Add size
+  [t1-sizes] +531 ms  after "Add size": 1 size row(s) on screen: ["Size 1=Regular","Size 1 (Persian)=","Size 1 price=5.99"]
+  [t1-sizes] +560 ms  TAP Size 1 name (field)
+  [t1-sizes] +644 ms  TYPE "Small" over "Regular"
+  [t1-sizes] +676 ms  TAP Size 1 price (field)
+  [t1-sizes] +760 ms  TYPE "5.49" over "5.99"
+  [t1-sizes] +786 ms  TAP Add size (again, for row 2)
+  [t1-sizes] +902 ms  TAP Size 2 name (field)
+  [t1-sizes] +984 ms  TYPE "Large"
+  [t1-sizes] +1019 ms  TAP Size 2 price (field)
+  [t1-sizes] +1101 ms  TYPE "6.49"
+  [t1-sizes] +1128 ms  KEY Enter (saves the last price)
+MEASURE: t1-sizes | taps 9 | fields 5 | keys 1 | scrolls 1 (660 px) | app wait 1176 ms | done yes | search "Americano" → row → More → Add size (price becomes "Regular") → overwrite Regular→Small, 5.99→5.49 → Add size again → Large, 6.49 → Enter
+
+== t2-milk: Milk (Whole milk 0, Lactose-free 0, Oat milk +1) on the 7 lattes of Hot Beverage: Latte, Vanilla Latte, Hazelnut Latte, Organic Beet Latte, Matcha Latte, Pumpkin Spice Latte, Pumpkin Latte
+  [t2-milk] +0 ms  TAP Search items (field)
+  [t2-milk] +88 ms  TYPE "Latte"
+  [t2-milk] +125 ms  SCROLL 355 px (the page) to reach the "Latte" row in Hot Beverage: below the fold (23 px under the screen's bottom edge); at least 51 px needed
+  [t2-milk] +154 ms  TAP the "Latte" row in Hot Beverage
+  [t2-milk] +267 ms  SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed
+  [t2-milk] +300 ms  TAP Advanced
+  [t2-milk] +416 ms  SCROLL 664 px (the item panel) to reach Add a choice: below the fold (354 px under the screen's bottom edge); at least 376 px needed
+  [t2-milk] +444 ms  TAP Add a choice
+  [t2-milk] +561 ms  TAP Add-on 3 group (field)
+  [t2-milk] +643 ms  TYPE "Milk"
+  [t2-milk] +679 ms  TAP Add-on 3 choice (field)
+  [t2-milk] +759 ms  TYPE "Whole milk"
+  [t2-milk] +790 ms  TAP Add a choice
+  [t2-milk] +906 ms  TAP Add-on 4 group (field)
+  [t2-milk] +986 ms  TYPE "Milk"
+  [t2-milk] +1022 ms  TAP Add-on 4 choice (field)
+  [t2-milk] +1104 ms  TYPE "Lactose-free"
+  [t2-milk] +1131 ms  SCROLL 356 px (the item panel) to reach Add a choice: below the fold (46 px under the screen's bottom edge); at least 68 px needed
+  [t2-milk] +1161 ms  TAP Add a choice
+  [t2-milk] +1279 ms  TAP Add-on 5 group (field)
+  [t2-milk] +1360 ms  TYPE "Milk"
+  [t2-milk] +1395 ms  TAP Add-on 5 choice (field)
+  [t2-milk] +1477 ms  TYPE "Oat milk"
+  [t2-milk] +1512 ms  TAP Add-on 5 extra price (field)
+  [t2-milk] +1595 ms  TYPE "1" over "0"
+  [t2-milk] +1625 ms  KEY Enter (saves the last field)
+  [t2-milk] +1696 ms  TAP Done (back to the list)
+  [t2-milk] +1812 ms  TAP the "Vanilla Latte" row in Hot Beverage
+  [t2-milk] +1923 ms  SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed
+  [t2-milk] +1951 ms  TAP Advanced
+  [t2-milk] +2067 ms  SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed
+  [t2-milk] +2095 ms  TAP Add a choice
+  [t2-milk] +2214 ms  TAP Add-on 1 group (field)
+  [t2-milk] +2296 ms  TYPE "Milk"
+  [t2-milk] +2331 ms  TAP Add-on 1 choice (field)
+  [t2-milk] +2412 ms  TYPE "Whole milk"
+  [t2-milk] +2444 ms  TAP Add a choice
+  [t2-milk] +2559 ms  TAP Add-on 2 group (field)
+  [t2-milk] +2641 ms  TYPE "Milk"
+  [t2-milk] +2677 ms  TAP Add-on 2 choice (field)
+  [t2-milk] +2757 ms  TYPE "Lactose-free"
+  [t2-milk] +2789 ms  SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed
+  [t2-milk] +2815 ms  TAP Add a choice
+  [t2-milk] +2934 ms  TAP Add-on 3 group (field)
+  [t2-milk] +3017 ms  TYPE "Milk"
+  [t2-milk] +3052 ms  TAP Add-on 3 choice (field)
+  [t2-milk] +3133 ms  TYPE "Oat milk"
+  [t2-milk] +3167 ms  TAP Add-on 3 extra price (field)
+  [t2-milk] +3251 ms  TYPE "1" over "0"
+  [t2-milk] +3280 ms  KEY Enter (saves the last field)
+  [t2-milk] +3340 ms  TAP Done (back to the list)
+  [t2-milk] +3457 ms  TAP the "Hazelnut Latte" row in Hot Beverage
+  [t2-milk] +3568 ms  SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed
+  [t2-milk] +3598 ms  TAP Advanced
+  [t2-milk] +3712 ms  SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed
+  [t2-milk] +3740 ms  TAP Add a choice
+  [t2-milk] +3859 ms  TAP Add-on 1 group (field)
+  [t2-milk] +3940 ms  TYPE "Milk"
+  [t2-milk] +3977 ms  TAP Add-on 1 choice (field)
+  [t2-milk] +4059 ms  TYPE "Whole milk"
+  [t2-milk] +4091 ms  TAP Add a choice
+  [t2-milk] +4207 ms  TAP Add-on 2 group (field)
+  [t2-milk] +4289 ms  TYPE "Milk"
+  [t2-milk] +4325 ms  TAP Add-on 2 choice (field)
+  [t2-milk] +4405 ms  TYPE "Lactose-free"
+  [t2-milk] +4435 ms  SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed
+  [t2-milk] +4464 ms  TAP Add a choice
+  [t2-milk] +4581 ms  TAP Add-on 3 group (field)
+  [t2-milk] +4662 ms  TYPE "Milk"
+  [t2-milk] +4698 ms  TAP Add-on 3 choice (field)
+  [t2-milk] +4779 ms  TYPE "Oat milk"
+  [t2-milk] +4815 ms  TAP Add-on 3 extra price (field)
+  [t2-milk] +4898 ms  TYPE "1" over "0"
+  [t2-milk] +4944 ms  KEY Enter (saves the last field)
+  [t2-milk] +5003 ms  TAP Done (back to the list)
+  [t2-milk] +5119 ms  TAP the "Organic Beet Latte" row in Hot Beverage
+  [t2-milk] +5233 ms  SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed
+  [t2-milk] +5263 ms  TAP Advanced
+  [t2-milk] +5375 ms  SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed
+  [t2-milk] +5404 ms  TAP Add a choice
+  [t2-milk] +5523 ms  TAP Add-on 1 group (field)
+  [t2-milk] +5604 ms  TYPE "Milk"
+  [t2-milk] +5640 ms  TAP Add-on 1 choice (field)
+  [t2-milk] +5721 ms  TYPE "Whole milk"
+  [t2-milk] +5750 ms  TAP Add a choice
+  [t2-milk] +5867 ms  TAP Add-on 2 group (field)
+  [t2-milk] +5948 ms  TYPE "Milk"
+  [t2-milk] +5984 ms  TAP Add-on 2 choice (field)
+  [t2-milk] +6065 ms  TYPE "Lactose-free"
+  [t2-milk] +6108 ms  SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed
+  [t2-milk] +6137 ms  TAP Add a choice
+  [t2-milk] +6254 ms  TAP Add-on 3 group (field)
+  [t2-milk] +6336 ms  TYPE "Milk"
+  [t2-milk] +6371 ms  TAP Add-on 3 choice (field)
+  [t2-milk] +6452 ms  TYPE "Oat milk"
+  [t2-milk] +6487 ms  TAP Add-on 3 extra price (field)
+  [t2-milk] +6572 ms  TYPE "1" over "0"
+  [t2-milk] +6600 ms  KEY Enter (saves the last field)
+  [t2-milk] +6661 ms  TAP Done (back to the list)
+  [t2-milk] +6780 ms  SCROLL 273 px (the page) to reach the "Matcha Latte" row in Hot Beverage: covered by the Saved · Undo toast; at least 67 px needed
+  [t2-milk] +6809 ms  TAP the "Matcha Latte" row in Hot Beverage
+  [t2-milk] +6923 ms  SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed
+  [t2-milk] +6953 ms  TAP Advanced
+  [t2-milk] +7070 ms  SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed
+  [t2-milk] +7098 ms  TAP Add a choice
+  [t2-milk] +7217 ms  TAP Add-on 1 group (field)
+  [t2-milk] +7299 ms  TYPE "Milk"
+  [t2-milk] +7334 ms  TAP Add-on 1 choice (field)
+  [t2-milk] +7415 ms  TYPE "Whole milk"
+  [t2-milk] +7444 ms  TAP Add a choice
+  [t2-milk] +7560 ms  TAP Add-on 2 group (field)
+  [t2-milk] +7641 ms  TYPE "Milk"
+  [t2-milk] +7676 ms  TAP Add-on 2 choice (field)
+  [t2-milk] +7759 ms  TYPE "Lactose-free"
+  [t2-milk] +7801 ms  SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed
+  [t2-milk] +7831 ms  TAP Add a choice
+  [t2-milk] +7949 ms  TAP Add-on 3 group (field)
+  [t2-milk] +8030 ms  TYPE "Milk"
+  [t2-milk] +8066 ms  TAP Add-on 3 choice (field)
+  [t2-milk] +8147 ms  TYPE "Oat milk"
+  [t2-milk] +8182 ms  TAP Add-on 3 extra price (field)
+  [t2-milk] +8265 ms  TYPE "1" over "0"
+  [t2-milk] +8294 ms  KEY Enter (saves the last field)
+  [t2-milk] +8356 ms  TAP Done (back to the list)
+  [t2-milk] +8474 ms  TAP the "Pumpkin Spice Latte" row in Hot Beverage
+  [t2-milk] +8588 ms  SCROLL 220 px (the item panel) to reach Advanced: below the fold (100 px under the screen's bottom edge); at least 124 px needed
+  [t2-milk] +8616 ms  TAP Advanced
+  [t2-milk] +8732 ms  SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed
+  [t2-milk] +8761 ms  TAP Add a choice
+  [t2-milk] +8879 ms  TAP Add-on 1 group (field)
+  [t2-milk] +8961 ms  TYPE "Milk"
+  [t2-milk] +8996 ms  TAP Add-on 1 choice (field)
+  [t2-milk] +9079 ms  TYPE "Whole milk"
+  [t2-milk] +9108 ms  TAP Add a choice
+  [t2-milk] +9224 ms  TAP Add-on 2 group (field)
+  [t2-milk] +9305 ms  TYPE "Milk"
+  [t2-milk] +9340 ms  TAP Add-on 2 choice (field)
+  [t2-milk] +9422 ms  TYPE "Lactose-free"
+  [t2-milk] +9452 ms  SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed
+  [t2-milk] +9483 ms  TAP Add a choice
+  [t2-milk] +9601 ms  TAP Add-on 3 group (field)
+  [t2-milk] +9682 ms  TYPE "Milk"
+  [t2-milk] +9718 ms  TAP Add-on 3 choice (field)
+  [t2-milk] +9799 ms  TYPE "Oat milk"
+  [t2-milk] +9834 ms  TAP Add-on 3 extra price (field)
+  [t2-milk] +9917 ms  TYPE "1" over "0"
+  [t2-milk] +9962 ms  KEY Enter (saves the last field)
+  [t2-milk] +10020 ms  TAP Done (back to the list)
+  [t2-milk] +10139 ms  TAP the "Pumpkin Latte" row in Hot Beverage
+  [t2-milk] +10250 ms  SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed
+  [t2-milk] +10280 ms  TAP Advanced
+  [t2-milk] +10393 ms  SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed
+  [t2-milk] +10421 ms  TAP Add a choice
+  [t2-milk] +10539 ms  TAP Add-on 1 group (field)
+  [t2-milk] +10620 ms  TYPE "Milk"
+  [t2-milk] +10656 ms  TAP Add-on 1 choice (field)
+  [t2-milk] +10737 ms  TYPE "Whole milk"
+  [t2-milk] +10776 ms  TAP Add a choice
+  [t2-milk] +10892 ms  TAP Add-on 2 group (field)
+  [t2-milk] +10974 ms  TYPE "Milk"
+  [t2-milk] +11010 ms  TAP Add-on 2 choice (field)
+  [t2-milk] +11091 ms  TYPE "Lactose-free"
+  [t2-milk] +11224 ms  SCROLL 344 px (the item panel) to reach Add a choice: below the fold (34 px under the screen's bottom edge); at least 56 px needed
+  [t2-milk] +11261 ms  TAP Add a choice
+  [t2-milk] +11379 ms  TAP Add-on 3 group (field)
+  [t2-milk] +11460 ms  TYPE "Milk"
+  [t2-milk] +11494 ms  TAP Add-on 3 choice (field)
+  [t2-milk] +11577 ms  TYPE "Oat milk"
+  [t2-milk] +11612 ms  TAP Add-on 3 extra price (field)
+  [t2-milk] +11696 ms  TYPE "1" over "0"
+  [t2-milk] +11741 ms  KEY Enter (saves the last field)
+(node:70560) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+MEASURE: t2-milk | taps 91 | fields 50 | keys 7 | scrolls 23 (6902 px) | app wait 11782 ms | done yes | search "Latte" → for each of 7: row → Advanced → 3 × (Add a choice → group "Milk" → choice → [extra price]) → Enter → Done
+
+== t3-option-price: Latte: Oat milk +1 → +1.25
+  [t3-option-price] +0 ms  TAP Search items (field)
+  [t3-option-price] +87 ms  TYPE "Latte"
+  [t3-option-price] +125 ms  SCROLL 355 px (the page) to reach the "Latte" row in Hot Beverage: below the fold (23 px under the screen's bottom edge); at least 51 px needed
+  [t3-option-price] +155 ms  TAP the "Latte" row in Hot Beverage
+  [t3-option-price] +268 ms  SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed
+  [t3-option-price] +297 ms  TAP Advanced
+  [t3-option-price] +425 ms  SCROLL 1137 px (the item panel) to reach Add-on 5 (Oat milk) extra price (field): below the fold (827 px under the screen's bottom edge); at least 850 px needed
+  [t3-option-price] +454 ms  TAP Add-on 5 (Oat milk) extra price (field)
+  [t3-option-price] +538 ms  TYPE "1.25" over "1"
+  [t3-option-price] +567 ms  KEY Enter (saves)
+MEASURE: t3-option-price | taps 4 | fields 2 | keys 1 | scrolls 3 (1667 px) | app wait 606 ms | done yes | search "Latte" → row → Advanced → Oat milk's extra price: overwrite 1→1.25 → Enter
+
+== t4-extra: Cappuccino: optional add-on "Extra shot" +$1.50
+  [t4-extra] +0 ms  TAP Search items (field)
+  [t4-extra] +86 ms  TYPE "Cappuccino"
+  [t4-extra] +123 ms  TAP the "Cappuccino" row in Hot Beverage
+  [t4-extra] +235 ms  SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed
+  [t4-extra] +265 ms  TAP Advanced
+  [t4-extra] +380 ms  SCROLL 320 px (the item panel) to reach Add a choice: below the fold (10 px under the screen's bottom edge); at least 32 px needed
+  [t4-extra] +410 ms  TAP Add a choice
+  [t4-extra] +528 ms  TAP Add-on 1 choice (field)
+  [t4-extra] +610 ms  TYPE "Extra shot"
+  [t4-extra] +646 ms  TAP Add-on 1 extra price (field)
+  [t4-extra] +728 ms  TYPE "1.50" over "0"
+  [t4-extra] +773 ms  KEY Enter (saves the last field)
+MEASURE: t4-extra | taps 6 | fields 3 | keys 1 | scrolls 2 (495 px) | app wait 812 ms | done yes | search "Cappuccino" → row → Advanced → Add a choice → choice "Extra shot" → extra price overwrite 0→1.50 → Enter (group left empty)
+
+== t5-description: Turkish Coffee: an English and a Persian description
+  [t5-description] +0 ms  TAP Search items (field)
+  [t5-description] +87 ms  TYPE "Turkish"
+  [t5-description] +120 ms  TAP the "Turkish Coffee" row in Hot Beverage
+  [t5-description] +228 ms  TAP More
+  [t5-description] +341 ms  SCROLL 398 px (the item panel) to reach Description (field): below the fold (88 px under the screen's bottom edge); at least 136 px needed
+  [t5-description] +370 ms  TAP Description (field)
+  [t5-description] +453 ms  TYPE "Strong coffee brewed in a copper pot, served with a sweet."
+  [t5-description] +489 ms  TAP Description (فارسی) (field)
+  [t5-description] +570 ms  TYPE "قهوه غلیظ دم شده در قهوه جوش مسی با یک شیرینی"
+  [t5-description] +593 ms  TAP Done (the Persian box saves when it loses focus)
+MEASURE: t5-description | taps 6 | fields 3 | keys 0 | scrolls 1 (398 px) | app wait 678 ms | done yes | search "Turkish" → row → More → Description → Description (فارسی) → Done
+
+== t6-allergens: Turkish Coffee: allergens "milk"
+  [t6-allergens] +0 ms  TAP Search items (field)
+  [t6-allergens] +85 ms  TYPE "Turkish"
+  [t6-allergens] +119 ms  TAP the "Turkish Coffee" row in Hot Beverage
+  [t6-allergens] +232 ms  SCROLL 175 px (the item panel) to reach Advanced: below the fold (55 px under the screen's bottom edge); at least 79 px needed
+  [t6-allergens] +262 ms  TAP Advanced
+  [t6-allergens] +391 ms  SCROLL 565 px (the item panel) to reach Allergens (field): below the fold (255 px under the screen's bottom edge); at least 278 px needed
+  [t6-allergens] +421 ms  TAP Allergens (field)
+  [t6-allergens] +503 ms  TYPE "milk"
+  [t6-allergens] +535 ms  KEY Enter (saves)
+MEASURE: t6-allergens | taps 4 | fields 2 | keys 1 | scrolls 2 (740 px) | app wait 578 ms | done yes | search "Turkish" → row → Advanced → Allergens (free text, comma separated) → "milk" → Enter
+
+== t7-new-item: Cold Beverage: new "Audit Iced Tea", Small 4.99 / Large 5.99, a description, a photo
+  [t7-new-item] +0 ms  TAP Jump to section + choose "Cold Beverage" (2 taps)
+  [t7-new-item] +1010 ms  TAP + Add on Cold Beverage
+  [t7-new-item] +1097 ms  TYPE "Audit Iced Tea" (the Name field has the focus already)
+  [t7-new-item] +1130 ms  TAP Price (the Small price; the sheet has one price only) (field)
+  [t7-new-item] +1210 ms  TYPE "4.99"
+  [t7-new-item] +1216 ms  TAP Add photo (opens the phone's chooser)
+  [t7-new-item] +1262 ms  TAP choose the photo in the phone's chooser (counted as 1; iOS may add one more)
+  [t7-new-item] +1379 ms  TAP Add item
+  [t7-new-item] +1471 ms  created 27a851cb-df30-4233-a9f5-4fa871fb3790
+  [t7-new-item] +1512 ms  SCROLL 534 px (the page) to reach the "Audit Iced Tea" row in Cold Beverage: below the fold (202 px under the screen's bottom edge); at least 230 px needed
+  [t7-new-item] +1539 ms  TAP the "Audit Iced Tea" row in Cold Beverage
+  [t7-new-item] +1660 ms  TAP More
+  [t7-new-item] +1843 ms  TAP Description (field)
+  [t7-new-item] +1924 ms  TYPE "Black tea over ice with lemon."
+  [t7-new-item] +1966 ms  SCROLL 492 px (the item panel) to reach Add size: below the fold (182 px under the screen's bottom edge); at least 204 px needed
+  [t7-new-item] +1991 ms  TAP Add size
+  [t7-new-item] +2175 ms  after "Add size": 1 size row(s) on screen: ["Size 1=Regular","Size 1 (Persian)=","Size 1 price=4.99"]
+  [t7-new-item] +2206 ms  TAP Size 1 name (field)
+  [t7-new-item] +2290 ms  TYPE "Small" over "Regular"
+  [t7-new-item] +2317 ms  TAP Add size (again, for row 2)
+  [t7-new-item] +2432 ms  TAP Size 2 name (field)
+  [t7-new-item] +2514 ms  TYPE "Large"
+  [t7-new-item] +2550 ms  TAP Size 2 price (field)
+  [t7-new-item] +2630 ms  TYPE "5.99"
+  [t7-new-item] +2655 ms  KEY Enter (saves the last price)
+MEASURE: t7-new-item | taps 15 | fields 6 | keys 1 | scrolls 2 (1026 px) | app wait 2698 ms | done yes | Jump to section → Cold Beverage → + Add → name, price 4.99, Add photo + choose → Add item → find the new row → More → Description → Add size → overwrite Regular→Small → Add size again → Large, 5.99 → Enter
+
+== t8-move: Iced Americano: Cold Beverage → Hot Beverage (ends in Hot Beverage only)
+  [t8-move] +0 ms  TAP Search items (field)
+  [t8-move] +87 ms  TYPE "Iced Americano"
+  [t8-move] +124 ms  TAP the "Iced Americano" row in Cold Beverage
+  [t8-move] +234 ms  TAP More
+  [t8-move] +347 ms  SCROLL 848 px (the item panel) to reach "Also show in…" Hot Beverage: below the fold (538 px under the screen's bottom edge); at least 549 px needed
+  [t8-move] +377 ms  TAP "Also show in…" Hot Beverage
+  [t8-move] +482 ms  the Hot Beverage box shows its tick 24 ms after the tap (it waits for the server: no optimistic tick)
+  [t8-move] +511 ms  TAP "Also show in…" Cold Beverage (untick)
+MEASURE: t8-move | taps 5 | fields 1 | keys 0 | scrolls 1 (848 px) | app wait 600 ms | done yes | search "Iced Americano" → row → More → scroll to "Also show in…" → tick Hot Beverage (wait for the tick) → untick Cold Beverage
+
+== t9-hide-section: hide the Milkshake section
+  [t9-hide-section] +0 ms  TAP Jump to section + choose "Milkshake" (2 taps)
+  [t9-hide-section] +1478 ms  TAP the Milkshake section switch
+MEASURE: t9-hide-section | taps 3 | fields 0 | keys 0 | scrolls 0 (0 px) | app wait 1563 ms | done yes | Jump to section → Milkshake → the section's switch
+
+== p1-fast-sizes: probe: Mocha one price → Small 7.49 / Large 8.49, typed without waiting for any save to be answered
+  [p1-fast-sizes] +0 ms  TAP Search items (field)
+  [p1-fast-sizes] +83 ms  TYPE "Mocha"
+  [p1-fast-sizes] +88 ms  TAP the "Mocha" row in Hot Beverage
+  [p1-fast-sizes] +169 ms  TAP More
+  [p1-fast-sizes] +251 ms  SCROLL 660 px (the item panel) to reach Add size: below the fold (350 px under the screen's bottom edge); at least 372 px needed
+  [p1-fast-sizes] +289 ms  TAP Add size
+  [p1-fast-sizes] +412 ms  after "Add size": 1 size row(s) on screen: ["Size 1=Regular","Size 1 (Persian)=","Size 1 price=7.99"]
+  [p1-fast-sizes] +418 ms  TAP Size 1 name (field)
+  [p1-fast-sizes] +495 ms  TYPE "Small" over "Regular"
+  [p1-fast-sizes] +501 ms  TAP Size 1 price (field)
+  [p1-fast-sizes] +578 ms  TYPE "7.49" over "7.99"
+  [p1-fast-sizes] +585 ms  TAP Add size (again, for row 2)
+  [p1-fast-sizes] +672 ms  TAP Size 2 name (field)
+  [p1-fast-sizes] +752 ms  TYPE "Large"
+  [p1-fast-sizes] +761 ms  TAP Size 2 price (field)
+  [p1-fast-sizes] +836 ms  TYPE "8.49"
+  [p1-fast-sizes] +836 ms  KEY Enter (saves the last price)
+PROBE: p1-fast-sizes | taps 9 | fields 5 | keys 1 | scrolls 1 (660 px) | app wait 873 ms | done yes | as task 1, no wait for the saves
+
+MEASURE: t1-sizes | taps 9 | fields 5 | keys 1 | scrolls 1 (660 px) | app wait 1176 ms | done yes | search "Americano" → row → More → Add size (price becomes "Regular") → overwrite Regular→Small, 5.99→5.49 → Add size again → Large, 6.49 → Enter
+MEASURE: t2-milk | taps 91 | fields 50 | keys 7 | scrolls 23 (6902 px) | app wait 11782 ms | done yes | search "Latte" → for each of 7: row → Advanced → 3 × (Add a choice → group "Milk" → choice → [extra price]) → Enter → Done
+MEASURE: t3-option-price | taps 4 | fields 2 | keys 1 | scrolls 3 (1667 px) | app wait 606 ms | done yes | search "Latte" → row → Advanced → Oat milk's extra price: overwrite 1→1.25 → Enter
+MEASURE: t4-extra | taps 6 | fields 3 | keys 1 | scrolls 2 (495 px) | app wait 812 ms | done yes | search "Cappuccino" → row → Advanced → Add a choice → choice "Extra shot" → extra price overwrite 0→1.50 → Enter (group left empty)
+MEASURE: t5-description | taps 6 | fields 3 | keys 0 | scrolls 1 (398 px) | app wait 678 ms | done yes | search "Turkish" → row → More → Description → Description (فارسی) → Done
+MEASURE: t6-allergens | taps 4 | fields 2 | keys 1 | scrolls 2 (740 px) | app wait 578 ms | done yes | search "Turkish" → row → Advanced → Allergens (free text, comma separated) → "milk" → Enter
+MEASURE: t7-new-item | taps 15 | fields 6 | keys 1 | scrolls 2 (1026 px) | app wait 2698 ms | done yes | Jump to section → Cold Beverage → + Add → name, price 4.99, Add photo + choose → Add item → find the new row → More → Description → Add size → overwrite Regular→Small → Add size again → Large, 5.99 → Enter
+MEASURE: t8-move | taps 5 | fields 1 | keys 0 | scrolls 1 (848 px) | app wait 600 ms | done yes | search "Iced Americano" → row → More → scroll to "Also show in…" → tick Hot Beverage (wait for the tick) → untick Cold Beverage
+MEASURE: t9-hide-section | taps 3 | fields 0 | keys 0 | scrolls 0 (0 px) | app wait 1563 ms | done yes | Jump to section → Milkshake → the section's switch
+PROBE: p1-fast-sizes | taps 9 | fields 5 | keys 1 | scrolls 1 (660 px) | app wait 873 ms | done yes | as task 1, no wait for the saves
+# machine after: 20:08  up 15 days,  3:14, 2 users, load averages: 6.44 6.74 7.84

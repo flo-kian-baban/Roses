@@ -34,7 +34,7 @@
             "unit": "ms"
           }
         },
-        "set": "Re-baselined once on the performance fixture 2026-10-12 (the PM's suite fix of 2026-10-12: \"the ratchet applies there\"), from run 2026-10-13T00-14-07Z, the first run on the fixture, 3 repeats judged on the median: List 7293 (outlier) / 1928 / 3513 ms, median 3513; Grid 1878 / 1876 / 1874 ms, median 1876, passing. Tolerance 100 % on the median (up to 7026 ms for the List, below the live-data baseline it replaces, 8043 ms worst of 2), a decision taken by the build agent for the PM to confirm: one run on the fixture gives three List samples from 1928 to 7293 ms, so a 10 % tolerance would fail on noise; to be tightened to the observed spread after more runs on the fixture. The live-data baseline it replaces: run 2026-10-12T03-57-29Z, List 2 of 2 over, worst 8043; Grid 2 of 2, worst 4845 (the worse of two repeats)."
+        "set": "Re-baselined once on the performance fixture 2026-10-12 (the PM's suite fix of 2026-10-12: \"the ratchet applies there\"), from run 2026-10-13T00-14-07Z, the first run on the fixture, 3 repeats judged on the median: List 7293 (outlier) / 1928 / 3513 ms, median 3513; Grid 1876 / 1861 / 1878 ms, median 1876, passing. Tolerance 100 % on the median (up to 7026 ms for the List, below the live-data baseline it replaces, 8043 ms worst of 2), a decision taken by the build agent for the PM to confirm: one run on the fixture gives three List samples from 1928 to 7293 ms, so a 10 % tolerance would fail on noise; to be tightened to the observed spread after more runs on the fixture. The live-data baseline it replaces: run 2026-10-12T03-57-29Z, List 2 of 2 over, worst 8043; Grid 2 of 2, worst 4845 (the worse of two repeats)."
       }
     },
     {

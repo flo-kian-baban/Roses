@@ -1,0 +1,205 @@
+ui: before
+items: {
+  americano: 'dc367ad8-2d34-443f-a469-d00d5be142f0',
+  cappuccino: '05a8ce55-0f70-43b5-aef4-98297df1d34e',
+  turkish: 'f99777de-0dc0-4803-afb4-b33a92d9dd21',
+  latte: '9bcf3913-988c-4709-bdf1-b56a6c94298c',
+  icedAmericano: '9496fd2a-2bb7-4918-ab65-7fc8cee0c769',
+  mocha: '50da0510-52c9-4668-8100-96f27fcf29ca',
+  soup: 'f6cc1bf6-00b9-4ad7-ba7d-4c2925a66928'
+} 
+lattes in Hot Beverage: Latte, Vanilla Latte (hidden), Hazelnut Latte (hidden), Organic Beet Latte, Matcha Latte, Pumpkin Spice Latte (hidden), Pumpkin Latte
+
+== t1-sizes: Americano: one price → Small 5.49 / Large 6.49
+  [t1-sizes] +0 ms  TAP Search items (field)
+  [t1-sizes] +85 ms  TYPE "Americano"
+  [t1-sizes] +114 ms  TAP the "Americano" row in Hot Beverage
+  [t1-sizes] +212 ms  the editor is open: the "in the editor" counts start here
+  [t1-sizes] +247 ms  TAP + Sizes (Basics)
+  [t1-sizes] +326 ms  cursor in "Size 1"; Size 1 price shows "5.99"
+  [t1-sizes] +351 ms  TYPE "Small" (Size 1 name, the cursor already there)
+  [t1-sizes] +416 ms  KEY Tab (to the price)
+  [t1-sizes] +534 ms  TYPE "5.49" over the selected "5.99" (Size 1 price, the cursor already there)
+  [t1-sizes] +600 ms  KEY Enter (saves the row and opens the next)
+  [t1-sizes] +635 ms  cursor in "Size 2"
+  [t1-sizes] +658 ms  TYPE "Large" (Size 2 name, the cursor already there)
+  [t1-sizes] +723 ms  KEY Tab (to the price)
+  [t1-sizes] +790 ms  TYPE "6.49" (Size 2 price, the cursor already there)
+  [t1-sizes] +856 ms  KEY Enter (saves the row)
+MEASURE: t1-sizes | taps 3 | fields 5 | keys 4 | scrolls 0 (0 px) | app wait 907 ms | done yes | search "Americano" → row → + Sizes (Basics) (the cursor in Size 1, its price the item's 5.99) → Small, Tab, 5.49 over it, Enter → Large, Tab, 6.49, Enter
+  in the editor: taps 1, fields 4, keys 4, scrolls 0 (0 px)
+
+== t2-milk: Milk (Whole milk 0, Lactose-free 0, Oat milk +1) on the 7 lattes of Hot Beverage: Latte, Vanilla Latte, Hazelnut Latte, Organic Beet Latte, Matcha Latte, Pumpkin Spice Latte, Pumpkin Latte
+  [t2-milk] +0 ms  TAP Search items (field)
+  [t2-milk] +86 ms  TYPE "Latte"
+  [t2-milk] +124 ms  SCROLL 359 px (the page) to reach the "Latte" row in Hot Beverage: below the fold (27 px under the screen's bottom edge); at least 60 px needed
+  [t2-milk] +152 ms  TAP the "Latte" row in Hot Beverage
+  [t2-milk] +234 ms  the editor is open: the "in the editor" counts start here
+  [t2-milk] +267 ms  TAP + Choices (Basics)
+  [t2-milk] +343 ms  cursor in "Choice group 2"
+  [t2-milk] +377 ms  TYPE "Milk" (the group's name, the cursor already there)
+  [t2-milk] +441 ms  KEY Enter (to the first choice)
+  [t2-milk] +510 ms  TYPE "Whole milk" (choice "Whole milk", the cursor already there)
+  [t2-milk] +575 ms  KEY Tab (to its price)
+  [t2-milk] +657 ms  KEY Enter (saves the row and opens the next)
+  [t2-milk] +727 ms  TYPE "Lactose-free" (choice "Lactose-free", the cursor already there)
+  [t2-milk] +791 ms  KEY Tab (to its price)
+  [t2-milk] +874 ms  KEY Enter (saves the row and opens the next)
+  [t2-milk] +944 ms  TYPE "Oat milk" (choice "Oat milk", the cursor already there)
+  [t2-milk] +1008 ms  KEY Tab (to its price)
+  [t2-milk] +1076 ms  TYPE "1" (Oat milk's extra price, the cursor already there)
+  [t2-milk] +1140 ms  KEY Enter (saves the row)
+  [t2-milk] +1216 ms  TAP Copy to other items… (the Milk group)
+  [t2-milk] +1330 ms  TAP tick Vanilla Latte
+  [t2-milk] +1446 ms  TAP tick Hazelnut Latte
+  [t2-milk] +1563 ms  TAP tick Organic Beet Latte
+  [t2-milk] +1684 ms  SCROLL 422 px (the item panel) to reach tick Matcha Latte: below the fold (169 px under the screen's bottom edge); at least 180 px needed
+  [t2-milk] +1711 ms  TAP tick Matcha Latte
+  [t2-milk] +1830 ms  TAP tick Pumpkin Spice Latte
+  [t2-milk] +1950 ms  SCROLL 176 px (the item panel) to reach tick Pumpkin Latte: covered by div; at least 176 px needed
+  [t2-milk] +1977 ms  TAP tick Pumpkin Latte
+  [t2-milk] +2090 ms  TAP Copy to N items
+(node:84305) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+MEASURE: t2-milk | taps 11 | fields 6 | keys 7 | scrolls 3 (957 px) | app wait 2250 ms | done yes | search "Latte" → Latte → + Choices (Basics) → Milk, Enter → Whole milk, Tab, Enter → Lactose-free, Tab, Enter → Oat milk, Tab, 1, Enter → Copy to other items… → tick the other 6 lattes → Copy
+  in the editor: taps 9, fields 5, keys 7, scrolls 2 (598 px)
+
+== t3-option-price: Latte: Oat milk +1 → +1.25
+  [t3-option-price] +0 ms  TAP Search items (field)
+  [t3-option-price] +86 ms  TYPE "Latte"
+  [t3-option-price] +125 ms  SCROLL 359 px (the page) to reach the "Latte" row in Hot Beverage: below the fold (27 px under the screen's bottom edge); at least 60 px needed
+  [t3-option-price] +154 ms  TAP the "Latte" row in Hot Beverage
+  [t3-option-price] +236 ms  the editor is open: the "in the editor" counts start here
+  [t3-option-price] +269 ms  SCROLL 502 px (the item panel) to reach Advanced: below the fold (192 px under the screen's bottom edge); at least 216 px needed
+  [t3-option-price] +298 ms  TAP Advanced
+  [t3-option-price] +412 ms  SCROLL 775 px (the item panel) to reach Oat milk extra price (field): below the fold (465 px under the screen's bottom edge); at least 488 px needed
+  [t3-option-price] +442 ms  TAP Oat milk extra price (field)
+  [t3-option-price] +527 ms  TYPE "1.25" over "1"
+  [t3-option-price] +555 ms  KEY Enter (saves)
+MEASURE: t3-option-price | taps 4 | fields 2 | keys 1 | scrolls 3 (1636 px) | app wait 597 ms | done yes | search "Latte" → row → Advanced → Oat milk's extra price: overwrite 1→1.25 → Enter
+  in the editor: taps 2, fields 1, keys 1, scrolls 2 (1277 px)
+
+== t4-extra: Cappuccino: optional add-on "Extra shot" +$1.50
+  [t4-extra] +0 ms  TAP Search items (field)
+  [t4-extra] +86 ms  TYPE "Cappuccino"
+  [t4-extra] +108 ms  TAP the "Cappuccino" row in Hot Beverage
+  [t4-extra] +189 ms  the editor is open: the "in the editor" counts start here
+  [t4-extra] +222 ms  TAP + Choices (Basics)
+  [t4-extra] +299 ms  cursor in "Choice group 1"
+  [t4-extra] +331 ms  KEY Enter (past the group's name to the first choice)
+  [t4-extra] +400 ms  TYPE "Extra shot" (the choice, the cursor already there)
+  [t4-extra] +465 ms  KEY Tab (to its price)
+  [t4-extra] +533 ms  TYPE "1.50" (the extra price, the cursor already there)
+  [t4-extra] +598 ms  KEY Enter (saves the row)
+MEASURE: t4-extra | taps 3 | fields 3 | keys 3 | scrolls 0 (0 px) | app wait 638 ms | done yes | search "Cappuccino" → row → + Choices (Basics) → Enter (no group) → Extra shot, Tab, 1.50, Enter
+  in the editor: taps 1, fields 2, keys 3, scrolls 0 (0 px)
+
+== t5-description: Turkish Coffee: an English and a Persian description
+  [t5-description] +0 ms  TAP Search items (field)
+  [t5-description] +86 ms  TYPE "Turkish"
+  [t5-description] +117 ms  TAP the "Turkish Coffee" row in Hot Beverage
+  [t5-description] +197 ms  the editor is open: the "in the editor" counts start here
+  [t5-description] +233 ms  SCROLL 430 px (the item panel) to reach More: below the fold (120 px under the screen's bottom edge); at least 144 px needed
+  [t5-description] +258 ms  TAP More
+  [t5-description] +371 ms  TAP Description (field)
+  [t5-description] +455 ms  TYPE "Strong coffee brewed in a copper pot, served with a sweet." over "Finely ground coffee brewed unfiltered the traditional way: strong, rich and crowned with a velvety foam."
+  [t5-description] +488 ms  TAP Description (فارسی) (field)
+  [t5-description] +571 ms  TYPE "قهوه غلیظ دم شده در قهوه جوش مسی با یک شیرینی" over "قهوهٔ ریزآسیاب، دم‌شده به روش سنتی و بدون فیلتر؛ غلیظ و خوش‌عطر با کفی مخملی روی فنجان."
+  [t5-description] +622 ms  TAP Done (the Persian box saves when it loses focus)
+MEASURE: t5-description | taps 6 | fields 3 | keys 0 | scrolls 1 (430 px) | app wait 708 ms | done yes | search "Turkish" → row → More → Description → Description (فارسی) → Done
+  in the editor: taps 4, fields 2, keys 0, scrolls 1 (430 px)
+
+== t6-allergens: Turkish Coffee: allergens "milk"
+  [t6-allergens] +0 ms  TAP Search items (field)
+  [t6-allergens] +86 ms  TYPE "Turkish"
+  [t6-allergens] +116 ms  TAP the "Turkish Coffee" row in Hot Beverage
+  [t6-allergens] +197 ms  the editor is open: the "in the editor" counts start here
+  [t6-allergens] +230 ms  SCROLL 853 px (the item panel) to reach the Milk chip (Good to know): below the fold (543 px under the screen's bottom edge); at least 565 px needed
+  [t6-allergens] +260 ms  TAP the Milk chip (Good to know)
+MEASURE: t6-allergens | taps 3 | fields 1 | keys 0 | scrolls 1 (853 px) | app wait 352 ms | done yes | search "Turkish" → row → the Milk chip
+  in the editor: taps 1, fields 0, keys 0, scrolls 1 (853 px)
+
+== t7-new-item: Cold Beverage: new "Audit Iced Tea", Small 4.99 / Large 5.99, a description, a photo
+  [t7-new-item] +0 ms  TAP Jump to section + choose "Cold Beverage" (2 taps)
+  [t7-new-item] +1022 ms  TAP + Add on Cold Beverage
+  [t7-new-item] +1106 ms  TYPE "Audit Iced Tea" (the Name field has the focus already)
+  [t7-new-item] +1131 ms  TAP Price (the Small price; the sheet has one price only) (field)
+  [t7-new-item] +1211 ms  TYPE "4.99"
+  [t7-new-item] +1217 ms  TAP Add photo (opens the phone's chooser)
+  [t7-new-item] +1262 ms  TAP choose the photo in the phone's chooser (counted as 1; iOS may add one more)
+  [t7-new-item] +1327 ms  TAP Add item
+  [t7-new-item] +1440 ms  created 43625d76-2e0d-4edd-8a46-acea1b5f2c78; the editor opened on it with More open
+  [t7-new-item] +1440 ms  the editor is open: the "in the editor" counts start here
+  [t7-new-item] +1476 ms  SCROLL 542 px (the item panel) to reach Description (field): below the fold (232 px under the screen's bottom edge); at least 280 px needed
+  [t7-new-item] +1504 ms  TAP Description (field)
+  [t7-new-item] +1587 ms  TYPE "Black tea over ice with lemon."
+  [t7-new-item] +1633 ms  SCROLL 542 px (the item panel) to reach + Sizes (Basics): above the screen; at least 232 px needed
+  [t7-new-item] +1672 ms  TAP + Sizes (Basics)
+  [t7-new-item] +1806 ms  cursor in "Size 1"; Size 1 price shows "4.99"
+  [t7-new-item] +1836 ms  TYPE "Small" (Size 1 name, the cursor already there)
+  [t7-new-item] +1902 ms  KEY Tab (to the price)
+  [t7-new-item] +1968 ms  KEY Enter (saves the row and opens the next)
+  [t7-new-item] +2007 ms  cursor in "Size 2"
+  [t7-new-item] +2030 ms  TYPE "Large" (Size 2 name, the cursor already there)
+  [t7-new-item] +2095 ms  KEY Tab (to the price)
+  [t7-new-item] +2164 ms  TYPE "5.99" (Size 2 price, the cursor already there)
+  [t7-new-item] +2229 ms  KEY Enter (saves the row)
+MEASURE: t7-new-item | taps 9 | fields 6 | keys 4 | scrolls 2 (1084 px) | app wait 2270 ms | done yes | Jump to section → Cold Beverage → + Add → name, price 4.99, Add photo + choose → Add item (the editor opens on it, More open) → Description → + Sizes (Basics) → Small, Tab, Enter → Large, Tab, 5.99, Enter
+  in the editor: taps 2, fields 4, keys 4, scrolls 2 (1084 px)
+
+== t8-move: Iced Americano: Cold Beverage → Hot Beverage (ends in Hot Beverage only)
+  [t8-move] +0 ms  TAP Search items (field)
+  [t8-move] +86 ms  TYPE "Iced Americano"
+  [t8-move] +118 ms  TAP the "Iced Americano" row in Cold Beverage
+  [t8-move] +198 ms  the editor is open: the "in the editor" counts start here
+  [t8-move] +229 ms  TAP Section (Basics)
+  [t8-move] +345 ms  TAP Hot Beverage
+MEASURE: t8-move | taps 4 | fields 1 | keys 0 | scrolls 0 (0 px) | app wait 455 ms | done yes | search "Iced Americano" → row → Section → Hot Beverage
+  in the editor: taps 2, fields 0, keys 0, scrolls 0 (0 px)
+
+== t9-hide-section: hide the Milkshake section
+  [t9-hide-section] +0 ms  TAP Jump to section + choose "Milkshake" (2 taps)
+  [t9-hide-section] +1478 ms  TAP the Milkshake section switch
+MEASURE: t9-hide-section | taps 3 | fields 0 | keys 0 | scrolls 0 (0 px) | app wait 1562 ms | done yes | Jump to section → Milkshake → the section's switch
+
+== t10-hide-item: Mocha: hide it from its editor
+  [t10-hide-item] +0 ms  TAP Search items (field)
+  [t10-hide-item] +84 ms  TYPE "Mocha"
+  [t10-hide-item] +119 ms  TAP the "Mocha" row in Hot Beverage
+  [t10-hide-item] +200 ms  the editor is open: the "in the editor" counts start here
+  [t10-hide-item] +234 ms  SCROLL 353 px (the item panel) to reach the Shown switch (Basics): below the fold (43 px under the screen's bottom edge); at least 59 px needed
+  [t10-hide-item] +263 ms  TAP the Shown switch (Basics)
+MEASURE: t10-hide-item | taps 3 | fields 1 | keys 0 | scrolls 1 (353 px) | app wait 351 ms | done yes | search "Mocha" → row → the Shown switch (the last row of Basics)
+  in the editor: taps 1, fields 0, keys 0, scrolls 1 (353 px)
+
+== t11-sections: Pumpkin Soup: see every section it is in
+  [t11-sections] +0 ms  TAP Search items (field)
+  [t11-sections] +87 ms  TYPE "Pumpkin Soup"
+  [t11-sections] +121 ms  SCROLL 197 px (the page) to reach the "Pumpkin Soup" row in Appetizer: below the fold (27 px under the screen's bottom edge); at least 60 px needed
+  [t11-sections] +150 ms  TAP the "Pumpkin Soup" row in Appetizer
+  [t11-sections] +233 ms  the editor is open: the "in the editor" counts start here
+  [t11-sections] +262 ms  TAP Section (Basics)
+  [t11-sections] +382 ms  SCROLL 335 px (the item panel) to reach Also show in another section…: below the fold (300 px under the screen's bottom edge); at least 322 px needed
+  [t11-sections] +411 ms  TAP Also show in another section…
+  [t11-sections] +731 ms  SCROLL 315 px (the item panel) to reach ticked: Seasonal: below the fold (9 px under the screen's bottom edge); at least 31 px needed
+  [t11-sections] +760 ms  SEE ticked: Seasonal
+  [t11-sections] +798 ms  SCROLL 495 px (the item panel) to reach ticked: Appetizer: below the fold (244 px under the screen's bottom edge); at least 266 px needed
+  [t11-sections] +826 ms  SEE ticked: Appetizer
+MEASURE: t11-sections | taps 4 | fields 1 | keys 0 | scrolls 4 (1342 px) | app wait 827 ms | done yes | search "Pumpkin Soup" → row → Section → Also show in another section… (the ticked boxes)
+  in the editor: taps 2, fields 0, keys 0, scrolls 3 (1145 px)
+
+== t12-duplicate: Latte: duplicate it
+MEASURE: t12-duplicate | taps 0 | fields 0 | keys 0 | scrolls 0 (0 px) | app wait n/a ms | done no | not in this build
+
+MEASURE: t1-sizes | taps 3 | fields 5 | keys 4 | scrolls 0 (0 px) | app wait 907 ms | done yes | search "Americano" → row → + Sizes (Basics) (the cursor in Size 1, its price the item's 5.99) → Small, Tab, 5.49 over it, Enter → Large, Tab, 6.49, Enter | in the editor: taps 1 | fields 4 | keys 4 | scrolls 0 (0 px)
+MEASURE: t2-milk | taps 11 | fields 6 | keys 7 | scrolls 3 (957 px) | app wait 2250 ms | done yes | search "Latte" → Latte → + Choices (Basics) → Milk, Enter → Whole milk, Tab, Enter → Lactose-free, Tab, Enter → Oat milk, Tab, 1, Enter → Copy to other items… → tick the other 6 lattes → Copy | in the editor: taps 9 | fields 5 | keys 7 | scrolls 2 (598 px)
+MEASURE: t3-option-price | taps 4 | fields 2 | keys 1 | scrolls 3 (1636 px) | app wait 597 ms | done yes | search "Latte" → row → Advanced → Oat milk's extra price: overwrite 1→1.25 → Enter | in the editor: taps 2 | fields 1 | keys 1 | scrolls 2 (1277 px)
+MEASURE: t4-extra | taps 3 | fields 3 | keys 3 | scrolls 0 (0 px) | app wait 638 ms | done yes | search "Cappuccino" → row → + Choices (Basics) → Enter (no group) → Extra shot, Tab, 1.50, Enter | in the editor: taps 1 | fields 2 | keys 3 | scrolls 0 (0 px)
+MEASURE: t5-description | taps 6 | fields 3 | keys 0 | scrolls 1 (430 px) | app wait 708 ms | done yes | search "Turkish" → row → More → Description → Description (فارسی) → Done | in the editor: taps 4 | fields 2 | keys 0 | scrolls 1 (430 px)
+MEASURE: t6-allergens | taps 3 | fields 1 | keys 0 | scrolls 1 (853 px) | app wait 352 ms | done yes | search "Turkish" → row → the Milk chip | in the editor: taps 1 | fields 0 | keys 0 | scrolls 1 (853 px)
+MEASURE: t7-new-item | taps 9 | fields 6 | keys 4 | scrolls 2 (1084 px) | app wait 2270 ms | done yes | Jump to section → Cold Beverage → + Add → name, price 4.99, Add photo + choose → Add item (the editor opens on it, More open) → Description → + Sizes (Basics) → Small, Tab, Enter → Large, Tab, 5.99, Enter | in the editor: taps 2 | fields 4 | keys 4 | scrolls 2 (1084 px)
+MEASURE: t8-move | taps 4 | fields 1 | keys 0 | scrolls 0 (0 px) | app wait 455 ms | done yes | search "Iced Americano" → row → Section → Hot Beverage | in the editor: taps 2 | fields 0 | keys 0 | scrolls 0 (0 px)
+MEASURE: t9-hide-section | taps 3 | fields 0 | keys 0 | scrolls 0 (0 px) | app wait 1562 ms | done yes | Jump to section → Milkshake → the section's switch
+MEASURE: t10-hide-item | taps 3 | fields 1 | keys 0 | scrolls 1 (353 px) | app wait 351 ms | done yes | search "Mocha" → row → the Shown switch (the last row of Basics) | in the editor: taps 1 | fields 0 | keys 0 | scrolls 1 (353 px)
+MEASURE: t11-sections | taps 4 | fields 1 | keys 0 | scrolls 4 (1342 px) | app wait 827 ms | done yes | search "Pumpkin Soup" → row → Section → Also show in another section… (the ticked boxes) | in the editor: taps 2 | fields 0 | keys 0 | scrolls 3 (1145 px)
+MEASURE: t12-duplicate | taps 0 | fields 0 | keys 0 | scrolls 0 (0 px) | app wait n/a ms | done no | not in this build

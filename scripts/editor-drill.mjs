@@ -8,7 +8,10 @@
 //   the customers' page HTML (built files under --dist) contains no preview script;
 //   step 2 (2026-10-08): photo upload from the phone (tap count, stored file, public page), tap-to-edit in the preview,
 //   drag-and-drop of an item and of a section on a laptop (admin order = database = public page), deleting a section
-//   with "Move items to" (default) and with "Delete the items too", each undone, items in no section in the Needs-attention bar.
+//   with "Move items to" (default) and with "Delete the items too", each undone, items in no section in the Needs-attention bar;
+//   the item editor rebuild (Kian, 2026-10-13): hide from the status at the top (1 tap, nothing scrolled), the section chips (0 taps),
+//   "Looks good" clearing only that field's draft flag (database) and its Undo, "Saved · Undo" over no control of the editor, Duplicate
+//   (Other, Duplicate: the hidden copy field by field, right after the original, its name selected) and the one Undo that removes it.
 // Needs the production server at --base and DRILL_ADMIN_PIN (an admin PIN valid on any venue).
 //   DRILL_ADMIN_PIN=… node scripts/editor-drill.mjs --base http://127.0.0.1:3100 --out reports/checks/<stamp>/editor --dist .next-check --jpeg
 import fs from 'node:fs/promises';
@@ -62,15 +65,16 @@ let taps = 0; const tap = async (sel) => { taps++; await p.click(sel); };
   const tConfirm = Date.now();
   await p.press('[role=dialog] input[name=price]', 'Enter');
   await p.waitForSelector(`[data-item] >> text=${NAME}`);
-  // since 2026-10-13 (Kian via the PM) the editor opens on the new item, More open; Done closes it
+  // since 2026-10-13 (Kian via the PM) the editor opens on the new item; since the rebuild of the same day its description and price
+  // (and "+ Size") are on its first screen, with no More to open; Done closes it
   const opened = await p.waitForSelector(`.item-panel[aria-label="Edit ${NAME}"]`, { timeout: 5000 }).then(() => true).catch(() => false);
-  const moreOpen = opened && (await p.locator('.item-panel button[aria-expanded="true"]:has-text("More")').count()) > 0;
+  const moreOpen = opened && await p.evaluate(() => { const v = (s) => { const r = document.querySelector(s)?.getBoundingClientRect(); return !!r && r.top >= 0 && r.bottom <= innerHeight; }; return v('.item-panel textarea[aria-label="Description"]') && v('.item-panel [data-price-row]'); });
   if (opened) { await p.click('.item-panel button:has-text("Done")'); await p.waitForSelector('.item-panel', { state: 'detached', timeout: 5000 }).catch(() => {}); }
   const row = (await db.query(`select i.id, i.listed, i.price, x.section_id, x.position, (select max(position) from item_sections where section_id = x.section_id) as last from items i join item_sections x on x.item_id = i.id where i.venue_id = $1 and i.name->>'en' = $2`, [VENUE, NAME])).rows[0];
   itemId = row?.id;
   const pub = await waitPublic((h) => h.includes(`data-id="${itemId}"`));
   await snap(p, 'item-added');
-  check('t-add', taps === 1 && opened && moreOpen && !!row && row.listed && Number(row.price) === 4.5 && row.section_id === sec.id && row.position === row.last && pub.ok, `add an item: ${taps} tap (+ Add item) + name + price + Enter → the editor opened on it (${opened}, More open ${moreOpen}); created shown at $4.50, last in "${sec.name}" (position ${row?.position} of ${row?.last}); on the public page ${pub.ms} ms after Enter`);
+  check('t-add', taps === 1 && opened && moreOpen && !!row && row.listed && Number(row.price) === 4.5 && row.section_id === sec.id && row.position === row.last && pub.ok, `add an item: ${taps} tap (+ Add item) + name + price + Enter → the editor opened on it (${opened}; its description and price on the first screen: ${moreOpen}); created shown at $4.50, last in "${sec.name}" (position ${row?.position} of ${row?.last}); on the public page ${pub.ms} ms after Enter`);
   measure(`add an item: ${taps} tap + name + price + confirm (Enter); on the public page in ${pub.ms} ms; sheet confirmed at +${Date.now() - tConfirm} ms`);
 }
 { // seasonal items (Kian, 2026-10-12): add an item from the Seasonal section, target ≤ 2 taps + name + price; it is tagged with today's
@@ -166,8 +170,8 @@ await snap(l, 'editor-laptop');
   check('preview-no-welcome', welcome.inHtml && welcome.state === 'off' && welcome.display === 'none' && welcome.stored.length === 0 && welcomeAnims.length === 0 && welcome.rowOpacity === 1 && welcome.inert === false, `the fresh frame after a save carries the welcome screen (${welcome.inHtml}) switched off by the admin (data-welcome ${welcome.state}, display ${welcome.display}); no page animation running in the frame (${welcomeAnims.length}${welcome.animations.length ? `; running: ${welcome.animations.join(', ')}` : ''}), first row opacity ${welcome.rowOpacity}, the menu reachable (inert ${welcome.inert}); welcome keys in the admin's storage: ${welcome.stored.length}`);
 }
 { // reorder: Move up in the item panel, then the public page shows the same order
-  await l.click(`[data-item="${itemId}"] button[aria-label^="Edit"]`); await l.click('[role=dialog] button:has-text("More")');
-  await l.click('[role=dialog] button:has-text("Move up")');
+  await l.click(`[data-item="${itemId}"] button[aria-label^="Edit"]`);
+  await l.click(`[role=dialog] button[aria-label="Move up in ${sec.name}"]`); // under Where & when (the editor rebuild, 2026-10-13)
   await l.waitForSelector('[role=status]:has-text("Moved")');
   const adminOrder = await l.$$eval(`#sec-${sec.id} [data-item]`, (els) => els.map((e) => e.dataset.item));
   const dbOrder = (await db.query(`select x.item_id from item_sections x join items i on i.id = x.item_id where x.section_id = $1 order by x.position, i.name->>'en'`, [sec.id])).rows.map((r) => r.item_id);
@@ -190,7 +194,7 @@ await snap(l, 'editor-laptop');
   measure(`Undo of a price change back on the public page after ${back.ms} ms`);
 }
 { // Undo brings a deleted item back, in its section, on the public page
-  await l.click(`[data-item="${itemId}"] button[aria-label^="Edit"]`); await l.click('[role=dialog] button:has-text("Advanced")');
+  await l.click(`[data-item="${itemId}"] button[aria-label^="Edit"]`); await l.click('[role=dialog] [data-group="other"]'); // Delete is under Other (2026-10-13)
   await l.click('[role=dialog] button:has-text("Delete this item")');
   await l.click('[role=dialog][aria-label="Delete this item?"] button:has-text("Delete")');
   await l.waitForSelector('[role=status]:has-text("Deleted")');
@@ -356,7 +360,7 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   const focused = () => p.evaluate(() => document.activeElement?.getAttribute('aria-label'));
   await openIt(itemId, NAME);
   taps = 0;
-  const sizesBtn = p.locator('.item-panel').getByRole('button', { name: 'Sizes', exact: true }); await sizesBtn.scrollIntoViewIfNeeded(); taps++; await sizesBtn.click();
+  const sizesBtn = p.locator('.item-panel [data-price-row]').getByRole('button', { name: 'Size', exact: true }); await sizesBtn.scrollIntoViewIfNeeded(); taps++; await sizesBtn.click(); // "+ Size" beside the price (2026-10-13)
   await p.waitForSelector('.item-panel input[aria-label="Size 1"]');
   await p.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Size 1', null, { timeout: 3000 }).catch(() => {}); // a person types once the cursor is there
   const f1 = await focused(), pre = await p.inputValue('.item-panel input[aria-label="Size 1 price"]');
@@ -366,16 +370,16 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   const ws = await waitDb('select variants, price from items where id=$1', [itemId], (r) => r?.variants?.length === 2);
   const vs = JSON.stringify((ws.row?.variants ?? []).map((v) => [v.label.en, Number(v.price)]));
   await snap(p, 'inline-sizes');
-  check('t-inline-sizes', taps === 1 && f1 === 'Size 1' && pre === '4.5' && f2 === 'Size 2' && ws.ok && vs === JSON.stringify([['Small', 4], ['Large', 6]]) && ws.row.price == null, `+ Sizes: ${taps} tap, the cursor in "${f1}", Size 1's price "${pre}" (the item's); Small, Tab, 4, Enter → the cursor in "${f2}"; Large, Tab, 6, Enter → saved ${vs}, the one price cleared (${ws.row?.price ?? 'null'})`);
-  measure(`two sizes from the item editor: ${taps} tap (+ Sizes) + Small, Tab, 4, Enter, Large, Tab, 6, Enter; saved in the database within ${ws.ms} ms of the last Enter`);
+  check('t-inline-sizes', taps === 1 && f1 === 'Size 1' && pre === '4.5' && f2 === 'Size 2' && ws.ok && vs === JSON.stringify([['Small', 4], ['Large', 6]]) && ws.row.price == null, `+ Size: ${taps} tap, the cursor in "${f1}", Size 1's price "${pre}" (the item's); Small, Tab, 4, Enter → the cursor in "${f2}"; Large, Tab, 6, Enter → saved ${vs}, the one price cleared (${ws.row?.price ?? 'null'})`);
+  measure(`two sizes from the item editor: ${taps} tap (+ Size) + Small, Tab, 4, Enter, Large, Tab, 6, Enter; saved in the database within ${ws.ms} ms of the last Enter`);
   // a choice group, then Copy to other items, then one Undo
   taps = 0;
-  const choicesBtn = p.locator('.item-panel').getByRole('button', { name: 'Choices (milk, extras…)' }); await choicesBtn.scrollIntoViewIfNeeded(); taps++; await choicesBtn.click();
-  await p.waitForFunction(() => /^Choice group \d+$/.test(document.activeElement?.getAttribute('aria-label') || ''), null, { timeout: 3000 }).catch(() => {}); // Advanced opens, then the cursor is in the new group's name
+  const choicesBtn = p.locator('.item-panel').getByRole('button', { name: 'Choice group', exact: true }); await choicesBtn.scrollIntoViewIfNeeded(); taps++; await choicesBtn.click();
+  await p.waitForFunction(() => /^Choice group \d+$/.test(document.activeElement?.getAttribute('aria-label') || ''), null, { timeout: 3000 }).catch(() => {}); // the cursor is in the new group's name
   const fg = await focused();
   await p.keyboard.insertText('Drill milk'); await p.keyboard.press('Enter'); await p.keyboard.insertText('Oat'); await p.keyboard.press('Tab'); await p.keyboard.insertText('1'); await p.keyboard.press('Enter');
   const wc = await waitDb('select add_ons from items where id=$1', [itemId], (r) => r?.add_ons?.some((a) => a.group?.en === 'Drill milk' && a.label.en === 'Oat' && Number(a.price) === 1));
-  const copyBtn = p.locator('.item-panel [data-choice-group="Drill milk"] button:has-text("Copy to other items")'); await copyBtn.scrollIntoViewIfNeeded({ timeout: 8000 }); taps++; await copyBtn.click();
+  const copyBtn = p.locator('.item-panel [data-choice-group="Drill milk"]').getByRole('button', { name: 'Copy to other items…' }); await copyBtn.scrollIntoViewIfNeeded({ timeout: 8000 }); taps++; await copyBtn.click();
   const sheet = p.locator('[role=dialog][aria-label^="Copy “Drill milk”"]'); await sheet.waitFor();
   const box = sheet.locator('label', { hasText: T2 }).locator('input[type=checkbox]').first(); await box.scrollIntoViewIfNeeded(); taps++; await box.click();
   const selAll = await sheet.getByRole('button', { name: /^Select all in / }).count();
@@ -386,7 +390,7 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   await p.click('[role=status] button:has-text("Undo")'); await p.waitForSelector('[role=status]:has-text("Undone")', { timeout: 5000 }).catch(() => {});
   const wu = await waitDb('select add_ons from items where id=$1', [targetId], (r) => (r?.add_ons ?? []).length === 0);
   const src = (await db.query('select add_ons from items where id=$1', [itemId])).rows[0].add_ons;
-  check('t-copy-choices', fg === 'Choice group 1' && wc.ok && selAll > 0 && /Copied to 1 item/.test(toast || '') && wt.ok && wu.ok && src.some((a) => a.group?.en === 'Drill milk'), `+ Choices put the cursor in "${fg}"; "Drill milk" with Oat +$1 saved (${wc.ok}); Copy to other items: the sheet lists the venue's items by section with ${selAll} "Select all in …"; ticked "${T2}", Copy → toast "${(toast || '').trim()}", the group on it (${wt.ok}); Undo → gone from it again (${wu.ok}), still on the drill item (${src.some((a) => a.group?.en === 'Drill milk')}); ${taps} taps in all (+ Choices, Copy to other items, the tick, Copy)`);
+  check('t-copy-choices', fg === 'Choice group 1' && wc.ok && selAll > 0 && /Copied to 1 item/.test(toast || '') && wt.ok && wu.ok && src.some((a) => a.group?.en === 'Drill milk'), `+ Choice group put the cursor in "${fg}"; "Drill milk" with Oat +$1 saved (${wc.ok}); Copy to other items: the sheet lists the venue's items by section with ${selAll} "Select all in …"; ticked "${T2}", Copy → toast "${(toast || '').trim()}", the group on it (${wt.ok}); Undo → gone from it again (${wu.ok}), still on the drill item (${src.some((a) => a.group?.en === 'Drill milk')}); ${taps} taps in all (+ Choice group, Copy to…, the tick, Copy)`);
   // the section picker: a tap on another section moves the item there, last
   const other = (await db.query(`select id, name->>'en' as name from sections where venue_id = $1 and listed and not seasonal and id <> $2 order by position limit 1`, [VENUE, sec.id])).rows[0];
   taps = 0;
@@ -400,6 +404,106 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   await api('/api/admin/item', { action: 'update', id: itemId, patch: { section_ids: [sec.id], variants: [], add_ons: [], price: 4.5 } }, ck); // back as it was for the cleanup
   await p.click('.item-panel button:has-text("Done")').catch(() => {});
   if (targetId) { await api('/api/admin/item', { action: 'delete', id: targetId }, ck); await waitPublic((h) => !h.includes(`data-id="${targetId}"`)); }
+  await ph.close();
+}
+{ // the item editor rebuild (Kian, 2026-10-13), on the phone, on the drill's own item set up as a full one (two sizes, two choice groups, a
+  // description in both languages drafted by research and import, the Persian name a draft, in its section and the Seasonal one): the
+  // status at the top hides it in one tap with nothing scrolled; the chips name every section it is in, on the first screen; "Looks good"
+  // clears only that field's draft flag (database); "Saved · Undo" never lies over a control of the editor; Duplicate (Other, Duplicate)
+  // makes the hidden copy field by field, right after the original, its name selected, and one Undo removes it
+  const m = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'numeric' }).format(new Date())) - 1;
+  const today = m >= 8 && m <= 10 ? 'fall' : m === 11 || m <= 1 ? 'winter' : m <= 4 ? 'spring' : 'summer';
+  const title = { fall: 'Fall Menu', winter: 'Winter Menu', spring: 'Spring Menu', summer: 'Summer Menu' }[today];
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE);
+  const ck = await cookieOf(ph);
+  const seasonalId = (await db.query(`select id from sections where venue_id = $1 and seasonal`, [VENUE])).rows[0].id;
+  const full = { name: { en: NAME, fa: 'آیتم دریل' }, description: { en: 'Drill description, long enough to need more than the one line the editor shows of it.', fa: 'توضیح دریل' }, price: null,
+    variants: [{ label: { en: 'Small', fa: 'کوچک' }, price: 4 }, { label: { en: 'Large', fa: 'بزرگ' }, price: 6 }],
+    add_ons: [{ group: { en: 'Drill milk', fa: null }, label: { en: 'Oat', fa: null }, price: 1, required: false }, { group: { en: 'Drill syrup', fa: null }, label: { en: 'Vanilla', fa: null }, price: 0.5, required: false }],
+    section_ids: [sec.id, seasonalId], seasons: [today], listed: true };
+  const set = await api('/api/admin/item', { action: 'update', id: itemId, patch: full }, ck);
+  await db.query(`update items set drafts = array['description','allergens'], fa_draft = array['name','description'] where id = $1`, [itemId]); // the flags the research and the import leave
+  log('rebuild', `the drill item set up as a full one (${set.status}), research drafts description + allergens, Persian drafts name + description`);
+  await p.goto(`${base}/admin/${VENUE}`); await p.waitForSelector('[data-item]');
+  await p.fill('input[aria-label="Search items"]', NAME); await p.locator(`#sec-${sec.id} [data-item="${itemId}"] button[aria-label^="Edit"]`).click(); await p.waitForSelector(`.item-panel[aria-label="Edit ${NAME}"]`); await sleep(300);
+  const inView = (sel) => p.evaluate((sel) => { const el = document.querySelector(sel); if (!el) return false; const r = el.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight && r.height > 0; }, sel);
+  await snap(p, 'editor-rebuilt');
+  { // the status: one tap hides, nothing scrolled
+    const where = await inView('.item-panel [data-status] input[role=switch]'), text = (await p.textContent('.item-panel [data-status]'))?.trim();
+    taps = 0; taps++; await p.click('.item-panel [data-status] input[role=switch]');
+    const w = await waitDb('select listed from items where id=$1', [itemId], (r) => r?.listed === false);
+    const after = (await p.textContent('.item-panel [data-status]'))?.trim();
+    check('t-status-hide', where && taps === 1 && w.ok && /^Shown · .* only$/.test(text || '') && /^Hidden/.test(after || ''), `the status at the top reads "${text}", in view on opening (${where}); ${taps} tap on its switch → hidden in the database (${w.ok}, ${w.ms} ms), the status now "${after}"`);
+    await p.click('.item-panel [data-status] input[role=switch]'); await waitDb('select listed from items where id=$1', [itemId], (r) => r?.listed === true);
+  }
+  { // the sections, as chips, with no tap
+    const chips = (await p.locator('.item-panel [data-section-chip]').allTextContents()).map((x) => x.trim());
+    const shown = await inView('.item-panel [data-where] [data-section-chip]');
+    // 0 taps; whether they are on the first screen depends on what comes before them (this item's sizes and two choice groups push them
+    // below it; the audit drill's task 11 measures an item without choices), so that part is information only
+    check('t-section-chips', JSON.stringify(chips) === JSON.stringify([sec.name, title]), `Where & when names every section the item is in, with no tap: ${JSON.stringify(chips)} (wanted ${JSON.stringify([sec.name, title])}; the Seasonal section as customers see it now); on the first screen of this item (two sizes, two choice groups above them): ${shown}`);
+  }
+  { // "Looks good": only that field's flag, in the database; then the Persian one; Undo puts the last back
+    const flags = async () => (await db.query('select drafts, fa_draft, description, name from items where id=$1', [itemId])).rows[0];
+    const b0 = await flags();
+    taps = 0; taps++; await p.getByRole('button', { name: 'Looks good: the English description' }).click();
+    const w1 = await waitDb('select drafts, fa_draft, description, name from items where id=$1', [itemId], (r) => !r?.drafts?.includes('description'));
+    // "Saved · Undo" is up: the editor's scroll area ends above it, and no control of the editor lies under it
+    await p.waitForSelector('[role=status]:has-text("Looks good")'); await sleep(250);
+    const clear = await p.evaluate(() => {
+      const t = document.querySelector('[role=status]').getBoundingClientRect(), sc = document.querySelector('.item-panel .overflow-y-auto').getBoundingClientRect();
+      const over = [...document.querySelectorAll('.item-panel a[href], .item-panel button, .item-panel input, .item-panel textarea, .item-panel select, .item-panel [role=switch]')].filter((el) => {
+        const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const inScroll = el.closest('.overflow-y-auto');
+        const top = Math.max(r.top, inScroll ? sc.top : -1e9), bottom = Math.min(r.bottom, inScroll ? sc.bottom : 1e9);
+        return bottom > top && bottom > t.top && top < t.bottom && r.right > t.left && r.left < t.right;
+      }).map((el) => el.getAttribute('aria-label') || el.textContent?.trim().slice(0, 30));
+      return { toastTop: Math.round(t.top), scrollBottom: Math.round(sc.bottom), zone: !!document.querySelector('.item-panel [data-toast-zone]'), over };
+    });
+    check('t-toast-clear', clear.zone && clear.scrollBottom <= clear.toastTop + 0.5 && clear.over.length === 0, `while "Saved · Undo" shows: the editor's scroll area ends at ${clear.scrollBottom} px, the toast starts at ${clear.toastTop} px (the strip kept free: ${clear.zone}); controls of the editor under the toast: ${clear.over.length ? clear.over.join(', ') : 'none'}`);
+    taps++; await p.getByRole('button', { name: 'Looks good: the Persian description' }).click();
+    const w2 = await waitDb('select drafts, fa_draft, description, name from items where id=$1', [itemId], (r) => !r?.fa_draft?.includes('description'));
+    const tagGone = (await p.locator('.item-panel').getByRole('button', { name: /^Looks good: the (English|Persian) description$/ }).count()) === 0;
+    await p.click('[role=status] button:has-text("Undo")'); await p.waitForSelector('[role=status]:has-text("Undone")', { timeout: 5000 }).catch(() => {});
+    const w3 = await waitDb('select drafts, fa_draft from items where id=$1', [itemId], (r) => r?.fa_draft?.includes('description'));
+    const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    check('t-looks-good', w1.ok && same(w1.row.drafts, ['allergens']) && same(w1.row.fa_draft, b0.fa_draft) && same(w1.row.description, b0.description) && same(w1.row.name, b0.name)
+      && w2.ok && same(w2.row.fa_draft, ['name']) && same(w2.row.drafts, ['allergens']) && same(w2.row.description, b0.description) && tagGone && w3.ok && same(w3.row.fa_draft, ['name', 'description']) && same(w3.row.drafts, ['allergens']),
+      `database before: drafts ${JSON.stringify(b0.drafts)}, fa_draft ${JSON.stringify(b0.fa_draft)}; Looks good on the English description (1 tap) → drafts ${JSON.stringify(w1.row?.drafts)}, fa_draft ${JSON.stringify(w1.row?.fa_draft)}, the texts unchanged (${same(w1.row?.description, b0.description) && same(w1.row?.name, b0.name)}); on the Persian description → fa_draft ${JSON.stringify(w2.row?.fa_draft)}, drafts ${JSON.stringify(w2.row?.drafts)}; both buttons gone (${tagGone}); Undo → fa_draft ${JSON.stringify(w3.row?.fa_draft)}, drafts ${JSON.stringify(w3.row?.drafts)}`);
+    measure(`Looks good on a drafted field: 1 tap; the flag gone from the database in ${w1.ms} ms`);
+  }
+  { // Duplicate: Other, Duplicate; the copy field by field; one Undo removes it
+    const cols = 'name, description, price, variants, add_ons, components, serves, photo, notes, drafts, fa_draft, seasons, listed';
+    const orig = (await db.query(`select ${cols} from items where id=$1`, [itemId])).rows[0];
+    const pos = async (id) => (await db.query('select section_id, position from item_sections where item_id=$1 order by section_id', [id])).rows;
+    const origPos = await pos(itemId);
+    taps = 0;
+    const other = p.locator('.item-panel [data-group="other"]'); await other.scrollIntoViewIfNeeded(); taps++; await other.click();
+    const dup = p.locator('.item-panel').getByRole('button', { name: 'Duplicate', exact: true }); await dup.scrollIntoViewIfNeeded(); taps++; await dup.click();
+    const opened = await p.waitForSelector(`.item-panel[aria-label="Edit ${NAME} (copy)"]`, { timeout: 8000 }).then(() => true).catch(() => false);
+    await p.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Name', null, { timeout: 3000 }).catch(() => {});
+    const focus = await p.evaluate(() => { const a = document.activeElement; return { label: a?.getAttribute('aria-label'), all: !!a?.value && a.selectionStart === 0 && a.selectionEnd === a.value.length }; });
+    const copy = (await db.query(`select id, ${cols} from items where venue_id=$1 and name->>'en'=$2`, [VENUE, `${NAME} (copy)`])).rows[0];
+    const copyPos = copy ? await pos(copy.id) : [];
+    const keys = ['description', 'price', 'variants', 'add_ons', 'components', 'serves', 'photo', 'notes', 'drafts', 'seasons'];
+    const diff = keys.filter((k) => JSON.stringify(copy?.[k]) !== JSON.stringify(orig[k]));
+    const after = copyPos.every((c) => { const o = origPos.find((x) => x.section_id === c.section_id); return o && c.position === o.position + 1; }) && copyPos.length === origPos.length;
+    const listOrder = await p.$$eval(`#sec-${sec.id} [data-item]`, (els) => els.map((e) => e.dataset.item));
+    const nextInList = listOrder[listOrder.indexOf(itemId) + 1] === copy?.id;
+    const pub = await publicHtml(); const offPage = !pub.includes(`data-id="${copy?.id}"`);
+    const toast = (await p.locator('[role=status]').textContent({ timeout: 3000 }).catch(() => ''))?.trim();
+    await snap(p, 'duplicated');
+    await p.click('[role=status] button:has-text("Undo")'); await p.waitForSelector('[role=status]:has-text("Undone")', { timeout: 5000 }).catch(() => {});
+    const gone = await waitDb('select count(*)::int as n from items where id=$1', [copy?.id], (r) => r?.n === 0);
+    const closed = (await p.locator(`.item-panel[aria-label="Edit ${NAME} (copy)"]`).count()) === 0;
+    const origAfter = (await db.query(`select ${cols} from items where id=$1`, [itemId])).rows[0];
+    check('t-duplicate', taps === 2 && opened && !!copy && copy.listed === false && copy.name.en === `${NAME} (copy)` && copy.name.fa === `${orig.name.fa} (کپی)` && diff.length === 0 && after && nextInList && offPage && focus.label === 'Name' && focus.all && /Duplicated/.test(toast || '') && gone.ok && closed && JSON.stringify(origAfter) === JSON.stringify(orig),
+      `${taps} taps (Other, Duplicate) → the editor on "${copy?.name?.en}" / "${copy?.name?.fa}" (${opened}), its name selected (${focus.label}, all selected ${focus.all}); hidden (${copy?.listed === false}), off the public page (${offPage}); the same ${keys.join(', ')}: ${diff.length ? `DIFFER: ${diff.join(', ')}` : 'all equal'}; in the same ${copyPos.length} sections right after the original (${after}; next in the editor's list ${nextInList}); toast "${toast}"; Undo → the copy gone from the database (${gone.ok}), its editor closed (${closed}), the original unchanged (${JSON.stringify(origAfter) === JSON.stringify(orig)})`);
+    measure(`duplicate an item from its editor: ${taps} taps (Other, Duplicate); one Undo removes the copy (${gone.ms} ms)`);
+    if (copy && !gone.ok) await api('/api/admin/item', { action: 'delete', id: copy.id }, ck);
+  }
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { name: { en: NAME, fa: null }, description: { en: null, fa: null }, price: 4.5, variants: [], add_ons: [], section_ids: [sec.id], seasons: [], listed: true } }, ck);
+  await db.query(`update items set drafts = '{}', fa_draft = '{}' where id = $1`, [itemId]);
   await ph.close();
 }
 await laptop.close();

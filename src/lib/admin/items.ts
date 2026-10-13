@@ -15,7 +15,7 @@ export type ItemRow = {
   drafts: string[]; // Kian, 2026-10-12: fields written from research ('description' = English, 'allergens', 'dietary'), cleared by a person's edit or Confirm
 };
 export type ItemSnapshot = Omit<ItemRow, 'id' | 'venue_id' | 'updated_at' | 'updated_by' | 'import_key' | 'price'> & { price: string | number | null; placements: Placement[] };
-export type ItemPatch = Partial<Pick<ItemRow, 'name' | 'description' | 'variants' | 'add_ons' | 'components' | 'serves' | 'photo' | 'notes' | 'listed' | 'seasons' | 'drafts'>> & { price?: string | number | null; section_ids?: string[] };
+export type ItemPatch = Partial<Pick<ItemRow, 'name' | 'description' | 'variants' | 'add_ons' | 'components' | 'serves' | 'photo' | 'notes' | 'listed' | 'seasons' | 'drafts' | 'fa_draft'>> & { price?: string | number | null; section_ids?: string[] };
 
 const COLS = 'id, venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_at, updated_by, import_key, seasons, drafts';
 // The research basis of an item (src/lib/types.ts Basis), from its internal source column: the research import's entry, if any.
@@ -105,8 +105,8 @@ export async function updateItem(id: string, patch: ItemPatch, by: By): Promise<
       next.placements = keep;
     }
     if (next.listed && listingProblem(next)) { await client.query('rollback'); return { ok: false, error: listingProblem(next)! }; }
-    next.fa_draft = clearDrafts(row.fa_draft, before, next);
-    next.drafts = patch.drafts ?? clearResearchDrafts(row.drafts ?? [], before, next); // Confirm sets them; any other edit clears what it touched
+    next.fa_draft = patch.fa_draft ?? clearDrafts(row.fa_draft, before, next); // "Looks good" sets them (one flag less); any other edit clears what it touched
+    next.drafts = patch.drafts ?? clearResearchDrafts(row.drafts ?? [], before, next); // Confirm and "Looks good" set them; any other edit clears what it touched
     if (same(before, next)) { await client.query('rollback'); return { ok: true, id }; } // nothing changed: no write, no record
     await client.query(
       `update items set name=$2, description=$3, price=$4, variants=$5, add_ons=$6, components=$7, serves=$8, photo=$9, notes=$10, listed=$11, fa_draft=$12, seasons=$14, drafts=$15, updated_at=now(), updated_by=$13 where id=$1`,
@@ -162,6 +162,38 @@ export async function deleteItem(id: string, by: By): Promise<Result> {
     const revision = await recordRevision(client, { venueId: row.venue_id, table: 'items', rowId: id, action: 'delete', before, after: null, by });
     await client.query('commit');
     return { ok: true, id, revision };
+  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+}
+
+// Duplicate (Kian, 2026-10-13): a copy of the item named "<name> (copy)" in both languages, hidden, in the same sections (right after the
+// original in each), with the same price, sizes, choices, combo parts, serves, description, photo reference (the same file), seasons,
+// notes and draft flags (so the allergen state is the original's, the research basis included, and its Persian drafts stay drafts). One
+// 'create' record, so one Undo removes the copy; the items after it keep their order.
+export async function duplicateItem(id: string, by: By): Promise<Result & { orders?: { section_id: string; item_ids: string[] }[] }> {
+  const client = await pool.connect();
+  try {
+    await client.query('begin');
+    const src = (await client.query<ItemRow & { source: Record<string, unknown>[] }>(`select ${COLS}, source from items where id = $1`, [id])).rows[0];
+    if (!src) { await client.query('rollback'); return { ok: false, error: 'item not found' }; }
+    const from = (await itemSnapshot(client, id))!;
+    const name: Bi = { en: `${src.name.en ?? ''} (copy)`.trim(), fa: src.name.fa ? `${src.name.fa} (کپی)` : null };
+    const research = (src.source ?? []).filter((s) => s && s.source === 'research');
+    const r = await client.query<{ id: string }>(
+      `insert into items (venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_by, seasons, drafts, source) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,false,$11,$12,$13,$14,$15) returning id`,
+      [src.venue_id, name, src.description, src.price, JSON.stringify(src.variants), JSON.stringify(src.add_ons), JSON.stringify(src.components), src.serves, src.photo, src.notes, src.fa_draft, by, src.seasons ?? [], src.drafts ?? [], JSON.stringify(research)]);
+    const copyId = r.rows[0].id;
+    const placements: Placement[] = [];
+    for (const p of from.placements) {
+      await client.query('update item_sections set position = position + 1 where section_id = $1 and position > $2', [p.section_id, p.position]);
+      await client.query('insert into item_sections (item_id, section_id, position) values ($1,$2,$3)', [copyId, p.section_id, p.position + 1]);
+      placements.push({ section_id: p.section_id, position: p.position + 1 });
+    }
+    const after: ItemSnapshot = { ...from, name, listed: false, placements };
+    const revision = await recordRevision(client, { venueId: src.venue_id, table: 'items', rowId: copyId, action: 'create', before: null, after, by });
+    const orders = [];
+    for (const p of placements) orders.push({ section_id: p.section_id, item_ids: await sectionOrder(client, p.section_id) });
+    await client.query('commit');
+    return { ok: true, id: copyId, revision, orders };
   } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
 }
 

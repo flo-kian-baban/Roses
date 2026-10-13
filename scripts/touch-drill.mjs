@@ -3,7 +3,7 @@
 // smaller visual is fine when its tap area is padded to 44 × 44); the only exception is an inline text link inside a sentence.
 // Measured on the iPhone 13 viewport (390 × 664) and on the iPhone SE at Safari's visible height (375 × 548), on every admin screen:
 // the sign-in screens (venue picker, PIN, email and password), the Menu tab (with the venue and account menus, a section's menu, the
-// add-item sheet, the item editor with More and Advanced open, the price being edited, the preview overlay and the Saved · Undo toast;
+// add-item sheet, the item editor with its two groups (Allergens & diet, Other) open, the price being edited, the preview overlay and the Saved · Undo toast;
 // the item editor again for an item with add-ons on Senso, and on Kebab Land's Menu tab for an item with sizes and one with combo
 // parts, chosen from the database so their row buttons are on screen; the delete confirmation), the Style tab (the phone's bottom sheet: its
 // default with the Layout group, a colour open, the Welcome group, the sheet at full height), the Details tab, Team and + Add venue.
@@ -159,8 +159,8 @@ for (const vp of VIEWPORTS) {
   await screen(vp, p, 'menu: price being edited', async () => { const b = itemRow.locator('[data-price]'); await b.scrollIntoViewIfNeeded(); await b.click(); await itemRow.locator('input[aria-label="Price"]').waitFor(); });
   await p.keyboard.press('Escape'); await sleep(200);
   await screen(vp, p, 'menu: item editor', async () => { const b = itemRow.locator('button[aria-label^="Edit"]'); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('.item-panel'); });
-  await screen(vp, p, 'menu: item editor, More and Advanced open', async () => {
-    for (const t of ['More', 'Advanced']) { const b = p.locator(`.item-panel button[aria-expanded="false"]:has-text("${t}")`).first(); if (await b.count()) { await b.scrollIntoViewIfNeeded(); await b.click(); await sleep(200); } }
+  await screen(vp, p, 'menu: item editor, both groups open', async () => {
+    for (const t of ['allergens', 'other']) { const b = p.locator(`.item-panel [data-group="${t}"][aria-expanded="false"]`).first(); if (await b.count()) { await b.scrollIntoViewIfNeeded(); await b.click(); await sleep(200); } }
   });
   const done = async () => { if (await p.locator('.item-panel').count()) { await p.locator('.item-panel button:has-text("Done")').first().click(); await p.waitForSelector('.item-panel', { state: 'detached', timeout: 5000 }); } };
   await done();
@@ -178,11 +178,11 @@ for (const vp of VIEWPORTS) {
   const openItem = async (id) => {
     await done();
     const b = p.locator(`[data-item="${id}"] button[aria-label^="Edit"]`).first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('.item-panel');
-    for (const t of ['More', 'Advanced']) { const x = p.locator(`.item-panel button[aria-expanded="false"]:has-text("${t}")`).first(); if (await x.count()) { await x.scrollIntoViewIfNeeded(); await x.click(); await sleep(200); } }
+    for (const t of ['allergens', 'other']) { const x = p.locator(`.item-panel [data-group="${t}"][aria-expanded="false"]`).first(); if (await x.count()) { await x.scrollIntoViewIfNeeded(); await x.click(); await sleep(200); } }
   };
   await screen(vp, p, 'menu: item editor, an item with add-ons', async () => { await openItem(ITEMS.addOns); await p.waitForSelector('.item-panel button[aria-label^="Remove add-on"]'); });
   // the sheets of the build after the admin audit (Kian via the PM, 2026-10-13): copy choices to other items, the section picker with "Also show in"
-  await screen(vp, p, 'menu: item editor, copy choices to other items', async () => { const b = p.locator('.item-panel button:has-text("Copy to other items")').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=dialog][aria-label^="Copy “"]'); });
+  await screen(vp, p, 'menu: item editor, copy choices to other items', async () => { const b = p.locator('.item-panel button[aria-label="Copy to other items…"]').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=dialog][aria-label^="Copy “"]'); });
   await p.locator('[role=dialog][aria-label^="Copy “"] button[aria-label="Close"]').last().click().catch(() => {}); await p.waitForSelector('[role=dialog][aria-label^="Copy “"]', { state: 'detached', timeout: 3000 }).catch(() => {});
   await screen(vp, p, 'menu: item editor, the section picker with "Also show in"', async () => { const b = p.locator('.item-panel [data-section-picker]').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=dialog][aria-label^="Move “"]'); await p.click('[role=dialog][aria-label^="Move “"] summary'); await p.waitForSelector('[role=dialog][aria-label^="Move “"] details[open]'); });
   await p.locator('[role=dialog][aria-label^="Move “"] button[aria-label="Close"]').last().click().catch(() => {}); await p.waitForSelector('[role=dialog][aria-label^="Move “"]', { state: 'detached', timeout: 3000 }).catch(() => {});
@@ -190,7 +190,7 @@ for (const vp of VIEWPORTS) {
   await screen(vp, p, 'kebab-land menu', async () => { await p.goto(`${base}/admin/kebab-land`); await p.waitForSelector('[data-item]'); });
   await screen(vp, p, 'kebab-land: item editor, an item with sizes', async () => { await openItem(ITEMS.sizes); await p.waitForSelector('.item-panel button[aria-label^="Remove size"]'); });
   await screen(vp, p, 'kebab-land: item editor, an item with combo parts', async () => { await openItem(ITEMS.parts); await p.waitForSelector('.item-panel button[aria-label^="Remove part"]'); });
-  await screen(vp, p, 'kebab-land: delete confirmation', async () => { const b = p.locator('.item-panel button:has-text("Delete")').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=dialog][aria-label="Delete this item?"]'); });
+  await screen(vp, p, 'kebab-land: delete confirmation', async () => { const b = p.locator('.item-panel button:has-text("Delete this item")').first(); /* under Other (2026-10-13), whose closed summary also says "delete" */ await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=dialog][aria-label="Delete this item?"]'); });
   await p.goto(`${base}/admin/senso`); await p.waitForSelector('[data-item]'); await markSeen(p); // nothing was deleted: the confirmation is left by the page load
   // the Style tab (the phone layout: preview on top, controls in the bottom sheet)
   await screen(vp, p, 'style', async () => { await p.click('a[href="/admin/senso?tab=style"]'); await p.waitForSelector('[data-style-sheet]'); await p.waitForSelector('[data-style-group="tabs"]'); });

@@ -1,24 +1,33 @@
 'use client';
-// Good to know (Kian via the PM, 2026-10-13, after the admin audit): the allergen, diet and halal notes as one-tap chips, right under the
-// item's basics (owner and admin only; staff see nothing here, and the route answers them 403 as before). The allergen chips are Health
-// Canada's priority allergens plus the other gluten sources and sulphites, each with its Persian (src/lib/allergens.json, the words the
-// popup shows as "Contains: …" / "حاوی: …"); a word an owner typed before that is not one of them stays as a chip of its own, and
-// "Other…" adds one. A tap saves at once. Notes drafted from research show as suggested (blue) with what they are based on and Confirm;
-// a tap on a chip is the owner's own choice, so it confirms that list too (the draft flag goes, as for any edit by a person).
+// Allergens & diet (Kian via the PM, 2026-10-13, after the admin audit; a collapsed group of the item editor since the rebuild of the same
+// day, named with a one-line summary such as "Milk · Tree nuts — to confirm"): the allergen, diet and halal notes as one-tap chips (owner
+// and admin only; staff see nothing here, and the route answers them 403 as before). The allergen chips are Health Canada's priority
+// allergens plus the other gluten sources and sulphites, each with its Persian (src/lib/allergens.json, the words the popup shows as
+// "Contains: …" / "حاوی: …"); a word an owner typed before that is not one of them stays as a chip of its own, and "Other…" adds one. A
+// tap saves at once. Notes drafted from research show as suggested (blue) with what they are based on and Confirm; a tap on a chip is the
+// owner's own choice, so it confirms that list too (the draft flag goes, as for any edit by a person). The note for customers is under Other.
 import { useEffect, useState } from 'react';
 import type { Basis, EditorItem, Notes } from '@/lib/types';
 import words from '@/lib/allergens.json';
-import { Badge, TextField, btnPrimary, fieldCls } from './ui';
+import { Badge, btnPrimary, fieldCls } from './ui';
 
 const ALLERGENS = words.allergens, DIET = words.dietary;
 const chipCls = (on: boolean, draft: boolean) => `inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full border px-3.5 text-[15px] font-medium ${on ? (draft ? 'border-sky-300 bg-sky-100 text-sky-900' : 'border-ink bg-ink text-white') : 'border-line bg-white text-ink'}`;
 const norm = (w: string) => w.trim().toLowerCase();
+const cap = (w: string) => (w ? w[0].toUpperCase() + w.slice(1) : w);
+
+// The closed group's line: what the item contains, its diet and halal words, and whether a research draft waits for Confirm.
+export function notesSummary(n: Notes, drafts: string[]): string {
+  const parts = [...n.allergens.map(cap), ...n.dietary, ...(n.halal === true ? ['Halal'] : n.halal === false ? ['Not halal'] : [])];
+  const toConfirm = drafts.includes('allergens') || drafts.includes('dietary');
+  const base = parts.length ? parts.join(' · ') : toConfirm ? 'No common allergen found' : 'None set';
+  return toConfirm ? `${base} — to confirm` : base;
+}
 
 export function GoodToKnow({ item, onNotes, onConfirm, setErr }: { item: EditorItem; onNotes: (n: Notes) => Promise<void>; onConfirm: () => Promise<void>; setErr: (s: string | null) => void }) {
   const [n, setN] = useState<Notes>(item.notes);
   const [other, setOther] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [noteOpen, setNoteOpen] = useState(!!(item.notes.text?.en || item.notes.text?.fa)); // the note fields only once asked for (or when there is a note)
   const key = JSON.stringify(item.notes);
   useEffect(() => { setN(JSON.parse(key)); }, [key]);
   const draftA = item.drafts.includes('allergens'), draftD = item.drafts.includes('dietary');
@@ -33,13 +42,12 @@ export function GoodToKnow({ item, onNotes, onConfirm, setErr }: { item: EditorI
   const ownDiet = n.dietary.filter((x) => !DIET.some((d) => norm(d.en) === norm(x)));
   const confirm = async () => { setBusy(true); try { await onConfirm(); } catch (e) { setErr((e as Error).message); } finally { setBusy(false); } };
   return (
-    <section className="mt-6 space-y-3" data-good-to-know="" aria-label="Good to know">
-      <p className="text-sm font-medium">Good to know <span className="font-normal text-ink-muted">· customers see these in the item</span></p>
+    <div className="space-y-3" data-good-to-know="" aria-label="Allergens and diet">
       {(draftA || draftD) && <ResearchDraft notes={n} basis={item.basis} busy={busy} onConfirm={() => { void confirm(); }} />}
       <div role="group" aria-label="Contains">
         <span className="mb-1 flex items-center gap-2 text-sm font-medium">Contains{draftA && <Badge tone="blue">To confirm</Badge>}</span>
         <div className="flex flex-wrap gap-2">
-          {ALLERGENS.map((a) => <button key={a.en} type="button" data-allergen={a.en} aria-pressed={hasA(a.en)} className={chipCls(hasA(a.en), draftA)} onClick={() => toggleA(a.en)}><span>{a.en[0].toUpperCase() + a.en.slice(1)}</span><span lang="fa" className="text-[12px] opacity-75">{a.fa}</span></button>)}
+          {ALLERGENS.map((a) => <button key={a.en} type="button" data-allergen={a.en} aria-pressed={hasA(a.en)} className={chipCls(hasA(a.en), draftA)} onClick={() => toggleA(a.en)}><span>{cap(a.en)}</span><span lang="fa" className="text-[12px] opacity-75">{a.fa}</span></button>)}
           {ownWords.map((w) => <button key={w} type="button" data-allergen={w} aria-pressed className={chipCls(true, draftA)} onClick={() => toggleA(w)}>{w}<span aria-hidden="true">×</span></button>)}
           {other === null
             ? <button type="button" className={`${chipCls(false, false)} border-dashed`} onClick={() => setOther('')}>+ Other…</button>
@@ -62,11 +70,8 @@ export function GoodToKnow({ item, onNotes, onConfirm, setErr }: { item: EditorI
           ))}
         </div>
       </div>
-      {noteOpen || n.text?.en || n.text?.fa ? <>
-        <TextField label="Note for customers" value={n.text?.en} onCommit={(v) => save({ ...n, text: { ...(n.text ?? { en: null, fa: null }), en: v } })} />
-        <TextField label="Note for customers (فارسی)" value={n.text?.fa} dir="rtl" lang="fa" onCommit={(v) => save({ ...n, text: { ...(n.text ?? { en: null, fa: null }), fa: v } })} />
-      </> : <button type="button" className={`${chipCls(false, false)} border-dashed`} onClick={() => setNoteOpen(true)}>+ Note for customers</button>}
-    </section>
+      <p className="text-xs text-ink-muted">Customers see these in the item’s popup.</p>
+    </div>
   );
 }
 

@@ -9,16 +9,27 @@
 //   move    { action:'move', id, section_id, index }                                 order within one section
 //   copy-choices { action:'copy-choices', id, group, targets: [ids] }   one choice group of item `id` copied to the target items (Kian via the
 //           PM, 2026-10-13): a group of the same name is replaced, otherwise added; one record per item changed, one Undo for all
+//   looks-good { action:'looks-good', id, field }   one field's draft flag cleared, its text unchanged (Kian, 2026-10-13: the Draft tag's
+//           "Looks good" in the item editor): field 'description.en' (the research draft of the English description), 'name.fa',
+//           'description.fa', 'variants', 'addOns', 'components' (the Persian drafts); one record, Undo puts the flag back. Allergen and
+//           dietary drafts stay with Confirm (owner and admin only)
+//   duplicate { action:'duplicate', id }   a hidden copy "<name> (copy)" in the same sections, right after the original (Kian, 2026-10-13);
+//           one 'create' record (Undo removes it); answers the copy and the new order of each of its sections
 //   delete  { action:'delete', id }
 import { jsonRoute, ApiError, revalidateVenue, biOf, moneyOf, boolOf, idOf, str, photoOf, type JsonBody } from '@/lib/admin/api';
 import { canEditNotes, canEditVenue } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
-import { copyChoices, createItem, deleteItem, editorItem, getItem, moveItem, updateItem, type ItemPatch, type Notes } from '@/lib/admin/items';
+import { copyChoices, createItem, deleteItem, duplicateItem, editorItem, getItem, moveItem, updateItem, type ItemPatch, type Notes } from '@/lib/admin/items';
 import type { AddOn, Component, Variant } from '@/lib/types';
 import { getSection } from '@/lib/admin/sections';
 import { seasonsOf } from '@/lib/seasonal';
 import { seasonNow } from '@/lib/welcome';
 
+// "Looks good" (2026-10-13): which flag each field's Draft tag stands for
+const LOOKS_GOOD: Record<string, { list: 'drafts' | 'fa_draft'; flag: string }> = {
+  'description.en': { list: 'drafts', flag: 'description' }, 'name.fa': { list: 'fa_draft', flag: 'name' }, 'description.fa': { list: 'fa_draft', flag: 'description' },
+  variants: { list: 'fa_draft', flag: 'variants' }, addOns: { list: 'fa_draft', flag: 'addOns' }, components: { list: 'fa_draft', flag: 'components' },
+};
 const arr = (v: unknown): Record<string, unknown>[] => (Array.isArray(v) ? v.filter((x) => x && typeof x === 'object') : []);
 
 function readPatch(p: JsonBody): ItemPatch {
@@ -64,6 +75,17 @@ export default jsonRoute(async ({ res, session, body }) => {
   if (body.action === 'update') r = await updateItem(id, readPatch((body.patch && typeof body.patch === 'object' ? body.patch : {}) as JsonBody), by);
   else if (body.action === 'notes') { if (!canEditNotes(session)) throw new ApiError(403, 'Allergen, dietary and halal notes are set by the owner or an admin only'); r = await updateItem(id, { notes: readNotes(body.notes) }, by); }
   else if (body.action === 'confirm') { if (!canEditNotes(session)) throw new ApiError(403, 'Allergen and dietary notes are confirmed by the owner or an admin only'); r = await updateItem(id, { drafts: (item.drafts ?? []).filter((f) => f !== 'allergens' && f !== 'dietary') }, by); }
+  else if (body.action === 'looks-good') {
+    const f = LOOKS_GOOD[typeof body.field === 'string' ? body.field : ''];
+    if (!f) throw new ApiError(400, 'unknown field');
+    r = await updateItem(id, f.list === 'drafts' ? { drafts: (item.drafts ?? []).filter((x) => x !== f.flag) } : { fa_draft: item.fa_draft.filter((x) => x !== f.flag) }, by);
+  }
+  else if (body.action === 'duplicate') {
+    const d = await duplicateItem(id, by);
+    if (!d.ok) throw new ApiError(400, d.error);
+    await revalidateVenue(res, item.venue_id);
+    return { revisions: d.revision ? [d.revision] : [], item: await editorItem(d.id), orders: d.orders };
+  }
   else if (body.action === 'move') {
     const m = await moveItem(idOf(body.section_id), id, Number(body.index), by);
     if (!m.ok) throw new ApiError(400, m.error);

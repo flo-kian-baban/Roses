@@ -136,10 +136,10 @@ check('g-last-item-back', w.ok, `items shown again → "${bev.name}" back after 
 // (h) notes: staff sees no fields and gets 403; owner edits them in the panel; admin clears them
 const item = (await db.query(`select id from items where venue_id='senso' and name->>'en'='Turkish Coffee'`)).rows[0];
 await page.fill('input[aria-label="Search items"]', 'Turkish Coffee');
-await openItem(page, item.id); await page.click('[role=dialog] button:has-text("Advanced")');
-const staffNotesField = await page.$('[role=dialog] [data-allergen], [role=dialog] [data-good-to-know]'); const staffText = await page.textContent('[role=dialog]'); // the chips (2026-10-13) are not there for staff
+await openItem(page, item.id); // since the editor rebuild (2026-10-13) no More or Advanced: staff get one line in place of "Allergens & diet"
+const staffNotesField = await page.$('[role=dialog] [data-allergen], [role=dialog] [data-good-to-know], [role=dialog] [data-group="allergens"]'); const staffText = await page.textContent('[role=dialog]'); // the chips (2026-10-13) are not there for staff
 await snap(page, 'staff-no-notes');
-check('h-staff-ui', !staffNotesField && /set by the owner or an admin/.test(staffText || ''), `staff item panel (Advanced): notes inputs present = ${!!staffNotesField}; explanatory line shown = ${/set by the owner or an admin/.test(staffText || '')}`);
+check('h-staff-ui', !staffNotesField && /set by the owner or an admin/.test(staffText || ''), `staff item panel: notes group or inputs present = ${!!staffNotesField}; explanatory line shown = ${/set by the owner or an admin/.test(staffText || '')}`);
 { const r = await api('/api/admin/item', { action: 'notes', id: item.id, notes: { allergens: 'nuts' } }, staffCookie); check('h-staff-403', r.status === 403, `staff POST action=notes → ${r.status} "${r.json?.error}"`); }
 // Confirm of researched allergen and dietary notes (Kian, 2026-10-12): owner and admin only, like the notes
 { const r = await api('/api/admin/item', { action: 'confirm', id: item.id }, staffCookie); check('h-staff-confirm-403', r.status === 403, `staff POST action=confirm → ${r.status} "${r.json?.error}"`); }
@@ -162,7 +162,8 @@ const ownerCtx = await browser.newContext(DEVICE);
 const opage = await loginPage(ownerCtx, 'pin', { venue: 'senso', pin: owner.pin }); await opage.waitForSelector('[data-item]');
 await opage.fill('input[aria-label="Search items"]', 'Turkish Coffee');
 await openItem(opage, item.id);
-// the owner's chips (Kian via the PM, 2026-10-13: one tap each, under Good to know)
+// the owner's chips (Kian via the PM, 2026-10-13: one tap each; in the "Allergens & diet" group since the editor rebuild of the same day)
+{ const g = opage.locator('[role=dialog] [data-group="allergens"][aria-expanded="false"]'); if (await g.count()) await g.click(); }
 const nutChip = opage.locator('[role=dialog] [data-allergen="tree nuts"]');
 if ((await nutChip.getAttribute('aria-pressed')) === 'true') { await nutChip.click(); await waitDb('select notes from items where id=$1', [item.id], (r) => !r?.notes?.allergens?.includes('tree nuts')); } // the drill's own precondition
 await nutChip.click();

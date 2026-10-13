@@ -45,7 +45,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const [menu, dispatch] = useReducer(reduce, initial);
   const [tab, setTab] = useState<Tab>(initialTab);
   const go = (t: Tab) => { setTab(t); setPreviewOpen(false); setCompare(false); try { history.replaceState(null, '', TAB_HREF(venue.id, t)); } catch { /* ignore */ } };
-  const [open, setOpen] = useState<{ id: string; section: string | null; fresh?: boolean } | null>(null); // fresh: just added, opens with More open
+  const [open, setOpen] = useState<{ id: string; section: string | null; selectName?: boolean } | null>(null); // selectName: a copy just made, its name selected
   const [adding, setAdding] = useState<string | null>(null);
   const [addingSection, setAddingSection] = useState(false);
   const [renaming, setRenaming] = useState<string | null>(null);
@@ -121,6 +121,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     if (r.section) dispatch({ type: 'section', section: r.section as Menu['sections'][number] });
     if (r.order) dispatch({ type: 'item-order', ...(r.order as { section_id: string; item_ids: string[] }) });
     if (r.section_order) dispatch({ type: 'section-order', section_ids: r.section_order as string[] });
+    for (const o of (r.orders as { section_id: string; item_ids: string[] }[] | undefined) ?? []) dispatch({ type: 'item-order', ...o }); // a duplicate's sections, the copy right after the original
     if (r.menu) dispatch({ type: 'replace', menu: r.menu as Menu });
   }, []);
   const done = useCallback((r: Resp, text: string, f: Focus) => {
@@ -145,7 +146,15 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const itemCreate = async (sectionId: string, data: { name: string; price: number | null; photo: Photo | null }) => {
     const r = await call('/api/admin/item', { action: 'create', venue: venue.id, section_id: sectionId, name: { en: data.name, fa: null }, price: data.price, photo: data.photo });
     apply(r); const item = r.item as EditorItem; done(r, 'Added', { id: item.id, alt: sectionId }); setHighlight(item.id);
-    setOpen({ id: item.id, section: sectionId, fresh: true }); // the editor opens on the new item, More open for its description and sizes (Kian via the PM, 2026-10-13)
+    setOpen({ id: item.id, section: sectionId }); // the editor opens on the new item, for its description and sizes (Kian via the PM, 2026-10-13)
+  };
+  // "Looks good" on a field's Draft tag (Kian, 2026-10-13): that field's draft flag goes, nothing else; Undo puts it back.
+  const itemLooksGood = async (id: string, field: string) => { const r = await call('/api/admin/item', { action: 'looks-good', id, field }); apply(r); done(r, 'Looks good', { id, alt: sectionOf(id) }); };
+  // Duplicate (Kian, 2026-10-13): a hidden copy in the same sections, right after the original; the editor opens on it with its name
+  // selected; one Undo removes it (its editor then closes, the copy being gone).
+  const itemDuplicate = async (id: string) => {
+    const r = await call('/api/admin/item', { action: 'duplicate', id }); apply(r); const copy = r.item as EditorItem;
+    done(r, 'Duplicated', { id: copy.id, alt: sectionOf(id) }); setOpen({ id: copy.id, section: sectionOf(id), selectName: true });
   };
   // Copy a choice group to other items (Kian via the PM, 2026-10-13): one call, one record per item, one toast whose Undo puts them all back.
   const itemCopyChoices = async (id: string, group: string, targets: string[]) => {
@@ -215,7 +224,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const bar = (phone: boolean) => <PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone={phone} />;
   const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} previewSeason={season ?? now.season} onPlay={playTransition} />;
 
-  const panel = openItem && <ItemPanel key={openItem.id} fresh={!!open?.fresh} item={openItem} venueId={venue.id} season={today} sections={menu.sections} sectionId={open?.section ?? null} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
+  const panel = openItem && <ItemPanel key={openItem.id} selectName={!!open?.selectName} toast={!!toast} item={openItem} venueId={venue.id} season={today} sections={menu.sections} sectionId={open?.section ?? null} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onLooksGood={(f) => itemLooksGood(openItem.id, f)} onDuplicate={() => itemDuplicate(openItem.id)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (
     <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
       <div className="relative min-w-0">

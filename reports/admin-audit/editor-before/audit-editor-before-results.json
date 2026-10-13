@@ -1,0 +1,1191 @@
+{
+  "at": "2026-10-13T14:12:37.119Z",
+  "ui": "before",
+  "base": "http://127.0.0.1:59059",
+  "viewport": {
+    "width": 390,
+    "height": 664
+  },
+  "commit": "dc0d1cf",
+  "pageErrors": [],
+  "results": [
+    {
+      "task": "t1-sizes",
+      "title": "Americano: one price → Small 5.49 / Large 6.49",
+      "taps": 3,
+      "fields": 5,
+      "keys": 4,
+      "scrolls": 0,
+      "scrollPx": 0,
+      "scrollMinPx": 0,
+      "appWaitMs": 907,
+      "waitingForSavesMs": 69,
+      "waitingForPublicPageMs": 18,
+      "rawWallMs": 1975,
+      "screenshotMsExcluded": 1068,
+      "done": true,
+      "path": "search \"Americano\" → row → + Sizes (Basics) (the cursor in Size 1, its price the item's 5.99) → Small, Tab, 5.49 over it, Enter → Large, Tab, 6.49, Enter",
+      "overwrites": [
+        "Size 1 price: \"5.99\" (selected on focus, typed over)"
+      ],
+      "lost": [],
+      "notes": [],
+      "detail": {
+        "variants": [
+          {
+            "label": {
+              "en": "Small",
+              "fa": null
+            },
+            "price": 5.49
+          },
+          {
+            "label": {
+              "en": "Large",
+              "fa": null
+            },
+            "price": 6.49
+          }
+        ],
+        "price": null
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 85,
+          "text": "TYPE \"Americano\""
+        },
+        {
+          "ms": 114,
+          "text": "TAP the \"Americano\" row in Hot Beverage"
+        },
+        {
+          "ms": 212,
+          "text": "the editor is open: the \"in the editor\" counts start here"
+        },
+        {
+          "ms": 247,
+          "text": "TAP + Sizes (Basics)"
+        },
+        {
+          "ms": 326,
+          "text": "cursor in \"Size 1\"; Size 1 price shows \"5.99\""
+        },
+        {
+          "ms": 351,
+          "text": "TYPE \"Small\" (Size 1 name, the cursor already there)"
+        },
+        {
+          "ms": 416,
+          "text": "KEY Tab (to the price)"
+        },
+        {
+          "ms": 534,
+          "text": "TYPE \"5.49\" over the selected \"5.99\" (Size 1 price, the cursor already there)"
+        },
+        {
+          "ms": 600,
+          "text": "KEY Enter (saves the row and opens the next)"
+        },
+        {
+          "ms": 635,
+          "text": "cursor in \"Size 2\""
+        },
+        {
+          "ms": 658,
+          "text": "TYPE \"Large\" (Size 2 name, the cursor already there)"
+        },
+        {
+          "ms": 723,
+          "text": "KEY Tab (to the price)"
+        },
+        {
+          "ms": 790,
+          "text": "TYPE \"6.49\" (Size 2 price, the cursor already there)"
+        },
+        {
+          "ms": 856,
+          "text": "KEY Enter (saves the row)"
+        }
+      ],
+      "shots": [
+        "t1-sizes-01-start.jpg",
+        "t1-sizes-02-search.jpg",
+        "t1-sizes-03-panel.jpg",
+        "t1-sizes-04-sizes-started.jpg",
+        "t1-sizes-05-size-1.jpg",
+        "t1-sizes-06-size-2.jpg",
+        "t1-sizes-07-saved.jpg"
+      ],
+      "line": "MEASURE: t1-sizes | taps 3 | fields 5 | keys 4 | scrolls 0 (0 px) | app wait 907 ms | done yes | search \"Americano\" → row → + Sizes (Basics) (the cursor in Size 1, its price the item's 5.99) → Small, Tab, 5.49 over it, Enter → Large, Tab, 6.49, Enter | in the editor: taps 1 | fields 4 | keys 4 | scrolls 0 (0 px)",
+      "inEditor": {
+        "taps": 1,
+        "fields": 4,
+        "keys": 4,
+        "scrolls": 0,
+        "scrollPx": 0
+      },
+      "ui": "before"
+    },
+    {
+      "task": "t2-milk",
+      "title": "Milk (Whole milk 0, Lactose-free 0, Oat milk +1) on the 7 lattes of Hot Beverage: Latte, Vanilla Latte, Hazelnut Latte, Organic Beet Latte, Matcha Latte, Pumpkin Spice Latte, Pumpkin Latte",
+      "taps": 11,
+      "fields": 6,
+      "keys": 7,
+      "scrolls": 3,
+      "scrollPx": 957,
+      "scrollMinPx": 416,
+      "appWaitMs": 2250,
+      "waitingForSavesMs": 97,
+      "waitingForPublicPageMs": 9,
+      "rawWallMs": 3679,
+      "screenshotMsExcluded": 1429,
+      "done": true,
+      "path": "search \"Latte\" → Latte → + Choices (Basics) → Milk, Enter → Whole milk, Tab, Enter → Lactose-free, Tab, Enter → Oat milk, Tab, 1, Enter → Copy to other items… → tick the other 6 lattes → Copy",
+      "overwrites": [],
+      "lost": [
+        "the \"Latte\" row in Hot Beverage: below the fold (27 px under the screen's bottom edge); scrolled the page 359 px (to mid-screen; at least 60 px to bring it fully on screen)",
+        "tick Matcha Latte: below the fold (169 px under the screen's bottom edge); scrolled the item panel 422 px (to mid-screen; at least 180 px to bring it fully on screen)",
+        "tick Pumpkin Latte: covered by div; scrolled the item panel 176 px (to mid-screen; at least 176 px to bring it fully on screen)"
+      ],
+      "notes": [],
+      "detail": {
+        "lattes": [
+          {
+            "name": "Latte",
+            "listed": true,
+            "ok": true
+          },
+          {
+            "name": "Vanilla Latte",
+            "listed": false,
+            "ok": true
+          },
+          {
+            "name": "Hazelnut Latte",
+            "listed": false,
+            "ok": true
+          },
+          {
+            "name": "Organic Beet Latte",
+            "listed": true,
+            "ok": true
+          },
+          {
+            "name": "Matcha Latte",
+            "listed": true,
+            "ok": true
+          },
+          {
+            "name": "Pumpkin Spice Latte",
+            "listed": false,
+            "ok": true
+          },
+          {
+            "name": "Pumpkin Latte",
+            "listed": true,
+            "ok": true
+          }
+        ],
+        "toast": "Copied to 6 items·Undo"
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 86,
+          "text": "TYPE \"Latte\""
+        },
+        {
+          "ms": 124,
+          "text": "SCROLL 359 px (the page) to reach the \"Latte\" row in Hot Beverage: below the fold (27 px under the screen's bottom edge); at least 60 px needed"
+        },
+        {
+          "ms": 152,
+          "text": "TAP the \"Latte\" row in Hot Beverage"
+        },
+        {
+          "ms": 234,
+          "text": "the editor is open: the \"in the editor\" counts start here"
+        },
+        {
+          "ms": 267,
+          "text": "TAP + Choices (Basics)"
+        },
+        {
+          "ms": 343,
+          "text": "cursor in \"Choice group 2\""
+        },
+        {
+          "ms": 377,
+          "text": "TYPE \"Milk\" (the group's name, the cursor already there)"
+        },
+        {
+          "ms": 441,
+          "text": "KEY Enter (to the first choice)"
+        },
+        {
+          "ms": 510,
+          "text": "TYPE \"Whole milk\" (choice \"Whole milk\", the cursor already there)"
+        },
+        {
+          "ms": 575,
+          "text": "KEY Tab (to its price)"
+        },
+        {
+          "ms": 657,
+          "text": "KEY Enter (saves the row and opens the next)"
+        },
+        {
+          "ms": 727,
+          "text": "TYPE \"Lactose-free\" (choice \"Lactose-free\", the cursor already there)"
+        },
+        {
+          "ms": 791,
+          "text": "KEY Tab (to its price)"
+        },
+        {
+          "ms": 874,
+          "text": "KEY Enter (saves the row and opens the next)"
+        },
+        {
+          "ms": 944,
+          "text": "TYPE \"Oat milk\" (choice \"Oat milk\", the cursor already there)"
+        },
+        {
+          "ms": 1008,
+          "text": "KEY Tab (to its price)"
+        },
+        {
+          "ms": 1076,
+          "text": "TYPE \"1\" (Oat milk's extra price, the cursor already there)"
+        },
+        {
+          "ms": 1140,
+          "text": "KEY Enter (saves the row)"
+        },
+        {
+          "ms": 1216,
+          "text": "TAP Copy to other items… (the Milk group)"
+        },
+        {
+          "ms": 1330,
+          "text": "TAP tick Vanilla Latte"
+        },
+        {
+          "ms": 1446,
+          "text": "TAP tick Hazelnut Latte"
+        },
+        {
+          "ms": 1563,
+          "text": "TAP tick Organic Beet Latte"
+        },
+        {
+          "ms": 1684,
+          "text": "SCROLL 422 px (the item panel) to reach tick Matcha Latte: below the fold (169 px under the screen's bottom edge); at least 180 px needed"
+        },
+        {
+          "ms": 1711,
+          "text": "TAP tick Matcha Latte"
+        },
+        {
+          "ms": 1830,
+          "text": "TAP tick Pumpkin Spice Latte"
+        },
+        {
+          "ms": 1950,
+          "text": "SCROLL 176 px (the item panel) to reach tick Pumpkin Latte: covered by div; at least 176 px needed"
+        },
+        {
+          "ms": 1977,
+          "text": "TAP tick Pumpkin Latte"
+        },
+        {
+          "ms": 2090,
+          "text": "TAP Copy to N items"
+        }
+      ],
+      "shots": [
+        "t2-milk-01-start.jpg",
+        "t2-milk-02-search.jpg",
+        "t2-milk-03-open.jpg",
+        "t2-milk-04-milk-on-latte.jpg",
+        "t2-milk-05-copy-sheet.jpg",
+        "t2-milk-06-ticked.jpg",
+        "t2-milk-07-saved.jpg"
+      ],
+      "line": "MEASURE: t2-milk | taps 11 | fields 6 | keys 7 | scrolls 3 (957 px) | app wait 2250 ms | done yes | search \"Latte\" → Latte → + Choices (Basics) → Milk, Enter → Whole milk, Tab, Enter → Lactose-free, Tab, Enter → Oat milk, Tab, 1, Enter → Copy to other items… → tick the other 6 lattes → Copy | in the editor: taps 9 | fields 5 | keys 7 | scrolls 2 (598 px)",
+      "inEditor": {
+        "taps": 9,
+        "fields": 5,
+        "keys": 7,
+        "scrolls": 2,
+        "scrollPx": 598
+      },
+      "ui": "before"
+    },
+    {
+      "task": "t3-option-price",
+      "title": "Latte: Oat milk +1 → +1.25",
+      "taps": 4,
+      "fields": 2,
+      "keys": 1,
+      "scrolls": 3,
+      "scrollPx": 1636,
+      "scrollMinPx": 764,
+      "appWaitMs": 597,
+      "waitingForSavesMs": 6,
+      "waitingForPublicPageMs": 9,
+      "rawWallMs": 1336,
+      "screenshotMsExcluded": 739,
+      "done": true,
+      "path": "search \"Latte\" → row → Advanced → Oat milk's extra price: overwrite 1→1.25 → Enter",
+      "overwrites": [
+        "Oat milk extra price: \"1\""
+      ],
+      "lost": [
+        "the \"Latte\" row in Hot Beverage: below the fold (27 px under the screen's bottom edge); scrolled the page 359 px (to mid-screen; at least 60 px to bring it fully on screen)",
+        "Advanced: below the fold (192 px under the screen's bottom edge); scrolled the item panel 502 px (to mid-screen; at least 216 px to bring it fully on screen)",
+        "Oat milk extra price (field): below the fold (465 px under the screen's bottom edge); scrolled the item panel 775 px (to mid-screen; at least 488 px to bring it fully on screen)"
+      ],
+      "notes": [
+        "Oat milk's price field: Milk 3 extra price"
+      ],
+      "detail": {
+        "oat": {
+          "group": {
+            "en": "Milk",
+            "fa": null
+          },
+          "label": {
+            "en": "Oat milk",
+            "fa": null
+          },
+          "price": 1.25,
+          "required": false
+        }
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 86,
+          "text": "TYPE \"Latte\""
+        },
+        {
+          "ms": 125,
+          "text": "SCROLL 359 px (the page) to reach the \"Latte\" row in Hot Beverage: below the fold (27 px under the screen's bottom edge); at least 60 px needed"
+        },
+        {
+          "ms": 154,
+          "text": "TAP the \"Latte\" row in Hot Beverage"
+        },
+        {
+          "ms": 236,
+          "text": "the editor is open: the \"in the editor\" counts start here"
+        },
+        {
+          "ms": 269,
+          "text": "SCROLL 502 px (the item panel) to reach Advanced: below the fold (192 px under the screen's bottom edge); at least 216 px needed"
+        },
+        {
+          "ms": 298,
+          "text": "TAP Advanced"
+        },
+        {
+          "ms": 412,
+          "text": "SCROLL 775 px (the item panel) to reach Oat milk extra price (field): below the fold (465 px under the screen's bottom edge); at least 488 px needed"
+        },
+        {
+          "ms": 442,
+          "text": "TAP Oat milk extra price (field)"
+        },
+        {
+          "ms": 527,
+          "text": "TYPE \"1.25\" over \"1\""
+        },
+        {
+          "ms": 555,
+          "text": "KEY Enter (saves)"
+        }
+      ],
+      "shots": [
+        "t3-option-price-01-start.jpg",
+        "t3-option-price-02-search.jpg",
+        "t3-option-price-03-panel.jpg",
+        "t3-option-price-04-advanced.jpg",
+        "t3-option-price-05-saved.jpg"
+      ],
+      "line": "MEASURE: t3-option-price | taps 4 | fields 2 | keys 1 | scrolls 3 (1636 px) | app wait 597 ms | done yes | search \"Latte\" → row → Advanced → Oat milk's extra price: overwrite 1→1.25 → Enter | in the editor: taps 2 | fields 1 | keys 1 | scrolls 2 (1277 px)",
+      "inEditor": {
+        "taps": 2,
+        "fields": 1,
+        "keys": 1,
+        "scrolls": 2,
+        "scrollPx": 1277
+      },
+      "ui": "before"
+    },
+    {
+      "task": "t4-extra",
+      "title": "Cappuccino: optional add-on \"Extra shot\" +$1.50",
+      "taps": 3,
+      "fields": 3,
+      "keys": 3,
+      "scrolls": 0,
+      "scrollPx": 0,
+      "scrollMinPx": 0,
+      "appWaitMs": 638,
+      "waitingForSavesMs": 18,
+      "waitingForPublicPageMs": 7,
+      "rawWallMs": 1102,
+      "screenshotMsExcluded": 464,
+      "done": true,
+      "path": "search \"Cappuccino\" → row → + Choices (Basics) → Enter (no group) → Extra shot, Tab, 1.50, Enter",
+      "overwrites": [],
+      "lost": [],
+      "notes": [
+        "Group left empty (shortest path, as before): the customers' popup titles it \"Options · Optional\""
+      ],
+      "detail": {
+        "add_ons": [
+          {
+            "group": {
+              "en": null,
+              "fa": null
+            },
+            "label": {
+              "en": "Extra shot",
+              "fa": null
+            },
+            "price": 1.5,
+            "required": false
+          }
+        ]
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 86,
+          "text": "TYPE \"Cappuccino\""
+        },
+        {
+          "ms": 108,
+          "text": "TAP the \"Cappuccino\" row in Hot Beverage"
+        },
+        {
+          "ms": 189,
+          "text": "the editor is open: the \"in the editor\" counts start here"
+        },
+        {
+          "ms": 222,
+          "text": "TAP + Choices (Basics)"
+        },
+        {
+          "ms": 299,
+          "text": "cursor in \"Choice group 1\""
+        },
+        {
+          "ms": 331,
+          "text": "KEY Enter (past the group's name to the first choice)"
+        },
+        {
+          "ms": 400,
+          "text": "TYPE \"Extra shot\" (the choice, the cursor already there)"
+        },
+        {
+          "ms": 465,
+          "text": "KEY Tab (to its price)"
+        },
+        {
+          "ms": 533,
+          "text": "TYPE \"1.50\" (the extra price, the cursor already there)"
+        },
+        {
+          "ms": 598,
+          "text": "KEY Enter (saves the row)"
+        }
+      ],
+      "shots": [
+        "t4-extra-01-start.jpg",
+        "t4-extra-02-search.jpg",
+        "t4-extra-03-panel.jpg",
+        "t4-extra-04-saved.jpg"
+      ],
+      "line": "MEASURE: t4-extra | taps 3 | fields 3 | keys 3 | scrolls 0 (0 px) | app wait 638 ms | done yes | search \"Cappuccino\" → row → + Choices (Basics) → Enter (no group) → Extra shot, Tab, 1.50, Enter | in the editor: taps 1 | fields 2 | keys 3 | scrolls 0 (0 px)",
+      "inEditor": {
+        "taps": 1,
+        "fields": 2,
+        "keys": 3,
+        "scrolls": 0,
+        "scrollPx": 0
+      },
+      "ui": "before"
+    },
+    {
+      "task": "t5-description",
+      "title": "Turkish Coffee: an English and a Persian description",
+      "taps": 6,
+      "fields": 3,
+      "keys": 0,
+      "scrolls": 1,
+      "scrollPx": 430,
+      "scrollMinPx": 144,
+      "appWaitMs": 708,
+      "waitingForSavesMs": 16,
+      "waitingForPublicPageMs": 8,
+      "rawWallMs": 1452,
+      "screenshotMsExcluded": 744,
+      "done": true,
+      "path": "search \"Turkish\" → row → More → Description → Description (فارسی) → Done",
+      "overwrites": [
+        "Description: \"Finely ground coffee brewed unfiltered the traditional way: strong, rich and crowned with a velvety foam.\"",
+        "Description (فارسی): \"قهوهٔ ریزآسیاب، دم‌شده به روش سنتی و بدون فیلتر؛ غلیظ و خوش‌عطر با کفی مخملی روی فنجان.\""
+      ],
+      "lost": [
+        "More: below the fold (120 px under the screen's bottom edge); scrolled the item panel 430 px (to mid-screen; at least 144 px to bring it fully on screen)"
+      ],
+      "notes": [],
+      "detail": {
+        "description": {
+          "en": "Strong coffee brewed in a copper pot, served with a sweet.",
+          "fa": "قهوه غلیظ دم شده در قهوه جوش مسی با یک شیرینی"
+        }
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 86,
+          "text": "TYPE \"Turkish\""
+        },
+        {
+          "ms": 117,
+          "text": "TAP the \"Turkish Coffee\" row in Hot Beverage"
+        },
+        {
+          "ms": 197,
+          "text": "the editor is open: the \"in the editor\" counts start here"
+        },
+        {
+          "ms": 233,
+          "text": "SCROLL 430 px (the item panel) to reach More: below the fold (120 px under the screen's bottom edge); at least 144 px needed"
+        },
+        {
+          "ms": 258,
+          "text": "TAP More"
+        },
+        {
+          "ms": 371,
+          "text": "TAP Description (field)"
+        },
+        {
+          "ms": 455,
+          "text": "TYPE \"Strong coffee brewed in a copper pot, served with a sweet.\" over \"Finely ground coffee brewed unfiltered the traditional way: strong, rich and crowned with a velvety foam.\""
+        },
+        {
+          "ms": 488,
+          "text": "TAP Description (فارسی) (field)"
+        },
+        {
+          "ms": 571,
+          "text": "TYPE \"قهوه غلیظ دم شده در قهوه جوش مسی با یک شیرینی\" over \"قهوهٔ ریزآسیاب، دم‌شده به روش سنتی و بدون فیلتر؛ غلیظ و خوش‌عطر با کفی مخملی روی فنجان.\""
+        },
+        {
+          "ms": 622,
+          "text": "TAP Done (the Persian box saves when it loses focus)"
+        }
+      ],
+      "shots": [
+        "t5-description-01-start.jpg",
+        "t5-description-02-search.jpg",
+        "t5-description-03-panel.jpg",
+        "t5-description-04-more.jpg",
+        "t5-description-05-saved.jpg"
+      ],
+      "line": "MEASURE: t5-description | taps 6 | fields 3 | keys 0 | scrolls 1 (430 px) | app wait 708 ms | done yes | search \"Turkish\" → row → More → Description → Description (فارسی) → Done | in the editor: taps 4 | fields 2 | keys 0 | scrolls 1 (430 px)",
+      "inEditor": {
+        "taps": 4,
+        "fields": 2,
+        "keys": 0,
+        "scrolls": 1,
+        "scrollPx": 430
+      },
+      "ui": "before"
+    },
+    {
+      "task": "t6-allergens",
+      "title": "Turkish Coffee: allergens \"milk\"",
+      "taps": 3,
+      "fields": 1,
+      "keys": 0,
+      "scrolls": 1,
+      "scrollPx": 853,
+      "scrollMinPx": 565,
+      "appWaitMs": 352,
+      "waitingForSavesMs": 3,
+      "waitingForPublicPageMs": 12,
+      "rawWallMs": 823,
+      "screenshotMsExcluded": 471,
+      "done": true,
+      "path": "search \"Turkish\" → row → the Milk chip",
+      "overwrites": [],
+      "lost": [
+        "the Milk chip (Good to know): below the fold (543 px under the screen's bottom edge); scrolled the item panel 853 px (to mid-screen; at least 565 px to bring it fully on screen)"
+      ],
+      "notes": [],
+      "detail": {
+        "notes": {
+          "text": {
+            "en": null,
+            "fa": null
+          },
+          "halal": null,
+          "dietary": [
+            "Vegan"
+          ],
+          "allergens": [
+            "milk"
+          ]
+        }
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 86,
+          "text": "TYPE \"Turkish\""
+        },
+        {
+          "ms": 116,
+          "text": "TAP the \"Turkish Coffee\" row in Hot Beverage"
+        },
+        {
+          "ms": 197,
+          "text": "the editor is open: the \"in the editor\" counts start here"
+        },
+        {
+          "ms": 230,
+          "text": "SCROLL 853 px (the item panel) to reach the Milk chip (Good to know): below the fold (543 px under the screen's bottom edge); at least 565 px needed"
+        },
+        {
+          "ms": 260,
+          "text": "TAP the Milk chip (Good to know)"
+        }
+      ],
+      "shots": [
+        "t6-allergens-01-start.jpg",
+        "t6-allergens-02-search.jpg",
+        "t6-allergens-03-panel.jpg",
+        "t6-allergens-04-saved.jpg"
+      ],
+      "line": "MEASURE: t6-allergens | taps 3 | fields 1 | keys 0 | scrolls 1 (853 px) | app wait 352 ms | done yes | search \"Turkish\" → row → the Milk chip | in the editor: taps 1 | fields 0 | keys 0 | scrolls 1 (853 px)",
+      "inEditor": {
+        "taps": 1,
+        "fields": 0,
+        "keys": 0,
+        "scrolls": 1,
+        "scrollPx": 853
+      },
+      "ui": "before"
+    },
+    {
+      "task": "t7-new-item",
+      "title": "Cold Beverage: new \"Audit Iced Tea\", Small 4.99 / Large 5.99, a description, a photo",
+      "taps": 9,
+      "fields": 6,
+      "keys": 4,
+      "scrolls": 2,
+      "scrollPx": 1084,
+      "scrollMinPx": 512,
+      "appWaitMs": 2270,
+      "waitingForSavesMs": 24,
+      "waitingForPublicPageMs": 8,
+      "rawWallMs": 3682,
+      "screenshotMsExcluded": 1412,
+      "done": true,
+      "path": "Jump to section → Cold Beverage → + Add → name, price 4.99, Add photo + choose → Add item (the editor opens on it, More open) → Description → + Sizes (Basics) → Small, Tab, Enter → Large, Tab, 5.99, Enter",
+      "overwrites": [],
+      "lost": [
+        "Description (field): below the fold (232 px under the screen's bottom edge); scrolled the item panel 542 px (to mid-screen; at least 280 px to bring it fully on screen)",
+        "+ Sizes (Basics): above the screen; scrolled the item panel 542 px (to mid-screen; at least 232 px to bring it fully on screen)"
+      ],
+      "notes": [],
+      "detail": {
+        "id": "43625d76-2e0d-4edd-8a46-acea1b5f2c78",
+        "listed": true,
+        "photo": {
+          "alt": {
+            "en": "Audit Iced Tea",
+            "fa": null
+          },
+          "key": "senso/photo-b8d22fd2-74ac-4347-a493-d688b7063bbd.jpg",
+          "url": "/uploads/senso/photo-b8d22fd2-74ac-4347-a493-d688b7063bbd.jpg",
+          "width": 271,
+          "height": 143
+        },
+        "variants": [
+          {
+            "label": {
+              "en": "Small",
+              "fa": null
+            },
+            "price": 4.99
+          },
+          {
+            "label": {
+              "en": "Large",
+              "fa": null
+            },
+            "price": 5.99
+          }
+        ],
+        "description": {
+          "en": "Black tea over ice with lemon.",
+          "fa": null
+        }
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Jump to section + choose \"Cold Beverage\" (2 taps)"
+        },
+        {
+          "ms": 1022,
+          "text": "TAP + Add on Cold Beverage"
+        },
+        {
+          "ms": 1106,
+          "text": "TYPE \"Audit Iced Tea\" (the Name field has the focus already)"
+        },
+        {
+          "ms": 1131,
+          "text": "TAP Price (the Small price; the sheet has one price only) (field)"
+        },
+        {
+          "ms": 1211,
+          "text": "TYPE \"4.99\""
+        },
+        {
+          "ms": 1217,
+          "text": "TAP Add photo (opens the phone's chooser)"
+        },
+        {
+          "ms": 1262,
+          "text": "TAP choose the photo in the phone's chooser (counted as 1; iOS may add one more)"
+        },
+        {
+          "ms": 1327,
+          "text": "TAP Add item"
+        },
+        {
+          "ms": 1440,
+          "text": "created 43625d76-2e0d-4edd-8a46-acea1b5f2c78; the editor opened on it with More open"
+        },
+        {
+          "ms": 1440,
+          "text": "the editor is open: the \"in the editor\" counts start here"
+        },
+        {
+          "ms": 1476,
+          "text": "SCROLL 542 px (the item panel) to reach Description (field): below the fold (232 px under the screen's bottom edge); at least 280 px needed"
+        },
+        {
+          "ms": 1504,
+          "text": "TAP Description (field)"
+        },
+        {
+          "ms": 1587,
+          "text": "TYPE \"Black tea over ice with lemon.\""
+        },
+        {
+          "ms": 1633,
+          "text": "SCROLL 542 px (the item panel) to reach + Sizes (Basics): above the screen; at least 232 px needed"
+        },
+        {
+          "ms": 1672,
+          "text": "TAP + Sizes (Basics)"
+        },
+        {
+          "ms": 1806,
+          "text": "cursor in \"Size 1\"; Size 1 price shows \"4.99\""
+        },
+        {
+          "ms": 1836,
+          "text": "TYPE \"Small\" (Size 1 name, the cursor already there)"
+        },
+        {
+          "ms": 1902,
+          "text": "KEY Tab (to the price)"
+        },
+        {
+          "ms": 1968,
+          "text": "KEY Enter (saves the row and opens the next)"
+        },
+        {
+          "ms": 2007,
+          "text": "cursor in \"Size 2\""
+        },
+        {
+          "ms": 2030,
+          "text": "TYPE \"Large\" (Size 2 name, the cursor already there)"
+        },
+        {
+          "ms": 2095,
+          "text": "KEY Tab (to the price)"
+        },
+        {
+          "ms": 2164,
+          "text": "TYPE \"5.99\" (Size 2 price, the cursor already there)"
+        },
+        {
+          "ms": 2229,
+          "text": "KEY Enter (saves the row)"
+        }
+      ],
+      "shots": [
+        "t7-new-item-01-start.jpg",
+        "t7-new-item-02-jumped.jpg",
+        "t7-new-item-03-sheet.jpg",
+        "t7-new-item-04-sheet-filled.jpg",
+        "t7-new-item-05-editor-opened.jpg",
+        "t7-new-item-06-sizes-started.jpg",
+        "t7-new-item-07-size-1.jpg",
+        "t7-new-item-08-size-2.jpg",
+        "t7-new-item-09-saved.jpg"
+      ],
+      "line": "MEASURE: t7-new-item | taps 9 | fields 6 | keys 4 | scrolls 2 (1084 px) | app wait 2270 ms | done yes | Jump to section → Cold Beverage → + Add → name, price 4.99, Add photo + choose → Add item (the editor opens on it, More open) → Description → + Sizes (Basics) → Small, Tab, Enter → Large, Tab, 5.99, Enter | in the editor: taps 2 | fields 4 | keys 4 | scrolls 2 (1084 px)",
+      "inEditor": {
+        "taps": 2,
+        "fields": 4,
+        "keys": 4,
+        "scrolls": 2,
+        "scrollPx": 1084
+      },
+      "ui": "before"
+    },
+    {
+      "task": "t8-move",
+      "title": "Iced Americano: Cold Beverage → Hot Beverage (ends in Hot Beverage only)",
+      "taps": 4,
+      "fields": 1,
+      "keys": 0,
+      "scrolls": 0,
+      "scrollPx": 0,
+      "scrollMinPx": 0,
+      "appWaitMs": 455,
+      "waitingForSavesMs": 4,
+      "waitingForPublicPageMs": 7,
+      "rawWallMs": 1342,
+      "screenshotMsExcluded": 887,
+      "done": true,
+      "path": "search \"Iced Americano\" → row → Section → Hot Beverage",
+      "overwrites": [],
+      "lost": [],
+      "notes": [],
+      "detail": {
+        "placements": [
+          "Hot Beverage"
+        ]
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 86,
+          "text": "TYPE \"Iced Americano\""
+        },
+        {
+          "ms": 118,
+          "text": "TAP the \"Iced Americano\" row in Cold Beverage"
+        },
+        {
+          "ms": 198,
+          "text": "the editor is open: the \"in the editor\" counts start here"
+        },
+        {
+          "ms": 229,
+          "text": "TAP Section (Basics)"
+        },
+        {
+          "ms": 345,
+          "text": "TAP Hot Beverage"
+        }
+      ],
+      "shots": [
+        "t8-move-01-start.jpg",
+        "t8-move-02-search.jpg",
+        "t8-move-03-panel.jpg",
+        "t8-move-04-picker.jpg",
+        "t8-move-05-saved.jpg"
+      ],
+      "line": "MEASURE: t8-move | taps 4 | fields 1 | keys 0 | scrolls 0 (0 px) | app wait 455 ms | done yes | search \"Iced Americano\" → row → Section → Hot Beverage | in the editor: taps 2 | fields 0 | keys 0 | scrolls 0 (0 px)",
+      "inEditor": {
+        "taps": 2,
+        "fields": 0,
+        "keys": 0,
+        "scrolls": 0,
+        "scrollPx": 0
+      },
+      "ui": "before"
+    },
+    {
+      "task": "t9-hide-section",
+      "title": "hide the Milkshake section",
+      "taps": 3,
+      "fields": 0,
+      "keys": 0,
+      "scrolls": 0,
+      "scrollPx": 0,
+      "scrollMinPx": 0,
+      "appWaitMs": 1562,
+      "waitingForSavesMs": 3,
+      "waitingForPublicPageMs": 6,
+      "rawWallMs": 1685,
+      "screenshotMsExcluded": 123,
+      "done": true,
+      "path": "Jump to section → Milkshake → the section's switch",
+      "overwrites": [],
+      "lost": [],
+      "notes": [],
+      "detail": {
+        "listed": false
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Jump to section + choose \"Milkshake\" (2 taps)"
+        },
+        {
+          "ms": 1478,
+          "text": "TAP the Milkshake section switch"
+        }
+      ],
+      "shots": [
+        "t9-hide-section-01-start.jpg",
+        "t9-hide-section-02-jumped.jpg",
+        "t9-hide-section-03-saved.jpg"
+      ],
+      "line": "MEASURE: t9-hide-section | taps 3 | fields 0 | keys 0 | scrolls 0 (0 px) | app wait 1562 ms | done yes | Jump to section → Milkshake → the section's switch",
+      "inEditor": null,
+      "ui": "before"
+    },
+    {
+      "task": "t10-hide-item",
+      "title": "Mocha: hide it from its editor",
+      "taps": 3,
+      "fields": 1,
+      "keys": 0,
+      "scrolls": 1,
+      "scrollPx": 353,
+      "scrollMinPx": 59,
+      "appWaitMs": 351,
+      "waitingForSavesMs": 4,
+      "waitingForPublicPageMs": 8,
+      "rawWallMs": 817,
+      "screenshotMsExcluded": 466,
+      "done": true,
+      "path": "search \"Mocha\" → row → the Shown switch (the last row of Basics)",
+      "overwrites": [],
+      "lost": [
+        "the Shown switch (Basics): below the fold (43 px under the screen's bottom edge); scrolled the item panel 353 px (to mid-screen; at least 59 px to bring it fully on screen)"
+      ],
+      "notes": [],
+      "detail": {
+        "listed": false
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 84,
+          "text": "TYPE \"Mocha\""
+        },
+        {
+          "ms": 119,
+          "text": "TAP the \"Mocha\" row in Hot Beverage"
+        },
+        {
+          "ms": 200,
+          "text": "the editor is open: the \"in the editor\" counts start here"
+        },
+        {
+          "ms": 234,
+          "text": "SCROLL 353 px (the item panel) to reach the Shown switch (Basics): below the fold (43 px under the screen's bottom edge); at least 59 px needed"
+        },
+        {
+          "ms": 263,
+          "text": "TAP the Shown switch (Basics)"
+        }
+      ],
+      "shots": [
+        "t10-hide-item-01-start.jpg",
+        "t10-hide-item-02-search.jpg",
+        "t10-hide-item-03-panel.jpg",
+        "t10-hide-item-04-saved.jpg"
+      ],
+      "line": "MEASURE: t10-hide-item | taps 3 | fields 1 | keys 0 | scrolls 1 (353 px) | app wait 351 ms | done yes | search \"Mocha\" → row → the Shown switch (the last row of Basics) | in the editor: taps 1 | fields 0 | keys 0 | scrolls 1 (353 px)",
+      "inEditor": {
+        "taps": 1,
+        "fields": 0,
+        "keys": 0,
+        "scrolls": 1,
+        "scrollPx": 353
+      },
+      "ui": "before"
+    },
+    {
+      "task": "t11-sections",
+      "title": "Pumpkin Soup: see every section it is in",
+      "taps": 4,
+      "fields": 1,
+      "keys": 0,
+      "scrolls": 4,
+      "scrollPx": 1342,
+      "scrollMinPx": 679,
+      "appWaitMs": 827,
+      "waitingForSavesMs": 10,
+      "waitingForPublicPageMs": 0,
+      "rawWallMs": 1456,
+      "screenshotMsExcluded": 629,
+      "done": true,
+      "path": "search \"Pumpkin Soup\" → row → Section → Also show in another section… (the ticked boxes)",
+      "overwrites": [],
+      "lost": [
+        "the \"Pumpkin Soup\" row in Appetizer: below the fold (27 px under the screen's bottom edge); scrolled the page 197 px (to mid-screen; at least 60 px to bring it fully on screen)",
+        "Also show in another section…: below the fold (300 px under the screen's bottom edge); scrolled the item panel 335 px (to mid-screen; at least 322 px to bring it fully on screen)",
+        "ticked: Seasonal: below the fold (9 px under the screen's bottom edge); scrolled the item panel 315 px (to mid-screen; at least 31 px to bring it fully on screen)",
+        "ticked: Appetizer: below the fold (244 px under the screen's bottom edge); scrolled the item panel 495 px (to mid-screen; at least 266 px to bring it fully on screen)"
+      ],
+      "notes": [
+        "Section row of Basics reads \"AppetizerMove\""
+      ],
+      "detail": {
+        "seen": [
+          "Seasonal",
+          "Appetizer"
+        ],
+        "placements": [
+          "Seasonal",
+          "Appetizer"
+        ]
+      },
+      "steps": [
+        {
+          "ms": 0,
+          "text": "TAP Search items (field)"
+        },
+        {
+          "ms": 87,
+          "text": "TYPE \"Pumpkin Soup\""
+        },
+        {
+          "ms": 121,
+          "text": "SCROLL 197 px (the page) to reach the \"Pumpkin Soup\" row in Appetizer: below the fold (27 px under the screen's bottom edge); at least 60 px needed"
+        },
+        {
+          "ms": 150,
+          "text": "TAP the \"Pumpkin Soup\" row in Appetizer"
+        },
+        {
+          "ms": 233,
+          "text": "the editor is open: the \"in the editor\" counts start here"
+        },
+        {
+          "ms": 262,
+          "text": "TAP Section (Basics)"
+        },
+        {
+          "ms": 382,
+          "text": "SCROLL 335 px (the item panel) to reach Also show in another section…: below the fold (300 px under the screen's bottom edge); at least 322 px needed"
+        },
+        {
+          "ms": 411,
+          "text": "TAP Also show in another section…"
+        },
+        {
+          "ms": 731,
+          "text": "SCROLL 315 px (the item panel) to reach ticked: Seasonal: below the fold (9 px under the screen's bottom edge); at least 31 px needed"
+        },
+        {
+          "ms": 760,
+          "text": "SEE ticked: Seasonal"
+        },
+        {
+          "ms": 798,
+          "text": "SCROLL 495 px (the item panel) to reach ticked: Appetizer: below the fold (244 px under the screen's bottom edge); at least 266 px needed"
+        },
+        {
+          "ms": 826,
+          "text": "SEE ticked: Appetizer"
+        }
+      ],
+      "shots": [
+        "t11-sections-01-start.jpg",
+        "t11-sections-02-search.jpg",
+        "t11-sections-03-panel.jpg",
+        "t11-sections-04-seen.jpg"
+      ],
+      "line": "MEASURE: t11-sections | taps 4 | fields 1 | keys 0 | scrolls 4 (1342 px) | app wait 827 ms | done yes | search \"Pumpkin Soup\" → row → Section → Also show in another section… (the ticked boxes) | in the editor: taps 2 | fields 0 | keys 0 | scrolls 3 (1145 px)",
+      "inEditor": {
+        "taps": 2,
+        "fields": 0,
+        "keys": 0,
+        "scrolls": 3,
+        "scrollPx": 1145
+      },
+      "ui": "before"
+    },
+    {
+      "task": "t12-duplicate",
+      "title": "Latte: duplicate it",
+      "taps": 0,
+      "fields": 0,
+      "keys": 0,
+      "scrolls": 0,
+      "scrollPx": 0,
+      "scrollMinPx": 0,
+      "appWaitMs": null,
+      "waitingForSavesMs": 0,
+      "waitingForPublicPageMs": 0,
+      "rawWallMs": null,
+      "screenshotMsExcluded": 117,
+      "done": false,
+      "path": "not in this build",
+      "overwrites": [],
+      "lost": [],
+      "notes": [
+        "No Duplicate in this build"
+      ],
+      "detail": {
+        "notAvailable": true
+      },
+      "steps": [],
+      "shots": [
+        "t12-duplicate-01-start.jpg"
+      ],
+      "line": "MEASURE: t12-duplicate | taps 0 | fields 0 | keys 0 | scrolls 0 (0 px) | app wait n/a ms | done no | not in this build",
+      "inEditor": null,
+      "ui": "before"
+    }
+  ]
+}

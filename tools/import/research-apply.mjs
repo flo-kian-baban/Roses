@@ -126,7 +126,7 @@ try {
       await client.query(`insert into revisions (venue_id, table_name, row_id, action, before, after, by) values ($1, 'items', $2, 'update', $3, $4, $5)`, [rec.venue, w.id, w.before, await snapshot(w.id), by]);
     }
     counts.withdrawn++;
-    lines.push(`${w.it.name}: the placeholder description ${dry ? 'would be' : ''} withdrawn (${[w.en ? 'English' : null, w.fa ? 'Persian' : null].filter(Boolean).join(' and ')}); its allergen draft kept`);
+    lines.push(`${w.it.name}: the placeholder description ${dry ? 'would be ' : ''}withdrawn (${[w.en ? 'English' : null, w.fa ? 'Persian' : null].filter(Boolean).join(' and ')}); its allergen draft kept`);
   }
   await client.query(dry ? 'rollback' : 'commit');
 } catch (e) { await client.query('rollback').catch(() => {}); console.error(e.message); process.exitCode = 1; } finally { await client.end(); }

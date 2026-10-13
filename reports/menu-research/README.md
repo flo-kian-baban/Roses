@@ -58,3 +58,7 @@ Existing wording noted, not a contradiction and not changed: Sultan's Goblet's t
 ## Files
 
 `frozen-before.json`, `frozen-after.json`, `frozen-compare.json`, `apply-senso.txt`, `apply-kebab-land.txt`, `samples.md` (ten items per venue, from the working database; `samples.mjs` writes it), `source-urls.txt`.
+
+## Placeholders withdrawn (Kian's ruling, 2026-10-13 02:26 UTC)
+
+Six research-written descriptions that only pointed to the server (Senso Waffle; Chicken Rolled Fillet, Rolled Fillet Kebab, Soft Drink, Persian Dreams, Venato (Italy)) were cleared by `tools/import/research-apply.mjs` from the records' `withdrawn` entries, after a backup per venue (`backups/roses-20261013T022620Z-before-research-<venue>.dump`, main checkout): English and Persian, their draft flags with them; their allergen drafts kept. `withdraw-frozen-compare.json`: names, prices, sections, listing and seasons 0 rows changed; a second run withdrew nothing. `owner-to-write.md` lists them with what the owner needs to say. The review sheets were exported again (14 columns: "proposed fix" and "apply fix" added) and read back with `--dry`: 0 changes, 0 fixes applied; the 13 rows with a proposed fix come first (Fresh Berry Mojito-Virgin first on Kebab Land). Counts now: Senso English 45 existing + 94 new, Persian 46 + 93; Kebab Land English 61 + 36, Persian 61 + 36; 6 items for the owner to write. Files: `withdraw-frozen-before.json`, `withdraw-frozen-after.json`, `withdraw-frozen-compare.json`, `withdraw-apply-senso.txt`, `withdraw-apply-kebab-land.txt`.

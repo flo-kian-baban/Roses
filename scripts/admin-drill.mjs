@@ -137,7 +137,7 @@ check('g-last-item-back', w.ok, `items shown again → "${bev.name}" back after 
 const item = (await db.query(`select id from items where venue_id='senso' and name->>'en'='Turkish Coffee'`)).rows[0];
 await page.fill('input[aria-label="Search items"]', 'Turkish Coffee');
 await openItem(page, item.id); await page.click('[role=dialog] button:has-text("Advanced")');
-const staffNotesField = await page.$('[role=dialog] input[aria-label="Allergens"]'); const staffText = await page.textContent('[role=dialog]');
+const staffNotesField = await page.$('[role=dialog] [data-allergen], [role=dialog] [data-good-to-know]'); const staffText = await page.textContent('[role=dialog]'); // the chips (2026-10-13) are not there for staff
 await snap(page, 'staff-no-notes');
 check('h-staff-ui', !staffNotesField && /set by the owner or an admin/.test(staffText || ''), `staff item panel (Advanced): notes inputs present = ${!!staffNotesField}; explanatory line shown = ${/set by the owner or an admin/.test(staffText || '')}`);
 { const r = await api('/api/admin/item', { action: 'notes', id: item.id, notes: { allergens: 'nuts' } }, staffCookie); check('h-staff-403', r.status === 403, `staff POST action=notes → ${r.status} "${r.json?.error}"`); }
@@ -161,13 +161,16 @@ check('h-staff-ui', !staffNotesField && /set by the owner or an admin/.test(staf
 const ownerCtx = await browser.newContext(DEVICE);
 const opage = await loginPage(ownerCtx, 'pin', { venue: 'senso', pin: owner.pin }); await opage.waitForSelector('[data-item]');
 await opage.fill('input[aria-label="Search items"]', 'Turkish Coffee');
-await openItem(opage, item.id); await opage.click('[role=dialog] button:has-text("Advanced")');
-await opage.fill('[role=dialog] input[aria-label="Allergens"]', 'nuts'); await opage.press('[role=dialog] input[aria-label="Allergens"]', 'Enter');
-await waitDb('select notes from items where id=$1', [item.id], (r) => r?.notes?.allergens?.includes('nuts'));
-await opage.click('[role=dialog] input[name=halal][value=yes]');
+await openItem(opage, item.id);
+// the owner's chips (Kian via the PM, 2026-10-13: one tap each, under Good to know)
+const nutChip = opage.locator('[role=dialog] [data-allergen="tree nuts"]');
+if ((await nutChip.getAttribute('aria-pressed')) === 'true') { await nutChip.click(); await waitDb('select notes from items where id=$1', [item.id], (r) => !r?.notes?.allergens?.includes('tree nuts')); } // the drill's own precondition
+await nutChip.click();
+await waitDb('select notes from items where id=$1', [item.id], (r) => r?.notes?.allergens?.includes('tree nuts'));
+await opage.click('[role=dialog] [data-halal="yes"]');
 const wn = await waitDb('select notes from items where id=$1', [item.id], (r) => r?.notes?.halal === true);
 await snap(opage, 'owner-notes-saved');
-check('h-owner', wn.ok && wn.row.notes.allergens.includes('nuts'), `owner saved notes in the panel (each field on its own): ${JSON.stringify(wn.row?.notes)}`);
+check('h-owner', wn.ok && wn.row.notes.allergens.includes('tree nuts'), `owner saved notes in the panel with the chips (Tree nuts, then Halal; each tap on its own): ${JSON.stringify(wn.row?.notes)}`);
 { const adminCtx2 = await browser.newContext(DEVICE); const ap = await loginPage(adminCtx2, 'admin', { email, password }); const ac = await cookieOf(adminCtx2); const r = await api('/api/admin/item', { action: 'notes', id: item.id, notes: { allergens: '', halal: null } }, ac); const n2 = (await db.query('select notes from items where id=$1', [item.id])).rows[0].notes; check('h-admin', r.status === 200 && n2.allergens.length === 0 && n2.halal === null, `admin cleared the notes again: ${JSON.stringify(n2)}`); await ap.close(); await adminCtx2.close(); }
 
 // venue details API: staff gets 403; the owner reads and edits (Details tab), Undo puts it back

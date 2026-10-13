@@ -19,13 +19,13 @@ import { GoodToKnow } from './GoodToKnow';
 import { SectionPicker } from './SectionPicker';
 
 export type ItemPanelProps = {
-  item: EditorItem; venueId: string; sections: EditorSection[]; items: Record<string, EditorItem>; sectionId: string | null; canNotes: boolean; column?: boolean; season: SeasonId; notesFirst?: boolean;
+  item: EditorItem; venueId: string; sections: EditorSection[]; items: Record<string, EditorItem>; sectionId: string | null; canNotes: boolean; column?: boolean; season: SeasonId; notesFirst?: boolean; fresh?: boolean;
   onPatch: (patch: Record<string, unknown>) => Promise<void>; onNotes: (notes: Notes) => Promise<void>; onConfirm: () => Promise<void>; onCopy: (group: string, ids: string[]) => Promise<void>; onDelete: () => void;
   onMove: (sectionId: string, id: string, index: number) => Promise<void>; onClose: () => void;
 };
 
-export function ItemPanel({ item, venueId, sections, items, sectionId, canNotes, column, season, notesFirst, onPatch, onNotes, onConfirm, onCopy, onDelete, onMove, onClose }: ItemPanelProps) {
-  const [more, setMore] = useState(false);
+export function ItemPanel({ item, venueId, sections, items, sectionId, canNotes, column, season, notesFirst, fresh, onPatch, onNotes, onConfirm, onCopy, onDelete, onMove, onClose }: ItemPanelProps) {
+  const [more, setMore] = useState(!!fresh); // an item just added opens with More open: its description and sizes come next
   const [advanced, setAdvanced] = useState(false);
   const [sizeStart, setSizeStart] = useState(0), [choiceStart, setChoiceStart] = useState(0); // "+ Sizes" / "+ Choices" in Basics: open the group and start a row
   const [copying, setCopying] = useState<string | null>(null); // the choice group being copied to other items

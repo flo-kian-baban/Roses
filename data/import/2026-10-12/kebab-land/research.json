@@ -52,7 +52,8 @@
     "Merlot: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
     "Rose: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
     "Prosecco: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
-    "Mixed Appetizer: a choice between two components is part of the dish, not an optional extra: the allergen of either is drafted"
+    "Mixed Appetizer: a choice between two components is part of the dish, not an optional extra: the allergen of either is drafted",
+    "Kian, 2026-10-13: Chicken Rolled Fillet, Rolled Fillet Kebab, Soft Drink, Persian Dreams, Venato (Italy): placeholder descriptions withdrawn (cleared where still the research's draft; allergen drafts kept); every contradiction carries a proposed fix, applied only when its row is ticked in the review sheet"
   ],
   "items": [
     {
@@ -801,11 +802,16 @@
       "dietary": [],
       "source": "https://en.wikipedia.org/wiki/Roulade",
       "sourceTitle": "Roulade",
-      "newEn": "Rolled chicken fillet, one of the chef's specials. Ask your server how it is prepared and served.",
-      "newFa": "فیله مرغ رول‌شده، از پیشنهادهای ویژه سرآشپز. برای جزئیات از همکاران ما بپرسید.",
+      "newEn": null,
+      "newFa": null,
       "confidence": "low",
       "note": "Recipe not public: venue to confirm the filling, marinade and sides (cheese or buttered rice would add milk).",
-      "contradiction": null
+      "contradiction": null,
+      "withdrawn": {
+        "en": "Rolled chicken fillet, one of the chef's specials. Ask your server how it is prepared and served.",
+        "fa": "فیله مرغ رول‌شده، از پیشنهادهای ویژه سرآشپز. برای جزئیات از همکاران ما بپرسید.",
+        "why": "placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md)"
+      }
     },
     {
       "importKey": "kebab-land:item:rolled-fillet-kebab",
@@ -817,11 +823,16 @@
       "dietary": [],
       "source": "https://en.wikipedia.org/wiki/Roulade",
       "sourceTitle": "Roulade",
-      "newEn": "Rolled fillet, skewered and grilled; one of the chef's specials. Ask your server how it is prepared.",
-      "newFa": "فیله رول‌شده، به سیخ کشیده و کباب‌شده؛ از پیشنهادهای ویژه سرآشپز. برای جزئیات از همکاران ما بپرسید.",
+      "newEn": null,
+      "newFa": null,
       "confidence": "low",
       "note": "Recipe not public: venue to confirm the meat (assumed beef fillet, as in the Fillet Chenjeh), any filling, marinade and sides.",
-      "contradiction": null
+      "contradiction": null,
+      "withdrawn": {
+        "en": "Rolled fillet, skewered and grilled; one of the chef's specials. Ask your server how it is prepared.",
+        "fa": "فیله رول‌شده، به سیخ کشیده و کباب‌شده؛ از پیشنهادهای ویژه سرآشپز. برای جزئیات از همکاران ما بپرسید.",
+        "why": "placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md)"
+      }
     },
     {
       "importKey": "kebab-land:item:salari-kebab",
@@ -1271,11 +1282,16 @@
       "dietary": [],
       "source": "https://en.wikipedia.org/wiki/Soft_drink",
       "sourceTitle": "Soft drink",
-      "newEn": "A chilled soft drink; ask your server for today's choices.",
-      "newFa": "نوشابه خنک؛ برای انتخاب طعم از همکاران ما بپرسید.",
+      "newEn": null,
+      "newFa": null,
       "confidence": "medium",
       "note": "Venue to confirm which soft drinks and sizes are offered.",
-      "contradiction": null
+      "contradiction": null,
+      "withdrawn": {
+        "en": "A chilled soft drink; ask your server for today's choices.",
+        "fa": "نوشابه خنک؛ برای انتخاب طعم از همکاران ما بپرسید.",
+        "why": "placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md)"
+      }
     },
     {
       "importKey": "kebab-land:item:baklava",
@@ -1428,7 +1444,15 @@
       "newFa": null,
       "confidence": "low",
       "note": "House cocktail: venue to confirm it is the piña colada its text describes (some recipes add cream, which is milk).",
-      "contradiction": "EN and FA are the generic piña colada definition ('just four primary ingredients: white rum, pineapple juice, cream of coconut, and ice'), apparently copied; nothing in the name 'Tutti Trend' says it is a piña colada."
+      "contradiction": "EN and FA are the generic piña colada definition ('just four primary ingredients: white rum, pineapple juice, cream of coconut, and ice'), apparently copied; nothing in the name 'Tutti Trend' says it is a piña colada.",
+      "fix": {
+        "order": 4,
+        "description": {
+          "en": "Tropical cocktail of white rum, pineapple juice and cream of coconut over ice.",
+          "fa": "کوکتل استوایی با رام سفید، آب آناناس و کرم نارگیل روی یخ."
+        },
+        "why": "the text was a copied piña colada definition (\"just four primary ingredients\"); the fix keeps the same ingredients in the venue's own words; the venue confirms it is this drink"
+      }
     },
     {
       "importKey": "kebab-land:item:sultans-goblet",
@@ -1554,7 +1578,15 @@
       "newFa": null,
       "confidence": "medium",
       "note": "Some sangrias add brandy or a liqueur: venue to confirm the recipe.",
-      "contradiction": "The name says red wine, but EN and FA describe rosé wine (شراب رزه); the same text, word for word, is on Fresh Berry Mojito-Virgin."
+      "contradiction": "The name says red wine, but EN and FA describe rosé wine (شراب رزه); the same text, word for word, is on Fresh Berry Mojito-Virgin.",
+      "fix": {
+        "order": 2,
+        "description": {
+          "en": "Red wine, fresh fruit, and a splash of citrus — light, fruity, and refreshing.",
+          "fa": "شراب قرمز، میوه تازه و کمی مرکبات — سبک، میوه‌ای و خنک."
+        },
+        "why": "the name says red wine, the text said rosé; only the wine changes"
+      }
     },
     {
       "importKey": "kebab-land:item:persian-dreams",
@@ -1566,11 +1598,16 @@
       "dietary": [],
       "source": "https://en.wikipedia.org/wiki/Cocktail",
       "sourceTitle": "Cocktail",
-      "newEn": "Our house cocktail, mixed at the bar; your server can tell you what goes into it.",
-      "newFa": "کوکتل مخصوص بار ما؛ ترکیبش را از گارسون بپرسید.",
+      "newEn": null,
+      "newFa": null,
       "confidence": "low",
       "note": "Recipe not public: venue to confirm the spirits and ingredients before the description names any.",
-      "contradiction": null
+      "contradiction": null,
+      "withdrawn": {
+        "en": "Our house cocktail, mixed at the bar; your server can tell you what goes into it.",
+        "fa": "کوکتل مخصوص بار ما؛ ترکیبش را از گارسون بپرسید.",
+        "why": "placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md)"
+      }
     },
     {
       "importKey": "kebab-land:item:classic-mojito-virgin",
@@ -1616,7 +1653,19 @@
       "newFa": null,
       "confidence": "medium",
       "note": "Sulphites listed only because the description names rosé wine; a virgin berry mojito typically has none of the listed allergens.",
-      "contradiction": "EN and FA describe rosé wine with fruit and citrus (the Red Wine Sangria text word for word); a virgin berry mojito has no wine, and its text names neither mint nor berries."
+      "contradiction": "EN and FA describe rosé wine with fruit and citrus (the Red Wine Sangria text word for word); a virgin berry mojito has no wine, and its text names neither mint nor berries.",
+      "fix": {
+        "order": 1,
+        "description": {
+          "en": "Fresh mint, lime and mixed berries topped with soda — a sweet, cool mojito with no alcohol.",
+          "fa": "نعنای تازه، لیموترش و توت‌های تازه با سودا — موهیتویی شیرین و خنک، بدون الکل."
+        },
+        "notes": {
+          "allergens": [],
+          "keepDraft": true
+        },
+        "why": "the text was the Red Wine Sangria text (rosé wine) on an alcohol-free drink; the fix names what a virgin berry mojito is, and its allergen draft loses the sulphites the wine brought (still a draft)"
+      }
     },
     {
       "importKey": "kebab-land:item:fresh-berry-mojito",
@@ -1839,7 +1888,15 @@
       "newFa": null,
       "confidence": "high",
       "note": null,
-      "contradiction": "EN and FA describe plain vodka served neat or on the rocks; a Black Russian is vodka with coffee liqueur (IBA: 50 ml vodka, 20 ml coffee liqueur)."
+      "contradiction": "EN and FA describe plain vodka served neat or on the rocks; a Black Russian is vodka with coffee liqueur (IBA: 50 ml vodka, 20 ml coffee liqueur).",
+      "fix": {
+        "order": 3,
+        "description": {
+          "en": "Simple and bold — vodka and coffee liqueur over ice.",
+          "fa": "ساده و پرقدرت — ودکا و لیکور قهوه روی یخ."
+        },
+        "why": "a Black Russian is vodka with coffee liqueur; the text described plain vodka"
+      }
     },
     {
       "importKey": "kebab-land:item:electric-margarita",
@@ -2135,11 +2192,16 @@
       "dietary": [],
       "source": "https://en.wikipedia.org/wiki/Italian_wine",
       "sourceTitle": "Italian wine",
-      "newEn": "A bottle of Italian wine; ask your server about the producer, grape and vintage.",
-      "newFa": "یک بطری شراب ایتالیایی؛ درباره‌ی تولیدکننده، نوع انگور و سال برداشت از گارسون بپرسید.",
+      "newEn": null,
+      "newFa": null,
       "confidence": "low",
       "note": "'Venato' not found as an Italian wine (perhaps the Veneto region): venue to confirm the wine, colour and grape.",
-      "contradiction": null
+      "contradiction": null,
+      "withdrawn": {
+        "en": "A bottle of Italian wine; ask your server about the producer, grape and vintage.",
+        "fa": "یک بطری شراب ایتالیایی؛ درباره‌ی تولیدکننده، نوع انگور و سال برداشت از گارسون بپرسید.",
+        "why": "placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md)"
+      }
     },
     {
       "importKey": "kebab-land:item:borsao-spain",

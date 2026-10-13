@@ -5,14 +5,17 @@
 //     draft flag goes (it is the reviewer's text now);
 //   - allergens / dietary changed: the item's notes get the reviewer's words and that field's draft flag goes (a person's correction);
 //   - confirmed = yes: the allergen and dietary drafts are confirmed as they stand (their flags go; customers see "Contains: …");
-//   - correction: listed for a person to read, never applied; a read-only column that differs from the database: listed, ignored.
+//   - correction: listed for a person to read, never applied; a read-only column that differs from the database: listed, ignored;
+//   - apply fix = yes (Kian, 2026-10-13): the row's proposed fix is applied: the English and Persian as written in the "proposed fix" cell
+//     (the reviewer may edit them), the notes as the record proposes; the fixed text is the reviewer's, so its draft flags go. A row not
+//     ticked changes nothing, whatever its proposed fix says.
 // One revision row per item changed, as { kind: 'review', id: <the CSV>, name: <reviewer> }, with before and after snapshots. A sheet
 // exported and read back unchanged changes nothing (the round trip); so does a sheet read back twice.
 //   node tools/import/research-review-apply.mjs senso reports/research-review-senso.csv [--dry] [--reviewer "Kian"]
 import fs from 'node:fs';
 import pg from 'pg';
 import { loadEnv } from '../../scripts/load-env.mjs';
-import { COLUMNS, YES, currentRows, listOf, parseCsv } from './research-review-lib.mjs';
+import { COLUMNS, YES, applyFix, currentRows, listOf, parseCsv } from './research-review-lib.mjs';
 
 loadEnv();
 const [venue, file, ...rest] = process.argv.slice(2);
@@ -31,7 +34,7 @@ const snapshot = async (id) => {
   return { ...row, price: row.price === null ? null : Number(row.price), placements };
 };
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-const counts = { rows: sheet.length, changed: 0, unchanged: 0, confirmed: 0, descriptions: 0, notes: 0, corrections: 0, readOnlyIgnored: 0, notFound: 0 };
+const counts = { rows: sheet.length, changed: 0, unchanged: 0, confirmed: 0, descriptions: 0, notes: 0, fixesApplied: 0, corrections: 0, readOnlyIgnored: 0, notFound: 0 };
 const lines = [];
 await client.query('begin');
 try {
@@ -61,7 +64,12 @@ try {
     if (!same(dietary, listOf(c.dietary))) { notes.dietary = dietary; drafts = drafts.filter((f) => f !== 'dietary'); }
     if (YES.test((s.confirmed ?? '').trim())) drafts = drafts.filter((f) => f !== 'allergens' && f !== 'dietary');
     else if (c.confirmed && !(s.confirmed ?? '').trim()) lines.push(`${s.item}: "confirmed" emptied on a confirmed row; not applied (use Undo in the admin to take a confirmation back)`);
-    const after = { description, notes, drafts: drafts.sort(), fa_draft: faDraft.sort() };
+    let after = { description, notes, drafts: drafts.sort(), fa_draft: faDraft.sort() };
+    const tick = (s['apply fix'] ?? '').trim();
+    if (YES.test(tick)) {
+      if (!cur.fix) lines.push(`${s.item}: "apply fix" ticked on a row with no proposed fix; nothing to apply`);
+      else { after = applyFix({ ...it, ...after }, cur.fix, s['proposed fix']); counts.fixesApplied++; lines.push(`${s.item}: the proposed fix ${dry ? 'would be ' : ''}applied`); }
+    } else if ((s['proposed fix'] ?? '').trim() !== (c['proposed fix'] ?? '').trim()) lines.push(`${s.item}: the "proposed fix" text was edited but "apply fix" is not ticked; nothing applied`);
     if (same(after, { description: it.description, notes: it.notes, drafts: [...it.drafts].sort(), fa_draft: [...it.fa_draft].sort() })) { counts.unchanged++; continue; }
     counts.changed++;
     if (!same(description, it.description)) counts.descriptions++;

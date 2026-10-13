@@ -18,8 +18,10 @@ Record: `research.json` beside this file (140 items: every item shown on the ven
 | | Items |
 | --- | --- |
 | In the record (shown items) | 140 |
-| New English descriptions | 95 |
-| New Persian descriptions (Persian drafts) | 94 |
+| New English descriptions | 94 |
+| New Persian descriptions (Persian drafts) | 93 |
+| Placeholders withdrawn, for the owner to write | 1 |
+| Contradictions flagged, each with a proposed fix | 9 / 9 |
 | With at least one allergen in the draft | 98 |
 | No priority allergen found in the typical recipe | 42 |
 | Dietary draft Vegetarian / Vegan / none | 71 / 31 / 38 |
@@ -46,6 +48,27 @@ Allergens across the drafts: milk 87, egg 38, wheat 57, barley 2, tree nuts 22, 
 - Falooda: the noodles are starch noodles (the text said "noodles", which reads as wheat pasta); wheat kept as a precaution until the kitchen confirms the starch
 - Ice cream & Falooda: as Falooda
 - Greek Salad: a draft must not miss an allergen the typical recipe carries; the owner removes it if the kitchen serves it without feta
+- Kian, 2026-10-13: Senso Waffle: placeholder descriptions withdrawn (cleared where still the research's draft; allergen drafts kept); every contradiction carries a proposed fix, applied only when its row is ticked in the review sheet
+
+## Withdrawn placeholders: for the owner to write (Kian, 2026-10-13)
+
+| Item | The text withdrawn (English) | Why |
+| --- | --- | --- |
+| Senso Waffle | Senso's own house waffle, served warm. | placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md) |
+
+## Proposed fixes for the contradictions (applied only when ticked in the review sheet)
+
+| Item | Proposed English | Proposed Persian | Notes | Why |
+| --- | --- | --- | --- | --- |
+| Majoun | (no change) | (no change) | {"allergens":["milk","egg","tree nuts","peanuts","sesame"],"dietary":["Vegetarian"],"text":{"en":null,"fa":null}} | no text change; the notes said Vegan and "NUTS" while the description has ice cream, cream, honey, peanut and sesame; the fix puts the research's allergens and Vegetarian, keeps Halal as set, and removes the test note "Hi this is a note" |
+| Del Roba | Lemon verbena, orange blossom, damask rose, borage flower, lavender and saffron rock candy. | به‌لیمو، بهار نارنج، گل محمدی، گل گاوزبان، اسطوخودوس و نبات زعفرانی | — | the English said "To lemon" for به‌لیمو (lemon verbena), "saffron plant" for نبات زعفرانی (saffron rock candy) and "assochodos" for lavender; the Persian's spelling fixed (ليمو, اسوخودوس) |
+| Digestive Herbal Tea | Orange blossom, mint, damask rosebuds, borage flower, lemon verbena, cinnamon, rose water and fresh lemon juice. | بهار نارنج، نعنا، غنچه گل محمدی، گل گاوزبان، به‌لیمو، دارچین، گلاب و آب‌لیموی تازه | — | the English said "lemon" for به‌لیمو (lemon verbena) and "rose" for گلاب (rose water), "mohamady flower" for the rosebuds |
+| Power Herbal Tea | Mint, chamomile, borage flower, black tea, valerian, lavender, ginger and saffron rock candy. | نعنا، بابونه، گل گاوزبان، چای سیاه، سنبل‌الطیب، اسطوخودوس، زنجبیل و نبات زعفرانی | — | the English said "saffron plant" for نبات زعفرانی (saffron rock candy) and "valerine"; the Persian's اسوخودوس spelled اسطوخودوس |
+| Women's Life Herbal Tea | Chamomile, lemon verbena, damask rose, ginger, mint, thyme, cardamom and honey. | گل بابونه، به‌لیمو، گل محمدی، زنجبیل، نعنا، آویشن، هل و عسل | — | the English said "lemon" for به‌لیمو (lemon verbena) |
+| Sausage & Egg | Sliced beef sausage and two eggs, served with bread, fresh herbs, cheese, tomato and cucumber. | سوسیس گوشت گاو برش‌خورده و دو تخم‌مرغ، همراه با نان، سبزی تازه، پنیر، گوجه و خیار | — | the name says sausage, the text said "slice of beef" |
+| Sausage, Egg & Tomato | Sliced beef sausage and two eggs with fresh crushed tomato, served with bread, fresh herbs, cheese, tomato and cucumber. | سوسیس گوشت گاو برش‌خورده و دو تخم‌مرغ با گوجه تازه له‌شده، همراه با نان، سبزی تازه، پنیر، گوجه و خیار | — | the name says sausage, the text said "slice of beef" |
+| Gheymagh | Clotted Cream, Cream, Honey, Feta cheese and Bread | سرشیر، خامه، عسل، پنیر فتا و نان | — | the Persian named only clotted cream, cream and honey (Arabic ي); the English is kept as it is |
+| Mama pizza (Grilled chicken Salami,beef bacon) | Flat Bread, Grilled Chicken, Salami, Beef Bacon, Mozzarella Cheese, Tomato Sauce, Mushroom, Black Olives | نان تخت، مرغ گریل‌شده، سالامی، بیکن گوشت، پنیر موزارلا، سس گوجه، قارچ و زیتون سیاه | — | the name says grilled chicken and salami, the text said diced chicken and diced beef |
 
 ## For the venue to confirm (low confidence)
 
@@ -292,7 +315,6 @@ Allergens across the drafts: milk 87, egg 38, wheat 57, barley 2, tree nuts 22, 
 | Plain Bagel with Butter | A chewy plain bagel spread with butter, simple and satisfying. | بیگل ساده با کره؛ سبک و دلچسب. |
 | Everything Bagel With Butter | Bagel crusted with sesame, poppy seeds, garlic, onion and salt, spread with butter. | بیگل با رویه‌ی کنجد، خشخاش، سیر، پیاز و نمک، همراه با کره. |
 | Classic waffle | A warm golden waffle, crisp at the edges and soft inside. | وافل گرم و طلایی، با لبه‌های ترد و داخل نرم. |
-| Senso Waffle | Senso's own house waffle, served warm. | وافل مخصوص سنسو، گرم و تازه. |
 | Strawberry pancake | Soft, golden pancakes topped with fresh strawberries for a sweet, unhurried breakfast. | پنکیک نرم و طلایی با توت‌فرنگی تازه؛ برای یک صبحانه‌ی شیرین. |
 | Caesar Salad | Crisp romaine, croutons and parmesan in a garlicky Caesar dressing. | کاهوی رومی ترد، کروتان و پنیر پارمزان با سس سزار سیردار. |
 | Ashe Sabzi Shiraz | Thick Shiraz-style herb soup with leek, tarragon, rice, chickpeas, lentils and beans, topped with plenty of fried onion. | آش سبزی غلیظ به سبک شیراز با تره، ترخون، برنج، نخود، عدس و لوبیا، با پیاز داغ فراوان. |

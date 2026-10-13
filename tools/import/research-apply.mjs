@@ -12,6 +12,9 @@
 // One revision row per item changed, as { kind: 'record', id: <file>, name: 'Research' }, with the before and after snapshots in the admin's
 // shape. Idempotent: an item that already carries this record's research entry is left as it is now (an edit or a Confirm in the admin since
 // wins). A pg_dump backup of the database is taken first whenever something is to be written (BACKUP_DIR, else backups/; --no-backup skips it).
+// Withdrawn descriptions (Kian, 2026-10-13: placeholders that only point to the server): an item whose record carries `withdrawn: { en, fa }`
+// has that text cleared where it is still exactly the research's draft (the field's draft flag set); an edit since is kept and listed.
+// Its allergen draft stays. On a fresh database the record writes no such text in the first place (newEn and newFa are null).
 //   node tools/import/research-apply.mjs data/import/2026-10-12/senso/research.json [--dry] [--no-backup]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -67,12 +70,27 @@ async function plan() {
   return out;
 }
 
-const counts = { items: rec.items.length, applied: 0, alreadyApplied: 0, missing: 0, newEn: 0, newFa: 0, allergenDrafts: 0, dietaryDrafts: 0, ownerNotesKept: 0 };
+// The withdrawals still to do: the text is the record's own draft, unchanged since.
+async function planWithdrawals() {
+  const out = [];
+  for (const it of rec.items.filter((x) => x.withdrawn)) {
+    const row = (await client.query(`select id from items where venue_id = $1 and ${it.importKey ? 'import_key = $2' : 'id = $2::uuid'}`, [rec.venue, it.importKey ?? it.id])).rows[0];
+    if (!row) continue;
+    const before = await snapshot(row.id);
+    const en = it.withdrawn.en && before.description.en === it.withdrawn.en && before.drafts.includes('description');
+    const fa = it.withdrawn.fa && before.description.fa === it.withdrawn.fa && before.fa_draft.includes('description');
+    const edited = (it.withdrawn.en && before.description.en && before.description.en !== it.withdrawn.en) || (it.withdrawn.fa && before.description.fa && before.description.fa !== it.withdrawn.fa);
+    if (en || fa || edited) out.push({ it, id: row.id, before, en, fa, edited });
+  }
+  return out;
+}
+const counts = { items: rec.items.length, applied: 0, alreadyApplied: 0, missing: 0, newEn: 0, newFa: 0, allergenDrafts: 0, dietaryDrafts: 0, ownerNotesKept: 0, withdrawn: 0 };
 const lines = [];
 try {
   const steps = await plan();
   const todo = steps.filter((s) => s.after);
-  if (todo.length && !dry && !noBackup) {
+  const withdrawals = await planWithdrawals();
+  if ((todo.length || withdrawals.some((w) => w.en || w.fa)) && !dry && !noBackup) {
     const dir = process.env.BACKUP_DIR || 'backups';
     const out = path.join(dir, `${db}-${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z')}-before-research-${rec.venue}.dump`); // the venue in the name: two records applied in the same second keep both backups
     const b = spawnSync('bash', ['scripts/db-backup.sh', '--out', out], { encoding: 'utf8', env: { ...process.env, ROSES_DB: db } });
@@ -96,6 +114,19 @@ try {
     if (s.wrote.includes('allergens')) counts.allergenDrafts++;
     if (s.wrote.includes('dietary')) counts.dietaryDrafts++;
     if (s.kept.length) { counts.ownerNotesKept++; lines.push(`${s.it.name}: kept ${s.kept.join('; ')}; the research (${s.it.allergens.join(', ') || 'no allergen'}${s.it.dietary.length ? `; ${s.it.dietary.join(', ')}` : ''}) is recorded in its basis only`); }
+  }
+  for (const w of withdrawals) {
+    if (!w.en && !w.fa) { lines.push(`${w.it.name}: withdrawn in the record, but its description was edited since: kept as it is now`); continue; }
+    const after = { ...w.before, description: { ...w.before.description, ...(w.en ? { en: null } : {}), ...(w.fa ? { fa: null } : {}) }, drafts: w.en ? w.before.drafts.filter((f) => f !== 'description') : w.before.drafts, fa_draft: w.fa ? w.before.fa_draft.filter((f) => f !== 'description') : w.before.fa_draft };
+    if (frozen(after) !== frozen(w.before)) throw new Error(`${w.it.name}: a frozen field would change`);
+    if (!dry) {
+      const src = (await client.query('select source from items where id = $1', [w.id])).rows[0].source || [];
+      const nextSrc = src.map((e) => (e && e.source === 'research' && e.file === file ? { ...e, wrote: (e.wrote || []).filter((x) => !(x === 'en' && w.en) && !(x === 'fa' && w.fa)), withdrawn: [...new Set([...(e.withdrawn || []), ...(w.en ? ['en'] : []), ...(w.fa ? ['fa'] : [])])] } : e));
+      await client.query('update items set description = $2, drafts = $3, fa_draft = $4, source = $5::jsonb, updated_at = now(), updated_by = $6 where id = $1', [w.id, after.description, after.drafts, after.fa_draft, JSON.stringify(nextSrc), by]);
+      await client.query(`insert into revisions (venue_id, table_name, row_id, action, before, after, by) values ($1, 'items', $2, 'update', $3, $4, $5)`, [rec.venue, w.id, w.before, await snapshot(w.id), by]);
+    }
+    counts.withdrawn++;
+    lines.push(`${w.it.name}: the placeholder description ${dry ? 'would be' : ''} withdrawn (${[w.en ? 'English' : null, w.fa ? 'Persian' : null].filter(Boolean).join(' and ')}); its allergen draft kept`);
   }
   await client.query(dry ? 'rollback' : 'commit');
 } catch (e) { await client.query('rollback').catch(() => {}); console.error(e.message); process.exitCode = 1; } finally { await client.end(); }

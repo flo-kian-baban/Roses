@@ -165,6 +165,37 @@ export async function deleteItem(id: string, by: By): Promise<Result> {
   } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
 }
 
+// Copy choices (Kian via the PM, 2026-10-13): one choice group of an item (its add-ons with that group's English name, '' for the rows
+// with no group) copied to other items of the venue in one transaction. On each target a group of the same name is replaced where it
+// stands, otherwise the rows are added at the end; one change record per item changed, so one Undo (the toast carries them all) puts
+// every item back. Targets that would not change are left alone.
+export async function copyChoices(sourceId: string, group: string, targetIds: string[], by: By): Promise<{ ok: true; revisions: number[]; ids: string[] } | { ok: false; error: string }> {
+  const client = await pool.connect();
+  try {
+    await client.query('begin');
+    const src = (await client.query<ItemRow>(`select ${COLS} from items where id = $1`, [sourceId])).rows[0];
+    if (!src) { await client.query('rollback'); return { ok: false, error: 'item not found' }; }
+    const key = (a: AddOn) => (a.group?.en ?? '').trim();
+    const rows = src.add_ons.filter((a) => key(a) === group.trim());
+    if (!rows.length) { await client.query('rollback'); return { ok: false, error: 'no choices in that group to copy' }; }
+    const revisions: number[] = [], ids: string[] = [];
+    for (const id of [...new Set(targetIds)].filter((x) => x !== sourceId)) {
+      const row = (await client.query<ItemRow>(`select ${COLS} from items where id = $1 for update`, [id])).rows[0];
+      if (!row || row.venue_id !== src.venue_id) { await client.query('rollback'); return { ok: false, error: 'item not found in this venue' }; }
+      const before = (await itemSnapshot(client, id))!;
+      const at = before.add_ons.findIndex((a) => key(a) === group.trim());
+      const kept = before.add_ons.filter((a) => key(a) !== group.trim());
+      const add_ons = at < 0 ? [...kept, ...rows] : [...kept.slice(0, at), ...rows, ...kept.slice(at)]; // the rows before the group's first row are never in it
+      if (same(add_ons, before.add_ons)) continue;
+      await client.query('update items set add_ons = $2, updated_at = now(), updated_by = $3 where id = $1', [id, JSON.stringify(add_ons), by]);
+      revisions.push(await recordRevision(client, { venueId: row.venue_id, table: 'items', rowId: id, action: 'update', before, after: { ...before, add_ons }, by }));
+      ids.push(id);
+    }
+    await client.query('commit');
+    return { ok: true, revisions, ids };
+  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+}
+
 // Moves an item to `index` within one section (drag on a laptop, Move up / Move down on a phone). Positions of the
 // section are rewritten 0..n-1; one 'reorder' record on the section holds the order before and after.
 export async function moveItem(sectionId: string, itemId: string, index: number, by: By): Promise<Result & { order?: string[] }> {

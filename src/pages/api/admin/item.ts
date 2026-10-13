@@ -7,11 +7,13 @@
 //   confirm { action:'confirm', id }   owner or admin only (403): the allergen and dietary notes drafted from research are confirmed as
 //           they stand (Kian, 2026-10-12): their draft flags go, so the public popup shows them ("Contains: …"); one record, Undo puts them back
 //   move    { action:'move', id, section_id, index }                                 order within one section
+//   copy-choices { action:'copy-choices', id, group, targets: [ids] }   one choice group of item `id` copied to the target items (Kian via the
+//           PM, 2026-10-13): a group of the same name is replaced, otherwise added; one record per item changed, one Undo for all
 //   delete  { action:'delete', id }
 import { jsonRoute, ApiError, revalidateVenue, biOf, moneyOf, boolOf, idOf, str, photoOf, type JsonBody } from '@/lib/admin/api';
 import { canEditNotes, canEditVenue } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
-import { createItem, deleteItem, editorItem, getItem, moveItem, updateItem, type ItemPatch, type Notes } from '@/lib/admin/items';
+import { copyChoices, createItem, deleteItem, editorItem, getItem, moveItem, updateItem, type ItemPatch, type Notes } from '@/lib/admin/items';
 import type { AddOn, Component, Variant } from '@/lib/types';
 import { getSection } from '@/lib/admin/sections';
 import { seasonsOf } from '@/lib/seasonal';
@@ -67,6 +69,14 @@ export default jsonRoute(async ({ res, session, body }) => {
     if (!m.ok) throw new ApiError(400, m.error);
     await revalidateVenue(res, item.venue_id);
     return { revisions: m.revision ? [m.revision] : [], order: { section_id: body.section_id, item_ids: m.order } };
+  }
+  else if (body.action === 'copy-choices') {
+    const targets = Array.isArray(body.targets) ? body.targets.map(idOf) : [];
+    if (!targets.length) throw new ApiError(400, 'Pick at least one item');
+    const c = await copyChoices(id, typeof body.group === 'string' ? body.group : '', targets, by);
+    if (!c.ok) throw new ApiError(400, c.error);
+    await revalidateVenue(res, item.venue_id);
+    return { revisions: c.revisions, items: (await Promise.all(c.ids.map((x) => editorItem(x)))).filter(Boolean) };
   }
   else if (body.action === 'delete') r = await deleteItem(id, by);
   else throw new ApiError(400, 'unknown action');

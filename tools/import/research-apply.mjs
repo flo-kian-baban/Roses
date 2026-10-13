@@ -74,7 +74,7 @@ try {
   const todo = steps.filter((s) => s.after);
   if (todo.length && !dry && !noBackup) {
     const dir = process.env.BACKUP_DIR || 'backups';
-    const out = path.join(dir, `${db}-${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z')}-before-research.dump`);
+    const out = path.join(dir, `${db}-${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z')}-before-research-${rec.venue}.dump`); // the venue in the name: two records applied in the same second keep both backups
     const b = spawnSync('bash', ['scripts/db-backup.sh', '--out', out], { encoding: 'utf8', env: { ...process.env, ROSES_DB: db } });
     if (b.status !== 0) throw new Error(`backup failed, nothing applied: ${b.stderr || b.stdout}`);
     lines.push(b.stdout.trim().split('\n')[0]);

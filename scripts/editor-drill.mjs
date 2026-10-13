@@ -506,6 +506,33 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   await db.query(`update items set drafts = '{}', fa_draft = '{}' where id = $1`, [itemId]);
   await ph.close();
 }
+{ // one item's saves in the order they were made (fix after check:full 2026-10-13T14-44-02Z, where "Oat +$1" ended as +$0): a choice typed
+  // as a person types it fast (name, Tab: saved; price, Enter: saved again), the first save held back 800 ms on its way out; the second must
+  // wait for it, so the database and the screen end on +$1, and stay there
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE); const ck = await cookieOf(ph);
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { add_ons: [], variants: [], price: 4.5 } }, ck);
+  const sent = []; let held = false;
+  await p.route('**/api/admin/item', async (route) => {
+    const b = route.request().postData() || '';
+    if (b.includes('"Drill race"')) { const a = (JSON.parse(b).patch?.add_ons || []).find((x) => x.label?.en === 'Oat'); sent.push({ at: Date.now(), price: a ? a.price : null }); if (!held && a) { held = true; await sleep(800); } }
+    await route.continue();
+  });
+  await p.goto(`${base}/admin/${VENUE}`); await p.waitForSelector('[data-item]');
+  await p.fill('input[aria-label="Search items"]', NAME); await p.locator(`#sec-${sec.id} [data-item="${itemId}"] button[aria-label^="Edit"]`).click(); await p.waitForSelector(`.item-panel[aria-label="Edit ${NAME}"]`);
+  await p.locator('.item-panel').getByRole('button', { name: 'Choice group', exact: true }).click();
+  await p.waitForFunction(() => /^Choice group \d+$/.test(document.activeElement?.getAttribute('aria-label') || ''), null, { timeout: 3000 }).catch(() => {});
+  await p.keyboard.insertText('Drill race'); await p.keyboard.press('Enter'); await p.keyboard.insertText('Oat'); await p.keyboard.press('Tab'); await p.keyboard.insertText('1'); await p.keyboard.press('Enter');
+  const w = await waitDb('select add_ons from items where id=$1', [itemId], (r) => r?.add_ons?.some((a) => a.label?.en === 'Oat' && Number(a.price) === 1), 8000);
+  await sleep(1500); // both answers in, and any late one
+  const final = (await db.query('select add_ons from items where id=$1', [itemId])).rows[0].add_ons.filter((a) => a.group?.en === 'Drill race').map((a) => [a.label.en, Number(a.price)]);
+  const onScreen = await p.inputValue('.item-panel [data-choice-group="Drill race"] input[aria-label="Drill race 1 extra price"]').catch(() => null);
+  const order = sent.map((x) => x.price), gap = sent.length > 1 ? sent[1].at - sent[0].at : null;
+  check('t-save-order', w.ok && JSON.stringify(final) === JSON.stringify([['Oat', 1]]) && onScreen === '1' && JSON.stringify(order) === JSON.stringify([0, 1]) && gap >= 780, `a choice typed fast (Oat, Tab, 1, Enter), its first save held back 800 ms: the saves left in the order made (prices ${JSON.stringify(order)}; the second ${gap} ms after the first, so it waited for its answer); the database ends on ${JSON.stringify(final)} (${w.ok ? `${w.ms} ms` : 'not within 8 s'}) and still does 1.5 s later; the price on screen "${onScreen}"`);
+  await p.unroute('**/api/admin/item');
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { add_ons: [] } }, ck);
+  await ph.close();
+}
 await laptop.close();
 await api('/api/admin/item', { action: 'delete', id: itemId }, cookie);
 await waitPublic((h) => !h.includes(`data-id="${itemId}"`));

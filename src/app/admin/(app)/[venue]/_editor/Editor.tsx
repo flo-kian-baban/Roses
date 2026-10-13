@@ -131,34 +131,44 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     setFocus(f);
   }, []);
   const sectionOf = (id: string) => open?.id === id && open.section ? open.section : menu.items[id]?.placements[0]?.section_id ?? null;
+  // One item's saves reach the server one after another, in the order they were made, and only the newest answer is applied: two quick
+  // saves sent together (a choice's name saved on Tab, its price on Enter) could land in the other order, the older value winning in the
+  // database and on screen (check:full 2026-10-13T14-44-02Z: "Oat +$1" ended as +$0). The screen already shows what was typed meanwhile.
+  const saving = useRef(new Map<string, { tail: Promise<unknown>; n: number }>());
+  const inOrder = async (id: string, send: () => Promise<Resp>): Promise<{ r: Resp; newest: boolean }> => {
+    const q = saving.current.get(id) ?? { tail: Promise.resolve(), n: 0 }; saving.current.set(id, q);
+    const mine = ++q.n; const run = q.tail.catch(() => undefined).then(send); q.tail = run;
+    const r = await run; return { r, newest: q.n === mine };
+  };
+  const itemCall = async (id: string, body: Record<string, unknown>, text: string) => { const { r, newest } = await inOrder(id, () => call('/api/admin/item', { ...body, id })); if (newest) apply(r); done(r, text, { id, alt: sectionOf(id) }); return r; };
 
   // Items. Simple patches are applied at once (the switch flips, the price shows) and put back if the server refuses.
   const itemUpdate = async (id: string, patch: Record<string, unknown>, text = 'Saved') => {
     const before = menu.items[id];
     const optimistic = before && !('section_ids' in patch) ? { ...before, ...(patch as Partial<EditorItem>) } : null;
     if (optimistic) dispatch({ type: 'item', item: optimistic });
-    try { const r = await call('/api/admin/item', { action: 'update', id, patch }); apply(r); done(r, text, { id, alt: sectionOf(id) }); }
+    try { await itemCall(id, { action: 'update', patch }, text); }
     catch (e) { if (before) dispatch({ type: 'item', item: before }); throw e; }
   };
-  const itemNotes = async (id: string, notes: Notes) => { const r = await call('/api/admin/item', { action: 'notes', id, notes }); apply(r); done(r, 'Saved', { id, alt: sectionOf(id) }); };
+  const itemNotes = async (id: string, notes: Notes) => { await itemCall(id, { action: 'notes', notes }, 'Saved'); };
   // Researched allergen and dietary notes confirmed as they stand (Kian, 2026-10-12): they show to customers from now on; Undo puts the draft back.
-  const itemConfirm = async (id: string) => { const r = await call('/api/admin/item', { action: 'confirm', id }); apply(r); done(r, 'Confirmed', { id, alt: sectionOf(id) }); };
+  const itemConfirm = async (id: string) => { await itemCall(id, { action: 'confirm' }, 'Confirmed'); };
   const itemCreate = async (sectionId: string, data: { name: string; price: number | null; photo: Photo | null }) => {
     const r = await call('/api/admin/item', { action: 'create', venue: venue.id, section_id: sectionId, name: { en: data.name, fa: null }, price: data.price, photo: data.photo });
     apply(r); const item = r.item as EditorItem; done(r, 'Added', { id: item.id, alt: sectionId }); setHighlight(item.id);
     setOpen({ id: item.id, section: sectionId }); // the editor opens on the new item, for its description and sizes (Kian via the PM, 2026-10-13)
   };
   // "Looks good" on a field's Draft tag (Kian, 2026-10-13): that field's draft flag goes, nothing else; Undo puts it back.
-  const itemLooksGood = async (id: string, field: string) => { const r = await call('/api/admin/item', { action: 'looks-good', id, field }); apply(r); done(r, 'Looks good', { id, alt: sectionOf(id) }); };
+  const itemLooksGood = async (id: string, field: string) => { await itemCall(id, { action: 'looks-good', field }, 'Looks good'); };
   // Duplicate (Kian, 2026-10-13): a hidden copy in the same sections, right after the original; the editor opens on it with its name
   // selected; one Undo removes it (its editor then closes, the copy being gone).
   const itemDuplicate = async (id: string) => {
-    const r = await call('/api/admin/item', { action: 'duplicate', id }); apply(r); const copy = r.item as EditorItem;
+    const { r } = await inOrder(id, () => call('/api/admin/item', { action: 'duplicate', id })); apply(r); const copy = r.item as EditorItem; // after the item's own saves, so the copy is of what is on screen
     done(r, 'Duplicated', { id: copy.id, alt: sectionOf(id) }); setOpen({ id: copy.id, section: sectionOf(id), selectName: true });
   };
   // Copy a choice group to other items (Kian via the PM, 2026-10-13): one call, one record per item, one toast whose Undo puts them all back.
   const itemCopyChoices = async (id: string, group: string, targets: string[]) => {
-    const r = await call('/api/admin/item', { action: 'copy-choices', id, group, targets });
+    const { r } = await inOrder(id, () => call('/api/admin/item', { action: 'copy-choices', id, group, targets })); // after the item's own saves (Copy saves the group first)
     for (const it of (r.items as EditorItem[]) ?? []) dispatch({ type: 'item', item: it });
     done(r, r.revisions.length ? `Copied to ${r.revisions.length} item${r.revisions.length === 1 ? '' : 's'}` : 'Already there', { id, alt: sectionOf(id) });
   };

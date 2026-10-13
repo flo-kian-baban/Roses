@@ -1,0 +1,304 @@
+{
+  "scratch": "roses_check_20261013t144402z",
+  "perfFixture": "roses_check_20261013t144402z_perf",
+  "working": "roses",
+  "processes": [
+    {
+      "process": "roses-check:server-51863",
+      "source": "server-51863.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:server-51864",
+      "source": "server-51864.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:new-venue",
+      "source": "new-venue/new-venue-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:new-venue (remove)",
+      "source": "new-venue/new-venue-remove.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:admin-drill",
+      "source": "admin/admin-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:lockout-drill",
+      "source": "lockout-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:revalidation-drill",
+      "source": "revalidation-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:research-drill",
+      "source": "research/research-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:editor-drill",
+      "source": "editor/editor-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:preview-drill",
+      "source": "preview/preview-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:style-drill",
+      "source": "style/style-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:welcome-drill",
+      "source": "welcome/welcome-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:season-server",
+      "source": "season/season-server.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:transition-server",
+      "source": "transition/transition-server.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:transition-drill",
+      "source": "transition/transition-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:after-tap-drill (live data, content cost)",
+      "source": "after-tap/live/after-tap-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:touch-drill",
+      "source": "touch/touch-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:photo-links senso",
+      "source": "senso/photo-links.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:photo-links kebab-land",
+      "source": "kebab-land/photo-links.log",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "backup-drill.sh",
+      "source": "backup-drill.txt",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-uploads-clean",
+      "source": "uploads-clean.txt",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:migrate",
+      "source": "migrate.log (DATABASE_URL)",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:build",
+      "source": "build.log (DATABASE_URL)",
+      "databases": [
+        "roses_check_20261013t144402z"
+      ]
+    },
+    {
+      "process": "roses-check:perf-migrate",
+      "source": "perf/migrate.log (DATABASE_URL)",
+      "databases": [
+        "roses_check_20261013t144402z_perf"
+      ],
+      "allowed": "roses_check_20261013t144402z_perf"
+    },
+    {
+      "process": "roses-check:perf-build",
+      "source": "perf/build.log (DATABASE_URL)",
+      "databases": [
+        "roses_check_20261013t144402z_perf"
+      ],
+      "allowed": "roses_check_20261013t144402z_perf"
+    },
+    {
+      "process": "roses-check:perf-server",
+      "source": "perf/server-51867.log",
+      "databases": [
+        "roses_check_20261013t144402z_perf"
+      ],
+      "allowed": "roses_check_20261013t144402z_perf"
+    },
+    {
+      "process": "roses-check:after-tap-drill (fixture)",
+      "source": "after-tap/after-tap-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z_perf"
+      ],
+      "allowed": "roses_check_20261013t144402z_perf"
+    },
+    {
+      "process": "roses-check:new-venue (fixture)",
+      "source": "perf/new-venue-drill.log",
+      "databases": [
+        "roses_check_20261013t144402z_perf"
+      ],
+      "allowed": "roses_check_20261013t144402z_perf"
+    }
+  ],
+  "pgStatActivitySamples": [
+    {
+      "connection": "roses-check:admin-drill → roses_check_20261013t144402z",
+      "samples": 26
+    },
+    {
+      "connection": "roses-check:after-tap-drill → roses_check_20261013t144402z",
+      "samples": 229
+    },
+    {
+      "connection": "roses-check:after-tap-drill → roses_check_20261013t144402z_perf",
+      "samples": 213
+    },
+    {
+      "connection": "roses-check:editor-drill → roses_check_20261013t144402z",
+      "samples": 57
+    },
+    {
+      "connection": "roses-check:lockout-drill → roses_check_20261013t144402z",
+      "samples": 17
+    },
+    {
+      "connection": "roses-check:new-venue → roses_check_20261013t144402z",
+      "samples": 1
+    },
+    {
+      "connection": "roses-check:new-venue → roses_check_20261013t144402z_perf",
+      "samples": 1
+    },
+    {
+      "connection": "roses-check:perf-build → roses_check_20261013t144402z_perf",
+      "samples": 1
+    },
+    {
+      "connection": "roses-check:perf-server → roses_check_20261013t144402z_perf",
+      "samples": 152
+    },
+    {
+      "connection": "roses-check:preview-drill → roses_check_20261013t144402z",
+      "samples": 32
+    },
+    {
+      "connection": "roses-check:research-drill → roses_check_20261013t144402z",
+      "samples": 8
+    },
+    {
+      "connection": "roses-check:revalidation-drill → roses_check_20261013t144402z",
+      "samples": 3
+    },
+    {
+      "connection": "roses-check:season → roses_check_20261013t144402z",
+      "samples": 69
+    },
+    {
+      "connection": "roses-check:season-server → roses_check_20261013t144402z",
+      "samples": 405
+    },
+    {
+      "connection": "roses-check:server-51863 → roses_check_20261013t144402z",
+      "samples": 1739
+    },
+    {
+      "connection": "roses-check:server-51864 → roses_check_20261013t144402z",
+      "samples": 39
+    },
+    {
+      "connection": "roses-check:style-drill → roses_check_20261013t144402z",
+      "samples": 105
+    },
+    {
+      "connection": "roses-check:suite → roses_check_20261013t144402z",
+      "samples": 6767
+    },
+    {
+      "connection": "roses-check:suite → roses_check_20261013t144402z_perf",
+      "samples": 6753
+    },
+    {
+      "connection": "roses-check:suite-readonly → roses",
+      "samples": 6767
+    },
+    {
+      "connection": "roses-check:transition-drill → roses_check_20261013t144402z",
+      "samples": 4583
+    },
+    {
+      "connection": "roses-check:transition-server → roses_check_20261013t144402z",
+      "samples": 2374
+    },
+    {
+      "connection": "roses-check:welcome-drill → roses_check_20261013t144402z",
+      "samples": 75
+    }
+  ],
+  "otherRunsSeen": [],
+  "pass": true
+}

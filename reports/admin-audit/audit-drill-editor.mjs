@@ -327,12 +327,14 @@ if (want('t6-allergens')) {
   await startTask('t6-allergens', 'Turkish Coffee: allergens "milk"');
   await search('Turkish'); await shot('search');
   await openIt('Hot Beverage', ids.turkish, 'Turkish Coffee'); await shot('panel');
-  if (UI === 'after') { await tap(dlg().locator('button[aria-expanded="false"][data-group="allergens"]'), 'Allergens & diet (collapsed)'); await dlg().locator('[data-allergen="milk"]').waitFor(); await shot('allergens-open'); }
+  // the group is closed unless the item has allergen or dietary drafts waiting for Confirm (open by default since the PM's note of 2026-10-13); a person taps it only when closed
+  if (UI === 'after' && (await dlg().locator('button[aria-expanded="false"][data-group="allergens"]').count())) { await tap(dlg().locator('button[aria-expanded="false"][data-group="allergens"]'), 'Allergens & diet (closed)'); await dlg().locator('[data-allergen="milk"]').waitFor(); await shot('allergens-open'); }
+  else if (UI === 'after') T.notes.push('Allergens & diet already open (the item has drafts waiting for Confirm)');
   await tap(dlg().locator('[data-allergen="milk"]'), `the Milk chip (${UI === 'before' ? 'Good to know' : 'Allergens & diet'})`);
   const w = await waitPublic((h) => pubHas(h, ids.turkish, 'Contains: milk', 'حاوی: شیر'));
   await shot('saved');
   const n = (await dbItem(ids.turkish)).notes;
-  finish({ done: w.ok && JSON.stringify(n.allergens) === '["milk"]', endAt: w.at, path: `search "Turkish" → row → ${UI === 'after' ? 'Allergens & diet → ' : ''}the Milk chip`, detail: { notes: n } });
+  finish({ done: w.ok && JSON.stringify(n.allergens) === '["milk"]', endAt: w.at, path: `search "Turkish" → row → ${T.steps.some((x) => /Allergens & diet \(closed\)/.test(x.text)) ? 'Allergens & diet → ' : ''}the Milk chip`, detail: { notes: n } });
 }
 
 // ===== 7. A new item with a description, a photo and two sizes

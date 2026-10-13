@@ -4,9 +4,10 @@
 // rule still refuses to show an item without a price, its one-line reason under the bar); the item (the photo, tapped to replace it,
 // Remove under it; the name in one card with its EN and FA fields; the description likewise); price & choices (the price or the sizes,
 // every choice group with its choices and prices, edited in place: Choices.tsx); where & when (every section the item is in as a chip,
-// "Change" opening the section picker, its place in each section, the season chips); then two named groups, closed until tapped, each
-// saying in one line what it holds: Allergens & diet (owner and admin only; staff 403 unchanged: GoodToKnow.tsx) and Other (combo parts,
-// serves, the note for customers, Duplicate, Delete). A field drafted at import or by research carries a Draft tag with "Looks good",
+// "Change" opening the section picker, its place in each section, the season chips); then two named groups, each saying in one line what
+// it holds: Allergens & diet (owner and admin only; staff 403 unchanged: GoodToKnow.tsx; open from the start while the item has allergen
+// or dietary drafts waiting for Confirm, the PM, 2026-10-13, closed otherwise) and Other (closed until tapped: Duplicate, Delete, combo
+// parts, serves, the note for customers). A field drafted at import or by research carries a Draft tag with "Looks good",
 // which clears that field's flag only. Every field saves itself on change; there is no Save button. While "Saved · Undo" shows, the
 // panel keeps the strip under it free (the scroll area ends above it), so it never covers a control.
 // Seasons (Kian, 2026-10-12): four chips, none selected = all year; a season chosen hides the item everywhere outside it. Research drafts
@@ -31,8 +32,8 @@ export type ItemPanelProps = {
 };
 
 export function ItemPanel({ item, venueId, sections, items, sectionId, canNotes, column, season, notesFirst, selectName, toast, onPatch, onNotes, onConfirm, onCopy, onDelete, onLooksGood, onDuplicate, onMove, onClose }: ItemPanelProps) {
-  const onNotesFirst = !!notesFirst && canNotes && notesToConfirm(item);
-  const [allergensOpen, setAllergensOpen] = useState(onNotesFirst);
+  const toConfirm = canNotes && notesToConfirm(item), onNotesFirst = !!notesFirst && toConfirm;
+  const [allergensOpen, setAllergensOpen] = useState(toConfirm); // open while drafts wait for Confirm (the PM, 2026-10-13); it stays as the person leaves it
   const [otherOpen, setOtherOpen] = useState(false);
   const [copying, setCopying] = useState<string | null>(null); // the choice group being copied to other items
   const [err, setErr] = useState<string | null>(null);

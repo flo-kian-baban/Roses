@@ -1,0 +1,533 @@
+{
+  "base": "http://127.0.0.1:54387",
+  "at": "2026-10-13T20:41:40.587Z",
+  "pass": true,
+  "results": [
+    {
+      "step": "t-add",
+      "ok": true,
+      "text": "add an item: 1 tap (+ Add item) + name + price + Enter → the editor opened on it (true; its description and price on the first screen: true); created shown at $4.50, last in \"Senso Signature\" (position 13 of 13); on the public page 16 ms after Enter"
+    },
+    {
+      "step": "t-seasonal-add",
+      "ok": true,
+      "text": "add a seasonal item on the iPhone 13 viewport: 1 tap (+ Add item on the Seasonal section) + name + price + Enter (target ≤ 2 taps + name + price) → in the Seasonal section only (1 placement), shown true, tagged [\"fall\"] (today in Toronto: fall); on the public page first, under “Fall Menu”, 7 ms after Enter"
+    },
+    {
+      "step": "t-price",
+      "ok": true,
+      "text": "change a price: 1 tap (the price) + typing + Enter → $5.25 in the database 57 ms after Enter; row shows $5.25"
+    },
+    {
+      "step": "t-hide",
+      "ok": true,
+      "text": "hide an item: 1 tap (the switch) → hidden in the database 56 ms later, off the public page after 7 ms"
+    },
+    {
+      "step": "t-show",
+      "ok": true,
+      "text": "show it again: 1 tap → shown, back on the public page after 6 ms"
+    },
+    {
+      "step": "upload",
+      "ok": true,
+      "text": "photo upload: 2 taps (Edit, Add photo) + choose → stored as /uploads/senso/photo-f1323cb7-0e77-4705-b900-612967935254.jpg (271 × 143 px, key kept: true) 96 ms after choosing; GET it → 200 image/jpeg, 9818 bytes; on the public page after 6 ms"
+    },
+    {
+      "step": "switch-reason",
+      "ok": true,
+      "text": "switch on \"Aash-e-Reshteh\" (no price) refused with \"The item needs a price before it can be shown\"; still hidden in the database: true"
+    },
+    {
+      "step": "preview-1s",
+      "ok": true,
+      "text": "preview shows the new price 181 ms after Enter (target ≤ 1000); the row is in the frame's view (top 387 px of 902) and outlined: true"
+    },
+    {
+      "step": "preview-no-welcome",
+      "ok": true,
+      "text": "the fresh frame after a save carries the welcome screen (true) switched off by the admin (data-welcome off, display none); no page animation running in the frame (0; running: roses-pf on li), first row opacity 1, the menu reachable (inert false); welcome keys in the admin's storage: 0"
+    },
+    {
+      "step": "reorder",
+      "ok": true,
+      "text": "\"Drill editor item\" moved up one place in \"Senso Signature\": admin order = database order (14 items), public page shows the same order for the 7 shown items (6 ms); the item is now 13 of 14"
+    },
+    {
+      "step": "undo-price",
+      "ok": true,
+      "text": "price $7 on the public page after 163 ms; Undo → $6.75 back on the public page 263 ms after the tap (7 ms of polling); database 6.75"
+    },
+    {
+      "step": "undo-delete",
+      "ok": true,
+      "text": "deleted (row gone: true, off the public page after 6 ms); Undo → back in \"Senso Signature\" at position 12, shown, $6.75, on the public page after 7 ms, row back in the editor: true"
+    },
+    {
+      "step": "tap-to-edit",
+      "ok": true,
+      "text": "tapped \"Drill editor item\" in the preview → its editor opened 64 ms later (1 tap); the customers' own item sheet stayed closed: true"
+    },
+    {
+      "step": "tap-to-edit-section",
+      "ok": true,
+      "text": "tapped the \"Senso Signature\" heading in the preview → Rename section sheet with \"Senso Signature\""
+    },
+    {
+      "step": "drag-item",
+      "ok": true,
+      "text": "dragged the first item of \"Senso Signature\" below its third: database in the expected order 54 ms after the drop (true); admin order = expected: true; = database: true (14 items; the dragged item is now 3); the public page shows its 7 shown items in the same order after 7 ms (true)"
+    },
+    {
+      "step": "drag-section",
+      "ok": true,
+      "text": "dragged the second section above the first: database in the expected order 52 ms after the drop (true); admin order = expected: true; = database: true (15 sections); the public page shows its 15 shown sections in the same order after 7 ms (true)"
+    },
+    {
+      "step": "section-delete-move",
+      "ok": true,
+      "text": "delete \"Drill section\" with the default choice (Move items to \"Senso Signature\"): 3 taps (menu, Delete section, confirm); default choice was \"move\"; section gone: true; both items now in \"Senso Signature\" at positions 14, 15 in their old order, on the public page there after 7 ms (400 ms after the tap)"
+    },
+    {
+      "step": "section-delete-move-undo",
+      "ok": true,
+      "text": "Undo → \"Drill section\" back with its 2 items in order; the placements added to \"Senso Signature\" removed again (0 left), off that section on the public page after 10 ms"
+    },
+    {
+      "step": "section-delete-items",
+      "ok": true,
+      "text": "delete \"Drill section\" with \"Delete the items too\": section gone true, items left 0, off the public page after 6 ms"
+    },
+    {
+      "step": "section-delete-items-undo",
+      "ok": true,
+      "text": "Undo → section and both items back (shown, $3 and $4), in order in the editor (true) and on the public page after 7 ms"
+    },
+    {
+      "step": "orphans-bar",
+      "ok": true,
+      "text": "after the item lost its section: no \"In no section\" pile in the list (true); the Needs-attention bar shows \"1 in no section\" (database: 1); tapping it lists the item (true)"
+    },
+    {
+      "step": "record",
+      "ok": true,
+      "text": "revisions for the item: create, update, unlist, list, update, update, update, restore, delete, restore, update, update (every row carries before/after as its action needs: true); the section's reorder row holds the order before (14 ids) and after; the admin page shows no History or Restore (none found), /admin/senso/history → 404"
+    },
+    {
+      "step": "no-preview-script",
+      "ok": true,
+      "text": "senso: 5 inline script tags (head decision, artwork engine, welcome screen, language toggle, menu; wanted 5), 0 external, \"preview\" 0×, preview markers 0×; kebab-land: 4 inline script tags (head decision, welcome screen, language toggle, menu; wanted 4), 0 external, \"preview\" 0×, preview markers 0×"
+    },
+    {
+      "step": "t-inline-sizes",
+      "ok": true,
+      "text": "+ Size: 1 tap, the cursor in \"Size 1\", Size 1's price \"4.5\" (the item's); Small, Tab, 4, Enter → the cursor in \"Size 2\"; Large, Tab, 6, Enter → saved [[\"Small\",4],[\"Large\",6]], the one price cleared (null)"
+    },
+    {
+      "step": "t-copy-choices",
+      "ok": true,
+      "text": "+ Choice group put the cursor in \"Choice group 1\"; \"Drill milk\" with Oat +$1 saved (true); Copy to other items: the sheet lists the venue's items by section with 15 \"Select all in …\"; ticked \"Drill copy target\", Copy → toast \"Copied to 1 item·Undo\", the group on it (true); Undo → gone from it again (true), still on the drill item (true); 4 taps in all (+ Choice group, Copy to…, the tick, Copy)"
+    },
+    {
+      "step": "t-section-picker",
+      "ok": true,
+      "text": "Section → \"Hot Beverage\": 2 taps; the item only in \"Hot Beverage\" (true), last there (position 18 of 18); on the public page in 7 ms (true)"
+    },
+    {
+      "step": "t-status-hide",
+      "ok": true,
+      "text": "the status at the top reads \"Shown · fall only\", in view on opening (true); 1 tap on its switch → hidden in the database (true, 58 ms), the status now \"Hidden · fall only\""
+    },
+    {
+      "step": "t-section-chips",
+      "ok": true,
+      "text": "Where & when names every section the item is in, with no tap: [\"Senso Signature\",\"Fall Menu\"] (wanted [\"Senso Signature\",\"Fall Menu\"]; the Seasonal section as customers see it now); on the first screen of this item (two sizes, two choice groups above them): false"
+    },
+    {
+      "step": "t-toast-clear",
+      "ok": true,
+      "text": "while \"Saved · Undo\" shows: the editor's scroll area ends at 580 px, the toast starts at 587 px (the strip kept free: true); controls of the editor under the toast: none"
+    },
+    {
+      "step": "t-looks-good",
+      "ok": true,
+      "text": "database before: drafts [\"description\",\"allergens\"], fa_draft [\"name\",\"description\"]; Looks good on the English description (1 tap) → drafts [\"allergens\"], fa_draft [\"name\",\"description\"], the texts unchanged (true); on the Persian description → fa_draft [\"name\"], drafts [\"allergens\"]; both buttons gone (true); Undo → fa_draft [\"name\",\"description\"], drafts [\"allergens\"]"
+    },
+    {
+      "step": "t-duplicate",
+      "ok": true,
+      "text": "2 taps (Other, Duplicate) → the editor on \"Drill editor item (copy)\" / \"آیتم دریل (کپی)\" (true), its name selected (Name, all selected true); hidden (true), off the public page (true); the same description, price, variants, add_ons, components, serves, photo, notes, drafts, seasons: all equal; in the same 2 sections right after the original (true; next in the editor's list true); toast \"Duplicated·Undo\"; Undo → the copy gone from the database (true), its editor closed (true), the original unchanged (true)"
+    },
+    {
+      "step": "t-save-order",
+      "ok": true,
+      "text": "a choice typed fast (Oat, Tab, 1, Enter), its first save held back 800 ms: the saves left in the order made (prices [0,1]; the second 875 ms after the first, so it waited for its answer); the database ends on [[\"Oat\",1]] (926 ms) and still does 1.5 s later; the price on screen \"1\""
+    }
+  ],
+  "measures": [
+    "add an item: 1 tap + name + price + confirm (Enter); on the public page in 16 ms; sheet confirmed at +522 ms",
+    "add a seasonal item from the Seasonal section: 1 tap + name + price + confirm (Enter); on the public page under “Fall Menu” in 7 ms",
+    "change a price: 1 tap + typing + confirm (Enter); saved in 57 ms",
+    "hide an item: 1 tap; off the public page in 7 ms",
+    "photo upload: 2 taps + choose a photo; uploaded, saved and shown in the editor 96 ms after choosing (9818 bytes stored); on the public page in 6 ms",
+    "preview shows a saved change after 181 ms",
+    "Undo of a price change back on the public page after 7 ms",
+    "tap-to-edit: 1 tap on the item in the preview; editor open after 64 ms",
+    "drag an item (laptop): one drag; database and public page in the new order after 7 ms",
+    "drag a section (laptop): one drag; database and public page in the new order after 7 ms",
+    "delete a section, items moved: 3 taps (menu, Delete section, confirm with the default choice); on the public page in 7 ms",
+    "two sizes from the item editor: 1 tap (+ Size) + Small, Tab, 4, Enter, Large, Tab, 6, Enter; saved in the database within 106 ms of the last Enter",
+    "Looks good on a drafted field: 1 tap; the flag gone from the database in 53 ms",
+    "duplicate an item from its editor: 2 taps (Other, Duplicate); one Undo removes the copy (2 ms)"
+  ],
+  "transcript": [
+    {
+      "at": "2026-10-13T20:41:19.415Z",
+      "ms": 6,
+      "step": "db",
+      "text": "connected to database \"roses_check_20261013t195935z\" as application \"roses-check:editor-drill\""
+    },
+    {
+      "at": "2026-10-13T20:41:20.121Z",
+      "ms": 712,
+      "step": "shot",
+      "text": "01-editor-phone.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:20.703Z",
+      "ms": 1294,
+      "step": "shot",
+      "text": "02-item-added.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:20.704Z",
+      "ms": 1295,
+      "step": "t-add",
+      "text": "PASS: add an item: 1 tap (+ Add item) + name + price + Enter → the editor opened on it (true; its description and price on the first screen: true); created shown at $4.50, last in \"Senso Signature\" (position 13 of 13); on the public page 16 ms after Enter"
+    },
+    {
+      "at": "2026-10-13T20:41:21.234Z",
+      "ms": 1825,
+      "step": "shot",
+      "text": "03-seasonal-item-added.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:21.234Z",
+      "ms": 1825,
+      "step": "t-seasonal-add",
+      "text": "PASS: add a seasonal item on the iPhone 13 viewport: 1 tap (+ Add item on the Seasonal section) + name + price + Enter (target ≤ 2 taps + name + price) → in the Seasonal section only (1 placement), shown true, tagged [\"fall\"] (today in Toronto: fall); on the public page first, under “Fall Menu”, 7 ms after Enter"
+    },
+    {
+      "at": "2026-10-13T20:41:21.279Z",
+      "ms": 1870,
+      "step": "seasonal",
+      "text": "the drill's seasonal item deleted (200), gone from the public page after 6 ms"
+    },
+    {
+      "at": "2026-10-13T20:41:21.392Z",
+      "ms": 1983,
+      "step": "t-price",
+      "text": "PASS: change a price: 1 tap (the price) + typing + Enter → $5.25 in the database 57 ms after Enter; row shows $5.25"
+    },
+    {
+      "at": "2026-10-13T20:41:21.586Z",
+      "ms": 2177,
+      "step": "shot",
+      "text": "04-item-hidden.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:21.586Z",
+      "ms": 2177,
+      "step": "t-hide",
+      "text": "PASS: hide an item: 1 tap (the switch) → hidden in the database 56 ms later, off the public page after 7 ms"
+    },
+    {
+      "at": "2026-10-13T20:41:21.690Z",
+      "ms": 2281,
+      "step": "t-show",
+      "text": "PASS: show it again: 1 tap → shown, back on the public page after 6 ms"
+    },
+    {
+      "at": "2026-10-13T20:41:22.010Z",
+      "ms": 2601,
+      "step": "shot",
+      "text": "05-photo-uploaded.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:22.011Z",
+      "ms": 2602,
+      "step": "upload",
+      "text": "PASS: photo upload: 2 taps (Edit, Add photo) + choose → stored as /uploads/senso/photo-f1323cb7-0e77-4705-b900-612967935254.jpg (271 × 143 px, key kept: true) 96 ms after choosing; GET it → 200 image/jpeg, 9818 bytes; on the public page after 6 ms"
+    },
+    {
+      "at": "2026-10-13T20:41:22.238Z",
+      "ms": 2829,
+      "step": "shot",
+      "text": "06-switch-refused.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:22.238Z",
+      "ms": 2829,
+      "step": "switch-reason",
+      "text": "PASS: switch on \"Aash-e-Reshteh\" (no price) refused with \"The item needs a price before it can be shown\"; still hidden in the database: true"
+    },
+    {
+      "at": "2026-10-13T20:41:22.881Z",
+      "ms": 3472,
+      "step": "shot",
+      "text": "07-editor-laptop.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:23.186Z",
+      "ms": 3777,
+      "step": "shot",
+      "text": "08-preview-updated.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:23.186Z",
+      "ms": 3777,
+      "step": "preview-1s",
+      "text": "PASS: preview shows the new price 181 ms after Enter (target ≤ 1000); the row is in the frame's view (top 387 px of 902) and outlined: true"
+    },
+    {
+      "at": "2026-10-13T20:41:23.191Z",
+      "ms": 3782,
+      "step": "preview-no-welcome",
+      "text": "PASS: the fresh frame after a save carries the welcome screen (true) switched off by the admin (data-welcome off, display none); no page animation running in the frame (0; running: roses-pf on li), first row opacity 1, the menu reachable (inert false); welcome keys in the admin's storage: 0"
+    },
+    {
+      "at": "2026-10-13T20:41:23.768Z",
+      "ms": 4359,
+      "step": "shot",
+      "text": "09-reordered.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:23.768Z",
+      "ms": 4359,
+      "step": "reorder",
+      "text": "PASS: \"Drill editor item\" moved up one place in \"Senso Signature\": admin order = database order (14 items), public page shows the same order for the 7 shown items (6 ms); the item is now 13 of 14"
+    },
+    {
+      "at": "2026-10-13T20:41:24.436Z",
+      "ms": 5027,
+      "step": "shot",
+      "text": "10-undo-price.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:24.436Z",
+      "ms": 5027,
+      "step": "undo-price",
+      "text": "PASS: price $7 on the public page after 163 ms; Undo → $6.75 back on the public page 263 ms after the tap (7 ms of polling); database 6.75"
+    },
+    {
+      "at": "2026-10-13T20:41:25.973Z",
+      "ms": 6564,
+      "step": "shot",
+      "text": "11-undo-delete.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:25.973Z",
+      "ms": 6564,
+      "step": "undo-delete",
+      "text": "PASS: deleted (row gone: true, off the public page after 6 ms); Undo → back in \"Senso Signature\" at position 12, shown, $6.75, on the public page after 7 ms, row back in the editor: true"
+    },
+    {
+      "at": "2026-10-13T20:41:26.117Z",
+      "ms": 6708,
+      "step": "shot",
+      "text": "12-tap-to-edit.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:26.117Z",
+      "ms": 6708,
+      "step": "tap-to-edit",
+      "text": "PASS: tapped \"Drill editor item\" in the preview → its editor opened 64 ms later (1 tap); the customers' own item sheet stayed closed: true"
+    },
+    {
+      "at": "2026-10-13T20:41:26.429Z",
+      "ms": 7020,
+      "step": "tap-to-edit-section",
+      "text": "PASS: tapped the \"Senso Signature\" heading in the preview → Rename section sheet with \"Senso Signature\""
+    },
+    {
+      "at": "2026-10-13T20:41:27.085Z",
+      "ms": 7676,
+      "step": "shot",
+      "text": "13-drag-item.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:27.085Z",
+      "ms": 7676,
+      "step": "drag-item",
+      "text": "PASS: dragged the first item of \"Senso Signature\" below its third: database in the expected order 54 ms after the drop (true); admin order = expected: true; = database: true (14 items; the dragged item is now 3); the public page shows its 7 shown items in the same order after 7 ms (true)"
+    },
+    {
+      "at": "2026-10-13T20:41:28.199Z",
+      "ms": 8790,
+      "step": "shot",
+      "text": "14-drag-section.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:28.200Z",
+      "ms": 8791,
+      "step": "drag-section",
+      "text": "PASS: dragged the second section above the first: database in the expected order 52 ms after the drop (true); admin order = expected: true; = database: true (15 sections); the public page shows its 15 shown sections in the same order after 7 ms (true)"
+    },
+    {
+      "at": "2026-10-13T20:41:28.807Z",
+      "ms": 9398,
+      "step": "shot",
+      "text": "15-delete-section-sheet.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:29.207Z",
+      "ms": 9798,
+      "step": "section-delete-move",
+      "text": "PASS: delete \"Drill section\" with the default choice (Move items to \"Senso Signature\"): 3 taps (menu, Delete section, confirm); default choice was \"move\"; section gone: true; both items now in \"Senso Signature\" at positions 14, 15 in their old order, on the public page there after 7 ms (400 ms after the tap)"
+    },
+    {
+      "at": "2026-10-13T20:41:29.594Z",
+      "ms": 10185,
+      "step": "section-delete-move-undo",
+      "text": "PASS: Undo → \"Drill section\" back with its 2 items in order; the placements added to \"Senso Signature\" removed again (0 left), off that section on the public page after 10 ms"
+    },
+    {
+      "at": "2026-10-13T20:41:30.259Z",
+      "ms": 10850,
+      "step": "section-delete-items",
+      "text": "PASS: delete \"Drill section\" with \"Delete the items too\": section gone true, items left 0, off the public page after 6 ms"
+    },
+    {
+      "at": "2026-10-13T20:41:30.483Z",
+      "ms": 11074,
+      "step": "shot",
+      "text": "16-delete-section-items-undone.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:30.483Z",
+      "ms": 11074,
+      "step": "section-delete-items-undo",
+      "text": "PASS: Undo → section and both items back (shown, $3 and $4), in order in the editor (true) and on the public page after 7 ms"
+    },
+    {
+      "at": "2026-10-13T20:41:30.855Z",
+      "ms": 11446,
+      "step": "shot",
+      "text": "17-no-section-filter.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:30.855Z",
+      "ms": 11446,
+      "step": "orphans-bar",
+      "text": "PASS: after the item lost its section: no \"In no section\" pile in the list (true); the Needs-attention bar shows \"1 in no section\" (database: 1); tapping it lists the item (true)"
+    },
+    {
+      "at": "2026-10-13T20:41:31.137Z",
+      "ms": 11728,
+      "step": "record",
+      "text": "PASS: revisions for the item: create, update, unlist, list, update, update, update, restore, delete, restore, update, update (every row carries before/after as its action needs: true); the section's reorder row holds the order before (14 ids) and after; the admin page shows no History or Restore (none found), /admin/senso/history → 404"
+    },
+    {
+      "at": "2026-10-13T20:41:31.140Z",
+      "ms": 11731,
+      "step": "no-preview-script",
+      "text": "PASS: senso: 5 inline script tags (head decision, artwork engine, welcome screen, language toggle, menu; wanted 5), 0 external, \"preview\" 0×, preview markers 0×; kebab-land: 4 inline script tags (head decision, welcome screen, language toggle, menu; wanted 4), 0 external, \"preview\" 0×, preview markers 0×"
+    },
+    {
+      "at": "2026-10-13T20:41:32.459Z",
+      "ms": 13050,
+      "step": "shot",
+      "text": "18-inline-sizes.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:32.459Z",
+      "ms": 13050,
+      "step": "t-inline-sizes",
+      "text": "PASS: + Size: 1 tap, the cursor in \"Size 1\", Size 1's price \"4.5\" (the item's); Small, Tab, 4, Enter → the cursor in \"Size 2\"; Large, Tab, 6, Enter → saved [[\"Small\",4],[\"Large\",6]], the one price cleared (null)"
+    },
+    {
+      "at": "2026-10-13T20:41:33.320Z",
+      "ms": 13911,
+      "step": "shot",
+      "text": "19-copied.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:33.426Z",
+      "ms": 14017,
+      "step": "t-copy-choices",
+      "text": "PASS: + Choice group put the cursor in \"Choice group 1\"; \"Drill milk\" with Oat +$1 saved (true); Copy to other items: the sheet lists the venue's items by section with 15 \"Select all in …\"; ticked \"Drill copy target\", Copy → toast \"Copied to 1 item·Undo\", the group on it (true); Undo → gone from it again (true), still on the drill item (true); 4 taps in all (+ Choice group, Copy to…, the tick, Copy)"
+    },
+    {
+      "at": "2026-10-13T20:41:34.057Z",
+      "ms": 14648,
+      "step": "shot",
+      "text": "20-moved.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:34.057Z",
+      "ms": 14648,
+      "step": "t-section-picker",
+      "text": "PASS: Section → \"Hot Beverage\": 2 taps; the item only in \"Hot Beverage\" (true), last there (position 18 of 18); on the public page in 7 ms (true)"
+    },
+    {
+      "at": "2026-10-13T20:41:34.591Z",
+      "ms": 15182,
+      "step": "rebuild",
+      "text": "the drill item set up as a full one (200), research drafts description + allergens, Persian drafts name + description"
+    },
+    {
+      "at": "2026-10-13T20:41:35.282Z",
+      "ms": 15873,
+      "step": "shot",
+      "text": "21-editor-rebuilt.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:35.374Z",
+      "ms": 15965,
+      "step": "t-status-hide",
+      "text": "PASS: the status at the top reads \"Shown · fall only\", in view on opening (true); 1 tap on its switch → hidden in the database (true, 58 ms), the status now \"Hidden · fall only\""
+    },
+    {
+      "at": "2026-10-13T20:41:35.468Z",
+      "ms": 16059,
+      "step": "t-section-chips",
+      "text": "PASS: Where & when names every section the item is in, with no tap: [\"Senso Signature\",\"Fall Menu\"] (wanted [\"Senso Signature\",\"Fall Menu\"]; the Seasonal section as customers see it now); on the first screen of this item (two sizes, two choice groups above them): false"
+    },
+    {
+      "at": "2026-10-13T20:41:35.821Z",
+      "ms": 16412,
+      "step": "t-toast-clear",
+      "text": "PASS: while \"Saved · Undo\" shows: the editor's scroll area ends at 580 px, the toast starts at 587 px (the strip kept free: true); controls of the editor under the toast: none"
+    },
+    {
+      "at": "2026-10-13T20:41:36.022Z",
+      "ms": 16613,
+      "step": "t-looks-good",
+      "text": "PASS: database before: drafts [\"description\",\"allergens\"], fa_draft [\"name\",\"description\"]; Looks good on the English description (1 tap) → drafts [\"allergens\"], fa_draft [\"name\",\"description\"], the texts unchanged (true); on the Persian description → fa_draft [\"name\"], drafts [\"allergens\"]; both buttons gone (true); Undo → fa_draft [\"name\",\"description\"], drafts [\"allergens\"]"
+    },
+    {
+      "at": "2026-10-13T20:41:36.792Z",
+      "ms": 17383,
+      "step": "shot",
+      "text": "22-duplicated.jpg"
+    },
+    {
+      "at": "2026-10-13T20:41:36.907Z",
+      "ms": 17498,
+      "step": "t-duplicate",
+      "text": "PASS: 2 taps (Other, Duplicate) → the editor on \"Drill editor item (copy)\" / \"آیتم دریل (کپی)\" (true), its name selected (Name, all selected true); hidden (true), off the public page (true); the same description, price, variants, add_ons, components, serves, photo, notes, drafts, seasons: all equal; in the same 2 sections right after the original (true; next in the editor's list true); toast \"Duplicated·Undo\"; Undo → the copy gone from the database (true), its editor closed (true), the original unchanged (true)"
+    },
+    {
+      "at": "2026-10-13T20:41:40.495Z",
+      "ms": 21086,
+      "step": "t-save-order",
+      "text": "PASS: a choice typed fast (Oat, Tab, 1, Enter), its first save held back 800 ms: the saves left in the order made (prices [0,1]; the second 875 ms after the first, so it waited for its answer); the database ends on [[\"Oat\",1]] (926 ms) and still does 1.5 s later; the price on screen \"1\""
+    },
+    {
+      "at": "2026-10-13T20:41:40.566Z",
+      "ms": 21157,
+      "step": "cleanup",
+      "text": "drill item deleted again (stays in the change record)"
+    }
+  ]
+}

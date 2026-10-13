@@ -345,7 +345,9 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   // sizes, the first row takes the price, Tab and Enter do the rest), Copy to other items with one Undo for all, the section picker
   const T2 = 'Drill copy target';
   await db.query(`delete from items where venue_id = $1 and name->>'en' = $2`, [VENUE, T2]);
-  const ck = await cookieOf(phone);
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message)); // a phone of its own (the first one is closed by now)
+  await signin(p, VENUE);
+  const ck = await cookieOf(ph);
   const c = await api('/api/admin/item', { action: 'create', venue: VENUE, section_id: sec.id, name: { en: T2, fa: null }, price: 3 }, ck);
   const targetId = c.json?.item?.id;
   await api('/api/admin/item', { action: 'update', id: itemId, patch: { variants: [], add_ons: [], price: 4.5 } }, ck); // the drill item's own precondition
@@ -356,6 +358,7 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   taps = 0;
   const sizesBtn = p.locator('.item-panel').getByRole('button', { name: 'Sizes', exact: true }); await sizesBtn.scrollIntoViewIfNeeded(); taps++; await sizesBtn.click();
   await p.waitForSelector('.item-panel input[aria-label="Size 1"]');
+  await p.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Size 1', null, { timeout: 3000 }).catch(() => {}); // a person types once the cursor is there
   const f1 = await focused(), pre = await p.inputValue('.item-panel input[aria-label="Size 1 price"]');
   await p.keyboard.insertText('Small'); await p.keyboard.press('Tab'); await p.keyboard.insertText('4'); await p.keyboard.press('Enter');
   const f2 = await p.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Size 2', null, { timeout: 5000 }).then(() => 'Size 2').catch(async () => focused());
@@ -368,10 +371,11 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   // a choice group, then Copy to other items, then one Undo
   taps = 0;
   const choicesBtn = p.locator('.item-panel').getByRole('button', { name: 'Choices (milk, extras…)' }); await choicesBtn.scrollIntoViewIfNeeded(); taps++; await choicesBtn.click();
+  await p.waitForFunction(() => /^Choice group \d+$/.test(document.activeElement?.getAttribute('aria-label') || ''), null, { timeout: 3000 }).catch(() => {}); // Advanced opens, then the cursor is in the new group's name
   const fg = await focused();
   await p.keyboard.insertText('Drill milk'); await p.keyboard.press('Enter'); await p.keyboard.insertText('Oat'); await p.keyboard.press('Tab'); await p.keyboard.insertText('1'); await p.keyboard.press('Enter');
   const wc = await waitDb('select add_ons from items where id=$1', [itemId], (r) => r?.add_ons?.some((a) => a.group?.en === 'Drill milk' && a.label.en === 'Oat' && Number(a.price) === 1));
-  const copyBtn = p.locator('.item-panel [data-choice-group="Drill milk"] button:has-text("Copy to other items")'); await copyBtn.scrollIntoViewIfNeeded(); taps++; await copyBtn.click();
+  const copyBtn = p.locator('.item-panel [data-choice-group="Drill milk"] button:has-text("Copy to other items")'); await copyBtn.scrollIntoViewIfNeeded({ timeout: 8000 }); taps++; await copyBtn.click();
   const sheet = p.locator('[role=dialog][aria-label^="Copy “Drill milk”"]'); await sheet.waitFor();
   const box = sheet.locator('label', { hasText: T2 }).locator('input[type=checkbox]').first(); await box.scrollIntoViewIfNeeded(); taps++; await box.click();
   const selAll = await sheet.getByRole('button', { name: /^Select all in / }).count();
@@ -396,6 +400,7 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   await api('/api/admin/item', { action: 'update', id: itemId, patch: { section_ids: [sec.id], variants: [], add_ons: [], price: 4.5 } }, ck); // back as it was for the cleanup
   await p.click('.item-panel button:has-text("Done")').catch(() => {});
   if (targetId) { await api('/api/admin/item', { action: 'delete', id: targetId }, ck); await waitPublic((h) => !h.includes(`data-id="${targetId}"`)); }
+  await ph.close();
 }
 await laptop.close();
 await api('/api/admin/item', { action: 'delete', id: itemId }, cookie);

@@ -313,7 +313,7 @@ if (want('t6-allergens')) {
   const f = dlg().locator('input[aria-label="Allergens"]');
   T.notes.push(`the Allergens field: free text, placeholder "${await f.getAttribute('placeholder')}", hint "${(await dlg().locator('label:has(input[aria-label="Allergens"]) span.mt-1').textContent().catch(() => '')) || ''}"`);
   await type(f, 'milk', 'Allergens'); await key('Enter', 'saves');
-  const w = await waitPublic((h) => pubHas(h, ids.turkish, 'Contains milk'));
+  const w = await waitPublic((h) => pubHas(h, ids.turkish, /Contains:? milk/)); // "Contains: milk" since the research batch (2026-10-12)
   await shot('saved');
   const n = (await dbItem(ids.turkish)).notes;
   const pub = chunks(w.html, ids.turkish)[0] || '';

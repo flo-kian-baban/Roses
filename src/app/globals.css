@@ -79,3 +79,7 @@
 .admin .toast { animation: toast-in .2s ease-out; }
 @keyframes toast-in { from { opacity: 0; margin-bottom: -8px; } to { opacity: 1; margin-bottom: 0; } }
 @media (prefers-reduced-motion: reduce) { .admin .toast { animation: none; } }
+
+/* While a sheet is open the "Saved · Undo" toast moves to the top of the screen, so it never covers the sheet's own button at the
+   bottom (found by the re-measure of 2026-10-13: it sat on "Copy to N items" right after a choice was saved). */
+body:has([data-sheet]) .toast { top: max(0.75rem, env(safe-area-inset-top)); bottom: auto !important; }

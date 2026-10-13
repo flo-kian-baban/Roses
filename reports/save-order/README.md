@@ -12,7 +12,7 @@ A burst is 2 or more saves of one item with at most 2 s between consecutive ones
 | --- | --- | --- | --- |
 | Warm Pumpkin & Ice Cream | 2026-10-08 00:21:16.9 → 18.6 | #185 the one price $14.99 became a size "Regular $14.99"; #186 (1.67 s later) that size removed, $14.99 again | $14.99, no sizes: #186's value |
 | Majoun | 2026-10-08 14:29:45.8 → 46.8 | #583 the size "Regular $21.99" removed, $21.99 as the one price; #584 (1.0 s later) a size "Regular $21.99" again | $21.99, no sizes: the value of #585, 2.2 s after #584 (the size removed again), the last save of the field |
-| Majoun | 2026-10-08 14:32:00.9 → 02.2 | #593 Vegan added (contains nuts); #594 (1.3 s later) Halal set | none of these now: the notes changed 7 times since (the research import among them), the last by Kian's account (#1185); stored = #1185's value |
+| Majoun | 2026-10-08 14:32:00.9 → 02.2 | #593 Vegan added (contains nuts); #594 (1.3 s later) Halal set | none of these now: the notes changed 7 times since, all by Kian's account (#595, #596, #1181–#1185); stored = #1185's value |
 | Majoun | 2026-10-13 03:42:09.9 → 12.8 | #1183 Vegan removed; #1184 (1.3 s) the Persian note cleared; #1185 (1.6 s) the English note cleared | no allergen, no diet, no note: #1185's value |
 | Warm Pumpkin & Ice Cream | 2026-10-12 20:54:56.3 → 57.3 | #871 Winter added to Fall; #872 (0.97 s later) Winter removed | Fall only: #872's value |
 

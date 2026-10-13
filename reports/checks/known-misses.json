@@ -14,24 +14,27 @@
       "clears": "when resized copies of the photos are served from our own storage (the go-live list; downloading the photos needs the owner's written permission first)",
       "listed": "2026-10-09, the PM",
       "baseline": {
-        "run": "2026-10-12T03-57-29Z",
+        "run": "2026-10-13T00-14-07Z",
+        "fixture": "2026-10-12",
         "unit": "ms",
-        "tolerance": 0.1,
+        "tolerance": 1,
         "checks": {
           "after-tap-senso-list-photos": {
             "over": 2,
-            "of": 2,
-            "worst": 8043,
+            "of": 3,
+            "worst": 7293,
+            "median": 3513,
             "unit": "ms"
           },
           "after-tap-senso-grid-photos": {
-            "over": 2,
-            "of": 2,
-            "worst": 4845,
+            "over": 0,
+            "of": 3,
+            "worst": 1878,
+            "median": 1876,
             "unit": "ms"
           }
         },
-        "set": "2026-10-12, the PM: as measured in that run (each check is the worse of 2 repeats over Slow 4G). Tolerance 10 % on the worst value, a decision taken by the build agent for the PM to confirm: the same measurement on unchanged code ranged 7975–8409 ms (List) and 4692–5195 ms (Grid) over the 13 committed runs (2026-10-09 to 2026-10-12), so a strict comparison would fail about half the runs on noise of a few milliseconds The PM's suite fix (2026-10-12): the check now runs on the performance fixture, three repeats judged on the median; this baseline (live data, the worse of two) stands until the first suite run on the fixture, from which it is re-baselined once (the PM: \"the ratchet applies there\")."
+        "set": "Re-baselined once on the performance fixture 2026-10-12 (the PM's suite fix of 2026-10-12: \"the ratchet applies there\"), from run 2026-10-13T00-14-07Z, the first run on the fixture, 3 repeats judged on the median: List 7293 (outlier) / 1928 / 3513 ms, median 3513; Grid 1878 / 1876 / 1874 ms, median 1876, passing. Tolerance 100 % on the median (up to 7026 ms for the List, below the live-data baseline it replaces, 8043 ms worst of 2), a decision taken by the build agent for the PM to confirm: one run on the fixture gives three List samples from 1928 to 7293 ms, so a 10 % tolerance would fail on noise; to be tightened to the observed spread after more runs on the fixture. The live-data baseline it replaces: run 2026-10-12T03-57-29Z, List 2 of 2 over, worst 8043; Grid 2 of 2, worst 4845 (the worse of two repeats)."
       }
     },
     {

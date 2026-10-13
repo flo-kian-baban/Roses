@@ -341,6 +341,62 @@ const listedIds = async () => new Set((await db.query('select id from items wher
 { // staff get 403 on notes; the Style tab is not for staff (today a refusal page; the HTTP 403 comes with the Style tab in step 2)
   const r = await api('/api/admin/pin', {}, cookie); void r;
 }
+{ // the build after the admin audit (Kian via the PM, 2026-10-13), on the phone, on the drill's own items: inline rows (one tap starts the
+  // sizes, the first row takes the price, Tab and Enter do the rest), Copy to other items with one Undo for all, the section picker
+  const T2 = 'Drill copy target';
+  await db.query(`delete from items where venue_id = $1 and name->>'en' = $2`, [VENUE, T2]);
+  const ck = await cookieOf(phone);
+  const c = await api('/api/admin/item', { action: 'create', venue: VENUE, section_id: sec.id, name: { en: T2, fa: null }, price: 3 }, ck);
+  const targetId = c.json?.item?.id;
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { variants: [], add_ons: [], price: 4.5 } }, ck); // the drill item's own precondition
+  await p.goto(`${base}/admin/${VENUE}`); await p.waitForSelector('[data-item]');
+  const openIt = async (id, name) => { await p.fill('input[aria-label="Search items"]', name); const b = p.locator(`[data-item="${id}"] button[aria-label^="Edit"]`).first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector(`.item-panel[aria-label="Edit ${name}"]`); };
+  const focused = () => p.evaluate(() => document.activeElement?.getAttribute('aria-label'));
+  await openIt(itemId, NAME);
+  taps = 0;
+  const sizesBtn = p.locator('.item-panel').getByRole('button', { name: 'Sizes', exact: true }); await sizesBtn.scrollIntoViewIfNeeded(); taps++; await sizesBtn.click();
+  await p.waitForSelector('.item-panel input[aria-label="Size 1"]');
+  const f1 = await focused(), pre = await p.inputValue('.item-panel input[aria-label="Size 1 price"]');
+  await p.keyboard.insertText('Small'); await p.keyboard.press('Tab'); await p.keyboard.insertText('4'); await p.keyboard.press('Enter');
+  const f2 = await p.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Size 2', null, { timeout: 5000 }).then(() => 'Size 2').catch(async () => focused());
+  await p.keyboard.insertText('Large'); await p.keyboard.press('Tab'); await p.keyboard.insertText('6'); await p.keyboard.press('Enter');
+  const ws = await waitDb('select variants, price from items where id=$1', [itemId], (r) => r?.variants?.length === 2);
+  const vs = JSON.stringify((ws.row?.variants ?? []).map((v) => [v.label.en, Number(v.price)]));
+  await snap(p, 'inline-sizes');
+  check('t-inline-sizes', taps === 1 && f1 === 'Size 1' && pre === '4.5' && f2 === 'Size 2' && ws.ok && vs === JSON.stringify([['Small', 4], ['Large', 6]]) && ws.row.price == null, `+ Sizes: ${taps} tap, the cursor in "${f1}", Size 1's price "${pre}" (the item's); Small, Tab, 4, Enter → the cursor in "${f2}"; Large, Tab, 6, Enter → saved ${vs}, the one price cleared (${ws.row?.price ?? 'null'})`);
+  measure(`two sizes from the item editor: ${taps} tap (+ Sizes) + Small, Tab, 4, Enter, Large, Tab, 6, Enter; saved in the database within ${ws.ms} ms of the last Enter`);
+  // a choice group, then Copy to other items, then one Undo
+  taps = 0;
+  const choicesBtn = p.locator('.item-panel').getByRole('button', { name: 'Choices (milk, extras…)' }); await choicesBtn.scrollIntoViewIfNeeded(); taps++; await choicesBtn.click();
+  const fg = await focused();
+  await p.keyboard.insertText('Drill milk'); await p.keyboard.press('Enter'); await p.keyboard.insertText('Oat'); await p.keyboard.press('Tab'); await p.keyboard.insertText('1'); await p.keyboard.press('Enter');
+  const wc = await waitDb('select add_ons from items where id=$1', [itemId], (r) => r?.add_ons?.some((a) => a.group?.en === 'Drill milk' && a.label.en === 'Oat' && Number(a.price) === 1));
+  const copyBtn = p.locator('.item-panel [data-choice-group="Drill milk"] button:has-text("Copy to other items")'); await copyBtn.scrollIntoViewIfNeeded(); taps++; await copyBtn.click();
+  const sheet = p.locator('[role=dialog][aria-label^="Copy “Drill milk”"]'); await sheet.waitFor();
+  const box = sheet.locator('label', { hasText: T2 }).locator('input[type=checkbox]').first(); await box.scrollIntoViewIfNeeded(); taps++; await box.click();
+  const selAll = await sheet.getByRole('button', { name: /^Select all in / }).count();
+  taps++; await sheet.getByRole('button', { name: /^Copy to 1 item$/ }).click(); await sheet.waitFor({ state: 'detached' });
+  const toast = await p.locator('[role=status]').textContent({ timeout: 3000 }).catch(() => '');
+  const wt = await waitDb('select add_ons from items where id=$1', [targetId], (r) => r?.add_ons?.some((a) => a.group?.en === 'Drill milk' && a.label.en === 'Oat'));
+  await snap(p, 'copied');
+  await p.click('[role=status] button:has-text("Undo")'); await p.waitForSelector('[role=status]:has-text("Undone")', { timeout: 5000 }).catch(() => {});
+  const wu = await waitDb('select add_ons from items where id=$1', [targetId], (r) => (r?.add_ons ?? []).length === 0);
+  const src = (await db.query('select add_ons from items where id=$1', [itemId])).rows[0].add_ons;
+  check('t-copy-choices', fg === 'Choice group 1' && wc.ok && selAll > 0 && /Copied to 1 item/.test(toast || '') && wt.ok && wu.ok && src.some((a) => a.group?.en === 'Drill milk'), `+ Choices put the cursor in "${fg}"; "Drill milk" with Oat +$1 saved (${wc.ok}); Copy to other items: the sheet lists the venue's items by section with ${selAll} "Select all in …"; ticked "${T2}", Copy → toast "${(toast || '').trim()}", the group on it (${wt.ok}); Undo → gone from it again (${wu.ok}), still on the drill item (${src.some((a) => a.group?.en === 'Drill milk')}); ${taps} taps in all (+ Choices, Copy to other items, the tick, Copy)`);
+  // the section picker: a tap on another section moves the item there, last
+  const other = (await db.query(`select id, name->>'en' as name from sections where venue_id = $1 and listed and not seasonal and id <> $2 order by position limit 1`, [VENUE, sec.id])).rows[0];
+  taps = 0;
+  const pick = p.locator('.item-panel [data-section-picker]'); await pick.scrollIntoViewIfNeeded(); taps++; await pick.click();
+  const ms = p.locator(`[role=dialog][aria-label^="Move “${NAME}”"]`); await ms.waitFor();
+  taps++; await ms.locator(`[data-move-to="${other.name}"]`).click(); await ms.waitFor({ state: 'detached' });
+  const wm = await waitDb(`select array_agg(x.section_id::text) as s, max(x.position) as pos, (select max(position) from item_sections where section_id = $2) as last from item_sections x where x.item_id = $1`, [itemId, other.id], (r) => r?.s?.length === 1 && r.s[0] === other.id);
+  const pubm = await waitPublic((h) => publicOrder(h, other.id).includes(itemId) && !publicOrder(h, sec.id).includes(itemId));
+  await snap(p, 'moved');
+  check('t-section-picker', taps === 2 && wm.ok && Number(wm.row.pos) === Number(wm.row.last) && pubm.ok, `Section → "${other.name}": ${taps} taps; the item only in "${other.name}" (${wm.ok}), last there (position ${wm.row?.pos} of ${wm.row?.last}); on the public page in ${pubm.ms} ms (${pubm.ok})`);
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { section_ids: [sec.id], variants: [], add_ons: [], price: 4.5 } }, ck); // back as it was for the cleanup
+  await p.click('.item-panel button:has-text("Done")').catch(() => {});
+  if (targetId) { await api('/api/admin/item', { action: 'delete', id: targetId }, ck); await waitPublic((h) => !h.includes(`data-id="${targetId}"`)); }
+}
 await laptop.close();
 await api('/api/admin/item', { action: 'delete', id: itemId }, cookie);
 await waitPublic((h) => !h.includes(`data-id="${itemId}"`));

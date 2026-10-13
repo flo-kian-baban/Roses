@@ -1,0 +1,29 @@
+account admin Kian; item saves since 2026-10-07T00:00:00Z: 139 on 69 items; bursts (2+ saves of one item within 2 s): 5; flagged: 3
+
+FLAG Majoun (senso, 75691e9d-a195-4f2d-8ca5-85afb2039c6f): 2 saves, 2026-10-08T14:29:45.755Z → 2026-10-08T14:29:46.760Z
+  #583 2026-10-08T14:29:45.755Z update: price: — → 21.99; variants: Regular $21.99 → (none)
+  #584 2026-10-08T14:29:46.760Z update: price: 21.99 → —; variants: (none) → Regular $21.99
+  field price, written 2× in the burst (1005 ms between the transactions' starts): last —; written again after the burst 1× (last #585 by admin Kian: 21.99); stored now 21.99 (matches the newest write); SIGN: #584 set price value back to null after #583 had set it to 21.99
+  field variants, written 2× in the burst (1005 ms between the transactions' starts): last Regular $21.99; written again after the burst 1× (last #585 by admin Kian: (none)); stored now (none) (matches the newest write); SIGN: #584 set variants row 1 label back to {"en":"Regular","fa":null} after #583 had set it to null; #584 set variants row 1 price back to 21.99 after #583 had set it to null
+
+Majoun (senso, 75691e9d-a195-4f2d-8ca5-85afb2039c6f): 2 saves, 2026-10-08T14:32:00.910Z → 2026-10-08T14:32:02.232Z
+  #593 2026-10-08T14:32:00.910Z update: notes: allergens [NUTS], diet [], halal null → allergens [NUTS], diet [Vegan], halal null
+  #594 2026-10-08T14:32:02.232Z update: notes: allergens [NUTS], diet [Vegan], halal null → allergens [NUTS], diet [Vegan], halal true
+  field notes, written 2× in the burst (1322 ms between the transactions' starts): last allergens [NUTS], diet [Vegan], halal true; written again after the burst 7× (last #1185 by admin Kian: allergens [], diet [], halal null); stored now allergens [], diet [], halal null (matches the newest write)
+
+Majoun (senso, 75691e9d-a195-4f2d-8ca5-85afb2039c6f): 3 saves, 2026-10-13T03:42:09.927Z → 2026-10-13T03:42:12.832Z
+  #1183 2026-10-13T03:42:09.927Z update: notes: allergens [], diet [Vegan], halal null, note EN "Hi this is a note" FA "سلام این یک پی نوشت است" → allergens [], diet [], halal null, note EN "Hi this is a note" FA "سلام این یک پی نوشت است"
+  #1184 2026-10-13T03:42:11.232Z update: notes: allergens [], diet [], halal null, note EN "Hi this is a note" FA "سلام این یک پی نوشت است" → allergens [], diet [], halal null, note EN "Hi this is a note" FA ""
+  #1185 2026-10-13T03:42:12.832Z update: notes: allergens [], diet [], halal null, note EN "Hi this is a note" FA "" → allergens [], diet [], halal null
+  field notes, written 3× in the burst (1305 ms, 1600 ms between the transactions' starts): last allergens [], diet [], halal null; not written after the burst; stored now allergens [], diet [], halal null (matches the newest write)
+
+FLAG Warm Pumpkin & Ice Cream (senso, db899f4e-850c-4960-ab7d-d3d6c9551703): 2 saves, 2026-10-08T00:21:16.889Z → 2026-10-08T00:21:18.559Z
+  #185 2026-10-08T00:21:16.889Z update: price: 14.99 → —; variants: (none) → Regular $14.99
+  #186 2026-10-08T00:21:18.559Z update: price: — → 14.99; variants: Regular $14.99 → (none)
+  field price, written 2× in the burst (1670 ms between the transactions' starts): last 14.99; not written after the burst; stored now 14.99 (matches the newest write); SIGN: #186 set price value back to 14.99 after #185 had set it to null
+  field variants, written 2× in the burst (1670 ms between the transactions' starts): last (none); not written after the burst; stored now (none) (matches the newest write); SIGN: #186 set variants row 1 label back to null after #185 had set it to {"en":"Regular","fa":null}; #186 set variants row 1 price back to null after #185 had set it to 14.99; #186 left variants with 0 rows after #185 had 1
+
+FLAG Warm Pumpkin & Ice Cream (senso, db899f4e-850c-4960-ab7d-d3d6c9551703): 2 saves, 2026-10-12T20:54:56.298Z → 2026-10-12T20:54:57.264Z
+  #871 2026-10-12T20:54:56.298Z update: seasons: [fall] → [fall, winter]
+  #872 2026-10-12T20:54:57.264Z update: seasons: [fall, winter] → [fall]
+  field seasons, written 2× in the burst (966 ms between the transactions' starts): last [fall]; not written after the burst; stored now [fall] (matches the newest write); SIGN: #872 set seasons row 2 back to null after #871 had set it to "winter"; #872 left seasons with 1 rows after #871 had 2

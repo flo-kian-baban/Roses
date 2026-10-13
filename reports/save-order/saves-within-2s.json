@@ -1,0 +1,617 @@
+{
+  "at": "2026-10-13T20:46:47.859Z",
+  "database": "roses",
+  "account": {
+    "kind": "admin",
+    "name": "Kian"
+  },
+  "since": "2026-10-07T00:00:00Z",
+  "itemSaves": 139,
+  "items": 69,
+  "bursts": 5,
+  "flagged": 3,
+  "report": [
+    {
+      "item": "75691e9d-a195-4f2d-8ca5-85afb2039c6f",
+      "name": "Majoun",
+      "venue": "senso",
+      "first": "2026-10-08T14:29:45.755Z",
+      "last": "2026-10-08T14:29:46.760Z",
+      "saves": [
+        {
+          "rev": "583",
+          "at": "2026-10-08T14:29:45.755Z",
+          "action": "update",
+          "undo_of": null,
+          "fields": [
+            "price",
+            "variants"
+          ],
+          "values": [
+            "price: — → 21.99",
+            "variants: Regular $21.99 → (none)"
+          ]
+        },
+        {
+          "rev": "584",
+          "at": "2026-10-08T14:29:46.760Z",
+          "action": "update",
+          "undo_of": null,
+          "fields": [
+            "price",
+            "variants"
+          ],
+          "values": [
+            "price: 21.99 → —",
+            "variants: (none) → Regular $21.99"
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "field": "price",
+          "writes": 2,
+          "gapsMs": [
+            1005
+          ],
+          "values": [
+            {
+              "rev": "583",
+              "at": "2026-10-08T14:29:45.755Z",
+              "from": "—",
+              "to": "21.99"
+            },
+            {
+              "rev": "584",
+              "at": "2026-10-08T14:29:46.760Z",
+              "from": "21.99",
+              "to": "—"
+            }
+          ],
+          "lastWritten": "—",
+          "storedNow": "21.99",
+          "storedMatches": true,
+          "signs": [
+            "#584 set price value back to null after #583 had set it to 21.99"
+          ],
+          "laterWrites": [
+            {
+              "rev": "585",
+              "by": "admin Kian",
+              "action": "update",
+              "at": "2026-10-08T14:29:48.936Z",
+              "to": "21.99",
+              "after": 21.99
+            }
+          ]
+        },
+        {
+          "field": "variants",
+          "writes": 2,
+          "gapsMs": [
+            1005
+          ],
+          "values": [
+            {
+              "rev": "583",
+              "at": "2026-10-08T14:29:45.755Z",
+              "from": "Regular $21.99",
+              "to": "(none)"
+            },
+            {
+              "rev": "584",
+              "at": "2026-10-08T14:29:46.760Z",
+              "from": "(none)",
+              "to": "Regular $21.99"
+            }
+          ],
+          "lastWritten": "Regular $21.99",
+          "storedNow": "(none)",
+          "storedMatches": true,
+          "signs": [
+            "#584 set variants row 1 label back to {\"en\":\"Regular\",\"fa\":null} after #583 had set it to null",
+            "#584 set variants row 1 price back to 21.99 after #583 had set it to null"
+          ],
+          "laterWrites": [
+            {
+              "rev": "585",
+              "by": "admin Kian",
+              "action": "update",
+              "at": "2026-10-08T14:29:48.936Z",
+              "to": "(none)",
+              "after": []
+            }
+          ]
+        }
+      ],
+      "laterChanges": [
+        "585 update by admin Kian at 2026-10-08T14:29:48.936Z",
+        "588 update by admin Kian at 2026-10-08T14:30:33.574Z",
+        "589 update by admin Kian at 2026-10-08T14:30:38.601Z",
+        "590 update by admin Kian at 2026-10-08T14:30:43.586Z",
+        "591 update by admin Kian at 2026-10-08T14:31:29.855Z",
+        "592 update by admin Kian at 2026-10-08T14:31:57.577Z",
+        "593 update by admin Kian at 2026-10-08T14:32:00.910Z",
+        "594 update by admin Kian at 2026-10-08T14:32:02.232Z",
+        "595 update by admin Kian at 2026-10-08T14:32:09.751Z",
+        "596 update by admin Kian at 2026-10-08T14:32:24.964Z",
+        "786 update by admin Kian at 2026-10-12T06:01:42.077Z",
+        "789 update by admin Kian at 2026-10-12T06:06:10.929Z",
+        "940 update by record Research at 2026-10-13T00:11:09.245Z",
+        "1181 update by admin Kian at 2026-10-13T03:41:59.934Z",
+        "1182 update by admin Kian at 2026-10-13T03:42:02.191Z",
+        "1183 update by admin Kian at 2026-10-13T03:42:09.927Z",
+        "1184 update by admin Kian at 2026-10-13T03:42:11.232Z",
+        "1185 update by admin Kian at 2026-10-13T03:42:12.832Z"
+      ],
+      "flagged": true
+    },
+    {
+      "item": "75691e9d-a195-4f2d-8ca5-85afb2039c6f",
+      "name": "Majoun",
+      "venue": "senso",
+      "first": "2026-10-08T14:32:00.910Z",
+      "last": "2026-10-08T14:32:02.232Z",
+      "saves": [
+        {
+          "rev": "593",
+          "at": "2026-10-08T14:32:00.910Z",
+          "action": "update",
+          "undo_of": null,
+          "fields": [
+            "notes"
+          ],
+          "values": [
+            "notes: allergens [NUTS], diet [], halal null → allergens [NUTS], diet [Vegan], halal null"
+          ]
+        },
+        {
+          "rev": "594",
+          "at": "2026-10-08T14:32:02.232Z",
+          "action": "update",
+          "undo_of": null,
+          "fields": [
+            "notes"
+          ],
+          "values": [
+            "notes: allergens [NUTS], diet [Vegan], halal null → allergens [NUTS], diet [Vegan], halal true"
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "field": "notes",
+          "writes": 2,
+          "gapsMs": [
+            1322
+          ],
+          "values": [
+            {
+              "rev": "593",
+              "at": "2026-10-08T14:32:00.910Z",
+              "from": "allergens [NUTS], diet [], halal null",
+              "to": "allergens [NUTS], diet [Vegan], halal null"
+            },
+            {
+              "rev": "594",
+              "at": "2026-10-08T14:32:02.232Z",
+              "from": "allergens [NUTS], diet [Vegan], halal null",
+              "to": "allergens [NUTS], diet [Vegan], halal true"
+            }
+          ],
+          "lastWritten": "allergens [NUTS], diet [Vegan], halal true",
+          "storedNow": "allergens [], diet [], halal null",
+          "storedMatches": true,
+          "signs": [],
+          "laterWrites": [
+            {
+              "rev": "595",
+              "by": "admin Kian",
+              "action": "update",
+              "at": "2026-10-08T14:32:09.751Z",
+              "to": "allergens [NUTS], diet [Vegan], halal true, note EN \"Hi this is a note\" FA \"\"",
+              "after": {
+                "text": {
+                  "en": "Hi this is a note",
+                  "fa": null
+                },
+                "halal": true,
+                "dietary": [
+                  "Vegan"
+                ],
+                "allergens": [
+                  "NUTS"
+                ]
+              }
+            },
+            {
+              "rev": "596",
+              "by": "admin Kian",
+              "action": "update",
+              "at": "2026-10-08T14:32:24.964Z",
+              "to": "allergens [NUTS], diet [Vegan], halal true, note EN \"Hi this is a note\" FA \"سلام این یک پی نوشت است\"",
+              "after": {
+                "text": {
+                  "en": "Hi this is a note",
+                  "fa": "سلام این یک پی نوشت است"
+                },
+                "halal": true,
+                "dietary": [
+                  "Vegan"
+                ],
+                "allergens": [
+                  "NUTS"
+                ]
+              }
+            },
+            {
+              "rev": "1181",
+              "by": "admin Kian",
+              "action": "update",
+              "at": "2026-10-13T03:41:59.934Z",
+              "to": "allergens [NUTS], diet [Vegan], halal null, note EN \"Hi this is a note\" FA \"سلام این یک پی نوشت است\"",
+              "after": {
+                "text": {
+                  "en": "Hi this is a note",
+                  "fa": "سلام این یک پی نوشت است"
+                },
+                "halal": null,
+                "dietary": [
+                  "Vegan"
+                ],
+                "allergens": [
+                  "NUTS"
+                ]
+              }
+            },
+            {
+              "rev": "1182",
+              "by": "admin Kian",
+              "action": "update",
+              "at": "2026-10-13T03:42:02.191Z",
+              "to": "allergens [], diet [Vegan], halal null, note EN \"Hi this is a note\" FA \"سلام این یک پی نوشت است\"",
+              "after": {
+                "text": {
+                  "en": "Hi this is a note",
+                  "fa": "سلام این یک پی نوشت است"
+                },
+                "halal": null,
+                "dietary": [
+                  "Vegan"
+                ],
+                "allergens": []
+              }
+            },
+            {
+              "rev": "1183",
+              "by": "admin Kian",
+              "action": "update",
+              "at": "2026-10-13T03:42:09.927Z",
+              "to": "allergens [], diet [], halal null, note EN \"Hi this is a note\" FA \"سلام این یک پی نوشت است\"",
+              "after": {
+                "text": {
+                  "en": "Hi this is a note",
+                  "fa": "سلام این یک پی نوشت است"
+                },
+                "halal": null,
+                "dietary": [],
+                "allergens": []
+              }
+            },
+            {
+              "rev": "1184",
+              "by": "admin Kian",
+              "action": "update",
+              "at": "2026-10-13T03:42:11.232Z",
+              "to": "allergens [], diet [], halal null, note EN \"Hi this is a note\" FA \"\"",
+              "after": {
+                "text": {
+                  "en": "Hi this is a note",
+                  "fa": null
+                },
+                "halal": null,
+                "dietary": [],
+                "allergens": []
+              }
+            },
+            {
+              "rev": "1185",
+              "by": "admin Kian",
+              "action": "update",
+              "at": "2026-10-13T03:42:12.832Z",
+              "to": "allergens [], diet [], halal null",
+              "after": {
+                "text": {
+                  "en": null,
+                  "fa": null
+                },
+                "halal": null,
+                "dietary": [],
+                "allergens": []
+              }
+            }
+          ]
+        }
+      ],
+      "laterChanges": [
+        "595 update by admin Kian at 2026-10-08T14:32:09.751Z",
+        "596 update by admin Kian at 2026-10-08T14:32:24.964Z",
+        "786 update by admin Kian at 2026-10-12T06:01:42.077Z",
+        "789 update by admin Kian at 2026-10-12T06:06:10.929Z",
+        "940 update by record Research at 2026-10-13T00:11:09.245Z",
+        "1181 update by admin Kian at 2026-10-13T03:41:59.934Z",
+        "1182 update by admin Kian at 2026-10-13T03:42:02.191Z",
+        "1183 update by admin Kian at 2026-10-13T03:42:09.927Z",
+        "1184 update by admin Kian at 2026-10-13T03:42:11.232Z",
+        "1185 update by admin Kian at 2026-10-13T03:42:12.832Z"
+      ],
+      "flagged": false
+    },
+    {
+      "item": "75691e9d-a195-4f2d-8ca5-85afb2039c6f",
+      "name": "Majoun",
+      "venue": "senso",
+      "first": "2026-10-13T03:42:09.927Z",
+      "last": "2026-10-13T03:42:12.832Z",
+      "saves": [
+        {
+          "rev": "1183",
+          "at": "2026-10-13T03:42:09.927Z",
+          "action": "update",
+          "undo_of": null,
+          "fields": [
+            "notes"
+          ],
+          "values": [
+            "notes: allergens [], diet [Vegan], halal null, note EN \"Hi this is a note\" FA \"سلام این یک پی نوشت است\" → allergens [], diet [], halal null, note EN \"Hi this is a note\" FA \"سلام این یک پی نوشت است\""
+          ]
+        },
+        {
+          "rev": "1184",
+          "at": "2026-10-13T03:42:11.232Z",
+          "action": "update",
+          "undo_of": null,
+          "fields": [
+            "notes"
+          ],
+          "values": [
+            "notes: allergens [], diet [], halal null, note EN \"Hi this is a note\" FA \"سلام این یک پی نوشت است\" → allergens [], diet [], halal null, note EN \"Hi this is a note\" FA \"\""
+          ]
+        },
+        {
+          "rev": "1185",
+          "at": "2026-10-13T03:42:12.832Z",
+          "action": "update",
+          "undo_of": null,
+          "fields": [
+            "notes"
+          ],
+          "values": [
+            "notes: allergens [], diet [], halal null, note EN \"Hi this is a note\" FA \"\" → allergens [], diet [], halal null"
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "field": "notes",
+          "writes": 3,
+          "gapsMs": [
+            1305,
+            1600
+          ],
+          "values": [
+            {
+              "rev": "1183",
+              "at": "2026-10-13T03:42:09.927Z",
+              "from": "allergens [], diet [Vegan], halal null, note EN \"Hi this is a note\" FA \"سلام این یک پی نوشت است\"",
+              "to": "allergens [], diet [], halal null, note EN \"Hi this is a note\" FA \"سلام این یک پی نوشت است\""
+            },
+            {
+              "rev": "1184",
+              "at": "2026-10-13T03:42:11.232Z",
+              "from": "allergens [], diet [], halal null, note EN \"Hi this is a note\" FA \"سلام این یک پی نوشت است\"",
+              "to": "allergens [], diet [], halal null, note EN \"Hi this is a note\" FA \"\""
+            },
+            {
+              "rev": "1185",
+              "at": "2026-10-13T03:42:12.832Z",
+              "from": "allergens [], diet [], halal null, note EN \"Hi this is a note\" FA \"\"",
+              "to": "allergens [], diet [], halal null"
+            }
+          ],
+          "lastWritten": "allergens [], diet [], halal null",
+          "storedNow": "allergens [], diet [], halal null",
+          "storedMatches": true,
+          "signs": [],
+          "laterWrites": []
+        }
+      ],
+      "laterChanges": [],
+      "flagged": false
+    },
+    {
+      "item": "db899f4e-850c-4960-ab7d-d3d6c9551703",
+      "name": "Warm Pumpkin & Ice Cream",
+      "venue": "senso",
+      "first": "2026-10-08T00:21:16.889Z",
+      "last": "2026-10-08T00:21:18.559Z",
+      "saves": [
+        {
+          "rev": "185",
+          "at": "2026-10-08T00:21:16.889Z",
+          "action": "update",
+          "undo_of": null,
+          "fields": [
+            "price",
+            "variants"
+          ],
+          "values": [
+            "price: 14.99 → —",
+            "variants: (none) → Regular $14.99"
+          ]
+        },
+        {
+          "rev": "186",
+          "at": "2026-10-08T00:21:18.559Z",
+          "action": "update",
+          "undo_of": null,
+          "fields": [
+            "price",
+            "variants"
+          ],
+          "values": [
+            "price: — → 14.99",
+            "variants: Regular $14.99 → (none)"
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "field": "price",
+          "writes": 2,
+          "gapsMs": [
+            1670
+          ],
+          "values": [
+            {
+              "rev": "185",
+              "at": "2026-10-08T00:21:16.889Z",
+              "from": "14.99",
+              "to": "—"
+            },
+            {
+              "rev": "186",
+              "at": "2026-10-08T00:21:18.559Z",
+              "from": "—",
+              "to": "14.99"
+            }
+          ],
+          "lastWritten": "14.99",
+          "storedNow": "14.99",
+          "storedMatches": true,
+          "signs": [
+            "#186 set price value back to 14.99 after #185 had set it to null"
+          ],
+          "laterWrites": []
+        },
+        {
+          "field": "variants",
+          "writes": 2,
+          "gapsMs": [
+            1670
+          ],
+          "values": [
+            {
+              "rev": "185",
+              "at": "2026-10-08T00:21:16.889Z",
+              "from": "(none)",
+              "to": "Regular $14.99"
+            },
+            {
+              "rev": "186",
+              "at": "2026-10-08T00:21:18.559Z",
+              "from": "Regular $14.99",
+              "to": "(none)"
+            }
+          ],
+          "lastWritten": "(none)",
+          "storedNow": "(none)",
+          "storedMatches": true,
+          "signs": [
+            "#186 set variants row 1 label back to null after #185 had set it to {\"en\":\"Regular\",\"fa\":null}",
+            "#186 set variants row 1 price back to null after #185 had set it to 14.99",
+            "#186 left variants with 0 rows after #185 had 1"
+          ],
+          "laterWrites": []
+        }
+      ],
+      "laterChanges": [
+        "790 update by admin Kian at 2026-10-12T06:06:17.858Z",
+        "864 update by admin Kian at 2026-10-12T20:23:34.106Z",
+        "870 update by admin Kian at 2026-10-12T20:27:57.603Z",
+        "871 update by admin Kian at 2026-10-12T20:54:56.298Z",
+        "872 update by admin Kian at 2026-10-12T20:54:57.264Z",
+        "878 update by record Kian at 2026-10-12T21:01:27.169Z",
+        "879 update by admin Kian at 2026-10-12T21:08:26.367Z",
+        "881 update by admin Kian at 2026-10-12T21:08:57.285Z",
+        "882 update by admin Kian at 2026-10-12T21:09:02.879Z",
+        "886 update by admin Kian at 2026-10-12T21:10:49.710Z",
+        "936 update by record Research at 2026-10-13T00:11:09.245Z"
+      ],
+      "flagged": true
+    },
+    {
+      "item": "db899f4e-850c-4960-ab7d-d3d6c9551703",
+      "name": "Warm Pumpkin & Ice Cream",
+      "venue": "senso",
+      "first": "2026-10-12T20:54:56.298Z",
+      "last": "2026-10-12T20:54:57.264Z",
+      "saves": [
+        {
+          "rev": "871",
+          "at": "2026-10-12T20:54:56.298Z",
+          "action": "update",
+          "undo_of": null,
+          "fields": [
+            "seasons"
+          ],
+          "values": [
+            "seasons: [fall] → [fall, winter]"
+          ]
+        },
+        {
+          "rev": "872",
+          "at": "2026-10-12T20:54:57.264Z",
+          "action": "update",
+          "undo_of": null,
+          "fields": [
+            "seasons"
+          ],
+          "values": [
+            "seasons: [fall, winter] → [fall]"
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "field": "seasons",
+          "writes": 2,
+          "gapsMs": [
+            966
+          ],
+          "values": [
+            {
+              "rev": "871",
+              "at": "2026-10-12T20:54:56.298Z",
+              "from": "[fall]",
+              "to": "[fall, winter]"
+            },
+            {
+              "rev": "872",
+              "at": "2026-10-12T20:54:57.264Z",
+              "from": "[fall, winter]",
+              "to": "[fall]"
+            }
+          ],
+          "lastWritten": "[fall]",
+          "storedNow": "[fall]",
+          "storedMatches": true,
+          "signs": [
+            "#872 set seasons row 2 back to null after #871 had set it to \"winter\"",
+            "#872 left seasons with 1 rows after #871 had 2"
+          ],
+          "laterWrites": []
+        }
+      ],
+      "laterChanges": [
+        "878 update by record Kian at 2026-10-12T21:01:27.169Z",
+        "879 update by admin Kian at 2026-10-12T21:08:26.367Z",
+        "881 update by admin Kian at 2026-10-12T21:08:57.285Z",
+        "882 update by admin Kian at 2026-10-12T21:09:02.879Z",
+        "886 update by admin Kian at 2026-10-12T21:10:49.710Z",
+        "936 update by record Research at 2026-10-13T00:11:09.245Z"
+      ],
+      "flagged": true
+    }
+  ]
+}

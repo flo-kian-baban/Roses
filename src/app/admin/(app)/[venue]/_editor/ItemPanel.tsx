@@ -86,7 +86,7 @@ export function ItemPanel({ item, venueId, sections, items, sectionId, canNotes,
           <div className="mt-4 space-y-5">
             <TextField label="Description" value={item.description.en} multiline badge={item.drafts.includes('description') ? <Badge tone="blue">Draft</Badge> : null} onCommit={(v) => patch({ description: { ...item.description, en: v } })} />
             <TextField label="Description (فارسی)" value={item.description.fa} multiline dir="rtl" lang="fa" badge={draft('description') ? <Badge tone="blue">Persian draft</Badge> : item.description.en && !item.description.fa ? <Badge tone="amber">Missing</Badge> : null} onCommit={(v) => patch({ description: { ...item.description, fa: v } })} />
-            <Sizes item={item} onPatch={patch} start={sizeStart} />
+            <Sizes item={item} onPatch={patch} start={sizeStart} onStarted={() => setSizeStart(0)} />
             {orderIn.map((s) => {
               const i = s.item_ids.indexOf(item.id);
               return (
@@ -107,7 +107,7 @@ export function ItemPanel({ item, venueId, sections, items, sectionId, canNotes,
         <button type="button" onClick={() => setAdvanced((a) => !a)} aria-expanded={advanced} className="mt-6 flex w-full items-center justify-between rounded-2xl bg-fill px-4 py-3 text-left font-semibold"><span>Advanced</span><Icon name="down" className={`h-5 w-5 text-ink-muted transition ${advanced ? 'rotate-180' : ''}`} /></button>
         {advanced && (
           <div className="mt-4 space-y-6">
-            <Choices item={item} onPatch={patch} start={choiceStart} onCopy={setCopying} />
+            <Choices item={item} onPatch={patch} start={choiceStart} onStarted={() => setChoiceStart(0)} onCopy={setCopying} />
             <Parts item={item} onPatch={patch} />
             {!canNotes && <p className="text-sm text-ink-muted">Allergen, dietary and halal notes are set by the owner or an admin.</p>}
             <div className="border-t border-line pt-5">

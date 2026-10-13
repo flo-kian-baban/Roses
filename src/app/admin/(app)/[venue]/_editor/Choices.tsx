@@ -34,7 +34,9 @@ let seq = 0;
 const sizeRows = (v: Variant[]): SizeRow[] => v.map((x) => ({ en: x.label.en ?? '', fa: x.label.fa ?? '', price: priceText(x.price), key: ++seq }));
 const sizeDone = (r: SizeRow) => !!r.en.trim() && typeof priceOf(r.price) === 'number';
 
-export function Sizes({ item, onPatch, start }: { item: EditorItem; onPatch: Patch; start: number }) {
+// start: "+ Sizes" in Basics asks for a new row; onStarted says it was made (so a remount of the group, More closed and opened again,
+// does not make another)
+export function Sizes({ item, onPatch, start, onStarted }: { item: EditorItem; onPatch: Patch; start: number; onStarted: () => void }) {
   const [rows, setRows] = useState<SizeRow[]>(() => sizeRows(item.variants));
   const f = useFocus();
   const saved = normV(item.variants), mine = useRef(saved);
@@ -45,7 +47,7 @@ export function Sizes({ item, onPatch, start }: { item: EditorItem; onPatch: Pat
     const r: SizeRow = { en: '', fa: '', price: rows.length === 0 && item.price != null ? priceText(item.price) : '', key: ++seq };
     setRows((cur) => [...cur, r]); f.focus(`n${r.key}`);
   };
-  useEffect(() => { if (start) add(); }, [start]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (start) { add(); onStarted(); } }, [start]); // eslint-disable-line react-hooks/exhaustive-deps
   const save = (next: SizeRow[] = rows, removedPrice?: number | null) => {
     const variants = next.filter(sizeDone).map((r) => ({ label: { en: r.en.trim(), fa: r.fa.trim() || null }, price: priceOf(r.price) as number }));
     if (normV(variants) === normV(item.variants)) return;
@@ -96,7 +98,7 @@ function groupsOf(rows: ChoiceRow[]): { name: string; gkey: number; rows: Choice
   return out;
 }
 
-export function Choices({ item, onPatch, start, onCopy }: { item: EditorItem; onPatch: Patch; start: number; onCopy: (group: string) => void }) {
+export function Choices({ item, onPatch, start, onStarted, onCopy }: { item: EditorItem; onPatch: Patch; start: number; onStarted: () => void; onCopy: (group: string) => void }) {
   const [rows, setRows] = useState<ChoiceRow[]>(() => choiceRows(item.add_ons));
   const f = useFocus();
   const saved = normA(item.add_ons), mine = useRef(saved);
@@ -113,7 +115,7 @@ export function Choices({ item, onPatch, start, onCopy }: { item: EditorItem; on
   const addRow = (g: { name: string; rows: ChoiceRow[] }) => { const last = g.rows[g.rows.length - 1]; const r: ChoiceRow = { group: g.name, groupFa: last?.groupFa ?? '', en: '', fa: '', price: '', required: !!last?.required, key: ++seq }; setRows((cur) => { const at = cur.lastIndexOf(last) + 1; return [...cur.slice(0, at), r, ...cur.slice(at)]; }); f.focus(`n${r.key}`); };
   // a new group: its name first (unique while unnamed), then Tab or Enter to its first choice
   const addGroup = () => { const r: ChoiceRow = { group: `${UNNAMED}${++seq}`, groupFa: '', en: '', fa: '', price: '', required: false, key: ++seq }; setRows((cur) => [...cur, r]); f.focus(`g${r.key}`); };
-  useEffect(() => { if (start) addGroup(); }, [start]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (start) { addGroup(); onStarted(); } }, [start]); // eslint-disable-line react-hooks/exhaustive-deps
   const groups = groupsOf(rows);
   const shown = (name: string) => (name.startsWith(UNNAMED) ? '' : name);
   return (

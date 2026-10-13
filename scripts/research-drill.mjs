@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Menu research acceptance (Kian via the PM, 2026-10-12), on the suite's scratch copy and its server:
-//   coverage-<venue>   every shown item has an English and a Persian description (counts: existing, written by the research)
+//   coverage-<venue>   every shown item has an English and a Persian description (counts: existing, written by the research), except
+//                      the placeholders withdrawn on Kian's ruling of 2026-10-13 (the records' `withdrawn`; the owner writes them)
 //   basis-<venue>      every shown item has an allergen draft with a basis (key ingredients and a source URL), or the owner's own note kept
 //   lexicon-<venue>    every ingredient a description names (English and Persian, existing and new; tools/import/research-lexicon.mjs) is in
 //                      the item's key ingredients and its allergen is in the item's allergen draft
@@ -10,7 +11,8 @@
 //   confirm-api        Confirm through the item route: "Contains: …" in English and Persian on the public page, Undo takes it off again
 //   confirm-ui         on the iPhone 13 viewport: "Allergens to confirm" in the Needs-attention bar, the item's draft box with its basis,
 //                      Confirm (44 × 44), "Confirmed · Undo"; measured with its tap count
-//   csv-<venue>        reports/research-review-<venue>.csv: one row per shown item; exported from the database and read back unchanged = 0 changes
+//   csv-<venue>        reports/research-review-<venue>.csv: one row per shown item; exported from the database and read back unchanged = 0 changes;
+//                      a proposed fix on every contradiction, those rows first (Fresh Berry Mojito-Virgin first on Kebab Land), none applied unticked
 //   DRILL_ADMIN_PIN=… node scripts/research-drill.mjs --base http://127.0.0.1:3100 --out reports/checks/<stamp>/research --venues senso,kebab-land,<temp>
 import fs from 'node:fs';
 import path from 'node:path';
@@ -51,16 +53,20 @@ function liBlocks(html, id) {
   return outBlocks;
 }
 
-// ---- the data: every shown item of both venues, with its research basis
+// ---- the data: every shown item of both venues, with its research basis; the records (withdrawn placeholders, contradictions)
+const records = Object.fromEntries(venues.map((v) => [v, fs.readdirSync('data/import').sort().map((d) => path.join('data/import', d, v, 'research.json')).filter((f) => fs.existsSync(f)).flatMap((f) => JSON.parse(fs.readFileSync(f, 'utf8')).items)]));
 const rowsBy = {};
 for (const v of venues) rowsBy[v] = await currentRows(db, v);
 const newDescs = [];
 for (const v of venues) {
   const rows = rowsBy[v];
-  const missingEn = rows.filter((r) => !r.item.description.en?.trim()), missingFa = rows.filter((r) => !r.item.description.fa?.trim());
+  const withdrawn = new Set(records[v].filter((i) => i.withdrawn).map((i) => i.name));
+  const missingEn = rows.filter((r) => !r.item.description.en?.trim() && !withdrawn.has(r.cells.item)), missingFa = rows.filter((r) => !r.item.description.fa?.trim() && !withdrawn.has(r.cells.item));
+  const ownerToWrite = rows.filter((r) => withdrawn.has(r.cells.item));
   const wroteEn = rows.filter((r) => r.wrote.has('en')).length, wroteFa = rows.filter((r) => r.wrote.has('fa')).length;
-  check(`coverage-${v}`, rows.length > 0 && !missingEn.length && !missingFa.length, `${rows.length} shown items: English ${rows.length - missingEn.length} (${rows.length - missingEn.length - wroteEn} existing, ${wroteEn} written by the research), Persian ${rows.length - missingFa.length} (${rows.length - missingFa.length - wroteFa} existing, ${wroteFa} written by the research)${missingEn.length ? `; no English: ${missingEn.map((r) => r.cells.item).join(', ')}` : ''}${missingFa.length ? `; no Persian: ${missingFa.map((r) => r.cells.item).join(', ')}` : ''}`);
-  measure(`${v}: ${rows.length} shown items; descriptions English ${rows.length - missingEn.length - wroteEn} existing + ${wroteEn} new, Persian ${rows.length - missingFa.length - wroteFa} existing + ${wroteFa} new`);
+  const hasEn = rows.filter((r) => r.item.description.en?.trim()).length, hasFa = rows.filter((r) => r.item.description.fa?.trim()).length;
+  check(`coverage-${v}`, rows.length > 0 && !missingEn.length && !missingFa.length, `${rows.length} shown items: English ${hasEn} (${hasEn - wroteEn} existing, ${wroteEn} written by the research), Persian ${hasFa} (${hasFa - wroteFa} existing, ${wroteFa} written by the research); for the owner to write (placeholders withdrawn, Kian 2026-10-13): ${ownerToWrite.map((r) => `${r.cells.item}${r.item.description.en || r.item.description.fa ? ' (has text again)' : ''}`).join(', ') || 'none'}${missingEn.length ? `; no English: ${missingEn.map((r) => r.cells.item).join(', ')}` : ''}${missingFa.length ? `; no Persian: ${missingFa.map((r) => r.cells.item).join(', ')}` : ''}`);
+  measure(`${v}: ${rows.length} shown items; descriptions English ${hasEn - wroteEn} existing + ${wroteEn} new, Persian ${hasFa - wroteFa} existing + ${wroteFa} new; ${ownerToWrite.length} for the owner to write`);
   const noBasis = rows.filter((r) => !r.basis || !(r.basis.ingredients ?? []).length || !/^https:\/\//.test(r.basis.url ?? ''));
   const kept = rows.filter((r) => r.basis && (r.basis.kept ?? []).length);
   const draft = rows.filter((r) => r.item.drafts.includes('allergens')), confirmed = rows.filter((r) => r.basis && (r.basis.wrote ?? []).includes('allergens') && !r.item.drafts.includes('allergens'));
@@ -203,7 +209,11 @@ for (const v of venues) {
   fs.writeFileSync(fresh, toCsv(await currentRows(db, v)));
   const r = spawnSync(process.execPath, ['tools/import/research-review-apply.mjs', v, fresh, '--dry', '--reviewer', 'round trip'], { encoding: 'utf8', env: process.env });
   const j = (() => { try { return JSON.parse(r.stdout.trim().split('\n').pop()); } catch { return null; } })();
-  check(`csv-${v}`, committedRows === rowsBy[v].length && r.status === 0 && j && j.rows === rowsBy[v].length && j.changed === 0 && j.notFound === 0, `reports/research-review-${v}.csv: ${committedRows ?? 'MISSING'} rows for ${rowsBy[v].length} shown items; exported now and read back with --dry: ${j ? `${j.rows} rows, ${j.changed} changed, ${j.unchanged} unchanged, ${j.notFound} not found, ${j.readOnlyIgnored} read-only differences` : `exit ${r.status}: ${r.stderr.slice(0, 200)}`}`);
+  const now = await currentRows(db, v);
+  const contradictions = records[v].filter((i) => i.contradiction).map((i) => i.name);
+  const fixRows = now.filter((x) => x.fix), firstFix = now.findIndex((x) => !x.fix);
+  const fixesOk = contradictions.every((n) => fixRows.some((x) => x.cells.item === n)) && fixRows.every((x) => x.cells['proposed fix']) && (firstFix === -1 || firstFix === fixRows.length) && (v !== 'kebab-land' || now[0]?.cells.item === 'Fresh Berry Mojito-Virgin');
+  check(`csv-${v}`, committedRows === rowsBy[v].length && r.status === 0 && j && j.rows === rowsBy[v].length && j.changed === 0 && j.notFound === 0 && j.fixesApplied === 0 && fixesOk, `reports/research-review-${v}.csv: ${committedRows ?? 'MISSING'} rows for ${rowsBy[v].length} shown items; exported now and read back with --dry: ${j ? `${j.rows} rows, ${j.changed} changed, ${j.unchanged} unchanged, ${j.fixesApplied} fixes applied, ${j.notFound} not found, ${j.readOnlyIgnored} read-only differences` : `exit ${r.status}: ${r.stderr.slice(0, 200)}`}; proposed fixes ${fixRows.length} for ${contradictions.length} contradictions, first in the sheet (${now.slice(0, fixRows.length).map((x) => x.cells.item).join(', ')}), ${fixRows.filter((x) => x.cells['apply fix'] === 'applied').length} already applied`);
 }
 
 await db.end();

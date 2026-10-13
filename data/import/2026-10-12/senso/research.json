@@ -30,7 +30,8 @@
   "edits": [
     "Falooda: the noodles are starch noodles (the text said \"noodles\", which reads as wheat pasta); wheat kept as a precaution until the kitchen confirms the starch",
     "Ice cream & Falooda: as Falooda",
-    "Greek Salad: a draft must not miss an allergen the typical recipe carries; the owner removes it if the kitchen serves it without feta"
+    "Greek Salad: a draft must not miss an allergen the typical recipe carries; the owner removes it if the kitchen serves it without feta",
+    "Kian, 2026-10-13: Senso Waffle: placeholder descriptions withdrawn (cleared where still the research's draft; allergen drafts kept); every contradiction carries a proposed fix, applied only when its row is ticked in the review sheet"
   ],
   "items": [
     {
@@ -269,7 +270,27 @@
       "newFa": null,
       "confidence": "high",
       "note": "Persian ice cream contains egg yolk (Wikipedia: Bastani); kitchen to confirm sulphites if the figs are sulphured dried figs.",
-      "contradiction": "Owner's notes say Vegan and list only \"NUTS\", but the description has ice cream, cream and honey (not vegan) and names peanut, sesame and dairy; note text \"Hi this is a note\" looks like a test entry."
+      "contradiction": "Owner's notes say Vegan and list only \"NUTS\", but the description has ice cream, cream and honey (not vegan) and names peanut, sesame and dairy; note text \"Hi this is a note\" looks like a test entry.",
+      "fix": {
+        "order": 1,
+        "notes": {
+          "allergens": [
+            "milk",
+            "egg",
+            "tree nuts",
+            "peanuts",
+            "sesame"
+          ],
+          "dietary": [
+            "Vegetarian"
+          ],
+          "text": {
+            "en": null,
+            "fa": null
+          }
+        },
+        "why": "no text change; the notes said Vegan and \"NUTS\" while the description has ice cream, cream, honey, peanut and sesame; the fix puts the research's allergens and Vegetarian, keeps Halal as set, and removes the test note \"Hi this is a note\""
+      }
     },
     {
       "importKey": "senso:item:ice-cream-falooda",
@@ -720,7 +741,15 @@
       "newFa": null,
       "confidence": "high",
       "note": "spelling only: the Persian writes lavender اسوخودوس (اسطوخودوس); 'spring orange' = orange blossom, 'mohamady flower' = damask rose",
-      "contradiction": "English 'To lemon' is به‌لیمو, lemon verbena (not lemon), and English 'saffron plant' is نبات زعفرانی, saffron rock candy, in the Persian; 'assochodos' is lavender"
+      "contradiction": "English 'To lemon' is به‌لیمو, lemon verbena (not lemon), and English 'saffron plant' is نبات زعفرانی, saffron rock candy, in the Persian; 'assochodos' is lavender",
+      "fix": {
+        "order": 2,
+        "description": {
+          "en": "Lemon verbena, orange blossom, damask rose, borage flower, lavender and saffron rock candy.",
+          "fa": "به‌لیمو، بهار نارنج، گل محمدی، گل گاوزبان، اسطوخودوس و نبات زعفرانی"
+        },
+        "why": "the English said \"To lemon\" for به‌لیمو (lemon verbena), \"saffron plant\" for نبات زعفرانی (saffron rock candy) and \"assochodos\" for lavender; the Persian's spelling fixed (ليمو, اسوخودوس)"
+      }
     },
     {
       "importKey": "senso:item:green-tea",
@@ -764,7 +793,15 @@
       "newFa": null,
       "confidence": "high",
       "note": "the English name is a health claim (flagged); the Persian name دمنوش عشاق ('lovers' herbal tea') differs from it",
-      "contradiction": "English 'lemon' is به‌لیمو (lemon verbena) and English 'rose' is گلاب (rose water) in the Persian, which also has rosebuds (غنچه گل محمدی) where the English says 'mohamady flower'"
+      "contradiction": "English 'lemon' is به‌لیمو (lemon verbena) and English 'rose' is گلاب (rose water) in the Persian, which also has rosebuds (غنچه گل محمدی) where the English says 'mohamady flower'",
+      "fix": {
+        "order": 3,
+        "description": {
+          "en": "Orange blossom, mint, damask rosebuds, borage flower, lemon verbena, cinnamon, rose water and fresh lemon juice.",
+          "fa": "بهار نارنج، نعنا، غنچه گل محمدی، گل گاوزبان، به‌لیمو، دارچین، گلاب و آب‌لیموی تازه"
+        },
+        "why": "the English said \"lemon\" for به‌لیمو (lemon verbena) and \"rose\" for گلاب (rose water), \"mohamady flower\" for the rosebuds"
+      }
     },
     {
       "importKey": "senso:item:naz-bano-herbal-tea",
@@ -810,7 +847,15 @@
       "newFa": null,
       "confidence": "high",
       "note": "spelling: 'valerine' = valerian, اسوخودوس = اسطوخودوس (lavender); the Persian name دمنوش دل خواه differs; the English name is a claim (flagged)",
-      "contradiction": "English 'saffron plant' is نبات زعفرانی, saffron rock candy, in the Persian"
+      "contradiction": "English 'saffron plant' is نبات زعفرانی, saffron rock candy, in the Persian",
+      "fix": {
+        "order": 4,
+        "description": {
+          "en": "Mint, chamomile, borage flower, black tea, valerian, lavender, ginger and saffron rock candy.",
+          "fa": "نعنا، بابونه، گل گاوزبان، چای سیاه، سنبل‌الطیب، اسطوخودوس، زنجبیل و نبات زعفرانی"
+        },
+        "why": "the English said \"saffron plant\" for نبات زعفرانی (saffron rock candy) and \"valerine\"; the Persian's اسوخودوس spelled اسطوخودوس"
+      }
     },
     {
       "importKey": "senso:item:relaxing-herbal-tea",
@@ -895,7 +940,15 @@
       "newFa": null,
       "confidence": "high",
       "note": "honey makes it Vegetarian, not Vegan; the English name is a claim (flagged)",
-      "contradiction": "English 'lemon' is به‌لیمو (lemon verbena) in the Persian"
+      "contradiction": "English 'lemon' is به‌لیمو (lemon verbena) in the Persian",
+      "fix": {
+        "order": 5,
+        "description": {
+          "en": "Chamomile, lemon verbena, damask rose, ginger, mint, thyme, cardamom and honey.",
+          "fa": "گل بابونه، به‌لیمو، گل محمدی، زنجبیل، نعنا، آویشن، هل و عسل"
+        },
+        "why": "the English said \"lemon\" for به‌لیمو (lemon verbena)"
+      }
     },
     {
       "importKey": "senso:item:ice-pistachio-latte",
@@ -2023,7 +2076,15 @@
       "newFa": null,
       "confidence": "medium",
       "note": "Kitchen to confirm the sausage (fillers can add wheat, soy, mustard).",
-      "contradiction": "The name says sausage (سوسیس); both descriptions say \"slice of beef\" / برش گوشت گاو and name no sausage."
+      "contradiction": "The name says sausage (سوسیس); both descriptions say \"slice of beef\" / برش گوشت گاو and name no sausage.",
+      "fix": {
+        "order": 6,
+        "description": {
+          "en": "Sliced beef sausage and two eggs, served with bread, fresh herbs, cheese, tomato and cucumber.",
+          "fa": "سوسیس گوشت گاو برش‌خورده و دو تخم‌مرغ، همراه با نان، سبزی تازه، پنیر، گوجه و خیار"
+        },
+        "why": "the name says sausage, the text said \"slice of beef\""
+      }
     },
     {
       "importKey": "senso:item:sausage-egg-tomato",
@@ -2050,7 +2111,15 @@
       "newFa": null,
       "confidence": "medium",
       "note": "Kitchen to confirm the sausage (fillers can add wheat, soy, mustard).",
-      "contradiction": "The name says sausage (سوسیس); both descriptions say \"slice of beef\" / برش گوشت گاو and name no sausage."
+      "contradiction": "The name says sausage (سوسیس); both descriptions say \"slice of beef\" / برش گوشت گاو and name no sausage.",
+      "fix": {
+        "order": 7,
+        "description": {
+          "en": "Sliced beef sausage and two eggs with fresh crushed tomato, served with bread, fresh herbs, cheese, tomato and cucumber.",
+          "fa": "سوسیس گوشت گاو برش‌خورده و دو تخم‌مرغ با گوجه تازه له‌شده، همراه با نان، سبزی تازه، پنیر، گوجه و خیار"
+        },
+        "why": "the name says sausage, the text said \"slice of beef\""
+      }
     },
     {
       "importKey": "senso:item:turkish-omelette",
@@ -2182,7 +2251,15 @@
       "newFa": null,
       "confidence": "high",
       "note": null,
-      "contradiction": "The English lists clotted cream, cream, honey, feta cheese and bread; the Persian (سرشير خامه عسل) names only clotted cream, cream and honey."
+      "contradiction": "The English lists clotted cream, cream, honey, feta cheese and bread; the Persian (سرشير خامه عسل) names only clotted cream, cream and honey.",
+      "fix": {
+        "order": 8,
+        "description": {
+          "en": "Clotted Cream, Cream, Honey, Feta cheese and Bread",
+          "fa": "سرشیر، خامه، عسل، پنیر فتا و نان"
+        },
+        "why": "the Persian named only clotted cream, cream and honey (Arabic ي); the English is kept as it is"
+      }
     },
     {
       "importKey": "senso:item:mushroom-tomato-omelette",
@@ -2403,11 +2480,16 @@
       "dietary": [],
       "source": "https://en.wikipedia.org/wiki/Waffle",
       "sourceTitle": "Waffle",
-      "newEn": "Senso's own house waffle, served warm.",
-      "newFa": "وافل مخصوص سنسو، گرم و تازه.",
+      "newEn": null,
+      "newFa": null,
       "confidence": "low",
       "note": "House recipe not public: venue to confirm the toppings and their allergens; only a standard waffle batter is assumed.",
-      "contradiction": null
+      "contradiction": null,
+      "withdrawn": {
+        "en": "Senso's own house waffle, served warm.",
+        "fa": "وافل مخصوص سنسو، گرم و تازه.",
+        "why": "placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md)"
+      }
     },
     {
       "importKey": "senso:item:strawberry-pancake",
@@ -3085,7 +3167,15 @@
       "newFa": null,
       "confidence": "medium",
       "note": "Kitchen to confirm the processed meats (fillers can add wheat, soy, mustard).",
-      "contradiction": "The name lists salami; both descriptions list diced beef instead and no salami."
+      "contradiction": "The name lists salami; both descriptions list diced beef instead and no salami.",
+      "fix": {
+        "order": 9,
+        "description": {
+          "en": "Flat Bread, Grilled Chicken, Salami, Beef Bacon, Mozzarella Cheese, Tomato Sauce, Mushroom, Black Olives",
+          "fa": "نان تخت، مرغ گریل‌شده، سالامی، بیکن گوشت، پنیر موزارلا، سس گوجه، قارچ و زیتون سیاه"
+        },
+        "why": "the name says grilled chicken and salami, the text said diced chicken and diced beef"
+      }
     },
     {
       "importKey": "senso:item:canada-dry-ginger-ale",

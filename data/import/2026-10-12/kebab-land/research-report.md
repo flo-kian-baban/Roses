@@ -18,8 +18,10 @@ Record: `research.json` beside this file (102 items: every item shown on the ven
 | | Items |
 | --- | --- |
 | In the record (shown items) | 102 |
-| New English descriptions | 41 |
-| New Persian descriptions (Persian drafts) | 41 |
+| New English descriptions | 36 |
+| New Persian descriptions (Persian drafts) | 36 |
+| Placeholders withdrawn, for the owner to write | 5 |
+| Contradictions flagged, each with a proposed fix | 4 / 4 |
 | With at least one allergen in the draft | 75 |
 | No priority allergen found in the typical recipe | 27 |
 | Dietary draft Vegetarian / Vegan / none | 11 / 7 / 84 |
@@ -63,6 +65,26 @@ Allergens across the drafts: milk 45, egg 4, wheat 7, barley 5, rye 1, tree nuts
 - Rose: the descriptions name wine; "wine" added to the key ingredients beside the grape
 - Prosecco: the descriptions name wine; "wine" added to the key ingredients beside the grape
 - Mixed Appetizer: a choice between two components is part of the dish, not an optional extra: the allergen of either is drafted
+- Kian, 2026-10-13: Chicken Rolled Fillet, Rolled Fillet Kebab, Soft Drink, Persian Dreams, Venato (Italy): placeholder descriptions withdrawn (cleared where still the research's draft; allergen drafts kept); every contradiction carries a proposed fix, applied only when its row is ticked in the review sheet
+
+## Withdrawn placeholders: for the owner to write (Kian, 2026-10-13)
+
+| Item | The text withdrawn (English) | Why |
+| --- | --- | --- |
+| Chicken Rolled Fillet | Rolled chicken fillet, one of the chef's specials. Ask your server how it is prepared and served. | placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md) |
+| Rolled Fillet Kebab | Rolled fillet, skewered and grilled; one of the chef's specials. Ask your server how it is prepared. | placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md) |
+| Soft Drink | A chilled soft drink; ask your server for today's choices. | placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md) |
+| Persian Dreams | Our house cocktail, mixed at the bar; your server can tell you what goes into it. | placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md) |
+| Venato (Italy) | A bottle of Italian wine; ask your server about the producer, grape and vintage. | placeholder that only points to the server: cleared on Kian's ruling of 2026-10-13 (its allergen draft stays); the owner writes it (reports/menu-research/owner-to-write.md) |
+
+## Proposed fixes for the contradictions (applied only when ticked in the review sheet)
+
+| Item | Proposed English | Proposed Persian | Notes | Why |
+| --- | --- | --- | --- | --- |
+| Fresh Berry Mojito-Virgin | Fresh mint, lime and mixed berries topped with soda — a sweet, cool mojito with no alcohol. | نعنای تازه، لیموترش و توت‌های تازه با سودا — موهیتویی شیرین و خنک، بدون الکل. | {"allergens":[],"keepDraft":true} | the text was the Red Wine Sangria text (rosé wine) on an alcohol-free drink; the fix names what a virgin berry mojito is, and its allergen draft loses the sulphites the wine brought (still a draft) |
+| Red Wine Sangria | Red wine, fresh fruit, and a splash of citrus — light, fruity, and refreshing. | شراب قرمز، میوه تازه و کمی مرکبات — سبک، میوه‌ای و خنک. | — | the name says red wine, the text said rosé; only the wine changes |
+| Black Russian | Simple and bold — vodka and coffee liqueur over ice. | ساده و پرقدرت — ودکا و لیکور قهوه روی یخ. | — | a Black Russian is vodka with coffee liqueur; the text described plain vodka |
+| Tutti Trend | Tropical cocktail of white rum, pineapple juice and cream of coconut over ice. | کوکتل استوایی با رام سفید، آب آناناس و کرم نارگیل روی یخ. | — | the text was a copied piña colada definition ("just four primary ingredients"); the fix keeps the same ingredients in the venue's own words; the venue confirms it is this drink |
 
 ## For the venue to confirm (low confidence)
 
@@ -198,16 +220,12 @@ None.
 | Yogurt with Shallot Dip (Maast o Moosir) | Thick, creamy yogurt with chopped Persian shallot (moosir); cool and tangy with a mild bite, the classic partner for kebab. | ماست غلیظ با موسیر خردشده؛ خنک و خوش‌طعم، همراه همیشگی کباب. |
 | Baba Ghanoosh | Smoky roasted eggplant blended with tahini, garlic, lemon and olive oil; silky, rich and made for scooping. | بادمجان کبابی دودی با ارده، سیر، آبلیمو و روغن زیتون؛ نرم و لطیف. |
 | Fried Eggplant | Eggplant slices fried until golden outside and silky within; a simple, home-style Persian appetizer. | برش‌های بادمجان سرخ‌شده، طلایی و نرم؛ پیش‌غذایی ساده و خانگی. |
-| Chicken Rolled Fillet | Rolled chicken fillet, one of the chef's specials. Ask your server how it is prepared and served. | فیله مرغ رول‌شده، از پیشنهادهای ویژه سرآشپز. برای جزئیات از همکاران ما بپرسید. |
-| Rolled Fillet Kebab | Rolled fillet, skewered and grilled; one of the chef's specials. Ask your server how it is prepared. | فیله رول‌شده، به سیخ کشیده و کباب‌شده؛ از پیشنهادهای ویژه سرآشپز. برای جزئیات از همکاران ما بپرسید. |
 | Local Yogurt Moosir | Country-style yogurt with Persian shallot (moosir); tangy, cool and made for kebab. | ماست محلی با موسیر؛ ترش و خنک، همراهی دلچسب برای کباب. |
-| Soft Drink | A chilled soft drink; ask your server for today's choices. | نوشابه خنک؛ برای انتخاب طعم از همکاران ما بپرسید. |
 | Baklava | Layers of flaky, buttery pastry filled with chopped nuts and soaked in fragrant syrup. | لایه‌های نازک و ترد خمیر با کره، پر از مغزهای خردشده و آغشته به شربت معطر. |
 | Tiramisu cake | Coffee-soaked sponge layered with mascarpone cream, finished with a dusting of cocoa. | کیک اسفنجی خیس‌خورده در قهوه با لایه‌های کرم ماسکارپونه و پودر کاکائو. |
 | Pistachio cake | Soft cake made with pistachios; nutty, gently sweet and a lovely end to the meal. | کیک نرم با پسته؛ مغزدار و با شیرینی ملایم، پایانی دلچسب برای غذا. |
 | Nutella cake | Soft cake with Nutella, the hazelnut and cocoa spread; rich, sweet and indulgent. | کیک نرم با نوتلا، کرم فندق و کاکائو؛ شیرین و دلچسب. |
 | Caramel and hazelnut cake | Soft cake with caramel and hazelnuts; sweet, nutty and buttery. | کیک نرم با کارامل و فندق؛ شیرین، مغزدار و خوش‌طعم. |
-| Persian Dreams | Our house cocktail, mixed at the bar; your server can tell you what goes into it. | کوکتل مخصوص بار ما؛ ترکیبش را از گارسون بپرسید. |
 | Baileys Shot | A shot of Baileys Irish Cream: cream, cocoa and Irish whiskey in one sweet, silky sip. | یک پیک بیلیز، لیکور خامه‌ای ایرلندی از خامه، کاکائو و ویسکی؛ شیرین و مخملی. |
 | Gin & Tonic | A bar classic: gin and tonic water over ice with a wedge of lime; crisp, bittersweet and bubbly. | کلاسیک بار: جین و آب تونیک روی یخ با یک برش لیمو؛ خنک، گازدار و کمی تلخ. |
 | Jägermeister | German herbal liqueur of 56 herbs, fruits, roots and spices, among them citrus peel, liquorice, anise, ginger and saffron: sweet and spiced. | لیکور گیاهی آلمانی از 56 گیاه، میوه، ریشه و ادویه، از جمله پوست مرکبات، شیرین‌بیان، انیسون، زنجبیل و زعفران؛ شیرین و پرادویه. |
@@ -221,7 +239,6 @@ None.
 | Merlot (France) | A soft, round, fruity French red with velvety tannins; easy with anything off the charcoal grill. | شراب قرمز فرانسوی، نرم و میوه‌ای با تانن‌های مخملی؛ کنار هر کبابی از روی زغال خوش می‌نشیند. |
 | Shiraz (Australia) | Australian Shiraz: a full-bodied, jammy red with soft tannins and a spicy finish, made for charcoal-grilled kebabs. | شیراز استرالیایی؛ شراب قرمز پرقوام و مربایی با تانن نرم و ته‌مزه‌ای گرم و تند، همراه خوب کباب زغالی. |
 | Cabernet | A full-bodied red with firm tannins and fresh acidity; a sturdy partner for charcoal-grilled kebabs. | شراب قرمز پرقوام با تانن محکم و ترشی دلپذیر؛ کنار کباب‌های زغالی خوب جا می‌افتد. |
-| Venato (Italy) | A bottle of Italian wine; ask your server about the producer, grape and vintage. | یک بطری شراب ایتالیایی؛ درباره‌ی تولیدکننده، نوع انگور و سال برداشت از گارسون بپرسید. |
 | Borsao (Spain) | Spanish wine from Bodegas Borsao in Campo de Borja, Aragón, home of old-vine Garnacha; ask your server which bottle. | شراب اسپانیایی از بودگاس بورسائو در کامپو د بورخا، آراگون، سرزمین تاکستان‌های کهن گارناچا؛ نوعش را از گارسون بپرسید. |
 | Bordeaux (France) | A French red from Bordeaux, usually a blend of Merlot and Cabernet Sauvignon: dry, structured and made for the grill. | شراب قرمز فرانسوی از بوردو، معمولاً ترکیبی از مرلو و کابرنه سوینیون؛ خشک و خوش‌ساختار، برای سفره‌ی کباب. |
 | Pinot Noir (France) | French Pinot Noir, the red grape of Burgundy: light to medium-bodied, silky and fragrant, with gentle tannins. | پینو نوآر فرانسوی، انگور قرمز بورگونی؛ سبک تا متوسط، لطیف و خوش‌عطر با تانن ملایم. |

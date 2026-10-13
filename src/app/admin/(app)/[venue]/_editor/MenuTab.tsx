@@ -14,7 +14,7 @@ import { SEASON_NAMES, attention, listingProblem, money, needs, priceSummary, se
 import { Badge, Menu, Photo, Switch, btnSecondary } from './ui';
 
 export type MenuTabProps = {
-  menu: MenuData; season: SeasonId; filter: Filter; setFilter: (f: Filter) => void; query: string; setQuery: (q: string) => void; highlightId: string | null;
+  menu: MenuData; season: SeasonId; canNotes: boolean; filter: Filter; setFilter: (f: Filter) => void; query: string; setQuery: (q: string) => void; highlightId: string | null;
   onOpen: (id: string, sectionId: string | null) => void; onAdd: (sectionId: string) => void; onAddSection: () => void;
   onToggleItem: (id: string, listed: boolean) => Promise<void>; onPrice: (id: string, price: number | null) => Promise<void>;
   onToggleSection: (id: string, listed: boolean) => Promise<void>; onRename: (id: string) => void; onMoveSection: (id: string, dir: 'up' | 'down') => Promise<void>;
@@ -22,7 +22,7 @@ export type MenuTabProps = {
 };
 type Drag = { kind: 'item'; id: string; section: string } | { kind: 'section'; id: string };
 type Over = { id: string; after: boolean } | null;
-const LABEL: Record<Exclude<Filter, 'all'>, (n: number) => string> = { none: (n) => `${n} in no section`, price: (n) => `${n} need${n === 1 ? 's' : ''} a price`, draft: (n) => `${n} Persian draft${n === 1 ? '' : 's'}`, fa: (n) => `${n} missing Persian`, photo: (n) => `${n} without a photo`, season: (n) => `${n} out of season` };
+const LABEL: Record<Exclude<Filter, 'all'>, (n: number) => string> = { none: (n) => `${n} in no section`, price: (n) => `${n} need${n === 1 ? 's' : ''} a price`, draft: (n) => `${n} Persian draft${n === 1 ? '' : 's'}`, fa: (n) => `${n} missing Persian`, photo: (n) => `${n} without a photo`, season: (n) => `${n} out of season`, allergens: (n) => `Allergens to confirm (${n})` };
 
 export function MenuTab(p: MenuTabProps) {
   const { menu, filter, setFilter, query, setQuery } = p;
@@ -32,7 +32,7 @@ export function MenuTab(p: MenuTabProps) {
   const [over, setOver] = useState<Over>(null);
   useEffect(() => { setFine(window.matchMedia('(pointer: fine)').matches); }, []);
   const ctx = useMemo(() => seasonsCtx(menu, p.season), [menu, p.season]);
-  const counts = useMemo(() => attention(menu, ctx), [menu, ctx]);
+  const counts = useMemo(() => { const c = attention(menu, ctx); if (!p.canNotes) c.allergens = 0; return c; }, [menu, ctx, p.canNotes]); // allergens to confirm: owners and admins only (they confirm)
   const anyAttention = Object.values(counts).some((n) => n > 0);
   const q = query.trim().toLowerCase();
   const matches = (i: EditorItem) => !q || (i.name.en ?? '').toLowerCase().includes(q) || (i.name.fa ?? '').includes(query.trim());
@@ -99,7 +99,7 @@ export function MenuTab(p: MenuTabProps) {
             <Icon name="down" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" />
           </label>
         </div>
-        {narrowing && <p className="mt-2 flex items-center gap-2 text-sm text-ink-muted"><span>{shown} item{shown === 1 ? '' : 's'}{filter !== 'all' && <> · {LABEL[filter](counts[filter]).replace(/^\d+ /, '')}</>}</span><button type="button" onClick={() => { setFilter('all'); setQuery(''); }} className="font-medium text-ink underline-offset-4 hover:underline">Show all</button></p>}
+        {narrowing && <p className="mt-2 flex items-center gap-2 text-sm text-ink-muted"><span>{shown} item{shown === 1 ? '' : 's'}{filter !== 'all' && <> · {LABEL[filter](counts[filter]).replace(/^\d+ /, '').replace(/ \(\d+\)$/, '')}</>}</span><button type="button" onClick={() => { setFilter('all'); setQuery(''); }} className="font-medium text-ink underline-offset-4 hover:underline">Show all</button></p>}
       </div>
 
       {groups.sections.map(({ s, ids }, n) => (

@@ -2,23 +2,29 @@
 // The item editor: a side panel on laptops, full screen on phones. Three layers: Basics (always visible), More (one
 // tap: description, sizes, other sections, order) and Advanced (collapsed: add-ons, combo parts, notes for owner and
 // admin, delete). Every field saves itself on change; there is no Save button. Seasons (Kian, 2026-10-12): four chips in Basics, Fall /
-// Winter / Spring / Summer; none selected = all year; a season chosen hides the item everywhere outside it.
+// Winter / Spring / Summer; none selected = all year; a season chosen hides the item everywhere outside it. Research drafts (Kian, 2026-10-12):
+// an English description written from research carries a Draft badge (customers see it); allergen and dietary notes written from research
+// wait for Confirm (owner and admin) before customers see them; an item opened from the "Allergens to confirm" filter opens on them
+// (Advanced open, the draft box in view), any other item opens as before.
 import { useEffect, useState } from 'react';
-import type { AddOn, Bi, Component, EditorItem, EditorSection, Notes, Photo as PhotoData, SeasonId, Variant } from '@/lib/types';
+import type { AddOn, Basis, Bi, Component, EditorItem, EditorSection, Notes, Photo as PhotoData, SeasonId, Variant } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
-import { SEASON_NAMES, listingProblem, seasonState } from './state';
+import { SEASON_NAMES, listingProblem, notesToConfirm, seasonState } from './state';
 import { uploadImage } from './upload';
-import { Badge, MoneyField, Photo, Switch, TextField, btnDanger, btnGhost, btnSecondary, fieldCls } from './ui';
+import { Badge, MoneyField, Photo, Switch, TextField, btnDanger, btnGhost, btnPrimary, btnSecondary, fieldCls } from './ui';
 
 export type ItemPanelProps = {
-  item: EditorItem; venueId: string; sections: EditorSection[]; sectionId: string | null; canNotes: boolean; column?: boolean; season: SeasonId;
-  onPatch: (patch: Record<string, unknown>) => Promise<void>; onNotes: (notes: Notes) => Promise<void>; onDelete: () => void;
+  item: EditorItem; venueId: string; sections: EditorSection[]; sectionId: string | null; canNotes: boolean; column?: boolean; season: SeasonId; notesFirst?: boolean;
+  onPatch: (patch: Record<string, unknown>) => Promise<void>; onNotes: (notes: Notes) => Promise<void>; onConfirm: () => Promise<void>; onDelete: () => void;
   onMove: (sectionId: string, id: string, index: number) => Promise<void>; onClose: () => void;
 };
 
-export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column, season, onPatch, onNotes, onDelete, onMove, onClose }: ItemPanelProps) {
+export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column, season, notesFirst, onPatch, onNotes, onConfirm, onDelete, onMove, onClose }: ItemPanelProps) {
   const [more, setMore] = useState(false);
-  const [advanced, setAdvanced] = useState(false);
+  const onNotesFirst = !!notesFirst && canNotes && notesToConfirm(item);
+  const [advanced, setAdvanced] = useState(onNotesFirst);
+  useEffect(() => { if (onNotesFirst) setAdvanced(true); }, [item.id, onNotesFirst]);
+  useEffect(() => { if (onNotesFirst && advanced) document.querySelector('[data-research-draft]')?.scrollIntoView({ block: 'center' }); }, [item.id, onNotesFirst, advanced]);
   const [err, setErr] = useState<string | null>(null);
   const [reason, setReason] = useState<string | null>(null);
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose]);
@@ -61,7 +67,7 @@ export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column
         <button type="button" onClick={() => setMore((m) => !m)} aria-expanded={more} className="mt-6 flex w-full items-center justify-between rounded-2xl bg-fill px-4 py-3 text-left font-semibold"><span>More</span><Icon name="down" className={`h-5 w-5 text-ink-muted transition ${more ? 'rotate-180' : ''}`} /></button>
         {more && (
           <div className="mt-4 space-y-5">
-            <TextField label="Description" value={item.description.en} multiline onCommit={(v) => patch({ description: { ...item.description, en: v } })} />
+            <TextField label="Description" value={item.description.en} multiline badge={item.drafts.includes('description') ? <Badge tone="blue">Draft</Badge> : null} onCommit={(v) => patch({ description: { ...item.description, en: v } })} />
             <TextField label="Description (فارسی)" value={item.description.fa} multiline dir="rtl" lang="fa" badge={draft('description') ? <Badge tone="blue">Persian draft</Badge> : item.description.en && !item.description.fa ? <Badge tone="amber">Missing</Badge> : null} onCommit={(v) => patch({ description: { ...item.description, fa: v } })} />
             <Sizes item={item} onPatch={patch} />
             <div>
@@ -98,7 +104,7 @@ export function ItemPanel({ item, venueId, sections, sectionId, canNotes, column
           <div className="mt-4 space-y-6">
             <AddOns item={item} onPatch={patch} />
             <Parts item={item} onPatch={patch} />
-            {canNotes ? <NotesEditor item={item} onNotes={onNotes} setErr={setErr} /> : <p className="text-sm text-ink-muted">Allergen, dietary and halal notes are set by the owner or an admin.</p>}
+            {canNotes ? <NotesEditor item={item} onNotes={onNotes} onConfirm={onConfirm} setErr={setErr} /> : <p className="text-sm text-ink-muted">Allergen, dietary and halal notes are set by the owner or an admin.</p>}
             <div className="border-t border-line pt-5">
               <button type="button" onClick={onDelete} className={btnDanger}><Icon name="trash" className="h-4 w-4" />Delete this item</button>
             </div>
@@ -253,17 +259,21 @@ function Parts({ item, onPatch }: { item: EditorItem; onPatch: (p: Record<string
   );
 }
 
-function NotesEditor({ item, onNotes, setErr }: { item: EditorItem; onNotes: (n: Notes) => Promise<void>; setErr: (s: string | null) => void }) {
+function NotesEditor({ item, onNotes, onConfirm, setErr }: { item: EditorItem; onNotes: (n: Notes) => Promise<void>; onConfirm: () => Promise<void>; setErr: (s: string | null) => void }) {
   const [n, setN] = useState<Notes>(item.notes);
+  const [busy, setBusy] = useState(false);
   const key = JSON.stringify(item.notes);
   useEffect(() => { setN(JSON.parse(key)); }, [key]);
   const save = (next: Notes) => { setN(next); return onNotes(next).catch((e) => { setErr((e as Error).message); setN(item.notes); }); };
   const words = (s: string | null) => (s ?? '').split(',').map((x) => x.trim()).filter(Boolean);
+  const draftA = item.drafts.includes('allergens'), draftD = item.drafts.includes('dietary');
+  const confirm = async () => { setBusy(true); try { await onConfirm(); } catch (e) { setErr((e as Error).message); } finally { setBusy(false); } };
   return (
     <div className="space-y-3">
       <p className="text-sm font-medium">Allergen, dietary and halal notes <span className="font-normal text-ink-muted">(owner and admin)</span></p>
-      <TextField label="Allergens" value={n.allergens.join(', ')} placeholder="nuts, dairy, gluten" hint="Comma separated." onCommit={(v) => save({ ...n, allergens: words(v) })} />
-      <TextField label="Dietary" value={n.dietary.join(', ')} placeholder="vegetarian, vegan" hint="Comma separated." onCommit={(v) => save({ ...n, dietary: words(v) })} />
+      {(draftA || draftD) && <ResearchDraft notes={n} basis={item.basis} busy={busy} onConfirm={() => { void confirm(); }} />}
+      <TextField label="Allergens" value={n.allergens.join(', ')} placeholder="nuts, dairy, gluten" hint="Comma separated." badge={draftA ? <Badge tone="blue">To confirm</Badge> : null} onCommit={(v) => save({ ...n, allergens: words(v) })} />
+      <TextField label="Dietary" value={n.dietary.join(', ')} placeholder="vegetarian, vegan" hint="Comma separated." badge={draftD ? <Badge tone="blue">To confirm</Badge> : null} onCommit={(v) => save({ ...n, dietary: words(v) })} />
       <div>
         <span className="mb-1 block text-sm font-medium">Halal</span>
         <div className="grid grid-cols-3 gap-1.5">
@@ -274,6 +284,19 @@ function NotesEditor({ item, onNotes, setErr }: { item: EditorItem; onNotes: (n:
       </div>
       <TextField label="Note" value={n.text?.en} onCommit={(v) => save({ ...n, text: { ...(n.text ?? { en: null, fa: null }), en: v } })} />
       <TextField label="Note (فارسی)" value={n.text?.fa} dir="rtl" lang="fa" onCommit={(v) => save({ ...n, text: { ...(n.text ?? { en: null, fa: null }), fa: v } })} />
+    </div>
+  );
+}
+// Allergen and dietary notes drafted from research (Kian, 2026-10-12): not on the public page until confirmed. Shows what the draft says,
+// what it is based on (the assumed key ingredients and the source for the dish type) and one Confirm; a correction typed in the fields
+// below is the owner's own and needs no Confirm.
+function ResearchDraft({ notes, basis, busy, onConfirm }: { notes: Notes; basis: Basis | null; busy: boolean; onConfirm: () => void }) {
+  return (
+    <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3" data-research-draft="">
+      <p className="text-[15px] font-semibold text-sky-950">Suggested from research: customers don’t see it yet</p>
+      <p className="mt-1 text-[13px] text-sky-950/80">{notes.allergens.length ? <>Contains: {notes.allergens.join(', ')}.</> : <>No common allergen found in the usual recipe.</>}{notes.dietary.length ? <> {notes.dietary.join(', ')}.</> : null} Check it against your recipe; fix a word below if it is wrong, or tap Confirm if it is right.</p>
+      {basis && <p className="mt-1 text-[13px] text-sky-950/80">Based on: {basis.ingredients.join(', ')}{basis.source && <> · <a href={basis.source} target="_blank" rel="noreferrer" className="font-medium underline underline-offset-2">source</a></>}</p>}
+      <button type="button" onClick={onConfirm} disabled={busy} className={`${btnPrimary} mt-3`} aria-label="Confirm the allergens and dietary notes">{busy ? 'Confirming…' : 'Confirm'}</button>
     </div>
   );
 }

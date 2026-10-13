@@ -3,7 +3,7 @@
 // shown only if it has a price, or every size has a price.
 import type { Pool, PoolClient } from 'pg';
 import { pool } from '@/lib/db';
-import type { Bi, Variant, AddOn, Component, Notes, Placement, EditorItem, Photo, SeasonId } from '@/lib/types';
+import type { Basis, Bi, Variant, AddOn, Component, Notes, Placement, EditorItem, Photo, SeasonId } from '@/lib/types';
 type Q = Pool | PoolClient;
 import { recordRevision, type By } from './revisions';
 
@@ -12,11 +12,15 @@ export type ItemRow = {
   id: string; venue_id: string; name: Bi; description: Bi; price: string | null; variants: Variant[]; add_ons: AddOn[]; components: Component[];
   serves: string | null; photo: Photo | null; notes: Notes; listed: boolean; fa_draft: string[]; updated_at: string; updated_by: By | null; import_key: string | null;
   seasons: SeasonId[]; // Kian, 2026-10-12: shown only in these seasons, everywhere; none = all year
+  drafts: string[]; // Kian, 2026-10-12: fields written from research ('description' = English, 'allergens', 'dietary'), cleared by a person's edit or Confirm
 };
 export type ItemSnapshot = Omit<ItemRow, 'id' | 'venue_id' | 'updated_at' | 'updated_by' | 'import_key' | 'price'> & { price: string | number | null; placements: Placement[] };
-export type ItemPatch = Partial<Pick<ItemRow, 'name' | 'description' | 'variants' | 'add_ons' | 'components' | 'serves' | 'photo' | 'notes' | 'listed' | 'seasons'>> & { price?: string | number | null; section_ids?: string[] };
+export type ItemPatch = Partial<Pick<ItemRow, 'name' | 'description' | 'variants' | 'add_ons' | 'components' | 'serves' | 'photo' | 'notes' | 'listed' | 'seasons' | 'drafts'>> & { price?: string | number | null; section_ids?: string[] };
 
-const COLS = 'id, venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_at, updated_by, import_key, seasons';
+const COLS = 'id, venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_at, updated_by, import_key, seasons, drafts';
+// The research basis of an item (src/lib/types.ts Basis), from its internal source column: the research import's entry, if any.
+export const BASIS_SQL = `jsonb_path_query_first(source, '$[*] ? (@.source == "research")')`;
+export const basisOf = (b: Record<string, unknown> | null | undefined): Basis | null => (b ? { ingredients: Array.isArray(b.ingredients) ? b.ingredients.map(String) : [], source: typeof b.url === 'string' ? b.url : null, sourceTitle: typeof b.sourceTitle === 'string' ? b.sourceTitle : null, note: typeof b.note === 'string' ? b.note : null, file: typeof b.file === 'string' ? b.file : null } : null);
 
 export function listingProblem(i: { price: string | number | null; variants: Variant[] }): string | null {
   if (i.price != null && i.price !== '') return null;
@@ -32,18 +36,19 @@ export function persianMissing(i: { name: Bi; description: Bi; variants?: Varian
   return out;
 }
 
-export async function getItem(id: string): Promise<(ItemRow & { placements: Placement[] }) | null> {
-  const r = await pool.query<ItemRow>(`select ${COLS} from items where id = $1`, [id]);
+export async function getItem(id: string): Promise<(ItemRow & { placements: Placement[]; basis?: Record<string, unknown> | null }) | null> {
+  const r = await pool.query<ItemRow & { basis: Record<string, unknown> | null }>(`select ${COLS}, ${BASIS_SQL} as basis from items where id = $1`, [id]);
   if (!r.rows[0]) return null;
   const p = await pool.query<Placement>(`select section_id, position from item_sections where item_id = $1 order by position`, [id]);
   return { ...r.rows[0], placements: p.rows };
 }
 
 // The item as the page editor holds it (numbers for money, placements included).
-export function toEditorItem(row: ItemRow & { placements: Placement[] }): EditorItem {
+export function toEditorItem(row: ItemRow & { placements: Placement[]; basis?: Record<string, unknown> | null }): EditorItem {
   return {
     id: row.id, name: row.name, description: row.description, price: row.price == null ? null : Number(row.price), variants: row.variants, add_ons: row.add_ons, components: row.components,
     serves: row.serves, photo: row.photo, notes: row.notes, listed: row.listed, fa_draft: row.fa_draft, placements: row.placements, seasons: row.seasons ?? [],
+    drafts: row.drafts ?? [], basis: basisOf(row.basis),
   };
 }
 export async function editorItem(id: string): Promise<EditorItem | null> { const r = await getItem(id); return r ? toEditorItem(r) : null; }
@@ -65,6 +70,14 @@ function clearDrafts(fa_draft: string[], before: ItemSnapshot, after: ItemSnapsh
   if (JSON.stringify(before.variants) !== JSON.stringify(after.variants)) keep.delete('variants');
   if (JSON.stringify(before.add_ons) !== JSON.stringify(after.add_ons)) keep.delete('addOns');
   if (JSON.stringify(before.components) !== JSON.stringify(after.components)) keep.delete('components');
+  return [...keep];
+}
+// Text and notes a person writes are no longer research drafts (Kian, 2026-10-12): the English description, the allergens, the dietary words.
+function clearResearchDrafts(drafts: string[], before: ItemSnapshot, after: ItemSnapshot): string[] {
+  const keep = new Set(drafts);
+  if (before.description?.en !== after.description?.en) keep.delete('description');
+  if (JSON.stringify(before.notes?.allergens ?? []) !== JSON.stringify(after.notes?.allergens ?? [])) keep.delete('allergens');
+  if (JSON.stringify(before.notes?.dietary ?? []) !== JSON.stringify(after.notes?.dietary ?? [])) keep.delete('dietary');
   return [...keep];
 }
 
@@ -93,10 +106,11 @@ export async function updateItem(id: string, patch: ItemPatch, by: By): Promise<
     }
     if (next.listed && listingProblem(next)) { await client.query('rollback'); return { ok: false, error: listingProblem(next)! }; }
     next.fa_draft = clearDrafts(row.fa_draft, before, next);
+    next.drafts = patch.drafts ?? clearResearchDrafts(row.drafts ?? [], before, next); // Confirm sets them; any other edit clears what it touched
     if (same(before, next)) { await client.query('rollback'); return { ok: true, id }; } // nothing changed: no write, no record
     await client.query(
-      `update items set name=$2, description=$3, price=$4, variants=$5, add_ons=$6, components=$7, serves=$8, photo=$9, notes=$10, listed=$11, fa_draft=$12, seasons=$14, updated_at=now(), updated_by=$13 where id=$1`,
-      [id, next.name, next.description, next.price, JSON.stringify(next.variants), JSON.stringify(next.add_ons), JSON.stringify(next.components), next.serves, next.photo, next.notes, next.listed, next.fa_draft, by, next.seasons ?? []]);
+      `update items set name=$2, description=$3, price=$4, variants=$5, add_ons=$6, components=$7, serves=$8, photo=$9, notes=$10, listed=$11, fa_draft=$12, seasons=$14, drafts=$15, updated_at=now(), updated_by=$13 where id=$1`,
+      [id, next.name, next.description, next.price, JSON.stringify(next.variants), JSON.stringify(next.add_ons), JSON.stringify(next.components), next.serves, next.photo, next.notes, next.listed, next.fa_draft, by, next.seasons ?? [], next.drafts ?? []]);
     if (patch.section_ids) {
       await client.query('delete from item_sections where item_id = $1', [id]);
       for (const p of next.placements) await client.query('insert into item_sections (item_id, section_id, position) values ($1,$2,$3)', [id, p.section_id, p.position]);
@@ -116,7 +130,7 @@ export async function createItem(venueId: string, data: ItemPatch & { name: Bi }
     const snap: ItemSnapshot = {
       name: data.name, description: data.description ?? { en: null, fa: null }, price: data.price ?? null, variants: data.variants ?? [], add_ons: data.add_ons ?? [], components: data.components ?? [],
       serves: data.serves ?? null, photo: data.photo ?? null, notes: data.notes ?? { allergens: [], dietary: [], halal: null, text: { en: null, fa: null } }, listed: !!data.listed, fa_draft: [], placements: [],
-      seasons: data.seasons ?? [],
+      seasons: data.seasons ?? [], drafts: [],
     };
     if (snap.listed && listingProblem(snap)) { await client.query('rollback'); return { ok: false, error: listingProblem(snap)! }; }
     const r = await client.query<{ id: string }>(
@@ -181,10 +195,10 @@ export async function applyItemOrder(client: Q, sectionId: string, order: string
 // Puts an item back to a snapshot (Undo). Re-creates a deleted item with its old id and placements.
 export async function applyItemSnapshot(client: Q, venueId: string, id: string, snap: ItemSnapshot, by: By): Promise<void> {
   await client.query(
-    `insert into items (id, venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_by, seasons) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+    `insert into items (id, venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_by, seasons, drafts) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
      on conflict (id) do update set name=excluded.name, description=excluded.description, price=excluded.price, variants=excluded.variants, add_ons=excluded.add_ons, components=excluded.components,
-       serves=excluded.serves, photo=excluded.photo, notes=excluded.notes, listed=excluded.listed, fa_draft=excluded.fa_draft, seasons=excluded.seasons, updated_at=now(), updated_by=excluded.updated_by`,
-    [id, venueId, snap.name, snap.description, snap.price, JSON.stringify(snap.variants), JSON.stringify(snap.add_ons), JSON.stringify(snap.components), snap.serves, snap.photo, snap.notes, snap.listed, snap.fa_draft, by, snap.seasons ?? []]); // records written before the seasons existed read as all year
+       serves=excluded.serves, photo=excluded.photo, notes=excluded.notes, listed=excluded.listed, fa_draft=excluded.fa_draft, seasons=excluded.seasons, drafts=excluded.drafts, updated_at=now(), updated_by=excluded.updated_by`,
+    [id, venueId, snap.name, snap.description, snap.price, JSON.stringify(snap.variants), JSON.stringify(snap.add_ons), JSON.stringify(snap.components), snap.serves, snap.photo, snap.notes, snap.listed, snap.fa_draft, by, snap.seasons ?? [], snap.drafts ?? []]); // records written before the seasons (or the research drafts) existed read as all year (and no draft)
   await client.query('delete from item_sections where item_id = $1', [id]);
   for (const p of snap.placements ?? []) await client.query('insert into item_sections (item_id, section_id, position) select $1, $2, $3 where exists (select 1 from sections where id = $2) on conflict do nothing', [id, p.section_id, p.position]);
 }

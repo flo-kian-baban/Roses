@@ -7,6 +7,7 @@ import { Bi } from '@/components/Bi';
 import { LangToggle } from '@/components/LangToggle';
 import { ItemList, MenuDialogs, SectionTabs, slug } from '@/components/menu-kit';
 import { seasonalCss, seasonalMotif } from '@/lib/seasonal';
+import { ALLERGY_NOTICE } from '@/lib/allergens';
 
 // The Seasonal section (Kian, 2026-10-12), first when shown: a small motif of the season's picked artwork before its title.
 export function SensoPage({ venue, sections, season, photos = true }: { venue: Venue; sections: Section[]; season: SeasonId; photos?: boolean }) {
@@ -48,6 +49,8 @@ export function SensoPage({ venue, sections, season, photos = true }: { venue: V
                 <Bi as="p" text={l.hours} className="text-(--c-footer-hours)" />
               </div>
             ))}
+            {/* The general allergy notice on every venue (the PM, 2026-10-12; src/lib/allergens.ts). */}
+            <Bi as="p" text={ALLERGY_NOTICE} className="text-(--c-footer-hours)" />
           </footer>
         </div>
       </main>

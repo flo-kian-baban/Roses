@@ -1,0 +1,2391 @@
+{
+  "about": "Menu research for Roses Kebab Land (Kian via the PM, 2026-10-12): every item shown on the page that day. Descriptions where the field was empty (newEn, newFa; null = the venue's own text stays), and the allergen and dietary drafts with their basis (the assumed key ingredients and a source for the dish type, from simple web research). Drafts only: allergens and dietary words are never on the public page until an owner or admin confirms them; the descriptions are shown and marked as drafts in the admin. Applied by tools/import/research-apply.mjs (also in npm run setup); reviewed in reports/research-review-kebab-land.csv. Rules: research-report.md beside this file.",
+  "venue": "kebab-land",
+  "date": "2026-10-12",
+  "recordedBy": "Research",
+  "vocabulary": {
+    "allergens": [
+      "milk",
+      "egg",
+      "wheat",
+      "barley",
+      "oats",
+      "rye",
+      "tree nuts",
+      "peanuts",
+      "sesame",
+      "soy",
+      "mustard",
+      "fish",
+      "crustaceans",
+      "molluscs",
+      "sulphites"
+    ],
+    "dietary": [
+      "Vegetarian",
+      "Vegan"
+    ],
+    "file": "src/lib/allergens.json"
+  },
+  "edits": [
+    "Ketel One: the description names wheat: wheat drafted (the PM's rule), with the distillation note",
+    "Grey Goose: the description names wheat: wheat drafted (the PM's rule), with the distillation note",
+    "Crown Royal: the description names rye, corn and barley: rye, barley drafted (the PM's rule), with the distillation note",
+    "Jameson: the description names malted and unmalted barley: barley drafted (the PM's rule), with the distillation note",
+    "Black Label: barley drafted like the other whiskies for consistency (its description names no grain), with the distillation note",
+    "Glenfiddich 12: the description names malted barley: barley drafted (the PM's rule), with the distillation note",
+    "Aragh Sagi: the description names raisins: sulphites drafted (the PM's rule)",
+    "Sultan’s Goblet: no ingredient known: the basis says so instead of staying empty",
+    "Persian Dreams: no ingredient known: the basis says so instead of staying empty",
+    "Merlot (France): the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Shiraz (Australia): the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Cabernet: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Venato (Italy): the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Borsao (Spain): the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Bordeaux (France): the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Pinot Noir (France): the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Pinot Grigio: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Sauvignon Blanc: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Chardonnay: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Shiraz: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Cab Sauv: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Merlot: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Rose: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Prosecco: the descriptions name wine; \"wine\" added to the key ingredients beside the grape",
+    "Mixed Appetizer: a choice between two components is part of the dish, not an optional extra: the allergen of either is drafted"
+  ],
+  "items": [
+    {
+      "importKey": "kebab-land:item:green-salad",
+      "name": "Green Salad",
+      "ingredients": [
+        "lettuce",
+        "cucumber",
+        "tomato"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Salad",
+      "sourceTitle": "Salad",
+      "newEn": "Crisp lettuce, cucumber and tomato; a fresh, cool side to balance anything from the grill.",
+      "newFa": "کاهوی ترد با خیار و گوجه‌فرنگی؛ سالادی تازه و خنک کنار کباب.",
+      "confidence": "medium",
+      "note": "Venue to confirm the vegetables and the dressing; Vegan if the dressing has no honey, yogurt or egg.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:yogurt-with-shallot-dip-maast-o-moosir",
+      "name": "Yogurt with Shallot Dip (Maast o Moosir)",
+      "ingredients": [
+        "yogurt",
+        "persian shallot",
+        "salt"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Allium_stipitatum",
+      "sourceTitle": "Allium stipitatum",
+      "newEn": "Thick, creamy yogurt with chopped Persian shallot (moosir); cool and tangy with a mild bite, the classic partner for kebab.",
+      "newFa": "ماست غلیظ با موسیر خردشده؛ خنک و خوش‌طعم، همراه همیشگی کباب.",
+      "confidence": "high",
+      "note": "No English Wikipedia article for the dip; the Persian shallot article describes musir crushed into yogurt in kebab houses.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:baba-ghanoosh",
+      "name": "Baba Ghanoosh",
+      "ingredients": [
+        "eggplant",
+        "tahini",
+        "garlic",
+        "lemon juice",
+        "olive oil",
+        "salt"
+      ],
+      "allergens": [
+        "sesame"
+      ],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Baba_ghanoush",
+      "sourceTitle": "Baba ghanoush",
+      "newEn": "Smoky roasted eggplant blended with tahini, garlic, lemon and olive oil; silky, rich and made for scooping.",
+      "newFa": "بادمجان کبابی دودی با ارده، سیر، آبلیمو و روغن زیتون؛ نرم و لطیف.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: tahini (sesame) and garlic in the house recipe.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:fried-eggplant",
+      "name": "Fried Eggplant",
+      "ingredients": [
+        "eggplant",
+        "vegetable oil",
+        "salt"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Fried_eggplant",
+      "sourceTitle": "Fried eggplant",
+      "newEn": "Eggplant slices fried until golden outside and silky within; a simple, home-style Persian appetizer.",
+      "newFa": "برش‌های بادمجان سرخ‌شده، طلایی و نرم؛ پیش‌غذایی ساده و خانگی.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: no flour or egg coating and no topping (yogurt or kashk would add milk); Vegan if none.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:kashke-bademjan",
+      "name": "Kashke Bademjan",
+      "ingredients": [
+        "eggplant",
+        "kashk (whey)",
+        "garlic",
+        "mint",
+        "onion",
+        "walnut",
+        "saffron",
+        "vegetable oil"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Kashk_bademjan",
+      "sourceTitle": "Kashk bademjan",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: walnut garnish (often used; tree nuts).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:zeytoon-parvarde",
+      "name": "Zeytoon Parvarde",
+      "ingredients": [
+        "green olive",
+        "walnut",
+        "pomegranate molasses",
+        "garlic",
+        "mint",
+        "parsley",
+        "olive oil"
+      ],
+      "allergens": [
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Zeytoon_parvardeh",
+      "sourceTitle": "Zeytoon parvardeh",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:mixed-appetizer",
+      "name": "Mixed Appetizer",
+      "ingredients": [
+        "yogurt",
+        "persian shallot",
+        "green olive",
+        "walnut",
+        "pomegranate molasses",
+        "garlic",
+        "mint",
+        "parsley",
+        "olive oil",
+        "eggplant",
+        "vegetable oil",
+        "salt"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts",
+        "sesame"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Meze",
+      "sourceTitle": "Meze",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Sesame drafted because one of the two choices, Baba Ghanoosh, is made with tahini (sesame); the other, fried eggplant, has none: the popup cannot say which, so the draft keeps it. Customer's choice: Baba Ghanoosh adds sesame (tahini); Fried Eggplant adds none.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:mixed-appetizer-platter",
+      "name": "Mixed Appetizer Platter",
+      "ingredients": [
+        "eggplant",
+        "tahini",
+        "lemon juice",
+        "garlic",
+        "olive oil",
+        "green olive",
+        "walnut",
+        "pomegranate molasses",
+        "mint",
+        "parsley",
+        "kashk (whey)",
+        "onion",
+        "saffron",
+        "vegetable oil",
+        "yogurt",
+        "persian shallot",
+        "salt"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts",
+        "sesame"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Meze",
+      "sourceTitle": "Meze",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: tahini in the Baba Ghanoosh (sesame), walnut on the Kashke Bademjan.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:bazari-koobideh-kebab",
+      "name": "Bazari Koobideh Kebab",
+      "ingredients": [
+        "ground beef",
+        "onion",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "saffron",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Kabab_koobideh",
+      "sourceTitle": "Kabab koobideh",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: butter on the rice (milk); no egg, flour or breadcrumb binder (traditional koobideh has none).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:roses-koobideh-kebab",
+      "name": "Roses Koobideh Kebab",
+      "ingredients": [
+        "ground beef",
+        "ground chicken",
+        "onion",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "saffron",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Kabab_koobideh",
+      "sourceTitle": "Kabab koobideh",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "House beef-and-chicken mix; kitchen to confirm: any egg or breadcrumb binder, butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:barg-kebab",
+      "name": "Barg Kebab",
+      "ingredients": [
+        "beef tenderloin",
+        "onion",
+        "olive oil",
+        "garlic",
+        "saffron",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Kabab_barg",
+      "sourceTitle": "Kabab barg",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: butter on the rice and any butter baste (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:fillet-chenjeh-kebab",
+      "name": "Fillet Chenjeh Kebab",
+      "ingredients": [
+        "beef tenderloin",
+        "onion",
+        "olive oil",
+        "lemon juice",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "saffron",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://www.iranchamber.com/recipes/meat/kabab_chenjeh.php",
+      "sourceTitle": "Iran Chamber Society: Iranian Recipes & Cuisines",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Chenjeh is classically lamb; this one is beef fillet. Kitchen to confirm: yogurt in the marinade (some recipes), butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:gilaki-sour-kebab",
+      "name": "Gilaki Sour Kebab",
+      "ingredients": [
+        "beef sirloin",
+        "pomegranate juice",
+        "walnut",
+        "parsley",
+        "garlic",
+        "olive oil",
+        "basmati rice",
+        "saffron",
+        "butter"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Kabab_torsh",
+      "sourceTitle": "Kabab torsh",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm: crushed walnut in the marinade (typical of kabab torsh; tree nuts), butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:chicken-leg-kebab",
+      "name": "Chicken Leg Kebab",
+      "ingredients": [
+        "chicken leg",
+        "onion",
+        "lemon juice",
+        "saffron",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Jujeh_kabab",
+      "sourceTitle": "Jujeh kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: butter on the rice (milk); yogurt in the marinade, if used, also adds milk.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:chicken-breast-kebab",
+      "name": "Chicken Breast Kebab",
+      "ingredients": [
+        "chicken breast",
+        "onion",
+        "lemon juice",
+        "saffron",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Jujeh_kabab",
+      "sourceTitle": "Jujeh kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: butter on the rice (milk); yogurt in the marinade, if used, also adds milk.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:shekari-chicken-kebab",
+      "name": "Shekari Chicken Kebab",
+      "ingredients": [
+        "chicken breast",
+        "onion",
+        "spices",
+        "saffron",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Jujeh_kabab",
+      "sourceTitle": "Jujeh kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "House spice mix and marinade not public; kitchen to confirm them and butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:akbar-joojeh",
+      "name": "Akbar Joojeh",
+      "ingredients": [
+        "baby chicken",
+        "onion",
+        "garlic",
+        "lime juice",
+        "vegetable oil",
+        "pomegranate molasses",
+        "basmati rice",
+        "saffron",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://mycaldron.com/2017/12/17/roast-chicken-saffron-rice/",
+      "sourceTitle": "Roast Chicken & Saffron Rice | My Caldron",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "No Wikipedia article. Kitchen to confirm: no flour coating before frying (none in typical recipes; wheat if used), butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:darbari-chicken-kebab",
+      "name": "Darbari Chicken Kebab",
+      "ingredients": [
+        "chicken breast",
+        "saffron",
+        "onion",
+        "lemon juice",
+        "spices",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Jujeh_kabab",
+      "sourceTitle": "Jujeh kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "House marinade not public; kitchen to confirm it (yogurt would add milk) and butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:shishlik-kebab",
+      "name": "Shishlik Kebab",
+      "ingredients": [
+        "lamb chop",
+        "onion",
+        "saffron",
+        "lemon juice",
+        "black pepper",
+        "spices",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Shashlik",
+      "sourceTitle": "Shashlik",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: yogurt in the marinade (common in Persian shishlik) and butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:bakhtiari-kebab",
+      "name": "Bakhtiari Kebab",
+      "ingredients": [
+        "chicken breast",
+        "beef tenderloin",
+        "onion",
+        "saffron",
+        "lemon juice",
+        "olive oil",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/List_of_kebabs",
+      "sourceTitle": "List of kebabs",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Bakhtiari = jujeh and barg together; kitchen to confirm the cuts, marinade and butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:special-bonab-kebab",
+      "name": "Special Bonab Kebab",
+      "ingredients": [
+        "ground beef",
+        "onion",
+        "salt",
+        "black pepper",
+        "spices",
+        "basmati rice",
+        "tomato",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Bonab_kababi",
+      "sourceTitle": "Bonab kababi",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Bonab kebab is traditionally ground mutton; this one is described as beef. Kitchen to confirm: butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:rainbow-fish",
+      "name": "Rainbow Fish",
+      "ingredients": [
+        "rainbow trout",
+        "pomegranate",
+        "walnut",
+        "salt"
+      ],
+      "allergens": [
+        "fish",
+        "tree nuts"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Rainbow_trout",
+      "sourceTitle": "Rainbow trout",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Sides not stated; kitchen to confirm the topping (arils or molasses), any butter or flour, and whether rice comes with it.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:stone-lamb-shanks",
+      "name": "Stone Lamb Shanks",
+      "ingredients": [
+        "lamb shank",
+        "onion",
+        "garlic",
+        "turmeric",
+        "cinnamon",
+        "saffron",
+        "tomato paste",
+        "herbs"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://www.themediterraneandish.com/persian-braised-lamb-shanks-mahiche/",
+      "sourceTitle": "Persian Braised Lamb Recipe (Mahiche) | The Mediterranean Dish",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "No Wikipedia article for mahicheh. Recipe not public: kitchen to confirm the braise (stock, spices) and the sides.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:jojeh-fesenjooni",
+      "name": "Jojeh Fesenjooni",
+      "ingredients": [
+        "chicken leg",
+        "walnut",
+        "pomegranate molasses",
+        "onion",
+        "basmati rice",
+        "saffron",
+        "butter"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Fesenj%C4%81n",
+      "sourceTitle": "Fesenjān",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Fesenjan flavours (walnut, pomegranate) on grilled chicken; rice not stated, assumed; kitchen to confirm butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:jojeh-avocado",
+      "name": "Jojeh Avocado",
+      "ingredients": [
+        "chicken leg",
+        "garlic",
+        "walnut",
+        "avocado",
+        "basmati rice",
+        "saffron",
+        "butter"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Jujeh_kabab",
+      "sourceTitle": "Jujeh kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "low",
+      "note": "House recipe; kitchen to confirm the garlic sauce (mayonnaise adds egg, yogurt adds milk), rice (assumed) and butter on it.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:jojeh-mix",
+      "name": "Jojeh Mix",
+      "ingredients": [
+        "ground chicken",
+        "onion",
+        "spices",
+        "basmati rice",
+        "tomato",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Kabab_koobideh",
+      "sourceTitle": "Kabab koobideh",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Description reads as a minced-chicken koobideh; venue to confirm what 'Mix' means, any egg or breadcrumb binder, butter on the rice.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:kaseh-kebab",
+      "name": "Kaseh Kebab",
+      "ingredients": [
+        "chicken breast",
+        "saffron",
+        "onion",
+        "lemon juice",
+        "beef tenderloin",
+        "olive oil",
+        "ground beef",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm: the meat of the Chenjeh Tehrani (lamb or beef), butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:tabrizi-barg-kebab",
+      "name": "Tabrizi Barg Kebab",
+      "ingredients": [
+        "beef tenderloin",
+        "ground beef",
+        "onion",
+        "olive oil",
+        "garlic",
+        "saffron",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Kabab_barg",
+      "sourceTitle": "Kabab barg",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Barg and koobideh on one skewer; rice not stated, assumed; kitchen to confirm butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:special-chef-dish",
+      "name": "Special Chef Dish",
+      "ingredients": [
+        "beef tenderloin",
+        "lamb chop",
+        "chicken breast",
+        "ground beef",
+        "onion",
+        "saffron",
+        "lemon juice",
+        "olive oil",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm: yogurt in the shishlik marinade, butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:chicken-rolled-fillet",
+      "name": "Chicken Rolled Fillet",
+      "ingredients": [
+        "chicken fillet"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Roulade",
+      "sourceTitle": "Roulade",
+      "newEn": "Rolled chicken fillet, one of the chef's specials. Ask your server how it is prepared and served.",
+      "newFa": "فیله مرغ رول‌شده، از پیشنهادهای ویژه سرآشپز. برای جزئیات از همکاران ما بپرسید.",
+      "confidence": "low",
+      "note": "Recipe not public: venue to confirm the filling, marinade and sides (cheese or buttered rice would add milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:rolled-fillet-kebab",
+      "name": "Rolled Fillet Kebab",
+      "ingredients": [
+        "beef tenderloin"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Roulade",
+      "sourceTitle": "Roulade",
+      "newEn": "Rolled fillet, skewered and grilled; one of the chef's specials. Ask your server how it is prepared.",
+      "newFa": "فیله رول‌شده، به سیخ کشیده و کباب‌شده؛ از پیشنهادهای ویژه سرآشپز. برای جزئیات از همکاران ما بپرسید.",
+      "confidence": "low",
+      "note": "Recipe not public: venue to confirm the meat (assumed beef fillet, as in the Fillet Chenjeh), any filling, marinade and sides.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:salari-kebab",
+      "name": "Salari Kebab",
+      "ingredients": [
+        "chicken breast",
+        "onion",
+        "lemon juice",
+        "saffron",
+        "ground beef",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Rice not stated, assumed as on the single kebab plates; kitchen to confirm butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:soltani-kebab",
+      "name": "Soltani Kebab",
+      "ingredients": [
+        "beef tenderloin",
+        "olive oil",
+        "garlic",
+        "onion",
+        "saffron",
+        "ground beef",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Rice not stated, assumed as on the single kebab plates; kitchen to confirm butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:mohtasham",
+      "name": "Mohtasham",
+      "ingredients": [
+        "beef tenderloin",
+        "olive oil",
+        "garlic",
+        "onion",
+        "saffron",
+        "chicken breast",
+        "lemon juice",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Rice not stated, assumed as on the single kebab plates; kitchen to confirm butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:mozaffari-kebab",
+      "name": "Mozaffari Kebab",
+      "ingredients": [
+        "beef tenderloin",
+        "olive oil",
+        "lemon juice",
+        "onion",
+        "ground beef",
+        "salt",
+        "black pepper",
+        "saffron",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Chenjeh assumed beef fillet as on the menu; rice not stated, assumed; kitchen to confirm butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:amiri-kebab",
+      "name": "Amiri Kebab",
+      "ingredients": [
+        "lamb chop",
+        "onion",
+        "saffron",
+        "lemon juice",
+        "ground beef",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Rice not stated, assumed; kitchen to confirm yogurt in the shishlik marinade and butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:vaziri-kebab",
+      "name": "Vaziri Kebab",
+      "ingredients": [
+        "ground beef",
+        "onion",
+        "salt",
+        "black pepper",
+        "chicken leg",
+        "lemon juice",
+        "saffron",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/List_of_kebabs",
+      "sourceTitle": "List of kebabs",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Vaziri = koobideh and jujeh together; rice not stated, assumed; kitchen to confirm butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:yeylaghi",
+      "name": "Yeylaghi",
+      "ingredients": [
+        "beef sirloin",
+        "pomegranate juice",
+        "walnut",
+        "parsley",
+        "garlic",
+        "olive oil",
+        "ground beef",
+        "onion",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "saffron",
+        "butter"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Kabab_torsh",
+      "sourceTitle": "Kabab torsh",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm: walnut in the sour-kebab marinade (tree nuts), rice (assumed) and butter on it (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:platter-1",
+      "name": "Platter 1",
+      "ingredients": [
+        "chicken leg",
+        "chicken breast",
+        "onion",
+        "lemon juice",
+        "saffron",
+        "ground beef",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:platter-2",
+      "name": "Platter 2",
+      "ingredients": [
+        "beef tenderloin",
+        "olive oil",
+        "garlic",
+        "chicken leg",
+        "lemon juice",
+        "onion",
+        "saffron",
+        "ground beef",
+        "salt",
+        "black pepper",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:platter-3",
+      "name": "Platter 3",
+      "ingredients": [
+        "ground beef",
+        "onion",
+        "salt",
+        "black pepper",
+        "beef tenderloin",
+        "olive oil",
+        "lemon juice",
+        "chicken leg",
+        "chicken breast",
+        "saffron",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:platter-4",
+      "name": "Platter 4",
+      "ingredients": [
+        "beef tenderloin",
+        "olive oil",
+        "garlic",
+        "beef sirloin",
+        "pomegranate juice",
+        "walnut",
+        "parsley",
+        "ground beef",
+        "onion",
+        "salt",
+        "black pepper",
+        "lamb chop",
+        "lemon juice",
+        "saffron",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm: walnut in the sour kebab (tree nuts), yogurt in the shishlik marinade, butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:platter-5",
+      "name": "Platter 5",
+      "ingredients": [
+        "chicken breast",
+        "chicken leg",
+        "onion",
+        "lemon juice",
+        "saffron",
+        "spices",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Darbari and Shekari marinades not public; kitchen to confirm them (yogurt adds milk) and butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:platter-6",
+      "name": "Platter 6",
+      "ingredients": [
+        "ground beef",
+        "onion",
+        "salt",
+        "black pepper",
+        "beef tenderloin",
+        "olive oil",
+        "lemon juice",
+        "lamb chop",
+        "saffron",
+        "chicken breast",
+        "spices",
+        "basmati rice",
+        "butter"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chelow_kabab",
+      "sourceTitle": "Chelow kabab",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm: Shekari spice mix, yogurt in the shishlik marinade, butter on the rice (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:walnut-yogurt-drink",
+      "name": "Walnut Yogurt Drink",
+      "ingredients": [
+        "yogurt",
+        "water",
+        "walnut",
+        "salt",
+        "dried mint"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Doogh",
+      "sourceTitle": "Doogh",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "House recipe to confirm (herbs; raisins, if added, would add sulphites).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:shallot-moosir-yogurt-drink",
+      "name": "Shallot (Moosir) Yogurt Drink",
+      "ingredients": [
+        "yogurt",
+        "water",
+        "persian shallot",
+        "salt",
+        "dried mint"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Doogh",
+      "sourceTitle": "Doogh",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:local-yogurt-moosir",
+      "name": "Local Yogurt Moosir",
+      "ingredients": [
+        "yogurt",
+        "persian shallot",
+        "salt"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Allium_stipitatum",
+      "sourceTitle": "Allium stipitatum",
+      "newEn": "Country-style yogurt with Persian shallot (moosir); tangy, cool and made for kebab.",
+      "newFa": "ماست محلی با موسیر؛ ترش و خنک، همراهی دلچسب برای کباب.",
+      "confidence": "low",
+      "note": "Listed under Drinks: venue to confirm whether it is a drink (doogh) or the yogurt itself, and what 'local' (mahali) means here.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:soft-drink",
+      "name": "Soft Drink",
+      "ingredients": [
+        "carbonated water",
+        "sugar",
+        "flavouring"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Soft_drink",
+      "sourceTitle": "Soft drink",
+      "newEn": "A chilled soft drink; ask your server for today's choices.",
+      "newFa": "نوشابه خنک؛ برای انتخاب طعم از همکاران ما بپرسید.",
+      "confidence": "medium",
+      "note": "Venue to confirm which soft drinks and sizes are offered.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:baklava",
+      "name": "Baklava",
+      "ingredients": [
+        "filo pastry",
+        "butter",
+        "pistachio",
+        "walnut",
+        "sugar syrup"
+      ],
+      "allergens": [
+        "wheat",
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Baklava",
+      "sourceTitle": "Baklava",
+      "newEn": "Layers of flaky, buttery pastry filled with chopped nuts and soaked in fragrant syrup.",
+      "newFa": "لایه‌های نازک و ترد خمیر با کره، پر از مغزهای خردشده و آغشته به شربت معطر.",
+      "confidence": "medium",
+      "note": "Venue to confirm the style and nuts (Persian baklava often uses almond and pistachio with rosewater and cardamom).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:tiramisu-cake",
+      "name": "Tiramisu cake",
+      "ingredients": [
+        "sponge cake",
+        "coffee",
+        "mascarpone",
+        "cream",
+        "egg",
+        "sugar",
+        "cocoa powder"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Tiramisu",
+      "sourceTitle": "Tiramisu",
+      "newEn": "Coffee-soaked sponge layered with mascarpone cream, finished with a dusting of cocoa.",
+      "newFa": "کیک اسفنجی خیس‌خورده در قهوه با لایه‌های کرم ماسکارپونه و پودر کاکائو.",
+      "confidence": "medium",
+      "note": "Supplier or recipe to confirm: liqueur or Marsala (sulphites) and gelatine; Vegetarian if no gelatine.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:pistachio-cake",
+      "name": "Pistachio cake",
+      "ingredients": [
+        "flour",
+        "egg",
+        "sugar",
+        "butter",
+        "pistachio"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Cake",
+      "sourceTitle": "Cake",
+      "newEn": "Soft cake made with pistachios; nutty, gently sweet and a lovely end to the meal.",
+      "newFa": "کیک نرم با پسته؛ مغزدار و با شیرینی ملایم، پایانی دلچسب برای غذا.",
+      "confidence": "medium",
+      "note": "Supplier or recipe to confirm (cream or frosting; gelatine would rule out Vegetarian).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:nutella-cake",
+      "name": "Nutella cake",
+      "ingredients": [
+        "flour",
+        "egg",
+        "sugar",
+        "butter",
+        "nutella",
+        "hazelnut",
+        "cocoa",
+        "skim milk powder",
+        "soy lecithin"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "milk",
+        "tree nuts",
+        "soy"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Nutella",
+      "sourceTitle": "Nutella",
+      "newEn": "Soft cake with Nutella, the hazelnut and cocoa spread; rich, sweet and indulgent.",
+      "newFa": "کیک نرم با نوتلا، کرم فندق و کاکائو؛ شیرین و دلچسب.",
+      "confidence": "medium",
+      "note": "Supplier or recipe to confirm (frosting, gelatine); soy from the soy lecithin Nutella lists in the US and UK, to check on the Canadian label.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:caramel-and-hazelnut-cake",
+      "name": "Caramel and hazelnut cake",
+      "ingredients": [
+        "flour",
+        "egg",
+        "sugar",
+        "butter",
+        "cream",
+        "caramel",
+        "hazelnut"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Cake",
+      "sourceTitle": "Cake",
+      "newEn": "Soft cake with caramel and hazelnuts; sweet, nutty and buttery.",
+      "newFa": "کیک نرم با کارامل و فندق؛ شیرین، مغزدار و خوش‌طعم.",
+      "confidence": "medium",
+      "note": "Supplier or recipe to confirm (frosting, gelatine; caramel usually carries butter and cream).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:tutti-trend",
+      "name": "Tutti Trend",
+      "ingredients": [
+        "white rum",
+        "pineapple juice",
+        "cream of coconut",
+        "ice"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Piña_colada",
+      "sourceTitle": "Piña colada",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "low",
+      "note": "House cocktail: venue to confirm it is the piña colada its text describes (some recipes add cream, which is milk).",
+      "contradiction": "EN and FA are the generic piña colada definition ('just four primary ingredients: white rum, pineapple juice, cream of coconut, and ice'), apparently copied; nothing in the name 'Tutti Trend' says it is a piña colada."
+    },
+    {
+      "importKey": "kebab-land:item:sultans-goblet",
+      "name": "Sultan’s Goblet",
+      "ingredients": [
+        "house cocktail (recipe not public)"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Cocktail",
+      "sourceTitle": "Cocktail",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "low",
+      "note": "Recipe kept secret: venue to confirm the spirits and any allergens. Existing text uses 'best-kept' / بهترین (venue's wording).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:persian-draft-beer",
+      "name": "Persian Draft Beer",
+      "ingredients": [
+        "barley malt",
+        "hops",
+        "yeast",
+        "water"
+      ],
+      "allergens": [
+        "barley"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Draught_beer",
+      "sourceTitle": "Draught beer",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Brand and style not named: venue to confirm (add wheat if it is a wheat beer). FA 'آبجوی خانگی' reads as home-brewed rather than house beer.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:sake",
+      "name": "Sake",
+      "ingredients": [
+        "rice",
+        "koji",
+        "yeast",
+        "water"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sake",
+      "sourceTitle": "Sake",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Brand not named; price 70 next to 'served in a sake cup' and 'bottle shown for display': venue to confirm what the price buys.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:classic-mojito",
+      "name": "Classic Mojito",
+      "ingredients": [
+        "white rum",
+        "mint",
+        "lime",
+        "sugar",
+        "soda water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Mojito",
+      "sourceTitle": "Mojito",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:rose-cesar",
+      "name": "Rose Cesar",
+      "ingredients": [
+        "vodka",
+        "clamato juice (tomato and clam broth)",
+        "hot sauce",
+        "worcestershire sauce",
+        "spice",
+        "celery salt",
+        "lime"
+      ],
+      "allergens": [
+        "fish",
+        "molluscs"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Caesar_(cocktail)",
+      "sourceTitle": "Caesar (cocktail)",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm: Worcestershire sauce (fish, anchovy) and what is in the house rim; molluscs from the clam broth in Clamato.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:red-wine-sangria",
+      "name": "Red Wine Sangria",
+      "ingredients": [
+        "red wine",
+        "rosé wine",
+        "fresh fruit",
+        "citrus",
+        "orange juice",
+        "sugar"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sangria",
+      "sourceTitle": "Sangria",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Some sangrias add brandy or a liqueur: venue to confirm the recipe.",
+      "contradiction": "The name says red wine, but EN and FA describe rosé wine (شراب رزه); the same text, word for word, is on Fresh Berry Mojito-Virgin."
+    },
+    {
+      "importKey": "kebab-land:item:persian-dreams",
+      "name": "Persian Dreams",
+      "ingredients": [
+        "house cocktail (recipe not public)"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Cocktail",
+      "sourceTitle": "Cocktail",
+      "newEn": "Our house cocktail, mixed at the bar; your server can tell you what goes into it.",
+      "newFa": "کوکتل مخصوص بار ما؛ ترکیبش را از گارسون بپرسید.",
+      "confidence": "low",
+      "note": "Recipe not public: venue to confirm the spirits and ingredients before the description names any.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:classic-mojito-virgin",
+      "name": "Classic Mojito Virgin",
+      "ingredients": [
+        "mint",
+        "lime",
+        "sugar",
+        "soda water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Mojito",
+      "sourceTitle": "Mojito",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:fresh-berry-mojito-virgin",
+      "name": "Fresh Berry Mojito-Virgin",
+      "ingredients": [
+        "mint",
+        "lime",
+        "berries",
+        "sugar",
+        "soda water",
+        "rosé wine",
+        "fresh fruit",
+        "citrus"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Mojito",
+      "sourceTitle": "Mojito",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Sulphites listed only because the description names rosé wine; a virgin berry mojito typically has none of the listed allergens.",
+      "contradiction": "EN and FA describe rosé wine with fruit and citrus (the Red Wine Sangria text word for word); a virgin berry mojito has no wine, and its text names neither mint nor berries."
+    },
+    {
+      "importKey": "kebab-land:item:fresh-berry-mojito",
+      "name": "Fresh Berry Mojito",
+      "ingredients": [
+        "white rum",
+        "mint",
+        "lime",
+        "berries",
+        "sugar",
+        "soda water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Mojito",
+      "sourceTitle": "Mojito",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Which berries to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:cucumber-gin-mojito",
+      "name": "Cucumber Gin Mojito",
+      "ingredients": [
+        "gin",
+        "cucumber",
+        "mint",
+        "lime",
+        "sugar",
+        "soda water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Mojito",
+      "sourceTitle": "Mojito",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:strawberry-basil-margarita",
+      "name": "Strawberry, Basil Margarita",
+      "ingredients": [
+        "tequila",
+        "strawberry",
+        "basil",
+        "lime juice",
+        "triple sec",
+        "salt"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Margarita",
+      "sourceTitle": "Margarita",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Triple sec and a salt rim assumed from the classic margarita: venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:silk-rose-martini",
+      "name": "Silk Rose Martini",
+      "ingredients": [
+        "vodka",
+        "rose flavouring"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Martini_(cocktail)",
+      "sourceTitle": "Martini (cocktail)",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "low",
+      "note": "House recipe not public: venue to confirm the rose element and what makes it 'silk' (cream = milk, egg white = egg); its text is close to Rose Water Martini's.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:rose-water-martini",
+      "name": "Rose Water Martini",
+      "ingredients": [
+        "vodka",
+        "rose water",
+        "citrus"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Martini_(cocktail)",
+      "sourceTitle": "Martini (cocktail)",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "No vermouth named; if dry vermouth is added, add sulphites: venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:long-island-ice-tea",
+      "name": "Long Island Ice tea",
+      "ingredients": [
+        "vodka",
+        "tequila",
+        "white rum",
+        "gin",
+        "triple sec",
+        "lemon juice",
+        "simple syrup",
+        "cola"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Long_Island_iced_tea",
+      "sourceTitle": "Long Island iced tea",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:sex-on-the-beach",
+      "name": "Sex on the Beach",
+      "ingredients": [
+        "vodka",
+        "peach schnapps",
+        "cranberry juice",
+        "orange juice"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sex_on_the_beach",
+      "sourceTitle": "Sex on the beach",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:blue-lagoon",
+      "name": "Blue Lagoon",
+      "ingredients": [
+        "vodka",
+        "blue curaçao",
+        "lemonade"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Blue_Lagoon_(cocktail)",
+      "sourceTitle": "Blue Lagoon (cocktail)",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:tequila-sunrise",
+      "name": "Tequila Sunrise",
+      "ingredients": [
+        "tequila",
+        "orange juice",
+        "grenadine"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Tequila_sunrise",
+      "sourceTitle": "Tequila sunrise",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:rose-cesar-virgin",
+      "name": "Rose Cesar – Virgin",
+      "ingredients": [
+        "clamato juice (tomato and clam broth)",
+        "rose water",
+        "spices",
+        "hot sauce",
+        "worcestershire sauce",
+        "celery salt",
+        "lime"
+      ],
+      "allergens": [
+        "fish",
+        "molluscs"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Caesar_(cocktail)",
+      "sourceTitle": "Caesar (cocktail)",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm Worcestershire sauce (fish) and the rim; rose water is named here but not in the alcoholic Rose Cesar.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:black-russian",
+      "name": "Black Russian",
+      "ingredients": [
+        "vodka",
+        "coffee liqueur",
+        "ice"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Black_Russian",
+      "sourceTitle": "Black Russian",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": "EN and FA describe plain vodka served neat or on the rocks; a Black Russian is vodka with coffee liqueur (IBA: 50 ml vodka, 20 ml coffee liqueur)."
+    },
+    {
+      "importKey": "kebab-land:item:electric-margarita",
+      "name": "Electric Margarita",
+      "ingredients": [
+        "tequila",
+        "blue curaçao",
+        "lime juice",
+        "salt"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Margarita",
+      "sourceTitle": "Margarita",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Salt rim and any triple sec to confirm; existing FA uses پرانرژی (an 'energy' word, venue's wording).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:baileys-shot",
+      "name": "Baileys Shot",
+      "ingredients": [
+        "irish cream liqueur",
+        "cream",
+        "cocoa",
+        "irish whiskey",
+        "sugar"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Baileys_Irish_Cream",
+      "sourceTitle": "Baileys Irish Cream",
+      "newEn": "A shot of Baileys Irish Cream: cream, cocoa and Irish whiskey in one sweet, silky sip.",
+      "newFa": "یک پیک بیلیز، لیکور خامه‌ای ایرلندی از خامه، کاکائو و ویسکی؛ شیرین و مخملی.",
+      "confidence": "high",
+      "note": "The Irish whiskey is distilled (not counted as a grain allergen); the cream is milk.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:gin-tonic",
+      "name": "Gin & Tonic",
+      "ingredients": [
+        "gin",
+        "tonic water",
+        "lime",
+        "ice"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Gin_and_tonic",
+      "sourceTitle": "Gin and tonic",
+      "newEn": "A bar classic: gin and tonic water over ice with a wedge of lime; crisp, bittersweet and bubbly.",
+      "newFa": "کلاسیک بار: جین و آب تونیک روی یخ با یک برش لیمو؛ خنک، گازدار و کمی تلخ.",
+      "confidence": "high",
+      "note": "Gin is distilled from grain (not counted as a gluten allergen).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:ja-germeister",
+      "name": "Jägermeister",
+      "ingredients": [
+        "herbal liqueur",
+        "herbs",
+        "fruit",
+        "roots",
+        "spices",
+        "citrus peel",
+        "liquorice",
+        "anise",
+        "ginger",
+        "saffron",
+        "sugar"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Jägermeister",
+      "sourceTitle": "Jägermeister",
+      "newEn": "German herbal liqueur of 56 herbs, fruits, roots and spices, among them citrus peel, liquorice, anise, ginger and saffron: sweet and spiced.",
+      "newFa": "لیکور گیاهی آلمانی از 56 گیاه، میوه، ریشه و ادویه، از جمله پوست مرکبات، شیرین‌بیان، انیسون، زنجبیل و زعفران؛ شیرین و پرادویه.",
+      "confidence": "high",
+      "note": "The full list of 56 botanicals is not public.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:ketel-one",
+      "name": "Ketel One",
+      "ingredients": [
+        "wheat",
+        "water"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Ketel_One",
+      "sourceTitle": "Ketel One",
+      "newEn": "Dutch vodka from the Nolet distillery in Schiedam, distilled from wheat in copper pot stills: crisp and clean, by the shot or bottle.",
+      "newFa": "ودکای هلندی خاندان نولت از سخیدام، که از گندم و در دیگ‌های مسی تقطیر می‌شود؛ صاف و خالص. پیکی یا بطری.",
+      "confidence": "high",
+      "note": "Distilled from wheat; distillation leaves no gluten protein (Celiac Canada treats distilled spirits as gluten-free), so wheat is drafted only because the description names the grain: Kian to keep or remove. Distilled from 100% wheat; distilled spirits are not counted as a wheat allergen.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:grey-goose",
+      "name": "Grey Goose",
+      "ingredients": [
+        "wheat",
+        "spring water"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Grey_Goose_(vodka)",
+      "sourceTitle": "Grey Goose (vodka)",
+      "newEn": "French vodka from Picardy winter wheat, blended in Cognac with limestone spring water: soft and clean, by the shot or bottle.",
+      "newFa": "ودکای فرانسوی از گندم زمستانه‌ی پیکاردی، آمیخته با آب چشمه در کنیاک؛ نرم و خالص. پیکی یا بطری.",
+      "confidence": "high",
+      "note": "Distilled from wheat; distillation leaves no gluten protein (Celiac Canada treats distilled spirits as gluten-free), so wheat is drafted only because the description names the grain: Kian to keep or remove. Distilled from wheat; distilled spirits are not counted as a wheat allergen.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:ciroc-peach",
+      "name": "Ciroc Peach",
+      "ingredients": [
+        "grape",
+        "peach flavouring"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Cîroc",
+      "sourceTitle": "Cîroc",
+      "newEn": "French vodka distilled from grapes and flavoured with peach: soft, fruity and fragrant, by the shot or bottle.",
+      "newFa": "ودکای فرانسوی تقطیرشده از انگور، با طعم هلو؛ نرم، میوه‌ای و خوش‌عطر. پیکی یا بطری.",
+      "confidence": "high",
+      "note": "Grape-distilled vodka with peach flavouring; flavoured Cîroc is bottled below 40% (35% ABV in the US).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:crown-royal",
+      "name": "Crown Royal",
+      "ingredients": [
+        "rye",
+        "corn",
+        "barley"
+      ],
+      "allergens": [
+        "rye",
+        "barley"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Crown_Royal",
+      "sourceTitle": "Crown Royal",
+      "newEn": "Blended Canadian whisky from Gimli, Manitoba, made from rye, corn and barley: smooth and mellow, by the shot or bottle.",
+      "newFa": "ویسکی کانادایی از گیملی در مانیتوبا، ترکیبی از چاودار، ذرت و جو؛ نرم و ملایم. پیکی یا بطری.",
+      "confidence": "high",
+      "note": "Distilled from rye, corn and barley; distillation leaves no gluten protein (Celiac Canada treats distilled spirits as gluten-free), so rye and barley is drafted only because the description names the grain: Kian to keep or remove. Distilled from rye, corn and barley; distilled spirits are not counted as grain allergens.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:jameson",
+      "name": "Jameson",
+      "ingredients": [
+        "malted barley",
+        "unmalted barley",
+        "grain whiskey"
+      ],
+      "allergens": [
+        "barley"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Jameson_Irish_Whiskey",
+      "sourceTitle": "Jameson Irish Whiskey",
+      "newEn": "Blended Irish whiskey from Midleton, County Cork, made with malted and unmalted Irish barley: smooth and easy-going, by the shot or bottle.",
+      "newFa": "ویسکی ایرلندی از میدلتون در کانتی کورک، با جو ایرلندی مالت‌شده و مالت‌نشده؛ نرم و خوش‌نوش. پیکی یا بطری.",
+      "confidence": "high",
+      "note": "Distilled from malted and unmalted barley; distillation leaves no gluten protein (Celiac Canada treats distilled spirits as gluten-free), so barley is drafted only because the description names the grain: Kian to keep or remove. Distilled from barley and grain; distilled spirits are not counted as grain allergens.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:black-label",
+      "name": "Black Label",
+      "ingredients": [
+        "malted barley",
+        "grain whisky"
+      ],
+      "allergens": [
+        "barley"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Johnnie_Walker",
+      "sourceTitle": "Johnnie Walker",
+      "newEn": "Johnnie Walker's blended Scotch whisky, aged 12 years: rich, rounded and gently smoky, by the shot or bottle.",
+      "newFa": "اسکاچ ترکیبی 12 ساله‌ی جانی واکر؛ پرمایه، گرم و کمی دودی. پیکی یا بطری.",
+      "confidence": "medium",
+      "note": "Distilled from malted barley and grain; distillation leaves no gluten protein (Celiac Canada treats distilled spirits as gluten-free), so barley is drafted like the other whiskies (its description names no grain): Kian to keep or remove. Assumed Johnnie Walker Black Label (12-year blend): venue to confirm; grain-distilled, not counted as a grain allergen.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:glenfiddich-12",
+      "name": "Glenfiddich 12",
+      "ingredients": [
+        "malted barley",
+        "water"
+      ],
+      "allergens": [
+        "barley"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Glenfiddich",
+      "sourceTitle": "Glenfiddich",
+      "newEn": "Speyside single malt Scotch from Dufftown, aged 12 years in American and European oak casks: fresh, fruity and mellow, by the shot or bottle.",
+      "newFa": "تک‌مالت اسکاچ از اسپی‌ساید، ساخت داف‌تاون، با 12 سال کهنگی در بشکه‌های بلوط آمریکایی و اروپایی؛ تازه، میوه‌ای و ملایم. پیکی یا بطری.",
+      "confidence": "high",
+      "note": "Distilled from malted barley; distillation leaves no gluten protein (Celiac Canada treats distilled spirits as gluten-free), so barley is drafted only because the description names the grain: Kian to keep or remove. Distilled from malted barley; distilled spirits are not counted as a barley allergen. Casks per the brand (American oak and European sherry oak).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:merlot-france",
+      "name": "Merlot (France)",
+      "ingredients": [
+        "wine",
+        "merlot grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Merlot",
+      "sourceTitle": "Merlot",
+      "newEn": "A soft, round, fruity French red with velvety tannins; easy with anything off the charcoal grill.",
+      "newFa": "شراب قرمز فرانسوی، نرم و میوه‌ای با تانن‌های مخملی؛ کنار هر کبابی از روی زغال خوش می‌نشیند.",
+      "confidence": "medium",
+      "note": "Producer and vintage not named: venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:shiraz-australia",
+      "name": "Shiraz (Australia)",
+      "ingredients": [
+        "wine",
+        "shiraz grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Syrah",
+      "sourceTitle": "Syrah",
+      "newEn": "Australian Shiraz: a full-bodied, jammy red with soft tannins and a spicy finish, made for charcoal-grilled kebabs.",
+      "newFa": "شیراز استرالیایی؛ شراب قرمز پرقوام و مربایی با تانن نرم و ته‌مزه‌ای گرم و تند، همراه خوب کباب زغالی.",
+      "confidence": "medium",
+      "note": "Producer and vintage not named: venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:cabernet",
+      "name": "Cabernet",
+      "ingredients": [
+        "wine",
+        "cabernet sauvignon grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Cabernet_Sauvignon",
+      "sourceTitle": "Cabernet Sauvignon",
+      "newEn": "A full-bodied red with firm tannins and fresh acidity; a sturdy partner for charcoal-grilled kebabs.",
+      "newFa": "شراب قرمز پرقوام با تانن محکم و ترشی دلپذیر؛ کنار کباب‌های زغالی خوب جا می‌افتد.",
+      "confidence": "medium",
+      "note": "Assumed Cabernet Sauvignon: venue to confirm grape (Sauvignon or Franc), origin and producer.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:venato-italy",
+      "name": "Venato (Italy)",
+      "ingredients": [
+        "wine",
+        "wine grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Italian_wine",
+      "sourceTitle": "Italian wine",
+      "newEn": "A bottle of Italian wine; ask your server about the producer, grape and vintage.",
+      "newFa": "یک بطری شراب ایتالیایی؛ درباره‌ی تولیدکننده، نوع انگور و سال برداشت از گارسون بپرسید.",
+      "confidence": "low",
+      "note": "'Venato' not found as an Italian wine (perhaps the Veneto region): venue to confirm the wine, colour and grape.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:borsao-spain",
+      "name": "Borsao (Spain)",
+      "ingredients": [
+        "wine",
+        "garnacha grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Campo_de_Borja_(DO)",
+      "sourceTitle": "Campo de Borja (DO)",
+      "newEn": "Spanish wine from Bodegas Borsao in Campo de Borja, Aragón, home of old-vine Garnacha; ask your server which bottle.",
+      "newFa": "شراب اسپانیایی از بودگاس بورسائو در کامپو د بورخا، آراگون، سرزمین تاکستان‌های کهن گارناچا؛ نوعش را از گارسون بپرسید.",
+      "confidence": "low",
+      "note": "Which Borsao wine to confirm (mostly Garnacha reds; also rosé and white).",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:bordeaux-france",
+      "name": "Bordeaux (France)",
+      "ingredients": [
+        "wine",
+        "merlot grape",
+        "cabernet sauvignon grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Bordeaux_wine",
+      "sourceTitle": "Bordeaux wine",
+      "newEn": "A French red from Bordeaux, usually a blend of Merlot and Cabernet Sauvignon: dry, structured and made for the grill.",
+      "newFa": "شراب قرمز فرانسوی از بوردو، معمولاً ترکیبی از مرلو و کابرنه سوینیون؛ خشک و خوش‌ساختار، برای سفره‌ی کباب.",
+      "confidence": "medium",
+      "note": "Assumed red (most Bordeaux is): venue to confirm the château and blend.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:pinot-noir-france",
+      "name": "Pinot Noir (France)",
+      "ingredients": [
+        "wine",
+        "pinot noir grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Pinot_noir",
+      "sourceTitle": "Pinot noir",
+      "newEn": "French Pinot Noir, the red grape of Burgundy: light to medium-bodied, silky and fragrant, with gentle tannins.",
+      "newFa": "پینو نوآر فرانسوی، انگور قرمز بورگونی؛ سبک تا متوسط، لطیف و خوش‌عطر با تانن ملایم.",
+      "confidence": "medium",
+      "note": "Producer and region not named: venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:raki",
+      "name": "Raki",
+      "ingredients": [
+        "grape",
+        "anise",
+        "water"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Rakı",
+      "sourceTitle": "Rakı",
+      "newEn": "Turkish anise spirit distilled from grapes; with cold water it turns cloudy white. A classic beside grilled kebabs.",
+      "newFa": "عرق انیسون ترکیه‌ای از تقطیر انگور؛ با آب سرد سفید و کدر می‌شود. همراه کلاسیک کباب.",
+      "confidence": "medium",
+      "note": "Brand and the serving size for 19.99 not named: venue to confirm; distilled grape spirit, no sulphites expected.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:aragh-sagi",
+      "name": "Aragh Sagi",
+      "ingredients": [
+        "raisin"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Aragh_Sagi",
+      "sourceTitle": "Aragh Sagi",
+      "newEn": "Iran's traditional spirit, distilled from fermented raisins: clear, strong and aromatic, for sipping slowly beside your kebab.",
+      "newFa": "عرق کشمش به رسم قدیم ایرانی؛ زلال، تند و خوش‌عطر، برای جرعه‌جرعه نوشیدن کنار کباب.",
+      "confidence": "medium",
+      "note": "Raisins are often sulphited when dried; drafted because the description names raisins (a distilled spirit may carry little or none): Kian to keep or remove. Brand not named; distilled from raisins, sulphites not expected after distillation: bottle label to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:pinot-grigio",
+      "name": "Pinot Grigio",
+      "ingredients": [
+        "wine",
+        "pinot gris grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Pinot_gris",
+      "sourceTitle": "Pinot gris",
+      "newEn": "A light, crisp and dry white in the Italian style, with refreshing acidity and a clean finish.",
+      "newFa": "شراب سفید سبک و خشک به شیوه‌ی ایتالیایی؛ ترش‌مزه، تازه و خوش‌نوش.",
+      "confidence": "medium",
+      "note": "Producer not named: venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:sauvignon-blanc",
+      "name": "Sauvignon Blanc",
+      "ingredients": [
+        "wine",
+        "sauvignon blanc grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sauvignon_blanc",
+      "sourceTitle": "Sauvignon blanc",
+      "newEn": "A crisp, dry, zesty white with lively acidity and grassy to tropical notes; refreshing between bites of kebab.",
+      "newFa": "شراب سفید خشک و ترش‌مزه با عطری علفی و استوایی؛ میان لقمه‌های کباب، خنک و دلچسب.",
+      "confidence": "medium",
+      "note": "Producer and origin not named: venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:chardonnay",
+      "name": "Chardonnay",
+      "ingredients": [
+        "wine",
+        "chardonnay grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chardonnay",
+      "sourceTitle": "Chardonnay",
+      "newEn": "A medium-bodied white with a round, soft texture: fresh, fruity and easy alongside grilled kebabs.",
+      "newFa": "شراب سفید با بدنه‌ی متوسط و بافتی نرم و لطیف؛ تازه، میوه‌ای و خوش‌نوش کنار کباب.",
+      "confidence": "medium",
+      "note": "Producer not named; oaked or unoaked to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:shiraz",
+      "name": "Shiraz",
+      "ingredients": [
+        "wine",
+        "shiraz grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Syrah",
+      "sourceTitle": "Syrah",
+      "newEn": "A full-bodied, jammy red with soft tannins and a spicy finish; a natural match for charcoal-grilled kebabs.",
+      "newFa": "شراب قرمز پرقوام و مربایی با تانن نرم و ته‌مزه‌ای گرم و تند؛ کنار کباب زغالی خوب می‌نشیند.",
+      "confidence": "medium",
+      "note": "Producer and origin not named (style varies with climate): venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:cab-sauv",
+      "name": "Cab Sauv",
+      "ingredients": [
+        "wine",
+        "cabernet sauvignon grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Cabernet_Sauvignon",
+      "sourceTitle": "Cabernet Sauvignon",
+      "newEn": "A full-bodied red with firm tannins, fresh acidity and dark-fruited depth; stands up well to charcoal-grilled kebabs.",
+      "newFa": "شراب قرمز پرقوام با تانن محکم، ترشی دلپذیر و عمقی میوه‌ای؛ پابه‌پای کباب زغالی.",
+      "confidence": "medium",
+      "note": "Producer and origin not named: venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:merlot",
+      "name": "Merlot",
+      "ingredients": [
+        "wine",
+        "merlot grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Merlot",
+      "sourceTitle": "Merlot",
+      "newEn": "A soft, round and fruity red with velvety tannins; easy-drinking with any kebab from the grill.",
+      "newFa": "شراب قرمز نرم و میوه‌ای با تانن‌های مخملی؛ خوش‌نوش کنار هر کبابی.",
+      "confidence": "medium",
+      "note": "Producer and origin not named: venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:rose",
+      "name": "Rose",
+      "ingredients": [
+        "wine",
+        "red grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Rosé",
+      "sourceTitle": "Rosé",
+      "newEn": "Pink wine from red grapes, served chilled: fresh, fruity and light, easy alongside anything from the grill.",
+      "newFa": "شراب صورتی از انگور قرمز که خنک سرو می‌شود؛ تازه، سبک و میوه‌ای، کنار هر چیزی از روی منقل.",
+      "confidence": "medium",
+      "note": "Producer, grapes and sweetness not named: venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "kebab-land:item:prosecco",
+      "name": "Prosecco",
+      "ingredients": [
+        "sparkling wine",
+        "glera grape"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Prosecco",
+      "sourceTitle": "Prosecco",
+      "newEn": "Italian sparkling wine from the Glera grape of Veneto and Friuli: light, fresh and bubbly, a bright start to the meal.",
+      "newFa": "شراب گازدار ایتالیایی از انگور گلرا، از ونتو و فریولی؛ سبک، تازه و پرحباب، شروعی دلپذیر برای سفره.",
+      "confidence": "high",
+      "note": "Producer not named.",
+      "contradiction": null
+    }
+  ]
+}

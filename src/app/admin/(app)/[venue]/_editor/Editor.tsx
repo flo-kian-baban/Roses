@@ -140,6 +140,8 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     catch (e) { if (before) dispatch({ type: 'item', item: before }); throw e; }
   };
   const itemNotes = async (id: string, notes: Notes) => { const r = await call('/api/admin/item', { action: 'notes', id, notes }); apply(r); done(r, 'Saved', { id, alt: sectionOf(id) }); };
+  // Researched allergen and dietary notes confirmed as they stand (Kian, 2026-10-12): they show to customers from now on; Undo puts the draft back.
+  const itemConfirm = async (id: string) => { const r = await call('/api/admin/item', { action: 'confirm', id }); apply(r); done(r, 'Confirmed', { id, alt: sectionOf(id) }); };
   const itemCreate = async (sectionId: string, data: { name: string; price: number | null; photo: Photo | null }) => {
     const r = await call('/api/admin/item', { action: 'create', venue: venue.id, section_id: sectionId, name: { en: data.name, fa: null }, price: data.price, photo: data.photo });
     apply(r); const item = r.item as EditorItem; done(r, 'Added', { id: item.id, alt: sectionId }); setHighlight(item.id);
@@ -206,7 +208,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const bar = (phone: boolean) => <PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone={phone} />;
   const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} previewSeason={season ?? now.season} onPlay={playTransition} />;
 
-  const panel = openItem && <ItemPanel item={openItem} venueId={venue.id} season={today} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} column={wide} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
+  const panel = openItem && <ItemPanel item={openItem} venueId={venue.id} season={today} sections={menu.sections} sectionId={open?.section ?? null} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (
     <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
       <div className="relative min-w-0">
@@ -218,7 +220,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
           <span className="flex-1" />
           {!phoneStyle && <button type="button" onClick={() => setPreviewOpen(true)} className="flex h-11 items-center gap-1.5 rounded-full border border-line bg-white px-3 text-[14px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,.04)] lg:hidden"><Icon name="smartphone" className="h-4 w-4" />Preview</button>}
         </div>
-        {tab === 'menu' && <MenuTab menu={menu} season={today} filter={filter} setFilter={setFilter} query={query} setQuery={setQuery} highlightId={highlight}
+        {tab === 'menu' && <MenuTab menu={menu} season={today} canNotes={me.canNotes} filter={filter} setFilter={setFilter} query={query} setQuery={setQuery} highlightId={highlight}
               onOpen={(id, section) => setOpen({ id, section })} onAdd={(sid) => setAdding(sid)} onAddSection={() => setAddingSection(true)}
               onToggleItem={(id, listed) => itemUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onPrice={(id, price) => itemUpdate(id, { price })}
               onToggleSection={(id, listed) => sectionUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onRename={(id) => setRenaming(id)} onMoveSection={sectionMove}

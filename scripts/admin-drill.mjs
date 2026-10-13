@@ -141,6 +141,8 @@ const staffNotesField = await page.$('[role=dialog] input[aria-label="Allergens"
 await snap(page, 'staff-no-notes');
 check('h-staff-ui', !staffNotesField && /set by the owner or an admin/.test(staffText || ''), `staff item panel (Advanced): notes inputs present = ${!!staffNotesField}; explanatory line shown = ${/set by the owner or an admin/.test(staffText || '')}`);
 { const r = await api('/api/admin/item', { action: 'notes', id: item.id, notes: { allergens: 'nuts' } }, staffCookie); check('h-staff-403', r.status === 403, `staff POST action=notes → ${r.status} "${r.json?.error}"`); }
+// Confirm of researched allergen and dietary notes (Kian, 2026-10-12): owner and admin only, like the notes
+{ const r = await api('/api/admin/item', { action: 'confirm', id: item.id }, staffCookie); check('h-staff-confirm-403', r.status === 403, `staff POST action=confirm → ${r.status} "${r.json?.error}"`); }
 { const r = await fetch(`${base}/admin/senso?tab=style`, { headers: { cookie: staffCookie } }); const html = await r.text(); check('h-staff-style', /owner and admin only/.test(html) && !/data-style-tab/.test(html), `staff GET /admin/senso?tab=style → HTTP ${r.status}, refusal page shown: ${/owner and admin only/.test(html)}, no Style tab rendered`); }
 // the preview bar's season switch (2026-10-09) is on every tab, staff included: the scene route answers staff for their venue, 403 elsewhere
 { const r = await fetch(`${base}/api/admin/welcome-scene?venue=senso&season=winter`, { headers: { cookie: staffCookie } }); const j = await r.json().catch(() => null);

@@ -1,11 +1,11 @@
 // The page editor's data (every section and item of a venue, shown or hidden) and the lockout alerts.
 import { pool } from '@/lib/db';
 import type { EditorItem, EditorMenu, EditorSection } from '@/lib/types';
-import { toEditorItem, type ItemRow, type Placement } from './items';
+import { BASIS_SQL, toEditorItem, type ItemRow, type Placement } from './items';
 
 export async function editorMenu(venueId: string): Promise<EditorMenu> {
   const sections = (await pool.query<Omit<EditorSection, 'item_ids'>>(`select id, name, note, position, listed, fa_draft, layout, seasonal from sections where venue_id = $1 order by seasonal desc, position, name->>'en'`, [venueId])).rows;
-  const rows = (await pool.query<ItemRow>(`select id, venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_at, updated_by, import_key, seasons from items where venue_id = $1 order by name->>'en'`, [venueId])).rows;
+  const rows = (await pool.query<ItemRow & { basis: Record<string, unknown> | null }>(`select id, venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_at, updated_by, import_key, seasons, drafts, ${BASIS_SQL} as basis from items where venue_id = $1 order by name->>'en'`, [venueId])).rows;
   const placements = (await pool.query<Placement & { item_id: string; name_en: string | null }>(
     `select x.item_id, x.section_id, x.position, i.name->>'en' as name_en from item_sections x join items i on i.id = x.item_id where i.venue_id = $1 order by x.position, i.name->>'en'`, [venueId])).rows;
   const byItem = new Map<string, Placement[]>();

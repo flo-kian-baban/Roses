@@ -8,6 +8,7 @@ import { Bi } from '@/components/Bi';
 import { LangToggle } from '@/components/LangToggle';
 import { ItemList, MenuDialogs, SectionTabs, slug } from '@/components/menu-kit';
 import { seasonalCss } from '@/lib/seasonal';
+import { ALLERGY_NOTICE } from '@/lib/allergens';
 
 // The Seasonal section (Kian, 2026-10-12), first when shown: its title in the accent (src/lib/seasonal.ts).
 export function DefaultPage({ venue, sections, style }: { venue: Venue; sections: Section[]; style: StyleValues }) {
@@ -40,18 +41,18 @@ export function DefaultPage({ venue, sections, style }: { venue: Venue; sections
             </section>
           ))}
 
-          {venue.locations.length > 0 && (
-            <footer className="mt-10 rounded-2xl bg-(--c-footer-bg) px-4 py-4 text-[15px]">
-              {venue.locations.map((l, n) => (
-                <div key={n} className={n > 0 ? 'mt-4' : ''}>
-                  <Bi as="p" text={l.label} className="font-semibold text-(--c-footer-label)" />
-                  {l.address && <p className="text-(--c-footer-address)">{l.address}</p>}
-                  {l.phone && <p><a href={`tel:${l.phone.replace(/[^\d+]/g, '')}`} className="font-medium text-(--c-footer-phone) underline-offset-4 hover:underline">{l.phone}</a></p>}
-                  <Bi as="p" text={l.hours} className="text-(--c-footer-hours)" />
-                </div>
-              ))}
-            </footer>
-          )}
+          {/* The footer: the locations, then the general allergy notice, which every venue shows (the PM, 2026-10-12; src/lib/allergens.ts). */}
+          <footer className="mt-10 rounded-2xl bg-(--c-footer-bg) px-4 py-4 text-[15px]">
+            {venue.locations.map((l, n) => (
+              <div key={n} className={n > 0 ? 'mt-4' : ''}>
+                <Bi as="p" text={l.label} className="font-semibold text-(--c-footer-label)" />
+                {l.address && <p className="text-(--c-footer-address)">{l.address}</p>}
+                {l.phone && <p><a href={`tel:${l.phone.replace(/[^\d+]/g, '')}`} className="font-medium text-(--c-footer-phone) underline-offset-4 hover:underline">{l.phone}</a></p>}
+                <Bi as="p" text={l.hours} className="text-(--c-footer-hours)" />
+              </div>
+            ))}
+            <Bi as="p" text={ALLERGY_NOTICE} className={venue.locations.length > 0 ? 'mt-4 text-(--c-footer-hours)' : 'text-(--c-footer-hours)'} />
+          </footer>
         </div>
       </main>
       <MenuDialogs sections={sections} />

@@ -28,9 +28,15 @@ export type Section = { id: string; name: Bi; note: Bi; position: number; listed
 // ---- Page editor payload (admin). Plain data, safe for client components: no database imports here. ----
 export type Notes = { allergens: string[]; dietary: string[]; halal: boolean | null; text: Bi };
 export type Placement = { section_id: string; position: number };
+// The basis of a researched draft (Kian via the PM, 2026-10-12): the assumed key ingredients and a source for the dish type, recorded in
+// the item's internal source column by the research import (tools/import/research-apply.mjs); shown to owners and admins beside Confirm.
+export type Basis = { ingredients: string[]; source: string | null; sourceTitle?: string | null; note?: string | null; file?: string | null };
+// drafts: fields written from research, not by the venue ('description' = the English description, 'allergens', 'dietary'), like
+// fa_draft for the Persian; drafted allergen and dietary notes stay off the public page until confirmed.
 export type EditorItem = {
   id: string; name: Bi; description: Bi; price: number | null; variants: Variant[]; add_ons: AddOn[]; components: Component[];
   serves: string | null; photo: Photo | null; notes: Notes; listed: boolean; fa_draft: string[]; placements: Placement[]; seasons: SeasonId[];
+  drafts: string[]; basis: Basis | null;
 };
 export type EditorSection = { id: string; name: Bi; note: Bi; position: number; listed: boolean; fa_draft: string[]; layout: SectionLayout; seasonal: boolean; item_ids: string[] };
 export type EditorMenu = { sections: EditorSection[]; items: Record<string, EditorItem>; orphans: string[] };

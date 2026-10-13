@@ -1,0 +1,3397 @@
+{
+  "about": "Menu research for Senso Café & Bites (Kian via the PM, 2026-10-12): every item shown on the page that day. Descriptions where the field was empty (newEn, newFa; null = the venue's own text stays), and the allergen and dietary drafts with their basis (the assumed key ingredients and a source for the dish type, from simple web research). Drafts only: allergens and dietary words are never on the public page until an owner or admin confirms them; the descriptions are shown and marked as drafts in the admin. Applied by tools/import/research-apply.mjs (also in npm run setup); reviewed in reports/research-review-senso.csv. Rules: research-report.md beside this file.",
+  "venue": "senso",
+  "date": "2026-10-12",
+  "recordedBy": "Research",
+  "vocabulary": {
+    "allergens": [
+      "milk",
+      "egg",
+      "wheat",
+      "barley",
+      "oats",
+      "rye",
+      "tree nuts",
+      "peanuts",
+      "sesame",
+      "soy",
+      "mustard",
+      "fish",
+      "crustaceans",
+      "molluscs",
+      "sulphites"
+    ],
+    "dietary": [
+      "Vegetarian",
+      "Vegan"
+    ],
+    "file": "src/lib/allergens.json"
+  },
+  "edits": [
+    "Falooda: the noodles are starch noodles (the text said \"noodles\", which reads as wheat pasta); wheat kept as a precaution until the kitchen confirms the starch",
+    "Ice cream & Falooda: as Falooda",
+    "Greek Salad: a draft must not miss an allergen the typical recipe carries; the owner removes it if the kitchen serves it without feta"
+  ],
+  "items": [
+    {
+      "importKey": "senso:item:pumpkin-soup",
+      "name": "Pumpkin Soup",
+      "ingredients": [
+        "pumpkin",
+        "cream",
+        "autumn spices",
+        "onion",
+        "broth"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Pumpkin_soup",
+      "sourceTitle": "Pumpkin soup",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm the broth (chicken or vegetable) and which spices.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:pumpkin-omelette",
+      "name": "Senso Pumpkin Omelette",
+      "ingredients": [
+        "pumpkin",
+        "egg",
+        "date syrup",
+        "tahini",
+        "walnut",
+        "pistachio"
+      ],
+      "allergens": [
+        "egg",
+        "sesame",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Omelette",
+      "sourceTitle": "Omelette",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm the cooking fat (butter adds milk) and any bread served.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:pumpkin-cheesecake",
+      "name": "Pumpkin Cheesecake",
+      "ingredients": [
+        "pumpkin",
+        "cream cheese",
+        "sugar",
+        "egg",
+        "graham cracker crust",
+        "butter",
+        "cinnamon",
+        "nutmeg",
+        "ginger",
+        "clove"
+      ],
+      "allergens": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Cheesecake",
+      "sourceTitle": "Cheesecake",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm: biscuit crust (wheat) and eggs (a baked cheesecake assumed).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:pumpkin-sundae",
+      "name": "Warm Pumpkin & Ice Cream",
+      "ingredients": [
+        "pumpkin",
+        "vanilla ice cream",
+        "milk",
+        "cream",
+        "sugar",
+        "vanilla",
+        "date syrup",
+        "tahini",
+        "walnut",
+        "pistachio",
+        "coconut",
+        "sesame seed"
+      ],
+      "allergens": [
+        "milk",
+        "sesame",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Kabak_tatl%C4%B1s%C4%B1",
+      "sourceTitle": "Kabak tatlısı",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: egg in the vanilla ice cream (custard-style bases contain it).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:pumpkin-cake",
+      "name": "Pumpkin Cake",
+      "ingredients": [
+        "pumpkin",
+        "wheat flour",
+        "sugar",
+        "egg",
+        "vegetable oil",
+        "baking soda",
+        "cinnamon",
+        "nutmeg",
+        "ginger",
+        "clove"
+      ],
+      "allergens": [
+        "wheat",
+        "egg"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Pumpkin_bread",
+      "sourceTitle": "Pumpkin bread",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm: butter or a cream-cheese frosting (milk); pumpkin bread recipes typically use oil.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:pumpkin-latte",
+      "name": "Pumpkin Latte",
+      "ingredients": [
+        "espresso",
+        "milk",
+        "pumpkin syrup",
+        "autumn spices (cinnamon, nutmeg, clove)"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Pumpkin_spice_latte",
+      "sourceTitle": "Pumpkin spice latte",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "kitchen to confirm the pumpkin syrup's ingredients and any whipped cream topping",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:carrot-juice-with-ice-cream",
+      "name": "Carrot Juice with Ice cream",
+      "ingredients": [
+        "carrot juice",
+        "carrot",
+        "ice cream",
+        "milk",
+        "cream",
+        "sugar",
+        "egg yolk",
+        "saffron",
+        "rose water",
+        "pistachio"
+      ],
+      "allergens": [
+        "milk",
+        "egg",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Bastani",
+      "sourceTitle": "Bastani",
+      "newEn": "Fresh carrot juice topped with a scoop of ice cream, the Iranian juice-bar classic you sip and spoon at once.",
+      "newFa": "آب هویج تازه با یک اسکوپ بستنی؛ همان آب هویج بستنی آشنای آبمیوه‌فروشی‌های ایران، هم نوشیدنی و هم دسر.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm the ice cream: Persian saffron bastani (egg yolk, pistachio) assumed, as in āb havīj bastani.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:majoun",
+      "name": "Majoun",
+      "ingredients": [
+        "traditional persian ice cream",
+        "ice cream",
+        "milk",
+        "sugar",
+        "egg yolk",
+        "saffron",
+        "rose water",
+        "cream",
+        "almond",
+        "pistachio",
+        "peanut",
+        "hazelnut",
+        "walnut",
+        "date",
+        "fig",
+        "date molasses",
+        "honey",
+        "sesame"
+      ],
+      "allergens": [
+        "milk",
+        "egg",
+        "tree nuts",
+        "peanuts",
+        "sesame"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://labsalliebe.com/en/majoon-date-ice-cream-shake-with-nuts-%D9%85%D8%B9%D8%AC%D9%88%D9%86/",
+      "sourceTitle": "Majoon - Date Ice Cream Shake with Nuts معجون - Labsalliebe",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Persian ice cream contains egg yolk (Wikipedia: Bastani); kitchen to confirm sulphites if the figs are sulphured dried figs.",
+      "contradiction": "Owner's notes say Vegan and list only \"NUTS\", but the description has ice cream, cream and honey (not vegan) and names peanut, sesame and dairy; note text \"Hi this is a note\" looks like a test entry."
+    },
+    {
+      "importKey": "senso:item:ice-cream-falooda",
+      "name": "Ice cream & Falooda",
+      "ingredients": [
+        "starch noodle",
+        "sugar",
+        "rose water",
+        "lime juice",
+        "persian ice cream",
+        "milk",
+        "cream",
+        "egg yolk",
+        "saffron",
+        "pistachio"
+      ],
+      "allergens": [
+        "milk",
+        "egg",
+        "tree nuts",
+        "wheat"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Faloodeh",
+      "sourceTitle": "Faloodeh",
+      "newEn": "Persian falooda, thin icy starch noodles in rose-water syrup with lime, served with a scoop of traditional Persian ice cream.",
+      "newFa": "فالوده‌ی خنک با رشته‌های نشاسته‌ای نازک، شربت گلاب و آب‌لیمو، همراه یک اسکوپ بستنی سنتی.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: noodle starch (wheat starch is common in Iran) and the ice cream (saffron bastani: egg, pistachio). Wheat drafted because faloodeh noodles are made from starch and wheat starch is common in Iran (some use corn starch): kitchen to confirm the starch.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:banana-pistachio-milk",
+      "name": "Banana & Pistachio Milk",
+      "ingredients": [
+        "banana",
+        "milk",
+        "pistachio",
+        "sugar"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Milkshake",
+      "sourceTitle": "Milkshake",
+      "newEn": "Ripe banana and pistachio blended with cold milk into a thick, smooth shake, Iranian juice-bar style.",
+      "newFa": "موز رسیده و پسته که با شیر خنک مخلوط شده؛ شیرموزی غلیظ و لطیف به سبک آبمیوه‌فروشی‌های ایران.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: ice cream, sugar or honey in the blend, and pistachio as nuts, paste or syrup.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:pomegranate-majoun",
+      "name": "Pomegranate majoun",
+      "ingredients": [
+        "pomegranate",
+        "ice cream",
+        "milk",
+        "sugar"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://labsalliebe.com/en/majoon-date-ice-cream-shake-with-nuts-%D9%85%D8%B9%D8%AC%D9%88%D9%86/",
+      "sourceTitle": "Majoon - Date Ice Cream Shake with Nuts معجون - Labsalliebe",
+      "newEn": "A pomegranate twist on majoun, the thick Iranian ice cream treat eaten with a spoon; sweet, tart and cool.",
+      "newFa": "معجون با طعم انار؛ دسر غلیظ ایرانی بر پایه بستنی که با قاشق خورده می‌شود، ملس و خنک.",
+      "confidence": "low",
+      "note": "Recipe not public: venue to confirm pomegranate seeds or juice, which ice cream, and any cream, nuts, dates or honey.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:turkish-coffee",
+      "name": "Turkish Coffee",
+      "ingredients": [
+        "coffee",
+        "water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Turkish_coffee",
+      "sourceTitle": "Turkish coffee",
+      "newEn": "Finely ground coffee brewed unfiltered the traditional way: strong, rich and crowned with a velvety foam.",
+      "newFa": "قهوهٔ ریزآسیاب، دم‌شده به روش سنتی و بدون فیلتر؛ غلیظ و خوش‌عطر با کفی مخملی روی فنجان.",
+      "confidence": "high",
+      "note": "sugar to taste and cardamom are common in Turkish coffee: venue to confirm if either is added",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:brewing-coffee-medium",
+      "name": "Brewing Coffee",
+      "ingredients": [
+        "coffee",
+        "water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Drip_coffee",
+      "sourceTitle": "Drip coffee",
+      "newEn": "Freshly brewed coffee, smooth and full-bodied, in a medium or large cup.",
+      "newFa": "قهوهٔ دمی تازه، نرم و پرطعم؛ در اندازهٔ متوسط یا بزرگ.",
+      "confidence": "high",
+      "note": "options: lactose-free milk (milk), milk (milk), cream (milk), almond milk (tree nuts), oat milk (oats)",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:espresso-double",
+      "name": "Espresso",
+      "ingredients": [
+        "coffee",
+        "water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Espresso",
+      "sourceTitle": "Espresso",
+      "newEn": "A short, concentrated shot of coffee under a golden crema; single or double.",
+      "newFa": "عصارهٔ غلیظ و کوتاه قهوه با کرمای طلایی؛ سینگل یا دبل.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:americano",
+      "name": "Americano",
+      "ingredients": [
+        "espresso",
+        "water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Caff%C3%A8_americano",
+      "sourceTitle": "Caffè americano",
+      "newEn": "Espresso lengthened with hot water: all its depth in a longer, lighter cup.",
+      "newFa": "اسپرسو با آب داغ؛ عمق طعم اسپرسو در فنجانی بزرگ‌تر و ملایم‌تر.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:latte",
+      "name": "Latte",
+      "ingredients": [
+        "espresso",
+        "milk"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Latte",
+      "sourceTitle": "Latte",
+      "newEn": "Espresso and silky steamed milk under a thin layer of foam: smooth and mellow.",
+      "newFa": "اسپرسو و شیر بخارداده با بافتی مخملی و لایه‌ای نازک از فوم؛ نرم و ملایم.",
+      "confidence": "high",
+      "note": "options: vanilla syrup, hazelnut syrup (flavouring; check the syrup brand for tree nuts)",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:organic-beet-latte",
+      "name": "Organic Beet Latte",
+      "ingredients": [
+        "organic beetroot powder",
+        "milk"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://www.gimmesomeoven.com/beetroot-pink-latte-recipe/",
+      "sourceTitle": "Pink Latte (Hot or Iced) Recipe | Gimme Some Oven",
+      "newEn": "Organic beetroot and steamed milk in a vivid pink cup, velvety with a gentle earthy sweetness.",
+      "newFa": "چغندر ارگانیک و شیر بخارداده؛ لاته‌ای صورتی‌رنگ و مخملی با شیرینی ملایم چغندر.",
+      "confidence": "medium",
+      "note": "venue to confirm: coffee-free or with espresso, any spices (cardamom, cinnamon, ginger are common) or sweetener, and the default milk",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:cappuccino",
+      "name": "Cappuccino",
+      "ingredients": [
+        "espresso",
+        "milk"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Cappuccino",
+      "sourceTitle": "Cappuccino",
+      "newEn": "Espresso and steamed milk beneath a thick, airy cap of milk foam; shorter and bolder than a latte.",
+      "newFa": "اسپرسو و شیر بخارداده با لایه‌ای ضخیم و سبک از فوم شیر؛ کوچک‌تر و پرطعم‌تر از لاته.",
+      "confidence": "high",
+      "note": "a cocoa or cinnamon dusting is common: venue to confirm",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:mocha",
+      "name": "Mocha",
+      "ingredients": [
+        "espresso",
+        "chocolate sauce",
+        "milk"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Caff%C3%A8_mocha",
+      "sourceTitle": "Caffè mocha",
+      "newEn": "Espresso, chocolate and steamed milk: a latte with the warmth of hot chocolate.",
+      "newFa": "اسپرسو، شکلات و شیر بخارداده؛ لاته‌ای با طعم گرم و دلپذیر هات‌چاکلت.",
+      "confidence": "medium",
+      "note": "kitchen to confirm the chocolate (sauce or cocoa; some contain soy lecithin) and any whipped cream",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:caramel-macchiato",
+      "name": "Caramel Macchiato",
+      "ingredients": [
+        "milk",
+        "espresso",
+        "vanilla syrup",
+        "caramel sauce"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://www.bbcgoodfood.com/recipes/caramel-macchiato",
+      "sourceTitle": "Caramel macchiato recipe | Good Food",
+      "newEn": "Vanilla-scented steamed milk marked with espresso and finished with caramel sauce: layered, sweet and velvety.",
+      "newFa": "شیر بخارداده با عطر وانیل، اسپرسو و رگه‌های سس کارامل؛ لایه‌لایه، شیرین و مخملی.",
+      "confidence": "medium",
+      "note": "kitchen to confirm vanilla syrup or extract and the caramel sauce's ingredients",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:affogato",
+      "name": "Affogato",
+      "ingredients": [
+        "vanilla ice cream",
+        "espresso"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Affogato",
+      "sourceTitle": "Affogato",
+      "newEn": "A scoop of vanilla ice cream drowned in a hot shot of espresso: dessert and coffee in one.",
+      "newFa": "یک اسکوپ بستنی وانیلی غرق در شات داغ اسپرسو؛ دسر و قهوه در یک فنجان.",
+      "confidence": "medium",
+      "note": "kitchen to confirm: ice cream flavour (vanilla assumed), egg in the ice cream, and no gelatine",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:hot-chocolate",
+      "name": "Hot chocolate",
+      "ingredients": [
+        "chocolate",
+        "milk",
+        "sugar"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Hot_chocolate",
+      "sourceTitle": "Hot chocolate",
+      "newEn": "Chocolate and steamed milk in a warm, smooth and velvety cup.",
+      "newFa": "شکلات و شیر بخارداده؛ نوشیدنی گرم، غلیظ و مخملی.",
+      "confidence": "medium",
+      "note": "kitchen to confirm the chocolate (some contain soy lecithin) and toppings (marshmallows usually contain gelatine)",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:matcha-latte",
+      "name": "Matcha Latte",
+      "ingredients": [
+        "matcha",
+        "milk"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Matcha_latte",
+      "sourceTitle": "Matcha latte",
+      "newEn": "Matcha green tea and steamed milk: bright green, velvety and gently grassy.",
+      "newFa": "ماچا (پودر چای سبز) و شیر بخارداده؛ سبز روشن، مخملی و با طعم ملایم چای سبز.",
+      "confidence": "medium",
+      "note": "venue to confirm any sweetener and the default milk",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:tea",
+      "name": "Tea",
+      "ingredients": [
+        "black tea",
+        "water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Black_tea",
+      "sourceTitle": "Black tea",
+      "newEn": "Freshly brewed black tea, clear, amber and fragrant.",
+      "newFa": "چای سیاه تازه‌دم؛ خوش‌رنگ و خوش‌عطر.",
+      "confidence": "medium",
+      "note": "venue to confirm: black tea, any cardamom, and what is served with it (sugar cubes, rock candy)",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:large-tea",
+      "name": "Large Tea",
+      "ingredients": [
+        "black tea",
+        "water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Black_tea",
+      "sourceTitle": "Black tea",
+      "newEn": "A larger serving of freshly brewed black tea, clear, amber and fragrant.",
+      "newFa": "چای سیاه تازه‌دم در اندازهٔ بزرگ؛ خوش‌رنگ و خوش‌عطر.",
+      "confidence": "medium",
+      "note": "venue to confirm: a large cup or a pot, black tea, any cardamom",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:borage-with-lime",
+      "name": "Borage with lime",
+      "ingredients": [
+        "persian borage flower",
+        "dried lime"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Echium_amoenum",
+      "sourceTitle": "Echium amoenum",
+      "newEn": "Persian borage flowers steeped with dried lime: floral, gently tart and fragrant.",
+      "newFa": "گل گاوزبان ایرانی با لیمو عمانی؛ دمنوشی خوش‌رنگ، ملس و معطر.",
+      "confidence": "medium",
+      "note": "the English name says 'lime', the Persian name لیمو عمانی (dried lime): venue to confirm, and any sweetener (rock candy is common)",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:allergy-herbal-tea",
+      "name": "Allergy Herbal Tea",
+      "ingredients": [
+        "persian borage flower",
+        "orange blossom",
+        "thyme",
+        "mint",
+        "cinnamon",
+        "valerian",
+        "lemon verbena",
+        "ginger",
+        "saffron rock candy",
+        "rose water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Herbal_tea",
+      "sourceTitle": "Herbal tea",
+      "newEn": "A herbal blend of borage flower, orange blossom, thyme, mint, cinnamon, valerian, lemon verbena, ginger, saffron rock candy and rose water.",
+      "newFa": null,
+      "confidence": "high",
+      "note": "English written from the Persian list; the Persian spells valerian سنبل الطیف (سنبل‌الطیب); both names carry a health claim, the Persian a stray ')' (flagged)",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:apple-cinnamon-herbal-tea",
+      "name": "Apple & Cinnamon Herbal Tea",
+      "ingredients": [
+        "apple",
+        "cinnamon"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Herbal_tea",
+      "sourceTitle": "Herbal tea",
+      "newEn": "Apple and cinnamon steeped together: a warm, fruity cup with a gentle sweet spice.",
+      "newFa": "سیب و دارچین دم‌کرده؛ دمنوشی گرم و میوه‌ای با عطر شیرین دارچین.",
+      "confidence": "medium",
+      "note": "venue to confirm fresh or dried apple (dried apple may be sulphited), and any other herbs or sweetener",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:del-roba",
+      "name": "Del Roba",
+      "ingredients": [
+        "lemon verbena",
+        "orange blossom",
+        "damask rose (gol mohammadi)",
+        "persian borage flower",
+        "lavender",
+        "saffron rock candy"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Herbal_tea",
+      "sourceTitle": "Herbal tea",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "spelling only: the Persian writes lavender اسوخودوس (اسطوخودوس); 'spring orange' = orange blossom, 'mohamady flower' = damask rose",
+      "contradiction": "English 'To lemon' is به‌لیمو, lemon verbena (not lemon), and English 'saffron plant' is نبات زعفرانی, saffron rock candy, in the Persian; 'assochodos' is lavender"
+    },
+    {
+      "importKey": "senso:item:green-tea",
+      "name": "Green tea",
+      "ingredients": [
+        "green tea",
+        "water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Green_tea",
+      "sourceTitle": "Green tea",
+      "newEn": "Delicate green tea, light and grassy with a clean, gentle finish.",
+      "newFa": "چای سبز با طعمی لطیف و تازه و عطری ملایم.",
+      "confidence": "high",
+      "note": "venue to confirm loose leaf or bag, cup or pot",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:digestive-herbal-tea",
+      "name": "Digestive Herbal Tea",
+      "ingredients": [
+        "orange blossom",
+        "mint",
+        "damask rosebud (gol mohammadi)",
+        "persian borage flower",
+        "lemon verbena",
+        "cinnamon",
+        "rose water",
+        "fresh lemon juice"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Herbal_tea",
+      "sourceTitle": "Herbal tea",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "the English name is a health claim (flagged); the Persian name دمنوش عشاق ('lovers' herbal tea') differs from it",
+      "contradiction": "English 'lemon' is به‌لیمو (lemon verbena) and English 'rose' is گلاب (rose water) in the Persian, which also has rosebuds (غنچه گل محمدی) where the English says 'mohamady flower'"
+    },
+    {
+      "importKey": "senso:item:naz-bano-herbal-tea",
+      "name": "Naz Bano Herbal Tea",
+      "ingredients": [
+        "persian borage flower",
+        "chamomile flower",
+        "valerian",
+        "cinnamon"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Herbal_tea",
+      "sourceTitle": "Herbal tea",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "spelling only: 'valerine' and سنبل الطیف are valerian (سنبل‌الطیب)",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:power-herbal-tea",
+      "name": "Power Herbal Tea",
+      "ingredients": [
+        "mint",
+        "chamomile",
+        "persian borage flower",
+        "black tea",
+        "valerian",
+        "lavender",
+        "ginger",
+        "saffron rock candy"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Herbal_tea",
+      "sourceTitle": "Herbal tea",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "spelling: 'valerine' = valerian, اسوخودوس = اسطوخودوس (lavender); the Persian name دمنوش دل خواه differs; the English name is a claim (flagged)",
+      "contradiction": "English 'saffron plant' is نبات زعفرانی, saffron rock candy, in the Persian"
+    },
+    {
+      "importKey": "senso:item:relaxing-herbal-tea",
+      "name": "Relaxing Herbal Tea",
+      "ingredients": [
+        "hibiscus (sour tea)",
+        "persian borage flower",
+        "cinnamon"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Hibiscus_tea",
+      "sourceTitle": "Hibiscus tea",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "'sour tea' (چای ترش) is hibiscus (roselle); the Persian name دمنوش زن differs from the English; the English name is a claim (flagged)",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:saffron-herbal-tea",
+      "name": "Saffron Herbal Tea",
+      "ingredients": [
+        "saffron",
+        "water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Saffron",
+      "sourceTitle": "Saffron",
+      "newEn": "Saffron threads steeped into a golden, fragrant cup with a delicate floral aroma.",
+      "newFa": "زعفران دم‌کرده در فنجانی طلایی‌رنگ و خوش‌عطر، با رایحه‌ای لطیف و دل‌نشین.",
+      "confidence": "medium",
+      "note": "venue to confirm what else is in it (rock candy, cardamom, rose or green tea are common in Persian saffron tea)",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:stressless-herbal-tea",
+      "name": "Stressless Herbal Tea",
+      "ingredients": [
+        "chamomile",
+        "valerian",
+        "black tea",
+        "ginger"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Herbal_tea",
+      "sourceTitle": "Herbal tea",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "spelling: 'Valerine' and سنبل الطیف are valerian; the Persian name دمنوش افسون differs; the English name is a claim (flagged)",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:womens-life-herbal-tea",
+      "name": "Women's Life Herbal Tea",
+      "ingredients": [
+        "chamomile flower",
+        "lemon verbena",
+        "damask rose (gol mohammadi)",
+        "ginger",
+        "mint",
+        "thyme",
+        "cardamom",
+        "honey"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Herbal_tea",
+      "sourceTitle": "Herbal tea",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "honey makes it Vegetarian, not Vegan; the English name is a claim (flagged)",
+      "contradiction": "English 'lemon' is به‌لیمو (lemon verbena) in the Persian"
+    },
+    {
+      "importKey": "senso:item:ice-pistachio-latte",
+      "name": "Ice pistachio latte",
+      "ingredients": [
+        "espresso",
+        "milk",
+        "pistachio",
+        "ice"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Iced_coffee",
+      "sourceTitle": "Iced coffee",
+      "newEn": "Espresso, cold milk and pistachio over ice: nutty, smooth and refreshing.",
+      "newFa": "اسپرسو، شیر سرد و پسته روی یخ؛ خنک و مخملی با طعم دل‌نشین پسته.",
+      "confidence": "medium",
+      "note": "kitchen to confirm: pistachio paste or a pistachio-flavoured syrup (tree nuts kept), sweetener and any topping",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:ice-saffron-latte",
+      "name": "Ice saffron latte",
+      "ingredients": [
+        "espresso",
+        "milk",
+        "saffron",
+        "ice"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Iced_coffee",
+      "sourceTitle": "Iced coffee",
+      "newEn": "Espresso and cold milk with saffron over ice: golden, fragrant and smooth.",
+      "newFa": "اسپرسو و شیر سرد با زعفران روی یخ؛ طلایی، خوش‌عطر و مخملی.",
+      "confidence": "medium",
+      "note": "venue to confirm espresso (some saffron lattes have none), the sweetener (saffron syrup, rock candy) and any garnish",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:iced-latte",
+      "name": "Iced Latte",
+      "ingredients": [
+        "espresso",
+        "milk",
+        "ice"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Iced_coffee",
+      "sourceTitle": "Iced coffee",
+      "newEn": "Espresso and cold milk poured over ice: smooth, mellow and refreshing.",
+      "newFa": "اسپرسو و شیر سرد روی یخ؛ نرم، ملایم و خنک.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:iced-americano",
+      "name": "Iced Americano",
+      "ingredients": [
+        "espresso",
+        "water",
+        "ice"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Caff%C3%A8_americano",
+      "sourceTitle": "Caffè americano",
+      "newEn": "Espresso with cold water over ice: bold, clean and refreshing.",
+      "newFa": "اسپرسو با آب سرد روی یخ؛ پرطعم، سبک و خنک.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:iced-matcha-latte",
+      "name": "Iced Matcha Latte",
+      "ingredients": [
+        "matcha",
+        "milk",
+        "ice"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Matcha_latte",
+      "sourceTitle": "Matcha latte",
+      "newEn": "Matcha green tea and cold milk over ice: bright green, smooth and gently grassy.",
+      "newFa": "ماچا و شیر سرد روی یخ؛ سبز روشن، خنک و با طعم ملایم چای سبز.",
+      "confidence": "medium",
+      "note": "venue to confirm any sweetener and the default milk",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:green-mojito",
+      "name": "Green Mojito",
+      "ingredients": [
+        "mint",
+        "lime",
+        "sugar",
+        "soda water",
+        "ice"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Mojito",
+      "sourceTitle": "Mojito",
+      "newEn": "An alcohol-free mojito of fresh mint and lime over ice: zesty, cool and lightly sweet.",
+      "newFa": "موهیتوی بدون الکل با نعنای تازه و لیموترش روی یخ؛ خنک، ملس و پرطراوت.",
+      "confidence": "low",
+      "note": "recipe not public: venue to confirm alcohol-free (assumed from the Fresh Juice section), soda or blended, and what makes it green",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:cantaloupe",
+      "name": "Cantaloupe",
+      "ingredients": [
+        "cantaloupe"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Juice",
+      "sourceTitle": "Juice",
+      "newEn": "Fresh cantaloupe juice, chilled, smooth and sweet with the fragrance of ripe melon.",
+      "newFa": "آب طالبی تازه؛ خنک، لطیف و شیرین با عطر طالبی رسیده.",
+      "confidence": "medium",
+      "note": "venue to confirm whether ice, sugar or milk is added",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:orange",
+      "name": "Orange",
+      "ingredients": [
+        "orange"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Orange_juice",
+      "sourceTitle": "Orange juice",
+      "newEn": "Freshly squeezed orange juice: bright, sweet and tangy.",
+      "newFa": "آب پرتقال تازه‌گرفته؛ شیرین، ملس و پرطراوت.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:mango",
+      "name": "Mango",
+      "ingredients": [
+        "mango"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Juice",
+      "sourceTitle": "Juice",
+      "newEn": "Ripe mango juice, thick, smooth and tropical, served chilled.",
+      "newFa": "آب انبهٔ رسیده؛ غلیظ، لطیف و خنک با طعم گرمسیری انبه.",
+      "confidence": "medium",
+      "note": "venue to confirm fresh mango or mango pulp, and any water, ice or sugar",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:watermelon",
+      "name": "Watermelon",
+      "ingredients": [
+        "watermelon"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Juice",
+      "sourceTitle": "Juice",
+      "newEn": "Fresh watermelon juice: light, sweet and cool.",
+      "newFa": "آب هندوانهٔ تازه؛ سبک، شیرین و خنک.",
+      "confidence": "high",
+      "note": "the Persian name is spelled اب هندوانه (آب هندوانه); spelling only",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:cancer-killer",
+      "name": "Cancer Killer",
+      "ingredients": [
+        "beetroot",
+        "celery",
+        "ginger",
+        "carrot",
+        "green apple",
+        "lime",
+        "pomegranate",
+        "kiwi"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Vegetable_juice",
+      "sourceTitle": "Vegetable juice",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "the name is a health claim (venue's decision under ruling 11; flagged)",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:carrot-juice",
+      "name": "Carrot Juice",
+      "ingredients": [
+        "carrot"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Carrot_juice",
+      "sourceTitle": "Carrot juice",
+      "newEn": "Freshly pressed carrot juice: sweet, earthy and bright orange.",
+      "newFa": "آب هویج تازه‌گرفته؛ شیرین، خوش‌رنگ و خنک.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:celery-juice",
+      "name": "Celery Juice",
+      "ingredients": [
+        "celery"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Celery",
+      "sourceTitle": "Celery",
+      "newEn": "Freshly pressed celery juice: crisp, green and pleasantly savoury.",
+      "newFa": "آب کرفس تازه‌گرفته؛ سبز و خنک با عطر و طعم تازهٔ کرفس.",
+      "confidence": "high",
+      "note": "venue to confirm whether apple or lemon is added",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:almond-croissant",
+      "name": "Almond Croissant",
+      "ingredients": [
+        "croissant",
+        "wheat flour",
+        "butter",
+        "yeast",
+        "milk",
+        "sugar",
+        "egg",
+        "almond cream",
+        "almond",
+        "powdered sugar"
+      ],
+      "allergens": [
+        "wheat",
+        "milk",
+        "egg",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Croissant",
+      "sourceTitle": "Croissant",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: egg wash. Existing English ends with \"..\", the Persian text spells کرواسـان with a kashida.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:caramel-tres-leches",
+      "name": "Caramel Tres Leches",
+      "ingredients": [
+        "sponge cake",
+        "wheat flour",
+        "egg",
+        "sugar",
+        "evaporated milk",
+        "condensed milk",
+        "milk",
+        "whipped cream",
+        "caramel sauce",
+        "butter"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Tres_leches_cake",
+      "sourceTitle": "Tres leches cake",
+      "newEn": "Light sponge soaked in three milks, topped with whipped cream and caramel sauce; soft, cool and gently sweet.",
+      "newFa": "کیک اسفنجی سبک که در سه نوع شیر خیس خورده، با رویه خامه و سس کارامل؛ نرم و خنک با شیرینی ملایم.",
+      "confidence": "medium",
+      "note": "Caramel-topped trileçe style assumed (Wikipedia: Tres leches cake); kitchen to confirm the topping.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:dubai-chocolate-cheesecake",
+      "name": "Dubai Chocolate Cheesecake",
+      "ingredients": [
+        "cream cheese",
+        "sugar",
+        "cream",
+        "biscuit crust",
+        "butter",
+        "milk chocolate",
+        "pistachio cream",
+        "pistachio",
+        "tahini",
+        "kataifi pastry"
+      ],
+      "allergens": [
+        "milk",
+        "wheat",
+        "tree nuts",
+        "sesame"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Dubai_chocolate",
+      "sourceTitle": "Dubai chocolate",
+      "newEn": "Creamy cheesecake with the flavours of Dubai chocolate: milk chocolate, pistachio cream and crisp shredded kataifi pastry.",
+      "newFa": "چیزکیک خامه‌ای با طعم‌های شکلات دبی: شکلات شیری، کرم پسته و رشته‌های ترد کادایف.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: tahini (sesame) in the pistachio cream, egg (baked or no-bake), soy in the chocolate, no gelatine.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:nutella-oreo-cheesecake",
+      "name": "Nutella Oreo Cheesecake",
+      "ingredients": [
+        "cream cheese",
+        "sugar",
+        "cream",
+        "nutella",
+        "hazelnut",
+        "cocoa",
+        "oreo cookie",
+        "wheat flour",
+        "soy lecithin",
+        "butter"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts",
+        "wheat",
+        "soy"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Cheesecake",
+      "sourceTitle": "Cheesecake",
+      "newEn": "Creamy cheesecake with Nutella hazelnut-cocoa spread and crunchy Oreo cookies, a treat for chocolate lovers.",
+      "newFa": "چیزکیک خامه‌ای با کرم فندق و کاکائوی نوتلا و بیسکویت ترد اورئو؛ برای دوستداران شکلات.",
+      "confidence": "medium",
+      "note": "Nutella and Oreo both contain soy lecithin; kitchen to confirm egg (baked or no-bake) and no gelatine.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:persian-pistachio-croissant",
+      "name": "Persian Pistachio Croissant",
+      "ingredients": [
+        "croissant",
+        "wheat flour",
+        "butter",
+        "yeast",
+        "milk",
+        "sugar",
+        "egg",
+        "pistachio cream",
+        "pistachio"
+      ],
+      "allergens": [
+        "wheat",
+        "milk",
+        "egg",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Croissant",
+      "sourceTitle": "Croissant",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: egg wash. Existing English uses \"perfectly\" (a superlative) and ends with a stray invisible mark.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:pistachio-cake",
+      "name": "Pistachio Cake",
+      "ingredients": [
+        "wheat flour",
+        "pistachio",
+        "butter",
+        "sugar",
+        "egg",
+        "milk",
+        "baking powder"
+      ],
+      "allergens": [
+        "wheat",
+        "tree nuts",
+        "milk",
+        "egg"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://sallysbakingaddiction.com/pistachio-cake/",
+      "sourceTitle": "Pistachio Cake (Deliciously Moist!) - Sally's Baking",
+      "newEn": "Soft, moist cake made with ground pistachios, gently sweet and lovely with an afternoon coffee.",
+      "newFa": "کیک نرم و مرطوب با پسته آسیاب‌شده و شیرینی ملایم؛ کنار یک فنجان قهوه عصرانه می‌چسبد.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: frosting or topping (cream, white chocolate) and any other nuts.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:pistachio-cheesecake",
+      "name": "Pistachio Cheesecake",
+      "ingredients": [
+        "cream cheese",
+        "sugar",
+        "egg",
+        "cream",
+        "pistachio",
+        "biscuit crust",
+        "butter"
+      ],
+      "allergens": [
+        "milk",
+        "egg",
+        "tree nuts",
+        "wheat"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Cheesecake",
+      "sourceTitle": "Cheesecake",
+      "newEn": "Smooth, creamy cheesecake with the nutty, gently sweet flavour of pistachio.",
+      "newFa": "چیزکیک لطیف و خامه‌ای با طعم ملایم و دلنشین پسته.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: baked (egg) or no-bake (gelatine possible), and the crust (wheat).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:small-baklava",
+      "name": "Small Baklava",
+      "ingredients": [
+        "filo pastry",
+        "butter",
+        "walnut",
+        "pistachio",
+        "sugar syrup"
+      ],
+      "allergens": [
+        "wheat",
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Baklava",
+      "sourceTitle": "Baklava",
+      "newEn": "A small piece of baklava: crisp, buttery filo layered with chopped nuts and soaked in syrup, made for tea or coffee.",
+      "newFa": "یک تکه کوچک باقلوا: لایه‌های ترد و کره‌ای خمیر فیلو با مغزهای خردشده و شربت؛ کنار چای یا قهوه.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: the nuts (pistachio, walnut or almond), butter or oil, syrup or honey.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:large-baklava",
+      "name": "Large Baklava",
+      "ingredients": [
+        "filo pastry",
+        "butter",
+        "walnut",
+        "pistachio",
+        "sugar syrup"
+      ],
+      "allergens": [
+        "wheat",
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Baklava",
+      "sourceTitle": "Baklava",
+      "newEn": "A larger portion of baklava: crisp, buttery filo with chopped nuts and syrup, good for sharing over tea or coffee.",
+      "newFa": "باقلوا در اندازه بزرگ‌تر: لایه‌های ترد و کره‌ای خمیر فیلو با مغزهای خردشده و شربت؛ مناسب دورهمی کنار چای یا قهوه.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: the nuts (pistachio, walnut or almond), butter or oil, syrup or honey, and the portion size.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:butter-croissant",
+      "name": "Butter Croissant",
+      "ingredients": [
+        "croissant",
+        "wheat flour",
+        "butter",
+        "yeast",
+        "milk",
+        "sugar",
+        "egg",
+        "salt"
+      ],
+      "allergens": [
+        "wheat",
+        "milk",
+        "egg"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Croissant",
+      "sourceTitle": "Croissant",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm: egg wash.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:tiramisu",
+      "name": "Tiramisu",
+      "ingredients": [
+        "vanilla sponge cake",
+        "wheat flour",
+        "egg",
+        "sugar",
+        "vanilla",
+        "coffee",
+        "mascarpone",
+        "cocoa powder"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Tiramisu",
+      "sourceTitle": "Tiramisu",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Classic tiramisu uses ladyfingers and egg-yolk cream; kitchen to confirm egg in the cream and any Marsala or liqueur.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:turkish-knafeh",
+      "name": "Turkish Knafeh",
+      "ingredients": [
+        "kadayif pastry",
+        "wheat flour",
+        "unsalted cheese",
+        "butter",
+        "sugar syrup",
+        "pistachio"
+      ],
+      "allergens": [
+        "wheat",
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Knafeh",
+      "sourceTitle": "Knafeh",
+      "newEn": "Served warm: crisp shredded kadayif pastry around melted cheese, soaked in syrup and topped with crushed pistachio.",
+      "newFa": "کنافه داغ به سبک ترکی: رشته‌های ترد کادایف با مغز پنیر کش‌دار، آغشته به شربت و پودر پسته.",
+      "confidence": "high",
+      "note": "Kitchen to confirm: the cheese and butter or ghee.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:lotus-cheesecake",
+      "name": "Lotus cheesecake",
+      "ingredients": [
+        "cream cheese",
+        "sugar",
+        "cream",
+        "lotus biscoff biscuit",
+        "lotus biscoff spread",
+        "wheat flour",
+        "caramelised sugar",
+        "cinnamon",
+        "soy flour",
+        "butter"
+      ],
+      "allergens": [
+        "milk",
+        "wheat",
+        "soy"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Cheesecake",
+      "sourceTitle": "Cheesecake",
+      "newEn": "Creamy cheesecake made with Lotus Biscoff biscuits and spread, full of their caramel and cinnamon notes.",
+      "newFa": "چیزکیک خامه‌ای با بیسکویت و کرم لوتوس، با طعم کاراملی و کمی دارچین.",
+      "confidence": "medium",
+      "note": "Lotus Biscoff biscuits contain soy flour; kitchen to confirm egg (baked or no-bake) and no gelatine.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:classic-cheese-cake",
+      "name": "Classic Cheese Cake",
+      "ingredients": [
+        "cream cheese",
+        "sugar",
+        "egg",
+        "vanilla",
+        "biscuit crust",
+        "wheat flour",
+        "butter"
+      ],
+      "allergens": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Cheesecake",
+      "sourceTitle": "Cheesecake",
+      "newEn": "A classic baked cheesecake: smooth, rich cream cheese filling on a buttery biscuit base.",
+      "newFa": "چیزکیک تنوری کلاسیک: پنیر خامه‌ای لطیف و غلیظ روی کف بیسکویتی کره‌ای.",
+      "confidence": "high",
+      "note": "Kitchen to confirm: the crust (digestive or graham biscuits).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:coffee-walnut-cake",
+      "name": "Coffee & walnut cake",
+      "ingredients": [
+        "wheat flour",
+        "butter",
+        "sugar",
+        "egg",
+        "coffee",
+        "walnut",
+        "icing sugar"
+      ],
+      "allergens": [
+        "wheat",
+        "milk",
+        "egg",
+        "tree nuts"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Coffee_and_walnut_cake",
+      "sourceTitle": "Coffee and walnut cake",
+      "newEn": "Soft coffee sponge with walnuts, filled and topped with coffee butter icing; a classic British teatime cake.",
+      "newFa": "کیک اسفنجی نرم با قهوه و گردو، با لایه و رویه کرم کره‌ای قهوه؛ کیک کلاسیک عصرانه به سبک انگلیسی.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:napoleon",
+      "name": "Napoleon",
+      "ingredients": [
+        "puff pastry",
+        "wheat flour",
+        "butter",
+        "milk",
+        "egg",
+        "sugar",
+        "cornstarch",
+        "vanilla",
+        "powdered sugar"
+      ],
+      "allergens": [
+        "wheat",
+        "milk",
+        "egg"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Mille-feuille",
+      "sourceTitle": "Mille-feuille",
+      "newEn": "Crisp layers of puff pastry with smooth vanilla pastry cream, dusted with powdered sugar.",
+      "newFa": "لایه‌های ترد خمیر هزارلا با کرم وانیلی لطیف و پودر قند؛ همان ناپلئونی آشنای قنادی‌ها.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: pastry cream (egg) or whipped-cream filling, and the topping.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:chocolate-croissant",
+      "name": "Chocolate Croissant",
+      "ingredients": [
+        "croissant",
+        "wheat flour",
+        "butter",
+        "yeast",
+        "milk",
+        "sugar",
+        "egg",
+        "chocolate"
+      ],
+      "allergens": [
+        "wheat",
+        "milk",
+        "egg"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Pain_au_chocolat",
+      "sourceTitle": "Pain au chocolat",
+      "newEn": "A buttery, flaky croissant with a chocolate filling; a sweet companion for your morning coffee.",
+      "newFa": "کروسان کره‌ای و لایه‌لایه با مغز شکلات؛ همراهی شیرین برای قهوه صبح.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: chocolate bar or chocolate-cream filling, soy lecithin in the chocolate, egg wash.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:baklava-cake",
+      "name": "Baklava Cake",
+      "ingredients": [
+        "wheat flour",
+        "egg",
+        "sugar",
+        "butter",
+        "walnut",
+        "pistachio",
+        "sugar syrup"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "milk",
+        "tree nuts"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Baklava",
+      "sourceTitle": "Baklava",
+      "newEn": "A cake made in the style of baklava: a soft slice with chopped nuts and syrup that recalls the classic pastry.",
+      "newFa": "کیکی به سبک باقلوا: برشی نرم با مغزهای خردشده و شربت که طعم آشنای باقلوا را به یاد می‌آورد.",
+      "confidence": "low",
+      "note": "Recipe not public: venue to confirm the cake (which nuts, syrup or honey, any filo, butter).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:chocolate-late-cake",
+      "name": "Chocolate Late Cake",
+      "ingredients": [
+        "wheat flour",
+        "cocoa powder",
+        "chocolate",
+        "sugar",
+        "egg",
+        "butter",
+        "milk"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Chocolate_cake",
+      "sourceTitle": "Chocolate cake",
+      "newEn": "A moist chocolate cake, deep in cocoa flavour; a slice to go with your coffee.",
+      "newFa": "کیک شکلاتی مرطوب با طعم پررنگ کاکائو؛ برشی دلچسب کنار قهوه‌تان.",
+      "confidence": "low",
+      "note": "English name \"Late\" is unclear (lava, layer or latte?); the Persian name says only کیک شکلاتی; venue to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:ice-cream",
+      "name": "Ice Cream",
+      "ingredients": [
+        "milk",
+        "cream",
+        "sugar"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Ice_cream",
+      "sourceTitle": "Ice cream",
+      "newEn": "Creamy ice cream in your choice of seven flavours, from Persian classics to fruity favourites.",
+      "newFa": "بستنی خامه‌ای در هفت طعم به انتخاب شما، از طعم‌های سنتی ایرانی تا میوه‌ای.",
+      "confidence": "medium",
+      "note": "Options: pistachio (tree nuts), saffron (Persian ice cream: egg yolk, often pistachio), chocolate (may contain soy); kitchen to confirm egg in the bases and no gelatine.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:single-scoop-ice-cream",
+      "name": "Single Scoop Ice Cream",
+      "ingredients": [
+        "milk",
+        "cream",
+        "sugar"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Ice_cream",
+      "sourceTitle": "Ice cream",
+      "newEn": "One scoop of creamy ice cream in your choice of seven flavours, from Persian classics to fruity favourites.",
+      "newFa": "یک اسکوپ بستنی خامه‌ای با هفت طعم به انتخاب شما، از سنتی ایرانی تا میوه‌ای.",
+      "confidence": "medium",
+      "note": "Options: pistachio (tree nuts), saffron (Persian ice cream: egg yolk, often pistachio), chocolate (may contain soy); kitchen to confirm egg in the bases and no gelatine.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:ice-cream-sandwich",
+      "name": "Ice cream Sandwich",
+      "ingredients": [
+        "persian ice cream",
+        "milk",
+        "cream",
+        "sugar",
+        "egg yolk",
+        "saffron",
+        "rose water",
+        "pistachio",
+        "wafer",
+        "wheat flour"
+      ],
+      "allergens": [
+        "milk",
+        "egg",
+        "tree nuts",
+        "wheat"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Ice_cream_sandwich",
+      "sourceTitle": "Ice cream sandwich",
+      "newEn": "Traditional Persian ice cream pressed between two thin, crisp wafers: the Iranian ice cream sandwich known as bastani nooni.",
+      "newFa": "بستنی سنتی میان دو ویفر نازک و ترد؛ همان بستنی نونی آشنای ایرانی.",
+      "confidence": "medium",
+      "note": "Bastani nooni assumed (saffron ice cream with egg yolk and pistachio); kitchen to confirm, and soy in the wafers.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:falooda",
+      "name": "Falooda",
+      "ingredients": [
+        "starch noodle",
+        "sugar",
+        "rose water",
+        "lime juice",
+        "water"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Faloodeh",
+      "sourceTitle": "Faloodeh",
+      "newEn": "Persian falooda: thin starch noodles, icy in rose-water syrup and finished with a squeeze of lime; cool and floral.",
+      "newFa": "فالوده‌ی ایرانی: رشته‌های نشاسته‌ای نازک و یخ‌زده در شربت گلاب، با چند قطره آب‌لیمو؛ خنک و خوش‌عطر.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm: noodle starch (wheat starch is common in Iran), pistachio garnish, bottled lime juice (sulphites). Wheat drafted because faloodeh noodles are made from starch and wheat starch is common in Iran (some use corn starch): kitchen to confirm the starch.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:chocolate-milkshake",
+      "name": "Chocolate Milkshake",
+      "ingredients": [
+        "ice cream",
+        "milk",
+        "chocolate sauce"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Milkshake",
+      "sourceTitle": "Milkshake",
+      "newEn": "Ice cream, cold milk and chocolate blended thick and velvety.",
+      "newFa": "بستنی، شیر سرد و شکلات؛ میلک‌شیکی غلیظ و مخملی.",
+      "confidence": "medium",
+      "note": "kitchen to confirm: ice cream flavour, egg and gelatine in the ice cream, whipped cream or toppings",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:strawberry-milkshake",
+      "name": "Strawberry Milkshake",
+      "ingredients": [
+        "strawberry",
+        "ice cream",
+        "milk"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Milkshake",
+      "sourceTitle": "Milkshake",
+      "newEn": "Strawberries, ice cream and cold milk blended thick, velvety and fruity.",
+      "newFa": "توت‌فرنگی، بستنی و شیر سرد؛ میلک‌شیکی غلیظ، مخملی و میوه‌ای.",
+      "confidence": "medium",
+      "note": "kitchen to confirm fresh strawberries or syrup, egg and gelatine in the ice cream, any toppings",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:mango-milkshake",
+      "name": "Mango Milkshake",
+      "ingredients": [
+        "mango",
+        "ice cream",
+        "milk"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Milkshake",
+      "sourceTitle": "Milkshake",
+      "newEn": "Ripe mango, ice cream and cold milk blended thick, velvety and tropical.",
+      "newFa": "انبهٔ رسیده، بستنی و شیر سرد؛ میلک‌شیکی غلیظ و مخملی با طعم گرمسیری انبه.",
+      "confidence": "medium",
+      "note": "kitchen to confirm fresh mango or pulp, egg and gelatine in the ice cream, any toppings",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:nutella-milkshake",
+      "name": "Nutella Milkshake",
+      "ingredients": [
+        "nutella (hazelnut cocoa spread)",
+        "hazelnut",
+        "cocoa",
+        "ice cream",
+        "milk"
+      ],
+      "allergens": [
+        "milk",
+        "tree nuts",
+        "soy"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Milkshake",
+      "sourceTitle": "Milkshake",
+      "newEn": "Nutella, ice cream and cold milk blended into a thick, velvety shake of cocoa and hazelnut.",
+      "newFa": "نوتلا، بستنی و شیر سرد؛ میلک‌شیکی غلیظ و مخملی با طعم کاکائو و فندق.",
+      "confidence": "medium",
+      "note": "Nutella contains hazelnuts, skimmed milk and soy lecithin (Wikipedia, Nutella); kitchen to confirm egg/gelatine in the ice cream and toppings",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:brain-tongue-omelette",
+      "name": "Brain & Tongue Omelette",
+      "ingredients": [
+        "egg",
+        "brain",
+        "tongue"
+      ],
+      "allergens": [
+        "egg"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Omelette",
+      "sourceTitle": "Omelette",
+      "newEn": "Eggs cooked with tender tongue and brain, a hearty Persian breakfast plate.",
+      "newFa": "تخم‌مرغ با زبان و مغز پخته و لطیف؛ صبحانه‌ای ایرانی و پر و پیمان.",
+      "confidence": "low",
+      "note": "Recipe not public: venue to confirm the animal (lamb or beef), the cooking fat (butter adds milk) and the sides (bread, cheese).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:classic-eggs",
+      "name": "Classic Eggs",
+      "ingredients": [
+        "egg",
+        "bread",
+        "fresh herbs",
+        "cheese",
+        "tomato",
+        "cucumber"
+      ],
+      "allergens": [
+        "egg",
+        "wheat",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Fried_egg",
+      "sourceTitle": "Fried egg",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm the cooking fat (butter or oil).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:tomato-omelette",
+      "name": "Tomato Omelette",
+      "ingredients": [
+        "egg",
+        "tomato",
+        "onion",
+        "bread",
+        "fresh herbs",
+        "cheese",
+        "cucumber"
+      ],
+      "allergens": [
+        "egg",
+        "wheat",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Omelette",
+      "sourceTitle": "Omelette",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:halim",
+      "name": "Halim",
+      "ingredients": [
+        "wheat",
+        "meat",
+        "cinnamon",
+        "sugar",
+        "butter"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Haleem",
+      "sourceTitle": "Haleem",
+      "newEn": "Silky wheat and meat porridge, slow-cooked the Persian way and served with cinnamon and sugar.",
+      "newFa": "حلیم کش‌دار گندم و گوشت، همراه با دارچین و شکر.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm the meat (turkey, lamb or beef) and the butter or ghee topping (milk), which the source gives as usual in Iran.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:sausage-egg",
+      "name": "Sausage & Egg",
+      "ingredients": [
+        "beef sausage",
+        "beef",
+        "egg",
+        "bread",
+        "fresh herbs",
+        "cheese",
+        "tomato",
+        "cucumber"
+      ],
+      "allergens": [
+        "egg",
+        "wheat",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sausage",
+      "sourceTitle": "Sausage",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm the sausage (fillers can add wheat, soy, mustard).",
+      "contradiction": "The name says sausage (سوسیس); both descriptions say \"slice of beef\" / برش گوشت گاو and name no sausage."
+    },
+    {
+      "importKey": "senso:item:sausage-egg-tomato",
+      "name": "Sausage, Egg & Tomato",
+      "ingredients": [
+        "beef sausage",
+        "beef",
+        "egg",
+        "tomato",
+        "bread",
+        "fresh herbs",
+        "cheese",
+        "cucumber"
+      ],
+      "allergens": [
+        "egg",
+        "wheat",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sausage",
+      "sourceTitle": "Sausage",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm the sausage (fillers can add wheat, soy, mustard).",
+      "contradiction": "The name says sausage (سوسیس); both descriptions say \"slice of beef\" / برش گوشت گاو and name no sausage."
+    },
+    {
+      "importKey": "senso:item:turkish-omelette",
+      "name": "Turkish Omelette",
+      "ingredients": [
+        "sujuk",
+        "egg",
+        "onion",
+        "bread",
+        "fresh herbs",
+        "cheese",
+        "tomato",
+        "cucumber"
+      ],
+      "allergens": [
+        "egg",
+        "wheat",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sujuk",
+      "sourceTitle": "Sujuk",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Sujuk is usually beef (kitchen to confirm); \"Sujok\" in the English description is usually spelled sujuk or sucuk.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:bandar-omelette",
+      "name": "Bandar Omelette",
+      "ingredients": [
+        "date",
+        "egg",
+        "bread",
+        "fresh herbs",
+        "cheese",
+        "tomato",
+        "cucumber"
+      ],
+      "allergens": [
+        "egg",
+        "wheat",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Omelette",
+      "sourceTitle": "Omelette",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm the cooking fat (butter or oil).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:jungle-omelette",
+      "name": "Jungle Omelette",
+      "ingredients": [
+        "egg",
+        "tomato",
+        "feta cheese",
+        "fresh herbs",
+        "mixed peppers",
+        "bread",
+        "cucumber",
+        "onion"
+      ],
+      "allergens": [
+        "egg",
+        "wheat",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Omelette",
+      "sourceTitle": "Omelette",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:nargasi-omelette",
+      "name": "Nargasi Omelette",
+      "ingredients": [
+        "egg",
+        "spinach",
+        "onion",
+        "mushroom"
+      ],
+      "allergens": [
+        "egg"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Nargesi_(food)",
+      "sourceTitle": "Nargesi (food)",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm the cooking fat (butter adds milk) and any bread or cheese served.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:gheymagh",
+      "name": "Gheymagh",
+      "ingredients": [
+        "clotted cream",
+        "cream",
+        "honey",
+        "feta cheese",
+        "bread"
+      ],
+      "allergens": [
+        "milk",
+        "wheat"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Kaymak",
+      "sourceTitle": "Kaymak",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": "The English lists clotted cream, cream, honey, feta cheese and bread; the Persian (سرشير خامه عسل) names only clotted cream, cream and honey."
+    },
+    {
+      "importKey": "senso:item:mushroom-tomato-omelette",
+      "name": "Mushroom Tomato Omelette",
+      "ingredients": [
+        "egg",
+        "mushroom",
+        "onion",
+        "tomato",
+        "bread",
+        "fresh herbs",
+        "cheese",
+        "cucumber"
+      ],
+      "allergens": [
+        "egg",
+        "wheat",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Omelette",
+      "sourceTitle": "Omelette",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:papa-egg-roast-beef",
+      "name": "Papa Egg (Roast beef)",
+      "ingredients": [
+        "egg",
+        "roast beef"
+      ],
+      "allergens": [
+        "egg"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Roast_beef",
+      "sourceTitle": "Roast beef",
+      "newEn": "Eggs with sliced roast beef, a warm and filling start to the day.",
+      "newFa": "تخم‌مرغ با برش‌های رست بیف؛ صبحانه‌ای گرم و سیرکننده.",
+      "confidence": "low",
+      "note": "House recipe not public: venue to confirm how the eggs are cooked and the sides (bread, cheese, herbs as on the other breakfasts).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:cheese-platter",
+      "name": "Cheese Platter",
+      "ingredients": [
+        "bread",
+        "cheese",
+        "fresh herbs"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Sabzi_khordan",
+      "sourceTitle": "Sabzi khordan",
+      "newEn": "Bread, cheese and fresh herbs: the simple, everyday Persian breakfast.",
+      "newFa": "نان، پنیر و سبزی تازه؛ همان صبحانه‌ی ساده و همیشگی ایرانی.",
+      "confidence": "medium",
+      "note": "Venue to confirm the cheese and bread, and whether walnuts (tree nuts), tomato or cucumber come with it.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:plain-bagel-with-cream-cheese",
+      "name": "Plain Bagel With Cream Cheese",
+      "ingredients": [
+        "bagel",
+        "wheat flour",
+        "cream cheese"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Bagel",
+      "sourceTitle": "Bagel",
+      "newEn": "A chewy plain bagel with smooth cream cheese, an easy café breakfast.",
+      "newFa": "بیگل ساده با پنیر خامه‌ای نرم؛ صبحانه‌ای سبک و دلچسب.",
+      "confidence": "high",
+      "note": "Kitchen to confirm the bagel dough (many contain barley malt, some egg or milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:everything-bagel-with-cream-cheese",
+      "name": "Everything Bagel With Cream Cheese",
+      "ingredients": [
+        "bagel",
+        "wheat flour",
+        "sesame seed",
+        "poppy seed",
+        "garlic",
+        "onion",
+        "salt",
+        "cream cheese"
+      ],
+      "allergens": [
+        "wheat",
+        "sesame",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Everything_bagel",
+      "sourceTitle": "Everything bagel",
+      "newEn": "Bagel crusted with sesame, poppy seeds, garlic, onion and salt, spread with cream cheese.",
+      "newFa": "بیگل با رویه‌ی کنجد، خشخاش، سیر، پیاز و نمک، همراه با پنیر خامه‌ای.",
+      "confidence": "high",
+      "note": "Topping mix varies: kitchen to confirm it, and the dough (barley malt, egg or milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:plain-bagel-with-butter",
+      "name": "Plain Bagel with Butter",
+      "ingredients": [
+        "bagel",
+        "wheat flour",
+        "butter"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Bagel",
+      "sourceTitle": "Bagel",
+      "newEn": "A chewy plain bagel spread with butter, simple and satisfying.",
+      "newFa": "بیگل ساده با کره؛ سبک و دلچسب.",
+      "confidence": "high",
+      "note": "Kitchen to confirm the bagel dough (many contain barley malt, some egg or milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:everything-bagel-with-butter",
+      "name": "Everything Bagel With Butter",
+      "ingredients": [
+        "bagel",
+        "wheat flour",
+        "sesame seed",
+        "poppy seed",
+        "garlic",
+        "onion",
+        "salt",
+        "butter"
+      ],
+      "allergens": [
+        "wheat",
+        "sesame",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Everything_bagel",
+      "sourceTitle": "Everything bagel",
+      "newEn": "Bagel crusted with sesame, poppy seeds, garlic, onion and salt, spread with butter.",
+      "newFa": "بیگل با رویه‌ی کنجد، خشخاش، سیر، پیاز و نمک، همراه با کره.",
+      "confidence": "high",
+      "note": "Topping mix varies: kitchen to confirm it, and the dough (barley malt, egg or milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:classic-waffle",
+      "name": "Classic waffle",
+      "ingredients": [
+        "wheat flour",
+        "egg",
+        "milk",
+        "butter",
+        "sugar"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Waffle",
+      "sourceTitle": "Waffle",
+      "newEn": "A warm golden waffle, crisp at the edges and soft inside.",
+      "newFa": "وافل گرم و طلایی، با لبه‌های ترد و داخل نرم.",
+      "confidence": "medium",
+      "note": "Toppings not public: venue to confirm (syrup, cream, fruit; Nutella would add tree nuts and soy).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:senso-waffle",
+      "name": "Senso Waffle",
+      "ingredients": [
+        "wheat flour",
+        "egg",
+        "milk",
+        "butter",
+        "sugar"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Waffle",
+      "sourceTitle": "Waffle",
+      "newEn": "Senso's own house waffle, served warm.",
+      "newFa": "وافل مخصوص سنسو، گرم و تازه.",
+      "confidence": "low",
+      "note": "House recipe not public: venue to confirm the toppings and their allergens; only a standard waffle batter is assumed.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:strawberry-pancake",
+      "name": "Strawberry pancake",
+      "ingredients": [
+        "wheat flour",
+        "egg",
+        "milk",
+        "butter",
+        "sugar",
+        "strawberry"
+      ],
+      "allergens": [
+        "wheat",
+        "egg",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Pancake",
+      "sourceTitle": "Pancake",
+      "newEn": "Soft, golden pancakes topped with fresh strawberries for a sweet, unhurried breakfast.",
+      "newFa": "پنکیک نرم و طلایی با توت‌فرنگی تازه؛ برای یک صبحانه‌ی شیرین.",
+      "confidence": "medium",
+      "note": "Venue to confirm any other toppings (syrup, cream, Nutella: tree nuts, soy).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:mixed-green-salad",
+      "name": "Mixed Green Salad",
+      "ingredients": [
+        "spring mix",
+        "sunflower seed",
+        "walnut",
+        "strawberry",
+        "blackberry",
+        "raspberry",
+        "feta cheese"
+      ],
+      "allergens": [
+        "tree nuts",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Salad",
+      "sourceTitle": "Salad",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Options: Atlantic salmon (fish), chicken. Dressing not stated: kitchen to confirm. Persian شاه‌توت for blackberries usually means black mulberry: Kian to judge.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:greek-salad",
+      "name": "Greek Salad",
+      "ingredients": [
+        "cucumber",
+        "tomato",
+        "red onion",
+        "olive",
+        "lemon juice",
+        "olive oil",
+        "feta cheese"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Greek_salad",
+      "sourceTitle": "Greek salad",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Feta is the typical cheese of a Greek salad but the description names none: milk drafted as a precaution, kitchen to confirm. Options: Atlantic salmon (fish), chicken.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:watermelon-salad",
+      "name": "Watermelon Salad",
+      "ingredients": [
+        "watermelon",
+        "feta cheese",
+        "pomegranate"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Watermelon",
+      "sourceTitle": "Watermelon",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Dressing or herbs not stated: kitchen to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:caesar-salad",
+      "name": "Caesar Salad",
+      "ingredients": [
+        "romaine lettuce",
+        "crouton",
+        "parmesan cheese",
+        "caesar dressing",
+        "garlic",
+        "egg",
+        "olive oil",
+        "lemon juice",
+        "worcestershire sauce",
+        "anchovy",
+        "dijon mustard",
+        "black pepper"
+      ],
+      "allergens": [
+        "wheat",
+        "milk",
+        "egg",
+        "fish",
+        "mustard"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Caesar_salad",
+      "sourceTitle": "Caesar salad",
+      "newEn": "Crisp romaine, croutons and parmesan in a garlicky Caesar dressing.",
+      "newFa": "کاهوی رومی ترد، کروتان و پنیر پارمزان با سس سزار سیردار.",
+      "confidence": "medium",
+      "note": "Options: Atlantic salmon (fish), chicken. Kitchen to confirm the dressing (egg; anchovy or Worcestershire = fish; Dijon = mustard).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:creamy-mushroom-barley-soup",
+      "name": "Creamy Mushroom Barley Soup",
+      "ingredients": [
+        "milk",
+        "chicken",
+        "mushroom",
+        "barley",
+        "carrot",
+        "parsley",
+        "onion"
+      ],
+      "allergens": [
+        "milk",
+        "barley"
+      ],
+      "dietary": [],
+      "source": "https://www.thedeliciouscrescent.com/persian-creamy-barley-soup/",
+      "sourceTitle": "Cream of Barley Soup (Soup Jo) - The Delicious Crescent",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm any cream, butter or flour (wheat) used to thicken it.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:ashe-sabzi-shiraz",
+      "name": "Ashe Sabzi Shiraz",
+      "ingredients": [
+        "leek",
+        "tarragon",
+        "rice",
+        "chickpea",
+        "lentil",
+        "white bean",
+        "onion",
+        "fried onion",
+        "lamb",
+        "turmeric",
+        "black pepper",
+        "dried savory"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://www.kojaro.com/food/191386-ash-sabzi-shirazi/",
+      "sourceTitle": "طرز تهیه آش سبزی؛ صبحانه معروف شیرازی - کجارو",
+      "newEn": "Thick Shiraz-style herb soup with leek, tarragon, rice, chickpeas, lentils and beans, topped with plenty of fried onion.",
+      "newFa": "آش سبزی غلیظ به سبک شیراز با تره، ترخون، برنج، نخود، عدس و لوبیا، با پیاز داغ فراوان.",
+      "confidence": "medium",
+      "note": "Shiraz recipe uses shredded lamb and no kashk: kitchen to confirm the meat, the herbs and any kashk (milk) or bread (wheat).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:ashe-reshteh",
+      "name": "Ashe Reshteh",
+      "ingredients": [
+        "reshteh",
+        "noodle",
+        "fresh herbs",
+        "kidney bean",
+        "chickpea",
+        "lentil",
+        "kashk",
+        "fried onion",
+        "dried mint",
+        "garlic",
+        "turmeric"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Aush_reshteh",
+      "sourceTitle": "Aush reshteh",
+      "newEn": "Thick herb, bean and noodle soup, finished with kashk, fried onion and mint.",
+      "newFa": "آش غلیظ سبزی و حبوبات با رشته، همراه با کشک، پیاز داغ و نعناع داغ.",
+      "confidence": "high",
+      "note": "Kitchen to confirm no meat stock.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:kumpir-turkish-style-stuffed-baked-potato",
+      "name": "Kumpir (Turkish Style Stuffed Baked Potato)",
+      "ingredients": [
+        "potato",
+        "butter",
+        "mozzarella cheese",
+        "spicy mayonnaise",
+        "tomato",
+        "olive",
+        "pickle",
+        "corn",
+        "mushroom",
+        "salami",
+        "sausage"
+      ],
+      "allergens": [
+        "milk",
+        "egg"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Kumpir",
+      "sourceTitle": "Kumpir",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm the mayonnaise (mustard), salami and sausage (wheat, soy, mustard) and pickles (sulphites).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:barley-soup",
+      "name": "Barley Soup",
+      "ingredients": [
+        "carrot",
+        "onion",
+        "barley",
+        "chicken",
+        "tomato paste",
+        "milk"
+      ],
+      "allergens": [
+        "barley",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://thecaspianchef.com/soup-e-jow-barley-soup/",
+      "sourceTitle": "Soup-e Jow - Barley soup - The Caspian Chef",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm: the source recipe finishes with milk, but Senso also has a separate creamy version, so this one may have no milk.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:chips-o-panir",
+      "name": "chips o panir",
+      "ingredients": [
+        "potato",
+        "french fries",
+        "cheese",
+        "vegetable oil"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Cheese_fries",
+      "sourceTitle": "Cheese fries",
+      "newEn": "Golden fries under melted cheese, the Persian snack-bar classic.",
+      "newFa": "سیب‌زمینی سرخ‌کرده‌ی طلایی زیر پنیر آب‌شده؛ همان چیپس و پنیر ساندویچی‌های ایران.",
+      "confidence": "low",
+      "note": "Venue to confirm the cheese and any toppings (mushroom, sausage, sauce), often added in Iran.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:mexican-corn",
+      "name": "Mexican corn",
+      "ingredients": [
+        "sweet corn",
+        "butter",
+        "mayonnaise",
+        "cheese",
+        "salt",
+        "black pepper"
+      ],
+      "allergens": [
+        "milk",
+        "egg"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Esquites",
+      "sourceTitle": "Esquites",
+      "newEn": "Warm sweet corn with butter, mayonnaise and melted cheese, the way Iranian snack bars serve it.",
+      "newFa": "ذرت گرم و شیرین با کره، سس مایونز و پنیر آب‌شده؛ همان ذرت مکزیکی آشنای ایرانی.",
+      "confidence": "medium",
+      "note": "Iranian cup-corn version assumed (corn, butter, mayonnaise, pizza cheese, sometimes mushroom): kitchen to confirm; Persian name spelled میکزیکی (usual: مکزیکی).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:adasi",
+      "name": "Adasi",
+      "ingredients": [
+        "lentil",
+        "potato",
+        "onion",
+        "garlic",
+        "turmeric",
+        "vegetable oil"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://www.unicornsinthekitchen.com/adasi-persian-lentil-soup-recipe/",
+      "sourceTitle": "Adasi Persian Lentil Soup Recipe • Unicorns in the Kitchen",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm no meat stock and whether butter (milk) is used, as in some recipes.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:signature-senso-mix-sandwich",
+      "name": "Signature Senso Mix Sandwich",
+      "ingredients": [
+        "bread",
+        "turkey slices",
+        "chicken slices",
+        "mushroom sauce",
+        "signature sauce",
+        "tomato",
+        "pickle",
+        "lettuce",
+        "stick chips",
+        "potato"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sandwich",
+      "sourceTitle": "Sandwich",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Bread assumed; kitchen to confirm the mushroom sauce: cream or butter (milk), flour, wine (sulphites); signature sauce and cold cuts not public (egg, mustard, soy possible).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:tongue-sandwich",
+      "name": "Tongue Sandwich",
+      "ingredients": [
+        "bread",
+        "beef tongue",
+        "mushroom sauce",
+        "fried onion",
+        "stick chips",
+        "potato"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Beef_tongue",
+      "sourceTitle": "Beef tongue",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Bread assumed; kitchen to confirm beef or lamb tongue; kitchen to confirm the mushroom sauce: cream or butter (milk), flour, wine (sulphites).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:sosis-bandari-plate",
+      "name": "Sosis Bandari Plate",
+      "ingredients": [
+        "beef sausage",
+        "onion",
+        "tomato paste",
+        "chilli pepper",
+        "spices",
+        "vegetable oil"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sosis_Bandari",
+      "sourceTitle": "Sosis Bandari",
+      "newEn": "Sausage sautéed with onion, tomato paste and chilli, in the spicy southern Iranian bandari style.",
+      "newFa": "سوسیس تفت‌داده با پیاز، رب گوجه و فلفل تند؛ به سبک بندری و خوش‌ادویه.",
+      "confidence": "medium",
+      "note": "Venue to confirm the sides (bread or fries: wheat) and the sausage (fillers can add wheat, soy, mustard).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:sosis-plate",
+      "name": "Sosis Plate",
+      "ingredients": [
+        "beef sausage",
+        "vegetable oil"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sausage",
+      "sourceTitle": "Sausage",
+      "newEn": "Golden pan-fried sausage, served as a simple café plate.",
+      "newFa": "سوسیس تفت‌داده و طلایی؛ یک بشقاب ساده و دلچسب.",
+      "confidence": "low",
+      "note": "Plate contents not public: venue to confirm the sausage and the sides (bread, fries, pickles, tomato).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:smoked-montreal-roast-beef-sandwich",
+      "name": "Smoked Montreal Roast Beef Sandwich",
+      "ingredients": [
+        "smoked roast beef",
+        "bread"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Roast_beef_sandwich",
+      "sourceTitle": "Roast beef sandwich",
+      "newEn": "Smoked Montreal-style roast beef, thinly sliced and piled into a sandwich.",
+      "newFa": "رست بیف دودی به سبک مونترال، برش‌خورده و نازک، لای نان.",
+      "confidence": "low",
+      "note": "Recipe not public: venue to confirm the bread, sauces and toppings (mustard, cheese, pickles).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:smoked-turkey-breast-sandwich",
+      "name": "Smoked Turkey Breast Sandwich",
+      "ingredients": [
+        "smoked turkey breast",
+        "bread"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sandwich",
+      "sourceTitle": "Sandwich",
+      "newEn": "Smoked turkey breast, thinly sliced and layered into a sandwich.",
+      "newFa": "سینه بوقلمون دودی، برش‌خورده و نازک، لای نان.",
+      "confidence": "low",
+      "note": "Recipe not public: venue to confirm the bread, sauces and toppings.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:smoked-chicken-breast-sandwich",
+      "name": "Smoked Chicken Breast Sandwich",
+      "ingredients": [
+        "smoked chicken breast",
+        "bread"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Chicken_sandwich",
+      "sourceTitle": "Chicken sandwich",
+      "newEn": "Smoked chicken breast, thinly sliced and layered into a sandwich.",
+      "newFa": "سینه مرغ دودی، برش‌خورده و نازک، لای نان.",
+      "confidence": "low",
+      "note": "Recipe not public: venue to confirm the bread, sauces and toppings.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:cheese-pizza",
+      "name": "Cheese Pizza",
+      "ingredients": [
+        "pizza dough",
+        "tomato sauce",
+        "mozzarella cheese",
+        "cheddar cheese",
+        "marble cheese"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Pizza",
+      "sourceTitle": "Pizza",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Tomato sauce assumed (typical, not named).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:meat-lovers-pizza",
+      "name": "Meat Lovers Pizza",
+      "ingredients": [
+        "pizza dough",
+        "mushroom sauce",
+        "steak",
+        "beef bacon",
+        "ham",
+        "beef sausage",
+        "black olive",
+        "mozzarella cheese"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Pizza",
+      "sourceTitle": "Pizza",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm the mushroom sauce: cream or butter (milk), flour, wine (sulphites); processed meats may add wheat, soy, mustard; which meat the ham is.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:persian-pizza",
+      "name": "persian pizza",
+      "ingredients": [
+        "pizza dough",
+        "tomato sauce",
+        "mozzarella cheese",
+        "cheddar cheese",
+        "beef",
+        "corn",
+        "salami",
+        "beef sausage",
+        "mushroom",
+        "red onion",
+        "green pepper",
+        "black olive"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Pizza",
+      "sourceTitle": "Pizza",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": "Kitchen to confirm the salami and sausage (fillers can add wheat, soy, mustard).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:steak-pizza",
+      "name": "Steak Pizza",
+      "ingredients": [
+        "pizza dough",
+        "garlic butter",
+        "butter",
+        "garlic",
+        "mushroom sauce",
+        "steak",
+        "mozzarella cheese",
+        "chilli",
+        "red onion"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Pizza",
+      "sourceTitle": "Pizza",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm the mushroom sauce: cream or butter (milk), flour, wine (sulphites).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:vegetarian-pizza",
+      "name": "Vegetarian Pizza",
+      "ingredients": [
+        "pizza dough",
+        "tomato sauce",
+        "cheese",
+        "mushroom",
+        "red onion",
+        "corn",
+        "bell pepper",
+        "green olive",
+        "black olive",
+        "crushed tomato",
+        "feta cheese"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Pizza",
+      "sourceTitle": "Pizza",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:papa-pizza-roast-beef",
+      "name": "Papa pizza (roast beef)",
+      "ingredients": [
+        "flat bread",
+        "mushroom",
+        "mozzarella cheese",
+        "roast beef",
+        "black olive",
+        "corn"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Pizza",
+      "sourceTitle": "Pizza",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:mama-pizza-grilled-chicken-salami-beef-bacon",
+      "name": "Mama pizza (Grilled chicken Salami,beef bacon)",
+      "ingredients": [
+        "flat bread",
+        "chicken",
+        "beef",
+        "salami",
+        "beef bacon",
+        "mozzarella cheese",
+        "tomato sauce",
+        "mushroom",
+        "black olive"
+      ],
+      "allergens": [
+        "wheat",
+        "milk"
+      ],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Pizza",
+      "sourceTitle": "Pizza",
+      "newEn": null,
+      "newFa": null,
+      "confidence": "medium",
+      "note": "Kitchen to confirm the processed meats (fillers can add wheat, soy, mustard).",
+      "contradiction": "The name lists salami; both descriptions list diced beef instead and no salami."
+    },
+    {
+      "importKey": "senso:item:canada-dry-ginger-ale",
+      "name": "Canada Dry Ginger Ale",
+      "ingredients": [
+        "carbonated water",
+        "sugar (glucose-fructose)",
+        "natural ginger flavour",
+        "citric acid"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Canada_Dry",
+      "sourceTitle": "Canada Dry",
+      "newEn": "Canada's classic dry ginger ale: crisp bubbles, light sweetness and a mild ginger bite.",
+      "newFa": "جینجر ایل کلاسیک کانادایی؛ گازدار، کمی شیرین و با طعم ملایم زنجبیل.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:coca-cola",
+      "name": "Coca Cola",
+      "ingredients": [
+        "carbonated water",
+        "sugar (glucose-fructose)",
+        "caramel colour",
+        "phosphoric acid",
+        "natural flavour",
+        "caffeine"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Coca-Cola",
+      "sourceTitle": "Coca-Cola",
+      "newEn": "Classic Coca-Cola, crisp, fizzy and served cold.",
+      "newFa": "کوکاکولای کلاسیک؛ گازدار، خنک و پرطراوت.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:mineral-water",
+      "name": "Mineral water",
+      "ingredients": [
+        "mineral water"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Mineral_water",
+      "sourceTitle": "Mineral water",
+      "newEn": "Bottled mineral water, served cold.",
+      "newFa": "آب معدنی بطری، خنک.",
+      "confidence": "high",
+      "note": "venue to confirm still or sparkling",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:extra-beef-bacon",
+      "name": "Extra Beef Bacon",
+      "ingredients": [
+        "beef bacon"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Bacon",
+      "sourceTitle": "Bacon",
+      "newEn": "An extra serving of beef bacon for your plate.",
+      "newFa": "یک سهم بیکن گوشت اضافه برای بشقاب شما.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm the product (cured beef; check its label for allergens).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:extra-bread-2-slices",
+      "name": "Extra Bread (2 Slices)",
+      "ingredients": [
+        "bread",
+        "wheat flour"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Bread",
+      "sourceTitle": "Bread",
+      "newEn": "Two extra slices of bread for your breakfast.",
+      "newFa": "دو تکه نان اضافه برای صبحانه‌ی شما.",
+      "confidence": "medium",
+      "note": "Venue to confirm the bread (barbari, sangak, toast?) and whether it has milk, egg or sesame.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:extra-sausage",
+      "name": "Extra Sausage",
+      "ingredients": [
+        "beef sausage"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sausage",
+      "sourceTitle": "Sausage",
+      "newEn": "An extra serving of sausage for your plate.",
+      "newFa": "یک سهم سوسیس اضافه برای بشقاب شما.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm the sausage (beef assumed; fillers can add wheat, soy, mustard).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:extra-egg",
+      "name": "Extra Egg",
+      "ingredients": [
+        "egg"
+      ],
+      "allergens": [
+        "egg"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Eggs_as_food",
+      "sourceTitle": "Eggs as food",
+      "newEn": "One more egg for your breakfast.",
+      "newFa": "یک تخم‌مرغ اضافه برای صبحانه‌ی شما.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:extra-sujuk",
+      "name": "Extra Sujuk",
+      "ingredients": [
+        "sujuk",
+        "beef",
+        "spices"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Sujuk",
+      "sourceTitle": "Sujuk",
+      "newEn": "Extra sujuk, the spiced Turkish beef sausage.",
+      "newFa": "سوجوک اضافه؛ سوسیس ترکی و خوش‌ادویه از گوشت گاو.",
+      "confidence": "high",
+      "note": "Sujuk is usually beef, sometimes lamb: kitchen to confirm.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:date",
+      "name": "Date",
+      "ingredients": [
+        "date"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Date_palm",
+      "sourceTitle": "Date palm",
+      "newEn": "Sweet dates on the side.",
+      "newFa": "خرمای شیرین، کنار صبحانه.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:extra-honey",
+      "name": "Extra Honey",
+      "ingredients": [
+        "honey"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Honey",
+      "sourceTitle": "Honey",
+      "newEn": "An extra serving of honey for your breakfast.",
+      "newFa": "یک سهم عسل اضافه برای صبحانه‌ی شما.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:extra-cheese",
+      "name": "Extra cheese",
+      "ingredients": [
+        "cheese"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Cheese",
+      "sourceTitle": "Cheese",
+      "newEn": "An extra portion of cheese.",
+      "newFa": "یک سهم پنیر اضافه.",
+      "confidence": "medium",
+      "note": "Venue to confirm which cheese (breakfast white cheese or pizza mozzarella).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:nutella",
+      "name": "Nutella",
+      "ingredients": [
+        "sugar",
+        "palm oil",
+        "hazelnut",
+        "skimmed milk powder",
+        "cocoa",
+        "soy lecithin"
+      ],
+      "allergens": [
+        "tree nuts",
+        "milk",
+        "soy"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Nutella",
+      "sourceTitle": "Nutella",
+      "newEn": "A side of Nutella, the sweet hazelnut and cocoa spread.",
+      "newFa": "یک سهم نوتلا، کرم شیرین فندقی و کاکائویی.",
+      "confidence": "high",
+      "note": null,
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:extra-gheymagh",
+      "name": "Extra Gheymagh",
+      "ingredients": [
+        "clotted cream"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Kaymak",
+      "sourceTitle": "Kaymak",
+      "newEn": "Another serving of gheymagh, thick Persian clotted cream.",
+      "newFa": "یک سهم دیگر قیماق؛ سرشیر غلیظ و خامه‌ای.",
+      "confidence": "medium",
+      "note": "At 16.49 this may be a full portion: venue to confirm whether honey, feta or bread (wheat) come with it.",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:extra-mushroom",
+      "name": "Extra Mushroom",
+      "ingredients": [
+        "mushroom"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Edible_mushroom",
+      "sourceTitle": "Edible mushroom",
+      "newEn": "An extra portion of mushrooms.",
+      "newFa": "یک سهم قارچ اضافه.",
+      "confidence": "medium",
+      "note": "Kitchen to confirm whether they are cooked in butter (milk).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:ginger-shot",
+      "name": "Ginger shot",
+      "ingredients": [
+        "ginger"
+      ],
+      "allergens": [],
+      "dietary": [],
+      "source": "https://en.wikipedia.org/wiki/Ginger",
+      "sourceTitle": "Ginger",
+      "newEn": "A small, fiery shot of fresh ginger.",
+      "newFa": "یک شات کوچک و تند از زنجبیل تازه.",
+      "confidence": "low",
+      "note": "Recipe not public: venue to confirm what else is in it (lemon, apple, honey, turmeric).",
+      "contradiction": null
+    },
+    {
+      "importKey": "senso:item:nabat",
+      "name": "Nabat",
+      "ingredients": [
+        "sugar"
+      ],
+      "allergens": [],
+      "dietary": [
+        "Vegan"
+      ],
+      "source": "https://en.wikipedia.org/wiki/Rock_candy",
+      "sourceTitle": "Rock candy",
+      "newEn": "Persian rock sugar, the traditional sweetener for a hot cup.",
+      "newFa": "نبات، برای شیرین کردن نوشیدنی گرم به رسم ایرانی.",
+      "confidence": "high",
+      "note": "Venue to confirm plain or saffron nabat.",
+      "contradiction": null
+    }
+  ]
+}

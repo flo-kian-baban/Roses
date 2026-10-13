@@ -49,7 +49,7 @@ export function reduce(m: Menu, a: Action): Menu {
   }
 }
 
-export type Filter = 'all' | 'price' | 'draft' | 'fa' | 'photo' | 'season' | 'none';
+export type Filter = 'all' | 'price' | 'draft' | 'fa' | 'photo' | 'season' | 'allergens' | 'none';
 export type Need = Exclude<Filter, 'all' | 'none'>;
 
 export function listingProblem(i: { price: number | null; variants: Variant[] }): string | null {
@@ -70,14 +70,16 @@ export function seasonState(i: EditorItem, ctx: Seasons | null): 'out' | 'none' 
   if (ctx.seasonalId && i.placements.some((p) => p.section_id === ctx.seasonalId) && !i.seasons.includes(ctx.season)) return 'none';
   return null;
 }
-export const needs = (i: EditorItem, ctx: Seasons | null = null) => ({ price: !!listingProblem(i), draft: i.fa_draft.length > 0, fa: persianMissing(i), photo: !i.photo, season: !!seasonState(i, ctx) });
+// allergens: allergen or dietary notes drafted from research, waiting for an owner's or admin's Confirm (Kian, 2026-10-12; the bar shows it to them only)
+export const notesToConfirm = (i: EditorItem) => !!i.drafts?.some((f) => f === 'allergens' || f === 'dietary');
+export const needs = (i: EditorItem, ctx: Seasons | null = null) => ({ price: !!listingProblem(i), draft: i.fa_draft.length > 0, fa: persianMissing(i), photo: !i.photo, season: !!seasonState(i, ctx), allergens: notesToConfirm(i) });
 export const seasonsCtx = (m: Menu, season: SeasonId): Seasons => ({ season, seasonalId: m.sections.find((s) => s.seasonal)?.id ?? null });
 export const SEASON_NAMES: Record<SeasonId, string> = { fall: 'Fall', winter: 'Winter', spring: 'Spring', summer: 'Summer' };
 
 // Counts for the Needs-attention bar; "none" = items in no section (hidden from customers until moved; Kian, 2026-10-08).
 export function attention(m: Menu, ctx: Seasons | null = null): Record<Exclude<Filter, 'all'>, number> {
-  const c = { price: 0, draft: 0, fa: 0, photo: 0, season: 0, none: m.orphans.filter((id) => m.items[id]).length };
-  for (const i of Object.values(m.items)) { const n = needs(i, ctx); if (n.price) c.price++; if (n.draft) c.draft++; if (n.fa) c.fa++; if (n.photo) c.photo++; if (n.season) c.season++; }
+  const c = { price: 0, draft: 0, fa: 0, photo: 0, season: 0, allergens: 0, none: m.orphans.filter((id) => m.items[id]).length };
+  for (const i of Object.values(m.items)) { const n = needs(i, ctx); if (n.price) c.price++; if (n.draft) c.draft++; if (n.fa) c.fa++; if (n.photo) c.photo++; if (n.season) c.season++; if (n.allergens) c.allergens++; }
   return c;
 }
 

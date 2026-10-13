@@ -1,0 +1,33 @@
+{
+  "about": "Allergen and dietary words as customers read them, and the general allergy notice (Kian via the PM, 2026-10-12). Read by src/lib/allergens.ts (the app) and by the research tools and drill. allergens: Health Canada's priority food allergens (crustaceans and molluscs, egg, fish, milk, mustard, peanuts, sesame, soy, sulphites, tree nuts, wheat and triticale) plus the other gluten sources (barley, oats, rye). ownerWords: the admin's suggested words (its placeholder), shown in Persian too. dietary: the only words the research drafts may carry. notice: on every venue's page; the Persian is a draft for Kian's review.",
+  "allergens": [
+    { "en": "milk", "fa": "شیر" },
+    { "en": "egg", "fa": "تخم‌مرغ" },
+    { "en": "wheat", "fa": "گندم" },
+    { "en": "barley", "fa": "جو" },
+    { "en": "oats", "fa": "جو دوسر" },
+    { "en": "rye", "fa": "چاودار" },
+    { "en": "tree nuts", "fa": "مغزهای درختی" },
+    { "en": "peanuts", "fa": "بادام‌زمینی" },
+    { "en": "sesame", "fa": "کنجد" },
+    { "en": "soy", "fa": "سویا" },
+    { "en": "mustard", "fa": "خردل" },
+    { "en": "fish", "fa": "ماهی" },
+    { "en": "crustaceans", "fa": "سخت‌پوستان" },
+    { "en": "molluscs", "fa": "نرم‌تنان" },
+    { "en": "sulphites", "fa": "سولفیت" }
+  ],
+  "ownerWords": [
+    { "en": "nuts", "fa": "مغزها" },
+    { "en": "dairy", "fa": "لبنیات" },
+    { "en": "gluten", "fa": "گلوتن" }
+  ],
+  "dietary": [
+    { "en": "Vegetarian", "fa": "گیاهی" },
+    { "en": "Vegan", "fa": "وگان" }
+  ],
+  "notice": {
+    "en": "Please tell your server about any allergies before ordering. Our dishes may contain or come into contact with common allergens.",
+    "fa": "لطفاً پیش از سفارش، هرگونه حساسیت غذایی را به همکاران ما اطلاع دهید. غذاهای ما ممکن است حاوی مواد حساسیت‌زای رایج باشند یا با آن‌ها در تماس قرار بگیرند."
+  }
+}

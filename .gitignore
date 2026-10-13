@@ -31,3 +31,6 @@ reports/**/*.webm
 # The performance fixture (scripts/perf-fixture.mjs): a dump and a copy of the uploads, stored under this fixed path, never committed
 /perf-fixture/
 .next-perf/
+# The admin audit (the PM, 2026-10-12): its mockups and screenshots stay on disk, the findings and the measuring script are committed
+reports/admin-audit/mockups/
+reports/admin-audit/shots/

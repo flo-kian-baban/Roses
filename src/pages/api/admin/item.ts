@@ -4,6 +4,8 @@
 //   update  { action:'update', id, patch:{ name, description, price, variants, add_ons, components, serves, photo:{url,alt}, listed, section_ids, seasons } }
 //           seasons: any of fall, winter, spring, summer (none = all year)
 //   notes   { action:'notes', id, notes }                                            owner or admin only (403)
+//   confirm { action:'confirm', id }   owner or admin only (403): the allergen and dietary notes drafted from research are confirmed as
+//           they stand (Kian, 2026-10-12): their draft flags go, so the public popup shows them ("Contains: …"); one record, Undo puts them back
 //   move    { action:'move', id, section_id, index }                                 order within one section
 //   delete  { action:'delete', id }
 import { jsonRoute, ApiError, revalidateVenue, biOf, moneyOf, boolOf, idOf, str, photoOf, type JsonBody } from '@/lib/admin/api';
@@ -59,6 +61,7 @@ export default jsonRoute(async ({ res, session, body }) => {
   let r;
   if (body.action === 'update') r = await updateItem(id, readPatch((body.patch && typeof body.patch === 'object' ? body.patch : {}) as JsonBody), by);
   else if (body.action === 'notes') { if (!canEditNotes(session)) throw new ApiError(403, 'Allergen, dietary and halal notes are set by the owner or an admin only'); r = await updateItem(id, { notes: readNotes(body.notes) }, by); }
+  else if (body.action === 'confirm') { if (!canEditNotes(session)) throw new ApiError(403, 'Allergen and dietary notes are confirmed by the owner or an admin only'); r = await updateItem(id, { drafts: (item.drafts ?? []).filter((f) => f !== 'allergens' && f !== 'dietary') }, by); }
   else if (body.action === 'move') {
     const m = await moveItem(idOf(body.section_id), id, Number(body.index), by);
     if (!m.ok) throw new ApiError(400, m.error);

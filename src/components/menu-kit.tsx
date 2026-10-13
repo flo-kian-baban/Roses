@@ -7,6 +7,7 @@
 import type { ReactNode } from 'react';
 import type { Item, Section } from '@/lib/types';
 import { price } from '@/lib/format';
+import { allergenFa, dietaryFa } from '@/lib/allergens';
 import { Bi } from './Bi';
 
 export const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9؀-ۿ]+/g, '-').replace(/^-|-$/g, '');
@@ -111,18 +112,19 @@ function Detail({ item }: { item: Item }) {
 // The owner's allergen, dietary and halal notes (ruling 10: optional per item, set by the owner or an admin; Kian, 2026-10-08:
 // shown to customers in the popup). The last group of the popup, under Good to know; only what is set appears: halal as a
 // chip, each dietary word as a chip, the allergens as "Contains …", then the free note in both languages. Nothing of it on
-// the rows or cards.
+// the rows or cards. Since 2026-10-12 (Kian via the PM): "Contains: …" in English and Persian, the allergen and dietary words in Persian
+// from src/lib/allergens.ts; notes still drafted from research never get here (src/lib/menu.ts removes them until they are confirmed).
 function GoodToKnow({ item }: { item: Item }) {
   const n = item.notes;
   if (!n) return null;
-  const chips = [...(n.halal === true ? [{ en: 'Halal', fa: 'حلال' }] : n.halal === false ? [{ en: 'Not halal', fa: 'غیر حلال' }] : []), ...n.dietary.map((d) => ({ en: d, fa: d }))];
+  const chips = [...(n.halal === true ? [{ en: 'Halal', fa: 'حلال' }] : n.halal === false ? [{ en: 'Not halal', fa: 'غیر حلال' }] : []), ...n.dietary.map((d) => ({ en: d, fa: dietaryFa(d) }))];
   const hasText = !!(n.text?.en || n.text?.fa);
   if (!chips.length && !n.allergens.length && !hasText) return null;
   return (
     <Group data-notes="" title={<><span lang="en">Good to know</span><span lang="fa" dir="rtl">نکات</span></>}>
       <div className="sheet-notes">
         {chips.length > 0 && <p className="chips">{chips.map((c, i) => <span key={i} className="chip"><span lang="en">{c.en}</span><span lang="fa" dir="rtl">{c.fa}</span></span>)}</p>}
-        {n.allergens.length > 0 && <p className="contains"><span lang="en">Contains {n.allergens.join(', ')}</span><span lang="fa" dir="rtl">حاوی {n.allergens.join('، ')}</span></p>}
+        {n.allergens.length > 0 && <p className="contains"><span lang="en">Contains: {n.allergens.join(', ')}</span><span lang="fa" dir="rtl">حاوی: {n.allergens.map(allergenFa).join('، ')}</span></p>}
         {hasText && <Bi as="p" text={n.text} className="note" />}
       </div>
     </Group>

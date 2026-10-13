@@ -1,7 +1,7 @@
 'use client';
 // The item editor: a side panel on laptops, full screen on phones. Basics (always visible: name, price with "+ Sizes" and "+ Choices",
-// photo, section, seasons, shown), Good to know (owner and admin: allergen, diet and halal chips), More (one tap: description, sizes,
-// order, serves) and Advanced (collapsed: choices, combo parts, delete). Kian via the PM, 2026-10-13, after the admin audit: chips for
+// photo, section, seasons, shown), More (one tap: description, sizes, order, serves), Advanced (collapsed: choices, combo parts, delete)
+// and, for the owner and admins, Good to know (allergen, diet and halal chips, always open). Kian via the PM, 2026-10-13, after the admin audit: chips for
 // the notes (GoodToKnow.tsx), inline rows for sizes and choices with "Copy to other items…" (Choices.tsx), one section picker
 // (SectionPicker.tsx). The single "Price and choices" block of the audit waits for Kian. Every field saves itself on change; there is no Save button. Seasons (Kian, 2026-10-12): four chips in Basics, Fall /
 // Winter / Spring / Summer; none selected = all year; a season chosen hides the item everywhere outside it. Research drafts (Kian, 2026-10-12):
@@ -77,9 +77,6 @@ export function ItemPanel({ item, venueId, sections, items, sectionId, canNotes,
           </label>
         </div>
 
-        {/* Good to know: allergens, diet, halal, the note (owner and admin; Kian via the PM, 2026-10-13) */}
-        {canNotes && <GoodToKnow item={item} onNotes={onNotes} onConfirm={onConfirm} setErr={setErr} />}
-
         {/* More */}
         <button type="button" onClick={() => setMore((m) => !m)} aria-expanded={more} className="mt-6 flex w-full items-center justify-between rounded-2xl bg-fill px-4 py-3 text-left font-semibold"><span>More</span><Icon name="down" className={`h-5 w-5 text-ink-muted transition ${more ? 'rotate-180' : ''}`} /></button>
         {more && (
@@ -115,6 +112,10 @@ export function ItemPanel({ item, venueId, sections, items, sectionId, canNotes,
             </div>
           </div>
         )}
+
+        {/* Good to know: allergens, diet, halal, the note (owner and admin; Kian via the PM, 2026-10-13); below More and Advanced so those
+            stay right under the basics (the re-measure of 2026-10-13: above them it pushed them about 1,100 px down), one tap each all the same */}
+        {canNotes && <GoodToKnow item={item} onNotes={onNotes} onConfirm={onConfirm} setErr={setErr} />}
       </div>
       {copying !== null && <CopyChoicesSheet item={item} group={copying} sections={sections} items={items} onCopy={(ids) => onCopy(copying, ids)} onClose={() => setCopying(null)} />}
     </div>

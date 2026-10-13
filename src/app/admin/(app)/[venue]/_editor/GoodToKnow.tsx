@@ -18,6 +18,7 @@ export function GoodToKnow({ item, onNotes, onConfirm, setErr }: { item: EditorI
   const [n, setN] = useState<Notes>(item.notes);
   const [other, setOther] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(!!(item.notes.text?.en || item.notes.text?.fa)); // the note fields only once asked for (or when there is a note)
   const key = JSON.stringify(item.notes);
   useEffect(() => { setN(JSON.parse(key)); }, [key]);
   const draftA = item.drafts.includes('allergens'), draftD = item.drafts.includes('dietary');
@@ -61,8 +62,10 @@ export function GoodToKnow({ item, onNotes, onConfirm, setErr }: { item: EditorI
           ))}
         </div>
       </div>
-      <TextField label="Note for customers" value={n.text?.en} onCommit={(v) => save({ ...n, text: { ...(n.text ?? { en: null, fa: null }), en: v } })} />
-      <TextField label="Note for customers (فارسی)" value={n.text?.fa} dir="rtl" lang="fa" onCommit={(v) => save({ ...n, text: { ...(n.text ?? { en: null, fa: null }), fa: v } })} />
+      {noteOpen || n.text?.en || n.text?.fa ? <>
+        <TextField label="Note for customers" value={n.text?.en} onCommit={(v) => save({ ...n, text: { ...(n.text ?? { en: null, fa: null }), en: v } })} />
+        <TextField label="Note for customers (فارسی)" value={n.text?.fa} dir="rtl" lang="fa" onCommit={(v) => save({ ...n, text: { ...(n.text ?? { en: null, fa: null }), fa: v } })} />
+      </> : <button type="button" className={`${chipCls(false, false)} border-dashed`} onClick={() => setNoteOpen(true)}>+ Note for customers</button>}
     </section>
   );
 }

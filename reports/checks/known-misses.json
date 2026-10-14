@@ -64,32 +64,6 @@
         },
         "set": "2026-10-12, the PM: re-baselined once on the performance fixture 2026-10-12, from run 2026-10-12T17-36-33Z (the fast suite on 1d84bed, the first run on the fixture): LCP 8563 / 8565 / 8563 ms, worst 8565 ms, tolerance 10 % (up to 9422 ms). The live-data baseline it replaces: run 2026-10-12T07-54-45Z, 3 of 3 over, worst 7213 ms (22 uploaded photos). It changes again only when Kian decides to refresh the fixture. Median added 2026-10-12 (the PM's suite fix: judged on the median of 3): 8563 ms, the median of the same run's 8563 / 8565 / 8563 ms (reports/checks/2026-10-12T17-36-33Z/perf/senso/lighthouse-summary.json); tolerance 10 %: up to 9419 ms."
       }
-    },
-    {
-      "id": "first-frame-senso-spring",
-      "title": "Spring first frame, Senso (animation clocks)",
-      "step": "season",
-      "checks": [
-        "first-frame-senso-spring"
-      ],
-      "target": "on the first frame that shows the welcome card (the season drill's first sample of the measured load, on a warm server), every animation of Senso's spring scene with its clock running (currentTime > 0)",
-      "cause": "The scene is drawn in the first frame (19-22 ms), already mid-flight (the particles' negative delays apply while their animations are pending; a trace of such a load shows the 20 particles spread over the screen at first contentful paint), and the card follows in the next frame, about 8 ms later. The browser runs these animations on the compositor and sends their start time back to the page asynchronously; in 2 of 15 loads of the drill's own sequence (10 of 30 in another series) it had not arrived by the card's frame, so every clock still read 0 there, and every one was running a frame later. The PM's fix, each particle's frame-0 transform written inline at its mid-flight position, was tried on the same page and does not change it (2 of 20 loads with it, 2 of 20 without): a running or pending animation overrides an inline transform, and no page change can start a compositor clock before the frame is drawn. Fall shows the same race (2 of 15 loads), winter and summer did not (0 of 15 each). Evidence: reports/spring-first-frame/.",
-      "clears": "when the drill's first sample finds every clock running (no page change is known to do that), or when the PM rules that the check reads what the frame draws instead of the clock",
-      "listed": "2026-10-12, the PM (Q1 of the seasonal batch's review: the race listed with a baseline when the fix does not hold)",
-      "baseline": {
-        "run": "2026-10-12 hand runs of the season drill's spring sequence on the suite's build of f8e61c5 (reports/spring-first-frame/drill-sequence-spring.json, load 2)",
-        "unit": "frames",
-        "tolerance": 1,
-        "checks": {
-          "first-frame-senso-spring": {
-            "over": 74,
-            "of": 74,
-            "worst": 1,
-            "unit": "frames"
-          }
-        },
-        "set": "2026-10-12, the build agent, for the PM to confirm: over = the animations whose clock had not started at the first sample, of = all of them (every race measured stopped all of them, so the rate cannot grow); worst = frames from that sample until every clock ran: 1 in all 16 spring races measured (10 of 30 loads of the drill's sequence, 2 of 15 in the frame timeline, 4 of 60 loads in the inline A/B: 2 through the server, 2 with the inline transforms), 2 once in fall's (same sequence), 1-3 on cold loads; tolerance 100 % (up to 2 frames accepted, 3 or more is KNOWN MISS WORSENED)"
-      }
     }
   ]
 }

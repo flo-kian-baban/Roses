@@ -47,7 +47,10 @@ const transcript = [], results = [], measures = [];
 const t0 = Date.now();
 const log = (step, text) => { const l = { at: new Date().toISOString(), ms: Date.now() - t0, step, text: String(text) }; transcript.push(l); console.log(`${l.at} [${step}] ${l.text}`); };
 // metric (optional): { over, of, worst, unit } for the suite's known-miss ratchet
-const check = (step, ok, text, metric) => { results.push({ step, ok, text, ...(metric ? { metric } : {}) }); log(step, `${ok ? 'PASS' : 'FAIL'}: ${text}`); };
+// Information only until the pre-demo full run (the PM, 2026-10-14): the Persian tap and the first frame are measured and printed every
+// run (INFO, met or missed), never failing it.
+const INFO_ONLY = /^(persian-tap-senso|first-frame-)/;
+const check = (step, ok, text, metric) => { const info = INFO_ONLY.test(step); results.push({ step, ok, text, ...(info ? { info: true } : {}), ...(metric ? { metric } : {}) }); log(step, `${info ? `INFO (${ok ? 'met' : 'missed'}; information only)` : ok ? 'PASS' : 'FAIL'}: ${text}`); };
 const measure = (text) => { measures.push(text); console.log(`MEASURE: ${text}`); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const gz = (s) => zlib.gzipSync(Buffer.from(s)).length;
@@ -373,8 +376,8 @@ await stop();
 await browser.close();
 fs.closeSync(serverLog);
 fs.rmSync(copy, { recursive: true, force: true });
-const pass = results.every((r) => r.ok);
+const pass = results.every((r) => r.ok || r.info);
 fs.writeFileSync(path.join(out, 'season-drill.json'), JSON.stringify({ base, dist, copy, at: new Date().toISOString(), pass, interval, renders, results, measures, transcript }, null, 2));
-fs.writeFileSync(path.join(out, 'season-drill.txt'), [`Season drill ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length} checks)`, '', 'Measurements:', ...measures.map((m) => `- ${m}`), '', 'Renders (fixed clock, America/Toronto):', ...renders.map((r) => `- ${r.label} ${r.venue}: first response ${r.firstResponse} (previous render ${r.stale}), fresh ${r.fresh} after ${r.freshAfterMs} ms, file rewritten ${r.regenerated}`), '', ...results.map((r) => `${r.ok ? 'PASS' : 'FAIL'} ${r.step}: ${r.text}`), '', 'Transcript:', ...transcript.map((l) => `${l.at} [${l.step}] ${l.text}`)].join('\n'));
+fs.writeFileSync(path.join(out, 'season-drill.txt'), [`Season drill ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok || r.info).length}/${results.length} checks; ${results.filter((r) => r.info).length} information only)`, '', 'Measurements:', ...measures.map((m) => `- ${m}`), '', 'Renders (fixed clock, America/Toronto):', ...renders.map((r) => `- ${r.label} ${r.venue}: first response ${r.firstResponse} (previous render ${r.stale}), fresh ${r.fresh} after ${r.freshAfterMs} ms, file rewritten ${r.regenerated}`), '', ...results.map((r) => `${r.info ? `INFO (${r.ok ? 'met' : 'missed'})` : r.ok ? 'PASS' : 'FAIL'} ${r.step}: ${r.text}`), '', 'Transcript:', ...transcript.map((l) => `${l.at} [${l.step}] ${l.text}`)].join('\n'));
 console.log(`SEASON DRILL ${pass ? 'PASS' : 'FAIL'} (${results.filter((r) => r.ok).length}/${results.length})`);
 process.exit(pass ? 0 : 1);

@@ -22,8 +22,8 @@
 // failure fails the run as before. The rules are proven on simulated readings at the start of every run (network-watch-selftest.mjs).
 // Fast and full (the PM, 2026-10-12): npm run check (fast, for batches) runs every step, with the transition drill's browser checks
 // (Chromium and the WebKit 3-run timing) on the four versions the venue has chosen now and the served HTML and size of all 40;
-// npm run check:full (--full) runs everything, the transition drill on all 40 versions. check:full is required before every merge to
-// main; report.md says which one ran. Known-miss ratchet (the PM, the same day): every entry of known-misses.json records a baseline
+// npm run check:full (--full) runs everything, the transition drill on all 40 versions. The gate (Kian, 2026-10-14, until the owner
+// demo): npm run check for every merge to main; check:full once before the owner demo and once before go-live; report.md says which ran. Known-miss ratchet (the PM, the same day): every entry of known-misses.json records a baseline
 // per listed check ({ over, of, worst } of the run it names); a run in which a listed check measures worse (more samples over the
 // target, as a rate when the run measured a different number of samples; or a worse worst value beyond the entry's noise tolerance)
 // fails with KNOWN MISS WORSENED, printed with the baseline and the measurement.
@@ -338,6 +338,11 @@ try {
     const r = await run('node', ['scripts/network-watch-selftest.mjs'], { logFile: 'network-watch-selftest.txt' });
     return { pass: r.status === 0, evidence: ['network-watch-selftest.txt'], note: (r.stdout.trim().split('\n').pop() || '').trim() };
   }, 'network-selftest');
+
+  await step('the two timing rules, self-test (the PM, 2026-10-13: the Persian tap at most 2 of 40 over 50 ms and none over 100 ms, the pre-fix baseline of 16 of 40 still failing; the first frame judged by where the particles are drawn), on recorded runs and built samples', async () => {
+    const r = await run('node', ['scripts/timing-rules-selftest.mjs'], { logFile: 'timing-rules-selftest.txt' });
+    return { pass: r.status === 0, evidence: ['timing-rules-selftest.txt'], note: (r.stdout.trim().split('\n').pop() || '').trim() };
+  }, 'timing-selftest');
 
   await step(`servers on ${PORT} and ${PROXY_PORT} (TRUST_PROXY=1), ports picked free at start, each port's listener the process the suite spawned`, async () => {
     for (const p of [PORT, PROXY_PORT]) if (!(await portFree(p, '127.0.0.1')) || !(await portFree(p, '::1'))) return { pass: false, note: `port ${p} was taken after it was picked; whatever listens there is left alone` };
@@ -655,7 +660,7 @@ const cell = (t) => String(t ?? '').replace(/\|/g, '\\|').replace(/\s+/g, ' ');
 const knownStatus = (k) => !k.run ? '**NOT RUN** (the suite stopped before its step)' : k.run.status === 'KNOWN MISS WORSENED' ? `**KNOWN MISS WORSENED** (fails the run: ${k.run.checks.filter((c) => c.worsened).length} of ${k.run.checks.length} listed checks measured worse than their baseline)` : k.run.status === 'KNOWN MISS' ? `**KNOWN MISS** (${k.run.checks.filter((c) => !c.ok).length} of ${k.run.checks.length} listed checks missed their target)` : k.run.status === 'NOW PASSING' ? '**NOW PASSING**: every listed check met its target in this run (reported; the entry stays until its clearing condition is met)' : `**${k.run.status}** (fails the run)`;
 const lines = [
   `# Check suite — ${stamp.replace('T', ' ').replace(/-(\d\d)-(\d\d)Z$/, ':$1:$2Z')}`, '',
-  `**Suite: ${FULL ? 'full** (`npm run check:full`: the transition drill on all 40 versions; required before every merge to main)' : 'fast** (`npm run check`: the transition drill\'s browser checks on the four versions chosen now, the served HTML and size of all 40; not enough for a merge to main, which needs `npm run check:full`)'}`, '',
+  `**Suite: ${FULL ? 'full** (`npm run check:full`: the transition drill on all 40 versions; run once before the owner demo and once before go-live, Kian 2026-10-14)' : 'fast** (`npm run check`: the transition drill\'s browser checks on the four versions chosen now, the served HTML and size of all 40; not enough for a merge to main, which needs `npm run check:full`)'}`, '',
   `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, ${KNOWN_FILE} included) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server), ${PERF_PORT} (the performance fixture's server); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
   `Scratch copy: ${scratchName} from a pg_dump of ${workName}; ${uploadsNote}.`, '',
   `Performance fixture (Lighthouse\'s regression checks run on it, the PM 2026-10-12): ${perfNote}; its own build ${PERF_DIST} and server on port ${PERF_PORT}.`, '',

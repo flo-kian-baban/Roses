@@ -13,8 +13,10 @@
 //     control ages it by 3000 s and must not regenerate; the interval comes from the prerender manifest (initialRevalidateSeconds);
 //   Senso's artwork (Kian's picks): on every season's server (summer since 2026-10-10: the Persian sun with sparkles, motes and a
 //     few dandelion seeds, its own engine; spring since 2026-10-11: five blossoms and the rosebud, its own engine), 20 particles of the picked designs at most 2 near, present and
-//     mid-flight on the first sample (negative delays; every animation's clock running there is its own check since 2026-10-12, first-frame-<venue>-<season>,
-//     measured for the ratchet: spring's is a listed known miss, the compositor's start report racing the card's frame, reports/spring-first-frame/; on a warm server since 2026-10-12, the PM: the page loaded once and its uploaded
+//     mid-flight on the first sample (negative delays; first-frame-<venue>-<season> since 2026-10-12, judged since the PM's ruling of 2026-10-13 by
+//     where the particles are drawn, scripts/timing-rules.mjs: at least 3/4 inside the screen, in at least 3 of 4 vertical quarters, none stacked above
+//     the top edge; the animation clocks, which the compositor's start report can leave pending at that frame (reports/spring-first-frame/), are
+//     printed as information; on a warm server since 2026-10-12, the PM: the page loaded once and its uploaded
 //     photos fetched once first, after one cold sample printed as information, "cold, local only"), transform and opacity only, no other season in the HTML; smoothness on the
 //     iPhone 13 viewport with CPU throttled 4×: 5 s of requestAnimationFrame, median ≥ 50 fps and no long task > 50 ms, reported as
 //     measured; randomness: two loads differ in designs and parameters; the reduced-motion still; recordings (webm, on disk only) and
@@ -33,6 +35,7 @@ import net from 'node:net';
 import { spawn, execFileSync, spawnSync } from 'node:child_process';
 import { chromium, devices } from 'playwright';
 import { connectDb, loadEnv } from './load-env.mjs';
+import { FIRST, firstFrameRule } from './timing-rules.mjs';
 import { compare, compareCss, extract } from './welcome-fixture.mjs';
 
 loadEnv();
@@ -284,9 +287,7 @@ for (const v of venues.filter((x) => ART_VENUES.includes(x))) {
     // for one of them (/uploads/, preloaded for the first row) on a fresh server holds the first paint, so the first load after a start is
     // a server's cold start, not the page. One cold sample is taken first and printed as information (cold, local only: the hosted site
     // serves the photos from storage); then the page is loaded once and every uploaded photo it names fetched once, and the check is measured.
-    const FIRST = () => new Promise((res) => { const tick = () => { const w = document.getElementById('welcome'); if (w && w.querySelector('button[data-lang]')) { const s = w.querySelector('.scene'); const anims = s ? s.getAnimations({ subtree: true }) : []; const r = { t: Math.round(performance.now()), particles: s ? s.querySelectorAll('.p').length : 0, animations: anims.length, notRunning: anims.filter((a) => !(a.currentTime > 0)).length, midFlight: anims.length > 0 && anims.every((a) => a.currentTime > 0), minCurrent: Math.round(Math.min(...anims.map((a) => a.currentTime))), atZero: anims.filter((a) => !(a.currentTime > 0)).slice(0, 4).map((a) => `${a.animationName || a.constructor.name}${a.pending ? ' (pending)' : ''} on ${(a.effect && a.effect.target && (a.effect.target.getAttribute('class') || a.effect.target.tagName)) || '?'}`), frames: 0 };
-      // when a clock has not started at the sample: the frames until every one runs (counted after the sample, which is taken as before; 61 = not within 60 frames)
-      if (!r.notRunning) return res(r); const wait = () => { r.frames++; if (s.getAnimations({ subtree: true }).every((a) => a.currentTime > 0) || r.frames > 60) res(r); else requestAnimationFrame(wait); }; requestAnimationFrame(wait); } else requestAnimationFrame(tick); }; tick(); });
+    // the in-page sample (positions and clocks) and its judgement: scripts/timing-rules.mjs, shared with the evidence scripts
     { const cctx = await browser.newContext(DEVICE); const cp = await cctx.newPage(); await cp.goto(`${base}/${v}`, { waitUntil: 'commit' }); const cold = await cp.evaluate(FIRST);
       measure(`${v} ${season}: cold, local only (the first load after the server's start, before the warm-up; information, not a check): the first frame that shows the card ${cold.t} ms after navigation, ${cold.particles} particles, ${cold.animations} animations, the earliest ${cold.minCurrent} ms into its cycle (mid-flight: ${cold.midFlight}${cold.notRunning ? `; ${cold.notRunning} clock(s) not started, every one running ${cold.frames} frame(s) later` : ''})`);
       await cp.waitForLoadState('load', { timeout: 8000 }).catch(() => {}); await cctx.close(); }
@@ -302,9 +303,10 @@ for (const v of venues.filter((x) => ART_VENUES.includes(x))) {
     const onlyTO = a.props.every((x) => x === 'transform' || x === 'opacity');
     const picked = ph.designs[season] || [], fixed = season === 'summer' ? ['Uflames', 'Uspark', 'Umote'] : []; // summer: the sun, sparkles and motes are fixed parts of the scene, the seeds are picked
     check(`artwork-${v}-${season}`, ph.scenes.join() === season && ph.engine[season] === { fall: 'leaves', winter: 'snow', spring: 'bloom', summer: 'sun' }[season] && a.particles === 20 && a.near <= 2 && a.used.every((u) => picked.includes(u.slice(1)) || fixed.includes(u.slice(1))) && first.particles === 20 && a.running > 0 && onlyTO && errors.length === 0, `${v} ${season} (server clock ${SEASON_INSTANT[season]}): the HTML carries the ${ph.scenes.join('+')} scene only (engine ${ph.engine[season]}, designs ${picked.join(', ')}); on the first frame that shows the card (${first.t} ms after navigation; the engine runs before the card is parsed) the scene already holds ${first.particles} particles (their clocks: first-frame-${v}-${season}); ${a.particles} particles (${a.near} near), designs used ${a.used.join(', ')}, ${a.running} animations on ${a.props.join(', ') || 'nothing'} (transform and opacity only: ${onlyTO}); page errors ${errors.length}`);
-    // The clock condition, its own check since 2026-10-12 (the PM: keep it strict; spring's is a listed known miss): on the same first sample, every
-    // animation's clock running (currentTime > 0). Measured for the ratchet: the animations whose clock had not started, of all, and the frames until every one ran.
-    check(`first-frame-${v}-${season}`, first.animations > 0 && first.notRunning === 0, `${v} ${season}: on the first frame that shows the card (${first.t} ms after navigation) every one of the scene's ${first.animations} animations has its clock running (currentTime > 0): ${first.midFlight} (${first.notRunning} not started; the earliest ${first.minCurrent} ms into its cycle${first.atZero && first.atZero.length ? `; at 0: ${first.atZero.join(', ')}` : ''}${first.notRunning ? `; every one running ${first.frames > 60 ? 'not within 60 frames' : `${first.frames} frame(s) later`}` : ''})`, { over: first.notRunning, of: first.animations, worst: first.frames, unit: 'frames' });
+    // The first frame, judged by where the particles are drawn (the PM, 2026-10-13, replacing the clock condition of 2026-10-12): at least 3/4
+    // inside the screen, in at least 3 of the 4 vertical quarters, none stacked above the top edge; the clocks are printed as information.
+    const ff = firstFrameRule(first);
+    check(`first-frame-${v}-${season}`, ff.pass, `${v} ${season}: the first frame that shows the card (${first.t} ms after navigation), judged by where its particles are drawn: ${ff.text}${first.atZero && first.atZero.length ? `; at 0: ${first.atZero.join(', ')}` : ''}`);
     const page2 = await ctx.newPage(); await page2.goto(`${base}/${v}`, { waitUntil: 'domcontentloaded' }); await page2.waitForLoadState('load', { timeout: 8000 }).catch(() => {}); await sleep(300);
     const b = await page2.evaluate(PROBE);
     const sameStyles = a.styles.filter((s, i) => s === b.styles[i]).length;

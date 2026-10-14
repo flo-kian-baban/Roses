@@ -224,6 +224,17 @@ const cookie = await cookieOf(laptop);
   check('tap-to-edit-section', nameField === sec.name, `tapped the "${sec.name}" heading in the preview → Rename section sheet with "${nameField}"`);
   await l.keyboard.press('Escape'); await l.waitForSelector('[role=dialog][aria-label="Rename section"]', { state: 'detached' });
 }
+{ // a sheet opened from inside the item editor on a wide screen (Kian, 2026-10-14: the "Move to…" sheet painted under the Menu tab's sticky
+  // bars, its title cut, the top bar not dimmed, because the editor column is its own layer): the sheet is rendered at the top of the page
+  await l.click(`[data-item="${itemId}"] button[aria-label^="Edit"]`); await l.waitForSelector('.item-panel');
+  await l.click('.item-panel [data-section-picker]'); await l.waitForSelector('[role=dialog][aria-label^="Move “"]'); await sleep(400);
+  const top = await l.evaluate(() => { const d = document.querySelector('[role=dialog][aria-label^="Move “"]'), t = d.querySelector('h2'), r = t.getBoundingClientRect(), hit = document.elementFromPoint(r.left + 6, r.top + r.height / 2), bar = document.elementFromPoint(40, 20); // the top bar's left end (its centre may hold the Saved · Undo toast, above sheets by design)
+    return { wide: !!document.querySelector('.item-panel.sticky'), outsidePanel: !d.closest('.item-panel'), titleOnTop: !!hit && (hit === t || t.contains(hit)), topBarDimmed: !!bar && d.contains(bar) }; });
+  await snap(l, 'sheet-from-editor');
+  check('sheet-on-top', top.wide && top.outsidePanel && top.titleOnTop && top.topBarDimmed, `laptop 1440 × 900 (the editor as a column: ${top.wide}): the section picker's sheet, opened from the item editor, is rendered outside the editor (${top.outsidePanel}), its title on top of everything (${top.titleOnTop}), its dim over the top bar too (${top.topBarDimmed})`);
+  await l.keyboard.press('Escape'); await l.waitForSelector('[role=dialog][aria-label^="Move “"]', { state: 'detached' });
+  if (await l.locator('.item-panel').count()) await l.click('.item-panel button:has-text("Close")'); // Escape may close the editor too
+}
 const dragIt = async (fromBox, toBox, toY) => { await l.mouse.move(fromBox.x + 12, fromBox.y + fromBox.height / 2); await l.mouse.down(); await l.mouse.move(fromBox.x + 12, fromBox.y + fromBox.height / 2 + 8, { steps: 3 }); await l.mouse.move(toBox.x + 60, toY, { steps: 12 }); await l.mouse.move(toBox.x + 61, toY + 1); await l.mouse.up(); };
 const rowsOf = (sid) => l.$$eval(`#sec-${sid} [data-item]`, (els) => els.map((e) => e.dataset.item));
 const listedIds = async () => new Set((await db.query('select id from items where listed and venue_id = $1', [VENUE])).rows.map((r) => r.id));

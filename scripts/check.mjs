@@ -339,11 +339,6 @@ try {
     return { pass: r.status === 0, evidence: ['network-watch-selftest.txt'], note: (r.stdout.trim().split('\n').pop() || '').trim() };
   }, 'network-selftest');
 
-  await step('the two timing rules, self-test (the PM, 2026-10-13: the Persian tap at most 2 of 40 over 50 ms and none over 100 ms, the pre-fix baseline of 16 of 40 still failing; the first frame judged by where the particles are drawn), on recorded runs and built samples', async () => {
-    const r = await run('node', ['scripts/timing-rules-selftest.mjs'], { logFile: 'timing-rules-selftest.txt' });
-    return { pass: r.status === 0, evidence: ['timing-rules-selftest.txt'], note: (r.stdout.trim().split('\n').pop() || '').trim() };
-  }, 'timing-selftest');
-
   await step(`servers on ${PORT} and ${PROXY_PORT} (TRUST_PROXY=1), ports picked free at start, each port's listener the process the suite spawned`, async () => {
     for (const p of [PORT, PROXY_PORT]) if (!(await portFree(p, '127.0.0.1')) || !(await portFree(p, '::1'))) return { pass: false, note: `port ${p} was taken after it was picked; whatever listens there is left alone` };
     const a = startServer(PORT, {}, `server-${PORT}.log`), b = startServer(PROXY_PORT, { TRUST_PROXY: '1' }, `server-${PROXY_PORT}.log`);

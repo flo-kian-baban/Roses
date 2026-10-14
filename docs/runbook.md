@@ -128,7 +128,7 @@ Needs once: `npx playwright install chromium`. Lighthouse uses Google Chrome whe
 
 **The gate** (Kian, 2026-10-14, until the owner demo): `npm run check` (fast) for every merge to main; `npm run check:full` runs only once before the owner demo and once before go-live. Merge with `git merge --no-ff` and say in the merge commit which gate ran and its result.
 
-**Two timing checks, as ruled** (the PM, 2026-10-13; `scripts/timing-rules.mjs`, proven at the start of every run by `scripts/timing-rules-selftest.mjs`): the **Persian tap** takes 40 taps in both suites (check:full one on each of the 40 versions, `npm run check` 10 on each of the 4 chosen transitions) and passes when at most 2 have a task over 50 ms and none over 100 ms, every tap printed; the **first frame** of each season's welcome scene is judged by where its particles are drawn (at least 3/4 inside the screen, in at least 3 of the 4 vertical quarters), the particles above the top edge and the animation clocks printed as information. The known miss "Spring first frame" is gone.
+**Information-only checks** (the PM, 2026-10-14, until the pre-demo full run): the transition drill's Persian tap (`persian-tap-senso`) and the season drill's first frames (`first-frame-senso-<season>`) are measured and printed every run, marked INFO (met or missed), and never fail it.
 
 ## Evidence scripts
 

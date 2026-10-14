@@ -1,0 +1,1445 @@
+{
+  "base": "http://127.0.0.1:60458",
+  "dist": ".next-check",
+  "copy": ".next-season",
+  "at": "2026-10-13T23:49:53.668Z",
+  "pass": true,
+  "interval": {
+    "senso": 3600,
+    "kebab-land": 3600,
+    "drill-default-venue": "dynamic route"
+  },
+  "renders": [
+    {
+      "instant": "2026-08-31T22:30:00-04:00",
+      "label": "Aug 31 22:30 EDT (already Sep 1 in UTC)",
+      "venue": "senso",
+      "want": "summer",
+      "firstResponse": "fall",
+      "stale": true,
+      "fresh": "summer",
+      "freshAfterMs": 163,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/senso.html",
+          "mtime": 1791931703681.999,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html",
+          "mtime": 1791935305160.7485,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 402,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2026-08-31T22:30:00-04:00",
+      "label": "Aug 31 22:30 EDT (already Sep 1 in UTC)",
+      "venue": "kebab-land",
+      "want": "summer",
+      "firstResponse": "summer",
+      "stale": false,
+      "fresh": "summer",
+      "freshAfterMs": 6,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/kebab-land.html",
+          "mtime": 1791931703681.999,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html",
+          "mtime": 1791935305318.4036,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 402,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2026-08-31T22:30:00-04:00",
+      "label": "Aug 31 22:30 EDT (already Sep 1 in UTC)",
+      "venue": "drill-default-venue",
+      "want": "summer",
+      "firstResponse": "fall",
+      "stale": true,
+      "fresh": "summer",
+      "freshAfterMs": 107,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html",
+          "mtime": 1791935305421.4136,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 402,
+      "cacheControl": null
+    },
+    {
+      "instant": "2026-08-31T23:30:00-04:00",
+      "label": "Aug 31 23:30 EDT",
+      "venue": "senso",
+      "want": "summer",
+      "firstResponse": "summer",
+      "stale": true,
+      "fresh": "summer",
+      "freshAfterMs": 19,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/senso.html",
+          "mtime": 1791931704525,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html",
+          "mtime": 1791935305985.0454,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 387,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2026-08-31T23:30:00-04:00",
+      "label": "Aug 31 23:30 EDT",
+      "venue": "kebab-land",
+      "want": "summer",
+      "firstResponse": "summer",
+      "stale": true,
+      "fresh": "summer",
+      "freshAfterMs": 5,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/kebab-land.html",
+          "mtime": 1791931704525,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html",
+          "mtime": 1791935306088.0842,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 387,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2026-08-31T23:30:00-04:00",
+      "label": "Aug 31 23:30 EDT",
+      "venue": "drill-default-venue",
+      "want": "summer",
+      "firstResponse": "summer",
+      "stale": true,
+      "fresh": "summer",
+      "freshAfterMs": 4,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html",
+          "mtime": 1791935306196.0803,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 387,
+      "cacheControl": null
+    },
+    {
+      "instant": "2026-09-01T00:30:00-04:00",
+      "label": "Sep 1 00:30 EDT",
+      "venue": "senso",
+      "want": "fall",
+      "firstResponse": "summer",
+      "stale": true,
+      "fresh": "fall",
+      "freshAfterMs": 129,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/senso.html",
+          "mtime": 1791931705302.999,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html",
+          "mtime": 1791935306785.3408,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 403,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2026-09-01T00:30:00-04:00",
+      "label": "Sep 1 00:30 EDT",
+      "venue": "kebab-land",
+      "want": "fall",
+      "firstResponse": "summer",
+      "stale": true,
+      "fresh": "fall",
+      "freshAfterMs": 112,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/kebab-land.html",
+          "mtime": 1791931705302.999,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html",
+          "mtime": 1791935306894.7825,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 403,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2026-09-01T00:30:00-04:00",
+      "label": "Sep 1 00:30 EDT",
+      "venue": "drill-default-venue",
+      "want": "fall",
+      "firstResponse": "summer",
+      "stale": true,
+      "fresh": "fall",
+      "freshAfterMs": 107,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html",
+          "mtime": 1791935307000.2578,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 403,
+      "cacheControl": null
+    },
+    {
+      "instant": "2026-11-30T23:30:00-05:00",
+      "label": "Nov 30 23:30 EST",
+      "venue": "senso",
+      "want": "fall",
+      "firstResponse": "fall",
+      "stale": true,
+      "fresh": "fall",
+      "freshAfterMs": 8,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/senso.html",
+          "mtime": 1791931706107,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html",
+          "mtime": 1791935307641.9028,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 452,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2026-11-30T23:30:00-05:00",
+      "label": "Nov 30 23:30 EST",
+      "venue": "kebab-land",
+      "want": "fall",
+      "firstResponse": "fall",
+      "stale": true,
+      "fresh": "fall",
+      "freshAfterMs": 6,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/kebab-land.html",
+          "mtime": 1791931706107,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html",
+          "mtime": 1791935307725.9583,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 452,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2026-11-30T23:30:00-05:00",
+      "label": "Nov 30 23:30 EST",
+      "venue": "drill-default-venue",
+      "want": "fall",
+      "firstResponse": "fall",
+      "stale": true,
+      "fresh": "fall",
+      "freshAfterMs": 3,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html",
+          "mtime": 1791935307831.3523,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 452,
+      "cacheControl": null
+    },
+    {
+      "instant": "2026-12-01T00:30:00-05:00",
+      "label": "Dec 1 00:30 EST",
+      "venue": "senso",
+      "want": "winter",
+      "firstResponse": "fall",
+      "stale": true,
+      "fresh": "winter",
+      "freshAfterMs": 126,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/senso.html",
+          "mtime": 1791931706934.999,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html",
+          "mtime": 1791935308447.9146,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 433,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2026-12-01T00:30:00-05:00",
+      "label": "Dec 1 00:30 EST",
+      "venue": "kebab-land",
+      "want": "winter",
+      "firstResponse": "fall",
+      "stale": true,
+      "fresh": "winter",
+      "freshAfterMs": 112,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/kebab-land.html",
+          "mtime": 1791931706934.999,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html",
+          "mtime": 1791935308549.3418,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 433,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2026-12-01T00:30:00-05:00",
+      "label": "Dec 1 00:30 EST",
+      "venue": "drill-default-venue",
+      "want": "winter",
+      "firstResponse": "fall",
+      "stale": true,
+      "fresh": "winter",
+      "freshAfterMs": 106,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html",
+          "mtime": 1791935308656.4636,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 433,
+      "cacheControl": null
+    },
+    {
+      "instant": "2027-02-28T23:30:00-05:00",
+      "label": "Feb 28 23:30 EST",
+      "venue": "senso",
+      "want": "winter",
+      "firstResponse": "winter",
+      "stale": true,
+      "fresh": "winter",
+      "freshAfterMs": 6,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/senso.html",
+          "mtime": 1791931707760.999,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html",
+          "mtime": 1791935309231.8386,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 396,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2027-02-28T23:30:00-05:00",
+      "label": "Feb 28 23:30 EST",
+      "venue": "kebab-land",
+      "want": "winter",
+      "firstResponse": "winter",
+      "stale": true,
+      "fresh": "winter",
+      "freshAfterMs": 5,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/kebab-land.html",
+          "mtime": 1791931707760.999,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html",
+          "mtime": 1791935309323.2986,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 396,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2027-02-28T23:30:00-05:00",
+      "label": "Feb 28 23:30 EST",
+      "venue": "drill-default-venue",
+      "want": "winter",
+      "firstResponse": "winter",
+      "stale": true,
+      "fresh": "winter",
+      "freshAfterMs": 3,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html",
+          "mtime": 1791935309428.783,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 396,
+      "cacheControl": null
+    },
+    {
+      "instant": "2027-03-01T00:30:00-05:00",
+      "label": "Mar 1 00:30 EST",
+      "venue": "senso",
+      "want": "spring",
+      "firstResponse": "winter",
+      "stale": true,
+      "fresh": "spring",
+      "freshAfterMs": 127,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/senso.html",
+          "mtime": 1791931708530.999,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html",
+          "mtime": 1791935310000.6326,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 397,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2027-03-01T00:30:00-05:00",
+      "label": "Mar 1 00:30 EST",
+      "venue": "kebab-land",
+      "want": "spring",
+      "firstResponse": "winter",
+      "stale": true,
+      "fresh": "spring",
+      "freshAfterMs": 113,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/kebab-land.html",
+          "mtime": 1791931708530.999,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html",
+          "mtime": 1791935310110.0554,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 397,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2027-03-01T00:30:00-05:00",
+      "label": "Mar 1 00:30 EST",
+      "venue": "drill-default-venue",
+      "want": "spring",
+      "firstResponse": "winter",
+      "stale": true,
+      "fresh": "spring",
+      "freshAfterMs": 109,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html",
+          "mtime": 1791935310226.5403,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 397,
+      "cacheControl": null
+    },
+    {
+      "instant": "2027-05-31T23:30:00-04:00",
+      "label": "May 31 23:30 EDT",
+      "venue": "senso",
+      "want": "spring",
+      "firstResponse": "spring",
+      "stale": true,
+      "fresh": "spring",
+      "freshAfterMs": 18,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/senso.html",
+          "mtime": 1791931709332,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html",
+          "mtime": 1791935310814.119,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 407,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2027-05-31T23:30:00-04:00",
+      "label": "May 31 23:30 EDT",
+      "venue": "kebab-land",
+      "want": "spring",
+      "firstResponse": "spring",
+      "stale": true,
+      "fresh": "spring",
+      "freshAfterMs": 5,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/kebab-land.html",
+          "mtime": 1791931709332,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html",
+          "mtime": 1791935310916.377,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 407,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2027-05-31T23:30:00-04:00",
+      "label": "May 31 23:30 EDT",
+      "venue": "drill-default-venue",
+      "want": "spring",
+      "firstResponse": "spring",
+      "stale": true,
+      "fresh": "spring",
+      "freshAfterMs": 3,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html",
+          "mtime": 1791935311026.6558,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 407,
+      "cacheControl": null
+    },
+    {
+      "instant": "2027-06-01T00:30:00-04:00",
+      "label": "Jun 1 00:30 EDT",
+      "venue": "senso",
+      "want": "summer",
+      "firstResponse": "spring",
+      "stale": true,
+      "fresh": "summer",
+      "freshAfterMs": 125,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/senso.html",
+          "mtime": 1791931710130,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html",
+          "mtime": 1791935311644.3647,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 438,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2027-06-01T00:30:00-04:00",
+      "label": "Jun 1 00:30 EDT",
+      "venue": "kebab-land",
+      "want": "summer",
+      "firstResponse": "spring",
+      "stale": true,
+      "fresh": "summer",
+      "freshAfterMs": 112,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/pages/kebab-land.html",
+          "mtime": 1791931710130,
+          "stamp": null
+        },
+        {
+          "file": "server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html",
+          "mtime": 1791935311748.512,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 438,
+      "cacheControl": "s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "instant": "2027-06-01T00:30:00-04:00",
+      "label": "Jun 1 00:30 EDT",
+      "venue": "drill-default-venue",
+      "want": "summer",
+      "firstResponse": "spring",
+      "stale": true,
+      "fresh": "summer",
+      "freshAfterMs": 109,
+      "regenerated": true,
+      "entry": [
+        {
+          "file": "server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html",
+          "mtime": 1791935311858.9692,
+          "stamp": null
+        }
+      ],
+      "serverUpMs": 438,
+      "cacheControl": null
+    }
+  ],
+  "results": [
+    {
+      "step": "seasonal-empty-identical",
+      "ok": true,
+      "text": "Kebab Land with 0 seasonal items: the page with its Seasonal section (shown, empty) and with no Seasonal section at all (a venue without the feature), rendered at Aug 31 22:30 EDT (already Sep 1 in UTC): byte for byte the same (200563 B); no seasonal section in the HTML"
+    },
+    {
+      "step": "revalidate-config",
+      "ok": true,
+      "text": "prerender manifest: initialRevalidateSeconds senso 3600, kebab-land 3600, drill-default-venue dynamic route (wanted 3600 on every listed public page; a venue on the default template is the dynamic route with the same revalidate, proven by its renders below)"
+    },
+    {
+      "step": "seasonal-boundaries-senso",
+      "ok": true,
+      "text": "senso, items tagged per season (its own 6 in the Seasonal section and 6 tagged in all, then one per season in the Seasonal section, one winter-only in its own section, one in the Seasonal section with no season), 9 renders at the Toronto instants: Aug 31 22:30 EDT (already Sep 1 in UTC) → “Summer Menu” / “منوی تابستان”: Almond Croissant · Aug 31 23:30 EDT → “Summer Menu” / “منوی تابستان”: Almond Croissant · Sep 1 00:30 EDT → “Fall Menu” / “منوی پاییز”: Pumpkin Soup, Senso Pumpkin Omelette, Pumpkin Cheesecake, Pumpkin Cake, Pumpkin Latte, Warm Pumpkin & Ice Cream, Adasi · Nov 30 23:30 EST → “Fall Menu” / “منوی پاییز”: Pumpkin Soup, Senso Pumpkin Omelette, Pumpkin Cheesecake, Pumpkin Cake, Pumpkin Latte, Warm Pumpkin & Ice Cream, Adasi · Dec 1 00:30 EST → “Winter Menu” / “منوی زمستان”: Affogato · Feb 28 23:30 EST → “Winter Menu” / “منوی زمستان”: Affogato · Mar 1 00:30 EST → “Spring Menu” / “منوی بهار”: Allergy Herbal Tea · May 31 23:30 EDT → “Spring Menu” / “منوی بهار”: Allergy Herbal Tea · Jun 1 00:30 EDT → “Summer Menu” / “منوی تابستان”: Almond Croissant; out-of-season items absent from the whole page every time"
+    },
+    {
+      "step": "seasonal-boundaries-kebab-land",
+      "ok": true,
+      "text": "kebab-land, items tagged per season (one per season in the Seasonal section, one winter-only in its own section, one in the Seasonal section with no season), 9 renders at the Toronto instants: Aug 31 22:30 EDT (already Sep 1 in UTC) → “Summer Menu” / “منوی تابستان”: Baba Ghanoosh · Aug 31 23:30 EDT → “Summer Menu” / “منوی تابستان”: Baba Ghanoosh · Sep 1 00:30 EDT → “Fall Menu” / “منوی پاییز”: Akbar Joojeh · Nov 30 23:30 EST → “Fall Menu” / “منوی پاییز”: Akbar Joojeh · Dec 1 00:30 EST → “Winter Menu” / “منوی زمستان”: Amiri Kebab · Feb 28 23:30 EST → “Winter Menu” / “منوی زمستان”: Amiri Kebab · Mar 1 00:30 EST → “Spring Menu” / “منوی بهار”: Aragh Sagi · May 31 23:30 EDT → “Spring Menu” / “منوی بهار”: Aragh Sagi · Jun 1 00:30 EDT → “Summer Menu” / “منوی تابستان”: Baba Ghanoosh; out-of-season items absent from the whole page every time"
+    },
+    {
+      "step": "seasonal-boundaries-drill-default-venue",
+      "ok": true,
+      "text": "drill-default-venue, items tagged per season (one per season in the Seasonal section), 9 renders at the Toronto instants: Aug 31 22:30 EDT (already Sep 1 in UTC) → “Summer Menu” / “منوی تابستان”: Persian tea · Aug 31 23:30 EDT → “Summer Menu” / “منوی تابستان”: Persian tea · Sep 1 00:30 EDT → “Fall Menu” / “منوی پاییز”: Bread and feta · Nov 30 23:30 EST → “Fall Menu” / “منوی پاییز”: Bread and feta · Dec 1 00:30 EST → “Winter Menu” / “منوی زمستان”: Fresh orange juice · Feb 28 23:30 EST → “Winter Menu” / “منوی زمستان”: Fresh orange juice · Mar 1 00:30 EST → “Spring Menu” / “منوی بهار”: Omelette · May 31 23:30 EDT → “Spring Menu” / “منوی بهار”: Omelette · Jun 1 00:30 EDT → “Summer Menu” / “منوی تابستان”: Persian tea; out-of-season items absent from the whole page every time"
+    },
+    {
+      "step": "season-boundaries",
+      "ok": true,
+      "text": "rendered with a fixed clock (America/Toronto): Aug 31 22:30 EDT (already Sep 1 in UTC) → summer; Aug 31 23:30 EDT → summer; Sep 1 00:30 EDT → fall; Nov 30 23:30 EST → fall; Dec 1 00:30 EST → winter; Feb 28 23:30 EST → winter; Mar 1 00:30 EST → spring; May 31 23:30 EDT → spring; Jun 1 00:30 EDT → summer; the same on kebab-land, drill-default-venue: true"
+    },
+    {
+      "step": "hourly-regeneration",
+      "ok": true,
+      "text": "two renders an hour apart (the cached page aged 3601 s between them, the entry rewritten each time): Aug 31 23:30 EDT summer → Sep 1 00:30 EDT: first request still summer, regenerated to fall after 129 ms, entry rewritten true; Nov 30 23:30 EST fall → Dec 1 00:30 EST: first request still fall, regenerated to winter after 126 ms, entry rewritten true; Feb 28 23:30 EST winter → Mar 1 00:30 EST: first request still winter, regenerated to spring after 127 ms, entry rewritten true; May 31 23:30 EDT spring → Jun 1 00:30 EDT: first request still spring, regenerated to summer after 125 ms, entry rewritten true; Cache-Control s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "step": "within-the-hour",
+      "ok": true,
+      "text": "senso: the cached page aged 3000 s, two requests 2.5 s apart → cache entry unchanged (true)"
+    },
+    {
+      "step": "seasonal-persian",
+      "ok": true,
+      "text": "senso at Jun 1 00:30 EDT, after a tap on فارسی: the Seasonal section's title reads “منوی تابستان” (wanted “منوی تابستان”), its items “کروسان بادام” (wanted “کروسان بادام”), page language fa"
+    },
+    {
+      "step": "motion-rules-unchanged",
+      "ok": true,
+      "text": "the stylesheet keeps the previous motion rules verbatim (all)"
+    },
+    {
+      "step": "unchanged-kebab-land",
+      "ok": true,
+      "text": "kebab-land: the served scene of every season and its symbols byte for byte as in the fixture from 68bce67 (fall same, 18 particles, symbols wl1+wl2+wl3; winter same, 20 particles, symbols ws1+ws2; spring same, 16 particles, symbols wp1+wp2; summer same, 16 particles, symbols wg+wk+wgrad)"
+    },
+    {
+      "step": "unchanged-drill-default-venue",
+      "ok": true,
+      "text": "drill-default-venue: the served scene of every season and its symbols byte for byte as in the fixture from 68bce67 (fall same, 18 particles, symbols wl1+wl2+wl3; winter same, 20 particles, symbols ws1+ws2; spring same, 16 particles, symbols wp1+wp2; summer same, 16 particles, symbols wg+wk+wgrad)"
+    },
+    {
+      "step": "artwork-senso-fall",
+      "ok": true,
+      "text": "senso fall (server clock 2026-09-01T00:30:00-04:00): the HTML carries the fall scene only (engine leaves, designs F1, F2, F4, F8, F9); on the first frame that shows the card (30 ms after navigation; the engine runs before the card is parsed) the scene already holds 20 particles (their clocks: first-frame-senso-fall); 20 particles (2 near), designs used #F2, #F9, #F4, #F8, #F1, 60 animations on transform (transform and opacity only: true); page errors 0"
+    },
+    {
+      "step": "first-frame-senso-fall",
+      "ok": true,
+      "text": "senso fall: on the first frame that shows the card (30 ms after navigation) every one of the scene's 60 animations has its clock running (currentTime > 0): true (0 not started; the earliest 17 ms into its cycle)",
+      "metric": {
+        "over": 0,
+        "of": 60,
+        "worst": 0,
+        "unit": "frames"
+      }
+    },
+    {
+      "step": "randomness-senso-fall",
+      "ok": true,
+      "text": "senso fall: two loads → 0 of 20 particles with the same parameters (designs #F2+#F9+#F4+#F8+#F1 then #F1+#F9+#F2+#F8+#F4); first load's first particle: --x:93.1vw;--s:23px;--d:15.5s;--l:-2.6s;--o:0.45;--sw:9px;--sp:3.4s;--dr:-9.2vw;--rx:25deg;--ry:28deg;--rz:7deg;--fp:6.4s;--dip:10px"
+    },
+    {
+      "step": "smoothness-senso-fall",
+      "ok": true,
+      "text": "senso fall, iPhone 13 viewport, CPU 4×: 301 frames in 5 s (60 / 60 / 60 / 60 / 60 per second), median 60 fps (target ≥ 50); 0 long tasks, the longest 0 ms (target ≤ 50); worst gap between frames 17 ms"
+    },
+    {
+      "step": "still-senso-fall",
+      "ok": true,
+      "text": "senso fall with reduced motion: the still composition (10 designs resting, 10 in view, 0 animations running)"
+    },
+    {
+      "step": "recording-senso-fall",
+      "ok": true,
+      "text": "reports/checks/2026-10-13T23-43-37Z/season/senso-fall.webm (609 KB; gitignored, on disk only)"
+    },
+    {
+      "step": "artwork-senso-winter",
+      "ok": true,
+      "text": "senso winter (server clock 2026-12-01T00:30:00-05:00): the HTML carries the winter scene only (engine snow, designs W1, W3, W5, W7, W10); on the first frame that shows the card (26 ms after navigation; the engine runs before the card is parsed) the scene already holds 20 particles (their clocks: first-frame-senso-winter); 20 particles (2 near), designs used #W7, #W1, #W10, #W5, #W3, 57 animations on transform (transform and opacity only: true); page errors 0"
+    },
+    {
+      "step": "first-frame-senso-winter",
+      "ok": true,
+      "text": "senso winter: on the first frame that shows the card (26 ms after navigation) every one of the scene's 57 animations has its clock running (currentTime > 0): true (0 not started; the earliest 17 ms into its cycle)",
+      "metric": {
+        "over": 0,
+        "of": 57,
+        "worst": 0,
+        "unit": "frames"
+      }
+    },
+    {
+      "step": "randomness-senso-winter",
+      "ok": true,
+      "text": "senso winter: two loads → 0 of 20 particles with the same parameters (designs #W7+#W1+#W10+#W5+#W3 then #W10+#W7+#W1+#W5+#W3); first load's first particle: --x:69vw;--s:16px;--d:16.1s;--l:-5.7s;--o:0.58;--sw:6px;--sp:5.1s;--dr:3.4vw;--rx:23deg;--ry:27deg;--rz:15deg;--fp:37.4s;--dip:0px"
+    },
+    {
+      "step": "smoothness-senso-winter",
+      "ok": true,
+      "text": "senso winter, iPhone 13 viewport, CPU 4×: 301 frames in 5 s (60 / 60 / 60 / 60 / 60 per second), median 60 fps (target ≥ 50); 0 long tasks, the longest 0 ms (target ≤ 50); worst gap between frames 17 ms"
+    },
+    {
+      "step": "still-senso-winter",
+      "ok": true,
+      "text": "senso winter with reduced motion: the still composition (12 designs resting, 12 in view, 0 animations running)"
+    },
+    {
+      "step": "recording-senso-winter",
+      "ok": true,
+      "text": "reports/checks/2026-10-13T23-43-37Z/season/senso-winter.webm (477 KB; gitignored, on disk only)"
+    },
+    {
+      "step": "budget-senso-spring",
+      "ok": true,
+      "text": "senso spring: inline welcome code with the five blossoms and the rosebud and the season's transition 11210 B gzipped (≤ 15 360; the welcome drill measures the season of the day)"
+    },
+    {
+      "step": "artwork-senso-spring",
+      "ok": true,
+      "text": "senso spring (server clock 2027-03-01T00:30:00-05:00): the HTML carries the spring scene only (engine bloom, designs S1, S2, S3, S4, S5, S9); on the first frame that shows the card (28 ms after navigation; the engine runs before the card is parsed) the scene already holds 20 particles (their clocks: first-frame-senso-spring); 20 particles (2 near), designs used #S4, #S1, #S3, #S9, #S5, #S2, 79 animations on transform (transform and opacity only: true); page errors 0"
+    },
+    {
+      "step": "first-frame-senso-spring",
+      "ok": true,
+      "text": "senso spring: on the first frame that shows the card (28 ms after navigation) every one of the scene's 79 animations has its clock running (currentTime > 0): true (0 not started; the earliest 17 ms into its cycle)",
+      "metric": {
+        "over": 0,
+        "of": 79,
+        "worst": 0,
+        "unit": "frames"
+      }
+    },
+    {
+      "step": "randomness-senso-spring",
+      "ok": true,
+      "text": "senso spring: two loads → 0 of 20 particles with the same parameters (designs #S4+#S1+#S3+#S9+#S5+#S2 then #S9+#S5+#S4+#S3+#S2+#S1); first load's first particle: --x:5.8vw;--s:16px;--d:23.1s;--l:-14.7s;--o:0.46;--sw:16px;--sp:5.1s;--dr:0.9vw;--rx:24deg;--ry:31deg;--rz:7deg;--fp:5.4s;--dip:9px"
+    },
+    {
+      "step": "smoothness-senso-spring",
+      "ok": true,
+      "text": "senso spring, iPhone 13 viewport, CPU 4×: 301 frames in 5 s (60 / 60 / 60 / 60 / 60 per second), median 60 fps (target ≥ 50); 0 long tasks, the longest 0 ms (target ≤ 50); worst gap between frames 17 ms"
+    },
+    {
+      "step": "still-senso-spring",
+      "ok": true,
+      "text": "senso spring with reduced motion: the still composition (10 designs resting, 10 in view, 0 animations running)"
+    },
+    {
+      "step": "recording-senso-spring",
+      "ok": true,
+      "text": "reports/checks/2026-10-13T23-43-37Z/season/senso-spring.webm (506 KB; gitignored, on disk only)"
+    },
+    {
+      "step": "budget-senso-summer",
+      "ok": true,
+      "text": "senso summer: inline welcome code with the sun, its sparkles, motes and seeds and the season's transition 9032 B gzipped (≤ 15 360; the welcome drill measures the season of the day)"
+    },
+    {
+      "step": "artwork-senso-summer",
+      "ok": true,
+      "text": "senso summer (server clock 2027-06-01T00:30:00-04:00): the HTML carries the summer scene only (engine sun, designs D1, D2, D3); on the first frame that shows the card (26 ms after navigation; the engine runs before the card is parsed) the scene already holds 20 particles (their clocks: first-frame-senso-summer); 20 particles (0 near), designs used #Uflames, #Uspark, #Umote, #D2, #D1, 32 animations on transform, opacity (transform and opacity only: true); page errors 0"
+    },
+    {
+      "step": "first-frame-senso-summer",
+      "ok": true,
+      "text": "senso summer: on the first frame that shows the card (26 ms after navigation) every one of the scene's 32 animations has its clock running (currentTime > 0): true (0 not started; the earliest 17 ms into its cycle)",
+      "metric": {
+        "over": 0,
+        "of": 32,
+        "worst": 0,
+        "unit": "frames"
+      }
+    },
+    {
+      "step": "randomness-senso-summer",
+      "ok": true,
+      "text": "senso summer: two loads → 0 of 20 particles with the same parameters (designs #Uflames+#Uspark+#Umote+#D2+#D1 then #Uflames+#Uspark+#Umote+#D1+#D2+#D3); first load's first particle: --s:231px;--o:1;--y:-69px;--rs:0deg;--l:-112.8s"
+    },
+    {
+      "step": "smoothness-senso-summer",
+      "ok": true,
+      "text": "senso summer, iPhone 13 viewport, CPU 4×: 301 frames in 5 s (60 / 60 / 60 / 60 / 60 per second), median 60 fps (target ≥ 50); 0 long tasks, the longest 0 ms (target ≤ 50); worst gap between frames 17 ms"
+    },
+    {
+      "step": "still-senso-summer",
+      "ok": true,
+      "text": "senso summer with reduced motion: the still composition (14 designs resting, 14 in view, 0 animations running)"
+    },
+    {
+      "step": "recording-senso-summer",
+      "ok": true,
+      "text": "reports/checks/2026-10-13T23-43-37Z/season/senso-summer.webm (484 KB; gitignored, on disk only)"
+    },
+    {
+      "step": "roses-now-guard",
+      "ok": true,
+      "text": "ROSES_NOW=2026-12-01T00:30:00-05:00 (winter in Toronto) alone, without ROSES_CHECK_SUITE: senso: the first request served the previous render (summer; cache entry summer), regenerated true → rendered fall; kebab-land: the first request served the previous render (summer; cache entry summer), regenerated true → rendered fall; drill-default-venue: the first request served the previous render (summer; cache entry summer), regenerated true → rendered fall; the real season in Toronto today is fall; the server logged that it ignored ROSES_NOW: true; control, the same instant with ROSES_CHECK_SUITE=1: senso → winter; kebab-land → winter; drill-default-venue → winter"
+    }
+  ],
+  "measures": [
+    "regeneration interval: 3600 s configured (revalidate; the same in getStaticProps of every public page); an hour later the next request serves the previous render and the fresh season lands after 129 / 126 / 127 / 125 ms",
+    "senso fall: inline welcome code with the picked artwork 8.8 KB gzipped (25.3 KB raw), symbols F1, F2, F4, F8, F9",
+    "senso fall: cold, local only (the first load after the server's start, before the warm-up; information, not a check): the first frame that shows the card 43 ms after navigation, 20 particles, 60 animations, the earliest 0 ms into its cycle (mid-flight: false; 60 clock(s) not started, every one running 3 frame(s) later)",
+    "senso fall: warm-up before the measured load: the page loaded once in the browser and its 57 uploaded photo(s) fetched once",
+    "senso fall smoothness (CPU 4×): median 60 fps, longest task 0 ms",
+    "senso winter: inline welcome code with the picked artwork 4.1 KB gzipped (10.9 KB raw), symbols W1, W3, W5, W7, W10",
+    "senso winter: cold, local only (the first load after the server's start, before the warm-up; information, not a check): the first frame that shows the card 60 ms after navigation, 20 particles, 56 animations, the earliest 0 ms into its cycle (mid-flight: false; 56 clock(s) not started, every one running 2 frame(s) later)",
+    "senso winter: warm-up before the measured load: the page loaded once in the browser and its 51 uploaded photo(s) fetched once",
+    "senso winter smoothness (CPU 4×): median 60 fps, longest task 0 ms",
+    "senso spring: inline welcome code with the picked artwork 10.9 KB gzipped (31.0 KB raw), symbols S1, S2, S3, S4, S5, S9",
+    "senso spring: cold, local only (the first load after the server's start, before the warm-up; information, not a check): the first frame that shows the card 42 ms after navigation, 20 particles, 77 animations, the earliest 0 ms into its cycle (mid-flight: false; 77 clock(s) not started, every one running 2 frame(s) later)",
+    "senso spring: warm-up before the measured load: the page loaded once in the browser and its 51 uploaded photo(s) fetched once",
+    "senso spring smoothness (CPU 4×): median 60 fps, longest task 0 ms",
+    "senso summer: inline welcome code with the picked artwork 8.8 KB gzipped (23.8 KB raw), symbols Udisc, Urays, Uflames, Uspark, Umote, D1, D2, D3, Udg",
+    "senso summer: cold, local only (the first load after the server's start, before the warm-up; information, not a check): the first frame that shows the card 59 ms after navigation, 20 particles, 32 animations, the earliest 0 ms into its cycle (mid-flight: false; 32 clock(s) not started, every one running 2 frame(s) later)",
+    "senso summer: warm-up before the measured load: the page loaded once in the browser and its 51 uploaded photo(s) fetched once",
+    "senso summer smoothness (CPU 4×): median 60 fps, longest task 0 ms",
+    "ROSES_NOW guard: a server started with ROSES_NOW alone (set to winter) rendered fall on 3 venues, the real season in Toronto (fall); with the suite's flag the same instant rendered winter"
+  ],
+  "transcript": [
+    {
+      "at": "2026-10-13T23:48:08.801Z",
+      "ms": 95,
+      "step": "copy",
+      "text": ".next-check → .next-season"
+    },
+    {
+      "at": "2026-10-13T23:48:08.907Z",
+      "ms": 201,
+      "step": "db",
+      "text": "connected to database \"roses_check_20261013t234337z\" as application \"roses-check:season\""
+    },
+    {
+      "at": "2026-10-13T23:48:24.645Z",
+      "ms": 15939,
+      "step": "seasonal-empty-identical",
+      "text": "PASS: Kebab Land with 0 seasonal items: the page with its Seasonal section (shown, empty) and with no Seasonal section at all (a venue without the feature), rendered at Aug 31 22:30 EDT (already Sep 1 in UTC): byte for byte the same (200563 B); no seasonal section in the HTML"
+    },
+    {
+      "at": "2026-10-13T23:48:24.661Z",
+      "ms": 15955,
+      "step": "seasonal",
+      "text": "senso: its own seasonal items Pumpkin Soup (fall), Senso Pumpkin Omelette (fall), Pumpkin Cheesecake (fall), Pumpkin Cake (fall), Pumpkin Latte (fall), Warm Pumpkin & Ice Cream (fall); seeded fall Adasi, winter Affogato, spring Allergy Herbal Tea, summer Almond Croissant; winter only in its own section Americano; in the Seasonal section with no season Apple & Cinnamon Herbal Tea"
+    },
+    {
+      "at": "2026-10-13T23:48:24.669Z",
+      "ms": 15963,
+      "step": "seasonal",
+      "text": "kebab-land: its own seasonal items none; seeded fall Akbar Joojeh, winter Amiri Kebab, spring Aragh Sagi, summer Baba Ghanoosh; winter only in its own section Baileys Shot; in the Seasonal section with no season Bakhtiari Kebab"
+    },
+    {
+      "at": "2026-10-13T23:48:24.675Z",
+      "ms": 15969,
+      "step": "seasonal",
+      "text": "drill-default-venue: its own seasonal items none; seeded fall Bread and feta, winter Fresh orange juice, spring Omelette, summer Persian tea"
+    },
+    {
+      "at": "2026-10-13T23:48:24.678Z",
+      "ms": 15972,
+      "step": "build",
+      "text": "the build's own render: senso fall, kebab-land fall, drill-default-venue fall; configured interval {\"senso\":3600,\"kebab-land\":3600,\"drill-default-venue\":\"dynamic route\"} s"
+    },
+    {
+      "at": "2026-10-13T23:48:24.678Z",
+      "ms": 15972,
+      "step": "revalidate-config",
+      "text": "PASS: prerender manifest: initialRevalidateSeconds senso 3600, kebab-land 3600, drill-default-venue dynamic route (wanted 3600 on every listed public page; a venue on the default template is the dynamic route with the same revalidate, proven by its renders below)"
+    },
+    {
+      "at": "2026-10-13T23:48:25.283Z",
+      "ms": 16577,
+      "step": "render",
+      "text": "Aug 31 22:30 EDT (already Sep 1 in UTC) senso: first response fall (the previous render: true), fresh summer after 163 ms, cache entry rewritten true (server/pages/senso.html stamp none, server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:25.405Z",
+      "ms": 16699,
+      "step": "render",
+      "text": "Aug 31 22:30 EDT (already Sep 1 in UTC) kebab-land: first response summer (the previous render: false), fresh summer after 6 ms, cache entry rewritten true (server/pages/kebab-land.html stamp none, server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:25.521Z",
+      "ms": 16815,
+      "step": "render",
+      "text": "Aug 31 22:30 EDT (already Sep 1 in UTC) drill-default-venue: first response fall (the previous render: true), fresh summer after 107 ms, cache entry rewritten true (server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:26.056Z",
+      "ms": 17350,
+      "step": "render",
+      "text": "Aug 31 23:30 EDT senso: first response summer (the previous render: true), fresh summer after 19 ms, cache entry rewritten true (server/pages/senso.html stamp none, server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:26.179Z",
+      "ms": 17473,
+      "step": "render",
+      "text": "Aug 31 23:30 EDT kebab-land: first response summer (the previous render: true), fresh summer after 5 ms, cache entry rewritten true (server/pages/kebab-land.html stamp none, server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:26.296Z",
+      "ms": 17590,
+      "step": "render",
+      "text": "Aug 31 23:30 EDT drill-default-venue: first response summer (the previous render: true), fresh summer after 4 ms, cache entry rewritten true (server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:26.861Z",
+      "ms": 18155,
+      "step": "render",
+      "text": "Sep 1 00:30 EDT senso: first response summer (the previous render: true), fresh fall after 129 ms, cache entry rewritten true (server/pages/senso.html stamp none, server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:26.986Z",
+      "ms": 18280,
+      "step": "render",
+      "text": "Sep 1 00:30 EDT kebab-land: first response summer (the previous render: true), fresh fall after 112 ms, cache entry rewritten true (server/pages/kebab-land.html stamp none, server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:27.102Z",
+      "ms": 18396,
+      "step": "render",
+      "text": "Sep 1 00:30 EDT drill-default-venue: first response summer (the previous render: true), fresh fall after 107 ms, cache entry rewritten true (server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:27.694Z",
+      "ms": 18988,
+      "step": "render",
+      "text": "Nov 30 23:30 EST senso: first response fall (the previous render: true), fresh fall after 8 ms, cache entry rewritten true (server/pages/senso.html stamp none, server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:27.816Z",
+      "ms": 19110,
+      "step": "render",
+      "text": "Nov 30 23:30 EST kebab-land: first response fall (the previous render: true), fresh fall after 6 ms, cache entry rewritten true (server/pages/kebab-land.html stamp none, server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:27.930Z",
+      "ms": 19224,
+      "step": "render",
+      "text": "Nov 30 23:30 EST drill-default-venue: first response fall (the previous render: true), fresh fall after 3 ms, cache entry rewritten true (server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:28.518Z",
+      "ms": 19812,
+      "step": "render",
+      "text": "Dec 1 00:30 EST senso: first response fall (the previous render: true), fresh winter after 126 ms, cache entry rewritten true (server/pages/senso.html stamp none, server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:28.642Z",
+      "ms": 19936,
+      "step": "render",
+      "text": "Dec 1 00:30 EST kebab-land: first response fall (the previous render: true), fresh winter after 112 ms, cache entry rewritten true (server/pages/kebab-land.html stamp none, server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:28.756Z",
+      "ms": 20050,
+      "step": "render",
+      "text": "Dec 1 00:30 EST drill-default-venue: first response fall (the previous render: true), fresh winter after 106 ms, cache entry rewritten true (server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:29.288Z",
+      "ms": 20582,
+      "step": "render",
+      "text": "Feb 28 23:30 EST senso: first response winter (the previous render: true), fresh winter after 6 ms, cache entry rewritten true (server/pages/senso.html stamp none, server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:29.411Z",
+      "ms": 20705,
+      "step": "render",
+      "text": "Feb 28 23:30 EST kebab-land: first response winter (the previous render: true), fresh winter after 5 ms, cache entry rewritten true (server/pages/kebab-land.html stamp none, server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:29.526Z",
+      "ms": 20820,
+      "step": "render",
+      "text": "Feb 28 23:30 EST drill-default-venue: first response winter (the previous render: true), fresh winter after 3 ms, cache entry rewritten true (server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:30.079Z",
+      "ms": 21373,
+      "step": "render",
+      "text": "Mar 1 00:30 EST senso: first response winter (the previous render: true), fresh spring after 127 ms, cache entry rewritten true (server/pages/senso.html stamp none, server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:30.207Z",
+      "ms": 21501,
+      "step": "render",
+      "text": "Mar 1 00:30 EST kebab-land: first response winter (the previous render: true), fresh spring after 113 ms, cache entry rewritten true (server/pages/kebab-land.html stamp none, server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:30.326Z",
+      "ms": 21620,
+      "step": "render",
+      "text": "Mar 1 00:30 EST drill-default-venue: first response winter (the previous render: true), fresh spring after 109 ms, cache entry rewritten true (server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:30.885Z",
+      "ms": 22179,
+      "step": "render",
+      "text": "May 31 23:30 EDT senso: first response spring (the previous render: true), fresh spring after 18 ms, cache entry rewritten true (server/pages/senso.html stamp none, server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:31.008Z",
+      "ms": 22302,
+      "step": "render",
+      "text": "May 31 23:30 EDT kebab-land: first response spring (the previous render: true), fresh spring after 5 ms, cache entry rewritten true (server/pages/kebab-land.html stamp none, server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:31.124Z",
+      "ms": 22418,
+      "step": "render",
+      "text": "May 31 23:30 EDT drill-default-venue: first response spring (the previous render: true), fresh spring after 3 ms, cache entry rewritten true (server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:31.717Z",
+      "ms": 23011,
+      "step": "render",
+      "text": "Jun 1 00:30 EDT senso: first response spring (the previous render: true), fresh summer after 125 ms, cache entry rewritten true (server/pages/senso.html stamp none, server/route-cache/PAGES/aee25ab77bf7be0bffedc9296bbc27d56c4dabcf202f620df749461ad6ecd4ae/$/senso.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:31.844Z",
+      "ms": 23138,
+      "step": "render",
+      "text": "Jun 1 00:30 EDT kebab-land: first response spring (the previous render: true), fresh summer after 112 ms, cache entry rewritten true (server/pages/kebab-land.html stamp none, server/route-cache/PAGES/cb3ee28501390491297930a534fafd963882f13369c555d8cde0386e46ecbb51/$/kebab-land.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:31.962Z",
+      "ms": 23256,
+      "step": "render",
+      "text": "Jun 1 00:30 EDT drill-default-venue: first response spring (the previous render: true), fresh summer after 109 ms, cache entry rewritten true (server/route-cache/PAGES/a2f15e10f967baa15576eb3d51c7393195c07e2efddf214d700277a3daa57e81/$/drill-default-venue.html stamp none)"
+    },
+    {
+      "at": "2026-10-13T23:48:31.962Z",
+      "ms": 23256,
+      "step": "seasonal-boundaries-senso",
+      "text": "PASS: senso, items tagged per season (its own 6 in the Seasonal section and 6 tagged in all, then one per season in the Seasonal section, one winter-only in its own section, one in the Seasonal section with no season), 9 renders at the Toronto instants: Aug 31 22:30 EDT (already Sep 1 in UTC) → “Summer Menu” / “منوی تابستان”: Almond Croissant · Aug 31 23:30 EDT → “Summer Menu” / “منوی تابستان”: Almond Croissant · Sep 1 00:30 EDT → “Fall Menu” / “منوی پاییز”: Pumpkin Soup, Senso Pumpkin Omelette, Pumpkin Cheesecake, Pumpkin Cake, Pumpkin Latte, Warm Pumpkin & Ice Cream, Adasi · Nov 30 23:30 EST → “Fall Menu” / “منوی پاییز”: Pumpkin Soup, Senso Pumpkin Omelette, Pumpkin Cheesecake, Pumpkin Cake, Pumpkin Latte, Warm Pumpkin & Ice Cream, Adasi · Dec 1 00:30 EST → “Winter Menu” / “منوی زمستان”: Affogato · Feb 28 23:30 EST → “Winter Menu” / “منوی زمستان”: Affogato · Mar 1 00:30 EST → “Spring Menu” / “منوی بهار”: Allergy Herbal Tea · May 31 23:30 EDT → “Spring Menu” / “منوی بهار”: Allergy Herbal Tea · Jun 1 00:30 EDT → “Summer Menu” / “منوی تابستان”: Almond Croissant; out-of-season items absent from the whole page every time"
+    },
+    {
+      "at": "2026-10-13T23:48:31.962Z",
+      "ms": 23256,
+      "step": "seasonal-boundaries-kebab-land",
+      "text": "PASS: kebab-land, items tagged per season (one per season in the Seasonal section, one winter-only in its own section, one in the Seasonal section with no season), 9 renders at the Toronto instants: Aug 31 22:30 EDT (already Sep 1 in UTC) → “Summer Menu” / “منوی تابستان”: Baba Ghanoosh · Aug 31 23:30 EDT → “Summer Menu” / “منوی تابستان”: Baba Ghanoosh · Sep 1 00:30 EDT → “Fall Menu” / “منوی پاییز”: Akbar Joojeh · Nov 30 23:30 EST → “Fall Menu” / “منوی پاییز”: Akbar Joojeh · Dec 1 00:30 EST → “Winter Menu” / “منوی زمستان”: Amiri Kebab · Feb 28 23:30 EST → “Winter Menu” / “منوی زمستان”: Amiri Kebab · Mar 1 00:30 EST → “Spring Menu” / “منوی بهار”: Aragh Sagi · May 31 23:30 EDT → “Spring Menu” / “منوی بهار”: Aragh Sagi · Jun 1 00:30 EDT → “Summer Menu” / “منوی تابستان”: Baba Ghanoosh; out-of-season items absent from the whole page every time"
+    },
+    {
+      "at": "2026-10-13T23:48:31.962Z",
+      "ms": 23256,
+      "step": "seasonal-boundaries-drill-default-venue",
+      "text": "PASS: drill-default-venue, items tagged per season (one per season in the Seasonal section), 9 renders at the Toronto instants: Aug 31 22:30 EDT (already Sep 1 in UTC) → “Summer Menu” / “منوی تابستان”: Persian tea · Aug 31 23:30 EDT → “Summer Menu” / “منوی تابستان”: Persian tea · Sep 1 00:30 EDT → “Fall Menu” / “منوی پاییز”: Bread and feta · Nov 30 23:30 EST → “Fall Menu” / “منوی پاییز”: Bread and feta · Dec 1 00:30 EST → “Winter Menu” / “منوی زمستان”: Fresh orange juice · Feb 28 23:30 EST → “Winter Menu” / “منوی زمستان”: Fresh orange juice · Mar 1 00:30 EST → “Spring Menu” / “منوی بهار”: Omelette · May 31 23:30 EDT → “Spring Menu” / “منوی بهار”: Omelette · Jun 1 00:30 EDT → “Summer Menu” / “منوی تابستان”: Persian tea; out-of-season items absent from the whole page every time"
+    },
+    {
+      "at": "2026-10-13T23:48:31.962Z",
+      "ms": 23256,
+      "step": "season-boundaries",
+      "text": "PASS: rendered with a fixed clock (America/Toronto): Aug 31 22:30 EDT (already Sep 1 in UTC) → summer; Aug 31 23:30 EDT → summer; Sep 1 00:30 EDT → fall; Nov 30 23:30 EST → fall; Dec 1 00:30 EST → winter; Feb 28 23:30 EST → winter; Mar 1 00:30 EST → spring; May 31 23:30 EDT → spring; Jun 1 00:30 EDT → summer; the same on kebab-land, drill-default-venue: true"
+    },
+    {
+      "at": "2026-10-13T23:48:31.962Z",
+      "ms": 23256,
+      "step": "hourly-regeneration",
+      "text": "PASS: two renders an hour apart (the cached page aged 3601 s between them, the entry rewritten each time): Aug 31 23:30 EDT summer → Sep 1 00:30 EDT: first request still summer, regenerated to fall after 129 ms, entry rewritten true; Nov 30 23:30 EST fall → Dec 1 00:30 EST: first request still fall, regenerated to winter after 126 ms, entry rewritten true; Feb 28 23:30 EST winter → Mar 1 00:30 EST: first request still winter, regenerated to spring after 127 ms, entry rewritten true; May 31 23:30 EDT spring → Jun 1 00:30 EDT: first request still spring, regenerated to summer after 125 ms, entry rewritten true; Cache-Control s-maxage=3600, stale-while-revalidate=31532400"
+    },
+    {
+      "at": "2026-10-13T23:48:34.982Z",
+      "ms": 26276,
+      "step": "within-the-hour",
+      "text": "PASS: senso: the cached page aged 3000 s, two requests 2.5 s apart → cache entry unchanged (true)"
+    },
+    {
+      "at": "2026-10-13T23:48:36.417Z",
+      "ms": 27711,
+      "step": "seasonal-persian",
+      "text": "PASS: senso at Jun 1 00:30 EDT, after a tap on فارسی: the Seasonal section's title reads “منوی تابستان” (wanted “منوی تابستان”), its items “کروسان بادام” (wanted “کروسان بادام”), page language fa"
+    },
+    {
+      "at": "2026-10-13T23:48:36.441Z",
+      "ms": 27735,
+      "step": "seasonal",
+      "text": "fixtures removed: 14 placements, 14 items' seasons cleared; items with seasons left on these venues: 6"
+    },
+    {
+      "at": "2026-10-13T23:48:36.444Z",
+      "ms": 27738,
+      "step": "motion-rules-unchanged",
+      "text": "PASS: the stylesheet keeps the previous motion rules verbatim (all)"
+    },
+    {
+      "at": "2026-10-13T23:48:36.444Z",
+      "ms": 27738,
+      "step": "unchanged-kebab-land",
+      "text": "PASS: kebab-land: the served scene of every season and its symbols byte for byte as in the fixture from 68bce67 (fall same, 18 particles, symbols wl1+wl2+wl3; winter same, 20 particles, symbols ws1+ws2; spring same, 16 particles, symbols wp1+wp2; summer same, 16 particles, symbols wg+wk+wgrad)"
+    },
+    {
+      "at": "2026-10-13T23:48:36.444Z",
+      "ms": 27738,
+      "step": "unchanged-drill-default-venue",
+      "text": "PASS: drill-default-venue: the served scene of every season and its symbols byte for byte as in the fixture from 68bce67 (fall same, 18 particles, symbols wl1+wl2+wl3; winter same, 20 particles, symbols ws1+ws2; spring same, 16 particles, symbols wp1+wp2; summer same, 16 particles, symbols wg+wk+wgrad)"
+    },
+    {
+      "at": "2026-10-13T23:48:38.110Z",
+      "ms": 29404,
+      "step": "artwork-senso-fall",
+      "text": "PASS: senso fall (server clock 2026-09-01T00:30:00-04:00): the HTML carries the fall scene only (engine leaves, designs F1, F2, F4, F8, F9); on the first frame that shows the card (30 ms after navigation; the engine runs before the card is parsed) the scene already holds 20 particles (their clocks: first-frame-senso-fall); 20 particles (2 near), designs used #F2, #F9, #F4, #F8, #F1, 60 animations on transform (transform and opacity only: true); page errors 0"
+    },
+    {
+      "at": "2026-10-13T23:48:38.110Z",
+      "ms": 29404,
+      "step": "first-frame-senso-fall",
+      "text": "PASS: senso fall: on the first frame that shows the card (30 ms after navigation) every one of the scene's 60 animations has its clock running (currentTime > 0): true (0 not started; the earliest 17 ms into its cycle)"
+    },
+    {
+      "at": "2026-10-13T23:48:38.530Z",
+      "ms": 29824,
+      "step": "randomness-senso-fall",
+      "text": "PASS: senso fall: two loads → 0 of 20 particles with the same parameters (designs #F2+#F9+#F4+#F8+#F1 then #F1+#F9+#F2+#F8+#F4); first load's first particle: --x:93.1vw;--s:23px;--d:15.5s;--l:-2.6s;--o:0.45;--sw:9px;--sp:3.4s;--dr:-9.2vw;--rx:25deg;--ry:28deg;--rz:7deg;--fp:6.4s;--dip:10px"
+    },
+    {
+      "at": "2026-10-13T23:48:44.351Z",
+      "ms": 35645,
+      "step": "smoothness-senso-fall",
+      "text": "PASS: senso fall, iPhone 13 viewport, CPU 4×: 301 frames in 5 s (60 / 60 / 60 / 60 / 60 per second), median 60 fps (target ≥ 50); 0 long tasks, the longest 0 ms (target ≤ 50); worst gap between frames 17 ms"
+    },
+    {
+      "at": "2026-10-13T23:48:44.397Z",
+      "ms": 35691,
+      "step": "shot",
+      "text": "senso-fall.jpg"
+    },
+    {
+      "at": "2026-10-13T23:48:44.742Z",
+      "ms": 36036,
+      "step": "shot",
+      "text": "senso-fall-reduced-motion.jpg"
+    },
+    {
+      "at": "2026-10-13T23:48:44.742Z",
+      "ms": 36036,
+      "step": "still-senso-fall",
+      "text": "PASS: senso fall with reduced motion: the still composition (10 designs resting, 10 in view, 0 animations running)"
+    },
+    {
+      "at": "2026-10-13T23:48:49.780Z",
+      "ms": 41074,
+      "step": "recording-senso-fall",
+      "text": "PASS: reports/checks/2026-10-13T23-43-37Z/season/senso-fall.webm (609 KB; gitignored, on disk only)"
+    },
+    {
+      "at": "2026-10-13T23:48:51.170Z",
+      "ms": 42464,
+      "step": "artwork-senso-winter",
+      "text": "PASS: senso winter (server clock 2026-12-01T00:30:00-05:00): the HTML carries the winter scene only (engine snow, designs W1, W3, W5, W7, W10); on the first frame that shows the card (26 ms after navigation; the engine runs before the card is parsed) the scene already holds 20 particles (their clocks: first-frame-senso-winter); 20 particles (2 near), designs used #W7, #W1, #W10, #W5, #W3, 57 animations on transform (transform and opacity only: true); page errors 0"
+    },
+    {
+      "at": "2026-10-13T23:48:51.170Z",
+      "ms": 42464,
+      "step": "first-frame-senso-winter",
+      "text": "PASS: senso winter: on the first frame that shows the card (26 ms after navigation) every one of the scene's 57 animations has its clock running (currentTime > 0): true (0 not started; the earliest 17 ms into its cycle)"
+    },
+    {
+      "at": "2026-10-13T23:48:51.592Z",
+      "ms": 42886,
+      "step": "randomness-senso-winter",
+      "text": "PASS: senso winter: two loads → 0 of 20 particles with the same parameters (designs #W7+#W1+#W10+#W5+#W3 then #W10+#W7+#W1+#W5+#W3); first load's first particle: --x:69vw;--s:16px;--d:16.1s;--l:-5.7s;--o:0.58;--sw:6px;--sp:5.1s;--dr:3.4vw;--rx:23deg;--ry:27deg;--rz:15deg;--fp:37.4s;--dip:0px"
+    },
+    {
+      "at": "2026-10-13T23:48:57.409Z",
+      "ms": 48703,
+      "step": "smoothness-senso-winter",
+      "text": "PASS: senso winter, iPhone 13 viewport, CPU 4×: 301 frames in 5 s (60 / 60 / 60 / 60 / 60 per second), median 60 fps (target ≥ 50); 0 long tasks, the longest 0 ms (target ≤ 50); worst gap between frames 17 ms"
+    },
+    {
+      "at": "2026-10-13T23:48:57.454Z",
+      "ms": 48748,
+      "step": "shot",
+      "text": "senso-winter.jpg"
+    },
+    {
+      "at": "2026-10-13T23:48:57.808Z",
+      "ms": 49102,
+      "step": "shot",
+      "text": "senso-winter-reduced-motion.jpg"
+    },
+    {
+      "at": "2026-10-13T23:48:57.808Z",
+      "ms": 49102,
+      "step": "still-senso-winter",
+      "text": "PASS: senso winter with reduced motion: the still composition (12 designs resting, 12 in view, 0 animations running)"
+    },
+    {
+      "at": "2026-10-13T23:49:02.816Z",
+      "ms": 54110,
+      "step": "recording-senso-winter",
+      "text": "PASS: reports/checks/2026-10-13T23-43-37Z/season/senso-winter.webm (477 KB; gitignored, on disk only)"
+    },
+    {
+      "at": "2026-10-13T23:49:03.337Z",
+      "ms": 54631,
+      "step": "budget-senso-spring",
+      "text": "PASS: senso spring: inline welcome code with the five blossoms and the rosebud and the season's transition 11210 B gzipped (≤ 15 360; the welcome drill measures the season of the day)"
+    },
+    {
+      "at": "2026-10-13T23:49:04.203Z",
+      "ms": 55497,
+      "step": "artwork-senso-spring",
+      "text": "PASS: senso spring (server clock 2027-03-01T00:30:00-05:00): the HTML carries the spring scene only (engine bloom, designs S1, S2, S3, S4, S5, S9); on the first frame that shows the card (28 ms after navigation; the engine runs before the card is parsed) the scene already holds 20 particles (their clocks: first-frame-senso-spring); 20 particles (2 near), designs used #S4, #S1, #S3, #S9, #S5, #S2, 79 animations on transform (transform and opacity only: true); page errors 0"
+    },
+    {
+      "at": "2026-10-13T23:49:04.204Z",
+      "ms": 55498,
+      "step": "first-frame-senso-spring",
+      "text": "PASS: senso spring: on the first frame that shows the card (28 ms after navigation) every one of the scene's 79 animations has its clock running (currentTime > 0): true (0 not started; the earliest 17 ms into its cycle)"
+    },
+    {
+      "at": "2026-10-13T23:49:04.620Z",
+      "ms": 55914,
+      "step": "randomness-senso-spring",
+      "text": "PASS: senso spring: two loads → 0 of 20 particles with the same parameters (designs #S4+#S1+#S3+#S9+#S5+#S2 then #S9+#S5+#S4+#S3+#S2+#S1); first load's first particle: --x:5.8vw;--s:16px;--d:23.1s;--l:-14.7s;--o:0.46;--sw:16px;--sp:5.1s;--dr:0.9vw;--rx:24deg;--ry:31deg;--rz:7deg;--fp:5.4s;--dip:9px"
+    },
+    {
+      "at": "2026-10-13T23:49:10.445Z",
+      "ms": 61739,
+      "step": "smoothness-senso-spring",
+      "text": "PASS: senso spring, iPhone 13 viewport, CPU 4×: 301 frames in 5 s (60 / 60 / 60 / 60 / 60 per second), median 60 fps (target ≥ 50); 0 long tasks, the longest 0 ms (target ≤ 50); worst gap between frames 17 ms"
+    },
+    {
+      "at": "2026-10-13T23:49:10.488Z",
+      "ms": 61782,
+      "step": "shot",
+      "text": "senso-spring.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:10.830Z",
+      "ms": 62124,
+      "step": "shot",
+      "text": "senso-spring-reduced-motion.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:10.830Z",
+      "ms": 62124,
+      "step": "still-senso-spring",
+      "text": "PASS: senso spring with reduced motion: the still composition (10 designs resting, 10 in view, 0 animations running)"
+    },
+    {
+      "at": "2026-10-13T23:49:15.840Z",
+      "ms": 67134,
+      "step": "recording-senso-spring",
+      "text": "PASS: reports/checks/2026-10-13T23-43-37Z/season/senso-spring.webm (506 KB; gitignored, on disk only)"
+    },
+    {
+      "at": "2026-10-13T23:49:16.351Z",
+      "ms": 67645,
+      "step": "budget-senso-summer",
+      "text": "PASS: senso summer: inline welcome code with the sun, its sparkles, motes and seeds and the season's transition 9032 B gzipped (≤ 15 360; the welcome drill measures the season of the day)"
+    },
+    {
+      "at": "2026-10-13T23:49:17.211Z",
+      "ms": 68505,
+      "step": "artwork-senso-summer",
+      "text": "PASS: senso summer (server clock 2027-06-01T00:30:00-04:00): the HTML carries the summer scene only (engine sun, designs D1, D2, D3); on the first frame that shows the card (26 ms after navigation; the engine runs before the card is parsed) the scene already holds 20 particles (their clocks: first-frame-senso-summer); 20 particles (0 near), designs used #Uflames, #Uspark, #Umote, #D2, #D1, 32 animations on transform, opacity (transform and opacity only: true); page errors 0"
+    },
+    {
+      "at": "2026-10-13T23:49:17.211Z",
+      "ms": 68505,
+      "step": "first-frame-senso-summer",
+      "text": "PASS: senso summer: on the first frame that shows the card (26 ms after navigation) every one of the scene's 32 animations has its clock running (currentTime > 0): true (0 not started; the earliest 17 ms into its cycle)"
+    },
+    {
+      "at": "2026-10-13T23:49:17.630Z",
+      "ms": 68924,
+      "step": "randomness-senso-summer",
+      "text": "PASS: senso summer: two loads → 0 of 20 particles with the same parameters (designs #Uflames+#Uspark+#Umote+#D2+#D1 then #Uflames+#Uspark+#Umote+#D1+#D2+#D3); first load's first particle: --s:231px;--o:1;--y:-69px;--rs:0deg;--l:-112.8s"
+    },
+    {
+      "at": "2026-10-13T23:49:23.439Z",
+      "ms": 74733,
+      "step": "smoothness-senso-summer",
+      "text": "PASS: senso summer, iPhone 13 viewport, CPU 4×: 301 frames in 5 s (60 / 60 / 60 / 60 / 60 per second), median 60 fps (target ≥ 50); 0 long tasks, the longest 0 ms (target ≤ 50); worst gap between frames 17 ms"
+    },
+    {
+      "at": "2026-10-13T23:49:23.487Z",
+      "ms": 74781,
+      "step": "shot",
+      "text": "senso-summer.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:23.829Z",
+      "ms": 75123,
+      "step": "shot",
+      "text": "senso-summer-reduced-motion.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:23.829Z",
+      "ms": 75123,
+      "step": "still-senso-summer",
+      "text": "PASS: senso summer with reduced motion: the still composition (14 designs resting, 14 in view, 0 animations running)"
+    },
+    {
+      "at": "2026-10-13T23:49:28.836Z",
+      "ms": 80130,
+      "step": "recording-senso-summer",
+      "text": "PASS: reports/checks/2026-10-13T23-43-37Z/season/senso-summer.webm (484 KB; gitignored, on disk only)"
+    },
+    {
+      "at": "2026-10-13T23:49:30.785Z",
+      "ms": 82079,
+      "step": "shot",
+      "text": "senso-fall.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:32.616Z",
+      "ms": 83910,
+      "step": "shot",
+      "text": "kebab-land-fall.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:34.406Z",
+      "ms": 85700,
+      "step": "shot",
+      "text": "drill-default-venue-fall.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:36.374Z",
+      "ms": 87668,
+      "step": "shot",
+      "text": "senso-winter.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:38.183Z",
+      "ms": 89477,
+      "step": "shot",
+      "text": "kebab-land-winter.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:39.924Z",
+      "ms": 91218,
+      "step": "shot",
+      "text": "drill-default-venue-winter.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:41.873Z",
+      "ms": 93167,
+      "step": "shot",
+      "text": "senso-spring.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:43.683Z",
+      "ms": 94977,
+      "step": "shot",
+      "text": "kebab-land-spring.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:45.420Z",
+      "ms": 96714,
+      "step": "shot",
+      "text": "drill-default-venue-spring.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:47.395Z",
+      "ms": 98689,
+      "step": "shot",
+      "text": "senso-summer.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:49.367Z",
+      "ms": 100661,
+      "step": "shot",
+      "text": "kebab-land-summer.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:51.152Z",
+      "ms": 102446,
+      "step": "shot",
+      "text": "drill-default-venue-summer.jpg"
+    },
+    {
+      "at": "2026-10-13T23:49:53.604Z",
+      "ms": 104898,
+      "step": "roses-now-guard",
+      "text": "PASS: ROSES_NOW=2026-12-01T00:30:00-05:00 (winter in Toronto) alone, without ROSES_CHECK_SUITE: senso: the first request served the previous render (summer; cache entry summer), regenerated true → rendered fall; kebab-land: the first request served the previous render (summer; cache entry summer), regenerated true → rendered fall; drill-default-venue: the first request served the previous render (summer; cache entry summer), regenerated true → rendered fall; the real season in Toronto today is fall; the server logged that it ignored ROSES_NOW: true; control, the same instant with ROSES_CHECK_SUITE=1: senso → winter; kebab-land → winter; drill-default-venue → winter"
+    }
+  ]
+}

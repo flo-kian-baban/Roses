@@ -1,0 +1,1067 @@
+{
+  "base": "http://127.0.0.1:58386",
+  "at": "2026-10-13T21:06:47.751Z",
+  "throttle": {
+    "latencyMs": 562.5,
+    "downloadBytesPerS": 188744,
+    "uploadBytesPerS": 86400,
+    "cpu": 4
+  },
+  "targetMs": 2500,
+  "repeats": 3,
+  "judged": "median",
+  "pass": false,
+  "results": [
+    {
+      "step": "after-tap-senso-list-menu",
+      "ok": true,
+      "text": "within the 2500 ms target on the median of 3: senso (first section as a List), the menu visible 828 ms / 828 ms / 829 ms (median 828 ms) after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true / true, page errors 0 / 0 / 0 (both must hold in every repeat)",
+      "metric": {
+        "over": 0,
+        "of": 3,
+        "worst": 829,
+        "median": 828,
+        "judged": "median",
+        "unit": "ms"
+      }
+    },
+    {
+      "step": "after-tap-senso-list-photos",
+      "ok": false,
+      "text": "MISSES the 2500 ms target on the median of 3: senso (first section as a List), the 4 photo(s) in view loaded 13527 ms (outlier: over 2× the median) / 3978 ms / 6144 ms (median 6144 ms) after the tap; the first row's 1 eager photo(s) 2627 ms (outlier: over 2× the median) / 695 ms / 1111 ms (median 1111 ms), all 6 first-section photos not within 25 s / 12878 ms / 6144 ms (median 12878 ms); served as a list with 6 photos (1 eager)",
+      "metric": {
+        "over": 3,
+        "of": 3,
+        "worst": 13527,
+        "median": 6144,
+        "judged": "median",
+        "unit": "ms"
+      }
+    },
+    {
+      "step": "after-tap-senso-grid-menu",
+      "ok": true,
+      "text": "within the 2500 ms target on the median of 3: senso (its first section, the Seasonal section, as a Grid), the menu visible 827 ms / 829 ms / 828 ms (median 828 ms) after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true / true, page errors 0 / 0 / 0 (both must hold in every repeat)",
+      "metric": {
+        "over": 0,
+        "of": 3,
+        "worst": 829,
+        "median": 828,
+        "judged": "median",
+        "unit": "ms"
+      }
+    },
+    {
+      "step": "after-tap-senso-grid-photos",
+      "ok": false,
+      "text": "MISSES the 2500 ms target on the median of 3: senso (its first section, the Seasonal section, as a Grid), the 4 photo(s) in view loaded 4210 ms / 4211 ms / 4210 ms (median 4210 ms) after the tap; the first row's 2 eager photo(s) 3110 ms / 3113 ms / 3128 ms (median 3113 ms), all 6 first-section photos 10443 ms / 9012 ms / 9010 ms (median 9012 ms); served as a grid with 6 photos (2 eager)",
+      "metric": {
+        "over": 3,
+        "of": 3,
+        "worst": 4211,
+        "median": 4210,
+        "judged": "median",
+        "unit": "ms"
+      }
+    },
+    {
+      "step": "after-tap-kebab-land-menu",
+      "ok": true,
+      "text": "within the 2500 ms target on the median of 3: kebab-land (as it is), the menu visible 212 ms / 229 ms / 229 ms (median 229 ms) after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true / true, page errors 0 / 0 / 0 (both must hold in every repeat)",
+      "metric": {
+        "over": 0,
+        "of": 3,
+        "worst": 229,
+        "median": 229,
+        "judged": "median",
+        "unit": "ms"
+      }
+    },
+    {
+      "step": "after-tap-kebab-land-photos",
+      "ok": false,
+      "text": "MISSES the 2500 ms target on the median of 3: kebab-land (as it is), the 1 photo(s) in view loaded not within 25 s / not within 25 s / not within 25 s (median not reached) after the tap; the first row's 1 eager photo(s) not within 25 s / not within 25 s / not within 25 s (median not reached), all 2 first-section photos not within 25 s / not within 25 s / not within 25 s (median not reached); served as a list with 2 photos (1 eager)",
+      "metric": {
+        "over": 3,
+        "of": 3,
+        "worst": null,
+        "median": null,
+        "judged": "median",
+        "unit": "ms"
+      }
+    },
+    {
+      "step": "eager-rule",
+      "ok": true,
+      "text": "first row only, high fetch priority, everything else lazy: senso (first section as a List): 1 eager of 6 (1 eager on the whole page); senso (its first section, the Seasonal section, as a Grid): 2 eager of 6 (2 eager on the whole page); kebab-land (as it is): 1 eager of 2 (1 eager on the whole page)"
+    },
+    {
+      "step": "photo-sizes",
+      "ok": false,
+      "text": "first-section photos as linked from the venues' hosts (HEAD): senso: 6 photos, 180 KB–264 KB, 1.32 MB in all; natural 1254×1254 px, shown at 96×96 in a list, 173×173 in a grid; kebab-land: 2 photos, no sizes; natural 0×0 px, shown at 96×96 in a list"
+    },
+    {
+      "step": "restore-layout",
+      "ok": true,
+      "text": "\"the Seasonal section\" is a grid again, as found"
+    }
+  ],
+  "measures": [
+    "senso (first section as a List): menu visible 828 ms / 828 ms / 829 ms (median 828 ms), first-row photo(s) 2627 ms (outlier: over 2× the median) / 695 ms / 1111 ms (median 1111 ms), the 4 photos in view 13527 ms (outlier: over 2× the median) / 3978 ms / 6144 ms (median 6144 ms), all 6 not within 25 s / 12878 ms / 6144 ms (median 12878 ms) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view) — MISS",
+    "senso (its first section, the Seasonal section, as a Grid): menu visible 827 ms / 829 ms / 828 ms (median 828 ms), first-row photo(s) 3110 ms / 3113 ms / 3128 ms (median 3113 ms), the 4 photos in view 4210 ms / 4211 ms / 4210 ms (median 4210 ms), all 6 10443 ms / 9012 ms / 9010 ms (median 9012 ms) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view) — MISS",
+    "kebab-land (as it is): menu visible 212 ms / 229 ms / 229 ms (median 229 ms), first-row photo(s) not within 25 s / not within 25 s / not within 25 s (median not reached), the 1 photos in view not within 25 s / not within 25 s / not within 25 s (median not reached), all 2 not within 25 s / not within 25 s / not within 25 s (median not reached) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view) — MISS",
+    "photo bytes: senso 6 photos 180 KB–264 KB (1.32 MB), kebab-land 2 photos ?"
+  ],
+  "runs": [
+    {
+      "key": "senso-list",
+      "venue": "senso",
+      "layout": "list",
+      "label": "senso (first section as a List)",
+      "served": {
+        "id": "451ee116-bc02-4601-9889-c67dd5523f6f",
+        "layout": "list",
+        "imgs": [
+          {
+            "src": "/uploads/senso/photo-af86ecba-6329-4afb-a7db-f0e455d9bdad.jpg",
+            "loading": "eager",
+            "fetchPriority": "high"
+          },
+          {
+            "src": "/uploads/senso/photo-2935b8f5-3fc1-412d-8f23-296e485600a3.jpg",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "/uploads/senso/photo-d90b271d-1a55-407d-8517-86d140a0e5f9.jpg",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "/uploads/senso/photo-6ca0b3ea-5a6f-480b-b3ac-6046110acd85.jpg",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "/uploads/senso/photo-2284c52b-a7d3-4108-a407-5a213cdeb6f9.jpg",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "/uploads/senso/photo-a695863e-bff3-40c3-9f2e-23d71414855e.jpg",
+            "loading": "lazy",
+            "fetchPriority": null
+          }
+        ],
+        "eagerOnPage": 1
+      },
+      "repeats": [
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2687,
+          "firstPaintMs": 1324,
+          "domContentLoadedMs": 1477,
+          "loadEventMs": null,
+          "resourcesAtTap": 2,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 828,
+          "eagerPhotos": 1,
+          "eagerPhotosMs": 2627,
+          "photosInView": 4,
+          "photosInViewMs": 13527,
+          "photosAll": 6,
+          "photosAllMs": null,
+          "photos": [
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-af86ecba-6329-4afb-a7db-f0e455d9bdad.jpg",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 5308
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2935b8f5-3fc1-412d-8f23-296e485600a3.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 15750
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-d90b271d-1a55-407d-8517-86d140a0e5f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 15759
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-6ca0b3ea-5a6f-480b-b3ac-6046110acd85.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 16204
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2284c52b-a7d3-4108-a407-5a213cdeb6f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 13096
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-a695863e-bff3-40c3-9f2e-23d71414855e.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": false,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": null
+            }
+          ],
+          "section": "fall-menu"
+        },
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2672,
+          "firstPaintMs": 1324,
+          "domContentLoadedMs": 1473,
+          "loadEventMs": 6636,
+          "resourcesAtTap": 3,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 828,
+          "eagerPhotos": 1,
+          "eagerPhotosMs": 695,
+          "photosInView": 4,
+          "photosInViewMs": 3978,
+          "photosAll": 6,
+          "photosAllMs": 12878,
+          "photos": [
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-af86ecba-6329-4afb-a7db-f0e455d9bdad.jpg",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 3354
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2935b8f5-3fc1-412d-8f23-296e485600a3.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 6556
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-d90b271d-1a55-407d-8517-86d140a0e5f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 6563
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-6ca0b3ea-5a6f-480b-b3ac-6046110acd85.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 6636
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2284c52b-a7d3-4108-a407-5a213cdeb6f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 15361
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-a695863e-bff3-40c3-9f2e-23d71414855e.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 15536
+            }
+          ],
+          "section": "fall-menu"
+        },
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2689,
+          "firstPaintMs": 1460,
+          "domContentLoadedMs": 1482,
+          "loadEventMs": 8821,
+          "resourcesAtTap": 2,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 829,
+          "eagerPhotos": 1,
+          "eagerPhotosMs": 1111,
+          "photosInView": 4,
+          "photosInViewMs": 6144,
+          "photosAll": 6,
+          "photosAllMs": 6144,
+          "photos": [
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-af86ecba-6329-4afb-a7db-f0e455d9bdad.jpg",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 3783
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2935b8f5-3fc1-412d-8f23-296e485600a3.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 8750
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-d90b271d-1a55-407d-8517-86d140a0e5f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 8757
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-6ca0b3ea-5a6f-480b-b3ac-6046110acd85.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 8821
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2284c52b-a7d3-4108-a407-5a213cdeb6f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 7828
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-a695863e-bff3-40c3-9f2e-23d71414855e.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "96×96",
+              "responseEndMs": 7930
+            }
+          ],
+          "section": "fall-menu"
+        }
+      ],
+      "ok": false
+    },
+    {
+      "key": "senso-grid",
+      "venue": "senso",
+      "layout": "grid",
+      "label": "senso (its first section, the Seasonal section, as a Grid)",
+      "served": {
+        "id": "451ee116-bc02-4601-9889-c67dd5523f6f",
+        "layout": "grid",
+        "imgs": [
+          {
+            "src": "/uploads/senso/photo-af86ecba-6329-4afb-a7db-f0e455d9bdad.jpg",
+            "loading": "eager",
+            "fetchPriority": "high"
+          },
+          {
+            "src": "/uploads/senso/photo-2935b8f5-3fc1-412d-8f23-296e485600a3.jpg",
+            "loading": "eager",
+            "fetchPriority": "high"
+          },
+          {
+            "src": "/uploads/senso/photo-d90b271d-1a55-407d-8517-86d140a0e5f9.jpg",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "/uploads/senso/photo-6ca0b3ea-5a6f-480b-b3ac-6046110acd85.jpg",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "/uploads/senso/photo-2284c52b-a7d3-4108-a407-5a213cdeb6f9.jpg",
+            "loading": "lazy",
+            "fetchPriority": null
+          },
+          {
+            "src": "/uploads/senso/photo-a695863e-bff3-40c3-9f2e-23d71414855e.jpg",
+            "loading": "lazy",
+            "fetchPriority": null
+          }
+        ],
+        "eagerOnPage": 2
+      },
+      "repeats": [
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2725,
+          "firstPaintMs": 1372,
+          "domContentLoadedMs": 1513,
+          "loadEventMs": null,
+          "resourcesAtTap": 3,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 827,
+          "eagerPhotos": 2,
+          "eagerPhotosMs": 3110,
+          "photosInView": 4,
+          "photosInViewMs": 4210,
+          "photosAll": 6,
+          "photosAllMs": 10443,
+          "photos": [
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-af86ecba-6329-4afb-a7db-f0e455d9bdad.jpg",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 4633
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2935b8f5-3fc1-412d-8f23-296e485600a3.jpg",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 5833
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-d90b271d-1a55-407d-8517-86d140a0e5f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 6746
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-6ca0b3ea-5a6f-480b-b3ac-6046110acd85.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 6923
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2284c52b-a7d3-4108-a407-5a213cdeb6f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 13002
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-a695863e-bff3-40c3-9f2e-23d71414855e.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 13161
+            }
+          ],
+          "section": "fall-menu"
+        },
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2721,
+          "firstPaintMs": 1372,
+          "domContentLoadedMs": 1521,
+          "loadEventMs": null,
+          "resourcesAtTap": 3,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 829,
+          "eagerPhotos": 2,
+          "eagerPhotosMs": 3113,
+          "photosInView": 4,
+          "photosInViewMs": 4211,
+          "photosAll": 6,
+          "photosAllMs": 9012,
+          "photos": [
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-af86ecba-6329-4afb-a7db-f0e455d9bdad.jpg",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 4618
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2935b8f5-3fc1-412d-8f23-296e485600a3.jpg",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 5833
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-d90b271d-1a55-407d-8517-86d140a0e5f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 6747
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-6ca0b3ea-5a6f-480b-b3ac-6046110acd85.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 6922
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2284c52b-a7d3-4108-a407-5a213cdeb6f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 11635
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-a695863e-bff3-40c3-9f2e-23d71414855e.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 11722
+            }
+          ],
+          "section": "fall-menu"
+        },
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2720,
+          "firstPaintMs": 1372,
+          "domContentLoadedMs": 1521,
+          "loadEventMs": null,
+          "resourcesAtTap": 3,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 828,
+          "eagerPhotos": 2,
+          "eagerPhotosMs": 3128,
+          "photosInView": 4,
+          "photosInViewMs": 4210,
+          "photosAll": 6,
+          "photosAllMs": 9010,
+          "photos": [
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-af86ecba-6329-4afb-a7db-f0e455d9bdad.jpg",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 4616
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2935b8f5-3fc1-412d-8f23-296e485600a3.jpg",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 5834
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-d90b271d-1a55-407d-8517-86d140a0e5f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 6747
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-6ca0b3ea-5a6f-480b-b3ac-6046110acd85.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": true,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 6922
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-2284c52b-a7d3-4108-a407-5a213cdeb6f9.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 11643
+            },
+            {
+              "src": "http://127.0.0.1:58386/uploads/senso/photo-a695863e-bff3-40c3-9f2e-23d71414855e.jpg",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": true,
+              "natural": "1254×1254",
+              "rendered": "173×173",
+              "responseEndMs": 11722
+            }
+          ],
+          "section": "fall-menu"
+        }
+      ],
+      "ok": false
+    },
+    {
+      "key": "kebab-land",
+      "venue": "kebab-land",
+      "layout": null,
+      "label": "kebab-land (as it is)",
+      "served": {
+        "id": "62271c0e-ebc2-4379-9223-beb1408a7333",
+        "layout": "list",
+        "imgs": [
+          {
+            "src": "https://roseskebablands.com/wp-content/uploads/2025/06/garden-salad.webp",
+            "loading": "eager",
+            "fetchPriority": "high"
+          },
+          {
+            "src": "https://roseskebablands.com/wp-content/uploads/2025/06/Mixed-Appetizer-Platter-copy-785x1024.webp",
+            "loading": "lazy",
+            "fetchPriority": null
+          }
+        ],
+        "eagerOnPage": 1
+      },
+      "repeats": [
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2536,
+          "firstPaintMs": 1308,
+          "domContentLoadedMs": 1395,
+          "loadEventMs": 3503,
+          "resourcesAtTap": 3,
+          "imageResourcesAtTap": 0,
+          "menuVisibleMs": 212,
+          "eagerPhotos": 1,
+          "eagerPhotosMs": null,
+          "photosInView": 1,
+          "photosInViewMs": null,
+          "photosAll": 2,
+          "photosAllMs": null,
+          "photos": [
+            {
+              "src": "https://roseskebablands.com/wp-content/uploads/2025/06/garden-salad.webp",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": false,
+              "natural": "0×0",
+              "rendered": "96×96",
+              "responseEndMs": 3501
+            },
+            {
+              "src": "https://roseskebablands.com/wp-content/uploads/2025/06/Mixed-Appetizer-Platter-copy-785x1024.webp",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": false,
+              "natural": "0×0",
+              "rendered": "96×96",
+              "responseEndMs": 3501
+            }
+          ],
+          "section": "appetizers"
+        },
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2538,
+          "firstPaintMs": 1312,
+          "domContentLoadedMs": 1404,
+          "loadEventMs": 1990,
+          "resourcesAtTap": 20,
+          "imageResourcesAtTap": 16,
+          "menuVisibleMs": 229,
+          "eagerPhotos": 1,
+          "eagerPhotosMs": null,
+          "photosInView": 1,
+          "photosInViewMs": null,
+          "photosAll": 2,
+          "photosAllMs": null,
+          "photos": [
+            {
+              "src": "https://roseskebablands.com/wp-content/uploads/2025/06/garden-salad.webp",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": false,
+              "natural": "0×0",
+              "rendered": "96×96",
+              "responseEndMs": 595
+            },
+            {
+              "src": "https://roseskebablands.com/wp-content/uploads/2025/06/Mixed-Appetizer-Platter-copy-785x1024.webp",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": false,
+              "natural": "0×0",
+              "rendered": "96×96",
+              "responseEndMs": 1401
+            }
+          ],
+          "section": "appetizers"
+        },
+        {
+          "settled": true,
+          "errors": [],
+          "tapAtMs": 2535,
+          "firstPaintMs": 1312,
+          "domContentLoadedMs": 1411,
+          "loadEventMs": 1988,
+          "resourcesAtTap": 20,
+          "imageResourcesAtTap": 16,
+          "menuVisibleMs": 229,
+          "eagerPhotos": 1,
+          "eagerPhotosMs": null,
+          "photosInView": 1,
+          "photosInViewMs": null,
+          "photosAll": 2,
+          "photosAllMs": null,
+          "photos": [
+            {
+              "src": "https://roseskebablands.com/wp-content/uploads/2025/06/garden-salad.webp",
+              "loading": "eager",
+              "fetchPriority": "high",
+              "inView": true,
+              "complete": false,
+              "natural": "0×0",
+              "rendered": "96×96",
+              "responseEndMs": 590
+            },
+            {
+              "src": "https://roseskebablands.com/wp-content/uploads/2025/06/Mixed-Appetizer-Platter-copy-785x1024.webp",
+              "loading": "lazy",
+              "fetchPriority": null,
+              "inView": false,
+              "complete": false,
+              "natural": "0×0",
+              "rendered": "96×96",
+              "responseEndMs": 1400
+            }
+          ],
+          "section": "appetizers"
+        }
+      ],
+      "ok": false
+    }
+  ],
+  "sizes": [
+    {
+      "venue": "senso",
+      "src": "/uploads/senso/photo-af86ecba-6329-4afb-a7db-f0e455d9bdad.jpg",
+      "status": 200,
+      "bytes": 184369,
+      "type": "image/jpeg",
+      "natural": "1254×1254",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "senso",
+      "src": "/uploads/senso/photo-2935b8f5-3fc1-412d-8f23-296e485600a3.jpg",
+      "status": 200,
+      "bytes": 259872,
+      "type": "image/jpeg",
+      "natural": "1254×1254",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "senso",
+      "src": "/uploads/senso/photo-d90b271d-1a55-407d-8517-86d140a0e5f9.jpg",
+      "status": 200,
+      "bytes": 259665,
+      "type": "image/jpeg",
+      "natural": "1254×1254",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "senso",
+      "src": "/uploads/senso/photo-6ca0b3ea-5a6f-480b-b3ac-6046110acd85.jpg",
+      "status": 200,
+      "bytes": 270147,
+      "type": "image/jpeg",
+      "natural": "1254×1254",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "senso",
+      "src": "/uploads/senso/photo-2284c52b-a7d3-4108-a407-5a213cdeb6f9.jpg",
+      "status": 200,
+      "bytes": 202925,
+      "type": "image/jpeg",
+      "natural": "1254×1254",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "senso",
+      "src": "/uploads/senso/photo-a695863e-bff3-40c3-9f2e-23d71414855e.jpg",
+      "status": 200,
+      "bytes": 207216,
+      "type": "image/jpeg",
+      "natural": "1254×1254",
+      "rendered": "96×96 in a list, 173×173 in a grid"
+    },
+    {
+      "venue": "kebab-land",
+      "src": "https://roseskebablands.com/wp-content/uploads/2025/06/garden-salad.webp",
+      "status": "fetch failed",
+      "bytes": null,
+      "type": null,
+      "natural": "0×0",
+      "rendered": "96×96 in a list"
+    },
+    {
+      "venue": "kebab-land",
+      "src": "https://roseskebablands.com/wp-content/uploads/2025/06/Mixed-Appetizer-Platter-copy-785x1024.webp",
+      "status": "fetch failed",
+      "bytes": null,
+      "type": null,
+      "natural": "0×0",
+      "rendered": "96×96 in a list"
+    }
+  ],
+  "transcript": [
+    {
+      "at": "2026-10-13T21:03:55.535Z",
+      "ms": 10,
+      "step": "db",
+      "text": "connected to database \"roses_check_20261013t205003z\" as application \"roses-check:after-tap-drill\""
+    },
+    {
+      "at": "2026-10-13T21:03:55.727Z",
+      "ms": 202,
+      "step": "setup",
+      "text": "senso section \"the Seasonal section\" (451ee116-bc02-4601-9889-c67dd5523f6f) is a grid as found; the runs set it to List, then Grid, and put it back"
+    },
+    {
+      "at": "2026-10-13T21:03:55.787Z",
+      "ms": 262,
+      "step": "layout",
+      "text": "senso: the Seasonal section → list: on the public page after 7 ms"
+    },
+    {
+      "at": "2026-10-13T21:04:23.545Z",
+      "ms": 28020,
+      "step": "senso (first section as a List)",
+      "text": "repeat 1: first paint 1324 ms, DOMContentLoaded 1477 ms, the tap at 2687 ms with 0 image(s) of 2 resources down, settled true; after the tap: menu visible 828 ms, the 1 eager photo(s) 2627 ms, the 4 in view 13527 ms, all 6 null ms; page errors 0"
+    },
+    {
+      "at": "2026-10-13T21:04:39.145Z",
+      "ms": 43620,
+      "step": "senso (first section as a List)",
+      "text": "repeat 2: first paint 1324 ms, DOMContentLoaded 1473 ms, the tap at 2672 ms with 0 image(s) of 3 resources down, settled true; after the tap: menu visible 828 ms, the 1 eager photo(s) 695 ms, the 4 in view 3978 ms, all 6 12878 ms; page errors 0"
+    },
+    {
+      "at": "2026-10-13T21:04:48.022Z",
+      "ms": 52497,
+      "step": "senso (first section as a List)",
+      "text": "repeat 3: first paint 1460 ms, DOMContentLoaded 1482 ms, the tap at 2689 ms with 0 image(s) of 2 resources down, settled true; after the tap: menu visible 829 ms, the 1 eager photo(s) 1111 ms, the 4 in view 6144 ms, all 6 6144 ms; page errors 0"
+    },
+    {
+      "at": "2026-10-13T21:04:48.022Z",
+      "ms": 52497,
+      "step": "senso (first section as a List)",
+      "text": "senso (first section as a List), served as a list with 6 photos (1 eager, 1 eager on the whole page): menu visible 828 ms / 828 ms / 829 ms (median 828 ms) after the tap; the 1 eager photo(s) of the first row loaded 2627 ms (outlier: over 2× the median) / 695 ms / 1111 ms (median 1111 ms) after the tap; the 4 photo(s) in view loaded 13527 ms (outlier: over 2× the median) / 3978 ms / 6144 ms (median 6144 ms) after the tap (16.2 s / 6.7 s / 8.8 s after navigation); all 6 first-section photos not within 25 s / 12878 ms / 6144 ms (median 12878 ms) after the tap (— / 15.6 s / 8.8 s after navigation); the tap at 2.7 s / 2.7 s / 2.7 s after navigation (first paint 1.3 s / 1.3 s / 1.5 s, 0 / 0 / 0 image(s) already down at the tap)"
+    },
+    {
+      "at": "2026-10-13T21:04:48.022Z",
+      "ms": 52497,
+      "step": "after-tap-senso-list-menu",
+      "text": "PASS: within the 2500 ms target on the median of 3: senso (first section as a List), the menu visible 828 ms / 828 ms / 829 ms (median 828 ms) after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true / true, page errors 0 / 0 / 0 (both must hold in every repeat)"
+    },
+    {
+      "at": "2026-10-13T21:04:48.023Z",
+      "ms": 52498,
+      "step": "after-tap-senso-list-photos",
+      "text": "FAIL: MISSES the 2500 ms target on the median of 3: senso (first section as a List), the 4 photo(s) in view loaded 13527 ms (outlier: over 2× the median) / 3978 ms / 6144 ms (median 6144 ms) after the tap; the first row's 1 eager photo(s) 2627 ms (outlier: over 2× the median) / 695 ms / 1111 ms (median 1111 ms), all 6 first-section photos not within 25 s / 12878 ms / 6144 ms (median 12878 ms); served as a list with 6 photos (1 eager)"
+    },
+    {
+      "at": "2026-10-13T21:04:48.080Z",
+      "ms": 52555,
+      "step": "layout",
+      "text": "senso: the Seasonal section → grid: on the public page after 7 ms"
+    },
+    {
+      "at": "2026-10-13T21:05:01.295Z",
+      "ms": 65770,
+      "step": "senso (its first section, the Seasonal section, as a Grid)",
+      "text": "repeat 1: first paint 1372 ms, DOMContentLoaded 1513 ms, the tap at 2725 ms with 0 image(s) of 3 resources down, settled true; after the tap: menu visible 827 ms, the 2 eager photo(s) 3110 ms, the 4 in view 4210 ms, all 6 10443 ms; page errors 0"
+    },
+    {
+      "at": "2026-10-13T21:05:13.074Z",
+      "ms": 77549,
+      "step": "senso (its first section, the Seasonal section, as a Grid)",
+      "text": "repeat 2: first paint 1372 ms, DOMContentLoaded 1521 ms, the tap at 2721 ms with 0 image(s) of 3 resources down, settled true; after the tap: menu visible 829 ms, the 2 eager photo(s) 3113 ms, the 4 in view 4211 ms, all 6 9012 ms; page errors 0"
+    },
+    {
+      "at": "2026-10-13T21:05:24.851Z",
+      "ms": 89326,
+      "step": "senso (its first section, the Seasonal section, as a Grid)",
+      "text": "repeat 3: first paint 1372 ms, DOMContentLoaded 1521 ms, the tap at 2720 ms with 0 image(s) of 3 resources down, settled true; after the tap: menu visible 828 ms, the 2 eager photo(s) 3128 ms, the 4 in view 4210 ms, all 6 9010 ms; page errors 0"
+    },
+    {
+      "at": "2026-10-13T21:05:24.851Z",
+      "ms": 89326,
+      "step": "senso (its first section, the Seasonal section, as a Grid)",
+      "text": "senso (its first section, the Seasonal section, as a Grid), served as a grid with 6 photos (2 eager, 2 eager on the whole page): menu visible 827 ms / 829 ms / 828 ms (median 828 ms) after the tap; the 2 eager photo(s) of the first row loaded 3110 ms / 3113 ms / 3128 ms (median 3113 ms) after the tap; the 4 photo(s) in view loaded 4210 ms / 4211 ms / 4210 ms (median 4210 ms) after the tap (6.9 s / 6.9 s / 6.9 s after navigation); all 6 first-section photos 10443 ms / 9012 ms / 9010 ms (median 9012 ms) after the tap (13.2 s / 11.7 s / 11.7 s after navigation); the tap at 2.7 s / 2.7 s / 2.7 s after navigation (first paint 1.4 s / 1.4 s / 1.4 s, 0 / 0 / 0 image(s) already down at the tap)"
+    },
+    {
+      "at": "2026-10-13T21:05:24.851Z",
+      "ms": 89326,
+      "step": "after-tap-senso-grid-menu",
+      "text": "PASS: within the 2500 ms target on the median of 3: senso (its first section, the Seasonal section, as a Grid), the menu visible 827 ms / 829 ms / 828 ms (median 828 ms) after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true / true, page errors 0 / 0 / 0 (both must hold in every repeat)"
+    },
+    {
+      "at": "2026-10-13T21:05:24.851Z",
+      "ms": 89326,
+      "step": "after-tap-senso-grid-photos",
+      "text": "FAIL: MISSES the 2500 ms target on the median of 3: senso (its first section, the Seasonal section, as a Grid), the 4 photo(s) in view loaded 4210 ms / 4211 ms / 4210 ms (median 4210 ms) after the tap; the first row's 2 eager photo(s) 3110 ms / 3113 ms / 3128 ms (median 3113 ms), all 6 first-section photos 10443 ms / 9012 ms / 9010 ms (median 9012 ms); served as a grid with 6 photos (2 eager)"
+    },
+    {
+      "at": "2026-10-13T21:05:52.445Z",
+      "ms": 116920,
+      "step": "kebab-land (as it is)",
+      "text": "repeat 1: first paint 1308 ms, DOMContentLoaded 1395 ms, the tap at 2536 ms with 0 image(s) of 3 resources down, settled true; after the tap: menu visible 212 ms, the 1 eager photo(s) null ms, the 1 in view null ms, all 2 null ms; page errors 0"
+    },
+    {
+      "at": "2026-10-13T21:06:20.067Z",
+      "ms": 144542,
+      "step": "kebab-land (as it is)",
+      "text": "repeat 2: first paint 1312 ms, DOMContentLoaded 1404 ms, the tap at 2538 ms with 16 image(s) of 20 resources down, settled true; after the tap: menu visible 229 ms, the 1 eager photo(s) null ms, the 1 in view null ms, all 2 null ms; page errors 0"
+    },
+    {
+      "at": "2026-10-13T21:06:47.666Z",
+      "ms": 172141,
+      "step": "kebab-land (as it is)",
+      "text": "repeat 3: first paint 1312 ms, DOMContentLoaded 1411 ms, the tap at 2535 ms with 16 image(s) of 20 resources down, settled true; after the tap: menu visible 229 ms, the 1 eager photo(s) null ms, the 1 in view null ms, all 2 null ms; page errors 0"
+    },
+    {
+      "at": "2026-10-13T21:06:47.666Z",
+      "ms": 172141,
+      "step": "kebab-land (as it is)",
+      "text": "kebab-land (as it is), served as a list with 2 photos (1 eager, 1 eager on the whole page): menu visible 212 ms / 229 ms / 229 ms (median 229 ms) after the tap; the 1 eager photo(s) of the first row loaded not within 25 s / not within 25 s / not within 25 s (median not reached) after the tap; the 1 photo(s) in view loaded not within 25 s / not within 25 s / not within 25 s (median not reached) after the tap (— / — / — after navigation); all 2 first-section photos not within 25 s / not within 25 s / not within 25 s (median not reached) after the tap (— / — / — after navigation); the tap at 2.5 s / 2.5 s / 2.5 s after navigation (first paint 1.3 s / 1.3 s / 1.3 s, 0 / 16 / 16 image(s) already down at the tap)"
+    },
+    {
+      "at": "2026-10-13T21:06:47.666Z",
+      "ms": 172141,
+      "step": "after-tap-kebab-land-menu",
+      "text": "PASS: within the 2500 ms target on the median of 3: kebab-land (as it is), the menu visible 212 ms / 229 ms / 229 ms (median 229 ms) after the tap (the overlay gone, the first section's heading and first row in view); settled before the tap true / true / true, page errors 0 / 0 / 0 (both must hold in every repeat)"
+    },
+    {
+      "at": "2026-10-13T21:06:47.666Z",
+      "ms": 172141,
+      "step": "after-tap-kebab-land-photos",
+      "text": "FAIL: MISSES the 2500 ms target on the median of 3: kebab-land (as it is), the 1 photo(s) in view loaded not within 25 s / not within 25 s / not within 25 s (median not reached) after the tap; the first row's 1 eager photo(s) not within 25 s / not within 25 s / not within 25 s (median not reached), all 2 first-section photos not within 25 s / not within 25 s / not within 25 s (median not reached); served as a list with 2 photos (1 eager)"
+    },
+    {
+      "at": "2026-10-13T21:06:47.666Z",
+      "ms": 172141,
+      "step": "eager-rule",
+      "text": "PASS: first row only, high fetch priority, everything else lazy: senso (first section as a List): 1 eager of 6 (1 eager on the whole page); senso (its first section, the Seasonal section, as a Grid): 2 eager of 6 (2 eager on the whole page); kebab-land (as it is): 1 eager of 2 (1 eager on the whole page)"
+    },
+    {
+      "at": "2026-10-13T21:06:47.718Z",
+      "ms": 172193,
+      "step": "photo-sizes",
+      "text": "FAIL: first-section photos as linked from the venues' hosts (HEAD): senso: 6 photos, 180 KB–264 KB, 1.32 MB in all; natural 1254×1254 px, shown at 96×96 in a list, 173×173 in a grid; kebab-land: 2 photos, no sizes; natural 0×0 px, shown at 96×96 in a list"
+    },
+    {
+      "at": "2026-10-13T21:06:47.724Z",
+      "ms": 172199,
+      "step": "restore",
+      "text": "the Seasonal section → grid again: done"
+    },
+    {
+      "at": "2026-10-13T21:06:47.724Z",
+      "ms": 172199,
+      "step": "restore-layout",
+      "text": "PASS: \"the Seasonal section\" is a grid again, as found"
+    }
+  ]
+}

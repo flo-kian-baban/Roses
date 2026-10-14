@@ -423,10 +423,14 @@ const listedIds = async () => new Set((await db.query('select id from items wher
     add_ons: [{ group: { en: 'Drill milk', fa: null }, label: { en: 'Oat', fa: null }, price: 1, required: false }, { group: { en: 'Drill syrup', fa: null }, label: { en: 'Vanilla', fa: null }, price: 0.5, required: false }],
     section_ids: [sec.id, seasonalId], seasons: [today], listed: true };
   const set = await api('/api/admin/item', { action: 'update', id: itemId, patch: full }, ck);
+  const openIt = async () => { await p.goto(`${base}/admin/${VENUE}`); await p.waitForSelector('[data-item]'); await p.fill('input[aria-label="Search items"]', NAME); await p.locator(`#sec-${sec.id} [data-item="${itemId}"] button[aria-label^="Edit"]`).click(); await p.waitForSelector(`.item-panel[aria-label="Edit ${NAME}"]`); await sleep(300); };
+  // Allergens & diet opens by itself only while allergen or dietary drafts wait for Confirm (the PM, 2026-10-13): closed without them
+  await openIt(); const closedWithout = await p.getAttribute('.item-panel [data-group="allergens"]', 'aria-expanded');
   await db.query(`update items set drafts = array['description','allergens'], fa_draft = array['name','description'] where id = $1`, [itemId]); // the flags the research and the import leave
   log('rebuild', `the drill item set up as a full one (${set.status}), research drafts description + allergens, Persian drafts name + description`);
-  await p.goto(`${base}/admin/${VENUE}`); await p.waitForSelector('[data-item]');
-  await p.fill('input[aria-label="Search items"]', NAME); await p.locator(`#sec-${sec.id} [data-item="${itemId}"] button[aria-label^="Edit"]`).click(); await p.waitForSelector(`.item-panel[aria-label="Edit ${NAME}"]`); await sleep(300);
+  await openIt(); const openWith = await p.getAttribute('.item-panel [data-group="allergens"]', 'aria-expanded');
+  const chipsInGroup = await p.locator('.item-panel [data-group-section="allergens"] [data-allergen]').count();
+  check('t-allergens-open', closedWithout === 'false' && openWith === 'true' && chipsInGroup > 0, `Allergens & diet on opening the item: without drafts ${closedWithout === 'false' ? 'closed' : `NOT closed (${closedWithout})`}; with an allergen draft waiting for Confirm ${openWith === 'true' ? 'open' : `NOT open (${openWith})`}, its ${chipsInGroup} chips on the page with no tap`);
   const inView = (sel) => p.evaluate((sel) => { const el = document.querySelector(sel); if (!el) return false; const r = el.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight && r.height > 0; }, sel);
   await snap(p, 'editor-rebuilt');
   { // the status: one tap hides, nothing scrolled

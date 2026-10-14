@@ -1,6 +1,7 @@
 'use client';
 // The editor's small kit: fields that save themselves on change, the iOS-style switch, sheets and buttons.
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '../../../_ui/icons';
 
 export const btn = 'inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-4 text-[15px] font-semibold whitespace-nowrap transition active:scale-[.97] disabled:cursor-not-allowed disabled:opacity-50';
@@ -69,10 +70,13 @@ export function MoneyField({ value, onCommit, label = 'Price', hint, autoFocus, 
   );
 }
 
-// Bottom sheet on phones, a centred card on laptops. Escape and the backdrop close it.
+// Bottom sheet on phones, a centred card on laptops. Escape and the backdrop close it. Rendered into the admin's own wrapper (.admin,
+// so its styles still apply) at the top of the page: a sheet opened from inside the item editor would otherwise paint in the editor's
+// layer (on a wide screen the editor is a sticky column, its own stacking context), under the Menu tab's sticky bars and the top bar,
+// its title cut off (Kian, 2026-10-14).
 export function Sheet({ title, onClose, children, wide }: { title: string; onClose: () => void; children: React.ReactNode; wide?: boolean }) {
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose]);
-  return (
+  const sheet = (
     <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={title} data-sheet="">
       <button type="button" className="backdrop-in absolute inset-0 bg-black/40" onClick={onClose} aria-label="Close" />
       <div className={`sheet-in relative max-h-[92dvh] w-full overflow-y-auto rounded-t-[24px] bg-white p-5 shadow-pop sm:rounded-[24px] ${wide ? 'sm:w-[36rem]' : 'sm:w-[26rem]'}`} style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}>
@@ -81,6 +85,8 @@ export function Sheet({ title, onClose, children, wide }: { title: string; onClo
       </div>
     </div>
   );
+  const host = typeof document === 'undefined' ? null : document.querySelector('.admin') ?? document.body;
+  return host ? createPortal(sheet, host) : sheet;
 }
 
 export function ConfirmSheet({ title, body, label, onConfirm, onClose }: { title: string; body: React.ReactNode; label: string; onConfirm: () => Promise<void>; onClose: () => void }) {

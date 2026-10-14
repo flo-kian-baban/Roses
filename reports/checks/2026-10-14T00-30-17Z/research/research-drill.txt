@@ -1,0 +1,25 @@
+Research drill PASS (16/16)
+
+Measurements:
+- senso: 140 shown items; descriptions English 45 existing + 94 new, Persian 46 existing + 93 new; 1 for the owner to write
+- kebab-land: 102 shown items; descriptions English 61 existing + 36 new, Persian 61 existing + 36 new; 5 for the owner to write
+- health-claim scan of 259 new descriptions: 0 hits; words: detox, cleanse, cleansing, immune, immunity, boost, boosts, boosting, cure, cures, heal, heals, healing, remedy, medicinal, therapeutic, digest, digestion, digestive, metabolism, antioxidant, antioxidants, anti-inflammatory, inflammation, weight, slimming, fat-burning, healthy, health, healthier, wellness, nourishing, vitamin, vitamins, protein, energy, energizing, energising, calming, relaxing, soothing, soothe, soothes, stress, sleep, allergy, allergies, cancer, hormone, hormones, superfood, guilt-free, good for you, سم‌زدایی, سم زدایی, پاکسازی, ایمنی, تقویت, درمان, شفا, دارویی, گوارش, هضم, متابولیسم, آنتی‌اکسیدان, التهاب, لاغری, چربی‌سوز, سالم, سلامت, سلامتی, ویتامین, پروتئین, انرژی, آرام‌بخش, آرامش, آرامش‌بخش, تسکین, استرس, خواب, حساسیت, سرطان, مقوی, مفید
+- superlative scan: 0 hits; words: best, finest, perfect, perfection, famous, legendary, world-class, ultimate, unbeatable, number one, the most, greatest, unrivalled, unrivaled, بهترین, معروف, بی‌نظیر, بی نظیر, مشهور
+- confirm an item's researched allergens from the Menu tab on the iPhone 13 viewport: 3 taps (the Needs-attention chip, the item, Confirm), 615 ms to "Confirmed · Undo"
+
+PASS coverage-senso: 140 shown items: English 139 (45 existing, 94 written by the research), Persian 139 (46 existing, 93 written by the research); for the owner to write (placeholders withdrawn, Kian 2026-10-13): Senso Waffle
+PASS basis-senso: 140 of 140 with a basis (key ingredients and a source URL); allergen notes: 138 drafts to confirm, 1 confirmed or corrected since, 1 the owner's own note kept (Majoun)
+PASS lexicon-senso: 199 ingredient mentions in 140 items' descriptions (English and Persian; lexicon of 52 ingredients) checked against the key ingredients and the allergen draft: every one reflected
+PASS coverage-kebab-land: 102 shown items: English 97 (61 existing, 36 written by the research), Persian 97 (61 existing, 36 written by the research); for the owner to write (placeholders withdrawn, Kian 2026-10-13): Chicken Rolled Fillet, Rolled Fillet Kebab, Soft Drink, Persian Dreams, Venato (Italy)
+PASS basis-kebab-land: 102 of 102 with a basis (key ingredients and a source URL); allergen notes: 102 drafts to confirm, 0 confirmed or corrected since, 0 the owner's own note kept (none)
+PASS lexicon-kebab-land: 55 ingredient mentions in 102 items' descriptions (English and Persian; lexicon of 52 ingredients) checked against the key ingredients and the allergen draft: every one reflected
+PASS claims: 259 new descriptions (130 English, 129 Persian) scanned: health-claim words 0 hits, superlatives 0 hits, English over 25 words 0
+PASS public-senso: 138 items with notes still to confirm (146 rows or cards on the page): none of their allergens or dietary words in the HTML; "Contains" lines on the page 0, expected 0 (the confirmed items with allergens: none)
+PASS public-kebab-land: 102 items with notes still to confirm (102 rows or cards on the page): none of their allergens or dietary words in the HTML; "Contains" lines on the page 0, expected 0 (the confirmed items with allergens: none)
+PASS notice-senso: the general allergy notice on /senso: English true, Persian true
+PASS notice-kebab-land: the general allergy notice on /kebab-land: English true, Persian true
+PASS notice-drill-default-venue: the general allergy notice on /drill-default-venue: English true, Persian true
+PASS confirm-api: "Sausage & Egg": before Confirm the page shows no "Contains" for it (true); confirm → 200, drafts after []; "Contains: egg, wheat, milk" and "حاوی: تخم‌مرغ، گندم، شیر" on the public page after 7 ms (true); Undo → 200, off the page again after 6 ms (true), drafts back ["allergens"]
+PASS confirm-ui: iPhone 13: the bar's chip "Allergens to confirm (138)" (expected 138: 138 shown + 0 hidden items with notes to confirm), 146 rows after tapping it; "Pumpkin Soup" opened with its draft box (with its basis), Confirm 89 × 44 px; after Confirm drafts [], after Undo ["allergens"]
+PASS csv-senso: reports/research-review-senso.csv: 140 rows for 140 shown items; exported now and read back with --dry: 140 rows, 0 changed, 140 unchanged, 0 fixes applied, 0 not found, 0 read-only differences; proposed fixes 9 for 9 contradictions, first in the sheet (Majoun, Del Roba, Digestive Herbal Tea, Power Herbal Tea, Women's Life Herbal Tea, Sausage & Egg, Sausage, Egg & Tomato, Gheymagh, Mama pizza (Grilled chicken Salami,beef bacon)), 0 already applied
+PASS csv-kebab-land: reports/research-review-kebab-land.csv: 102 rows for 102 shown items; exported now and read back with --dry: 102 rows, 0 changed, 102 unchanged, 0 fixes applied, 0 not found, 0 read-only differences; proposed fixes 4 for 4 contradictions, first in the sheet (Fresh Berry Mojito-Virgin, Red Wine Sangria, Black Russian, Tutti Trend), 0 already applied

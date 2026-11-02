@@ -65,6 +65,15 @@ export async function recordFailure(venueId: string, address: string, opts: { ca
   } catch (e) { await client.query('rollback'); throw e; } finally { client.release(); }
 }
 
+export const limits = CFG;
+
+// A successful sign-in whose attempt was counted before the check (pre-go-live audit S1-04): the venue + address counter is cleared
+// as before, and the attempt comes off the venue's hourly count (with the venue lock, if this very attempt set it).
+export async function forgiveAttempt(venueId: string, address: string): Promise<void> {
+  await clearFailures(venueId, address);
+  await pool.query(`update login_failures set failures = greatest(failures - 1, 0), locked_until = case when failures - 1 < $2 then null else locked_until end where key = $1`, [`venue:${venueId}`, CFG().capFailures]);
+}
+
 export async function clearFailures(venueId: string, address: string): Promise<void> {
   await pool.query(`delete from login_failures where key = $1`, [`${venueId}:${address}`]);
 }

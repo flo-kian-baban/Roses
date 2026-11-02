@@ -92,8 +92,17 @@ log(`correct PIN on kebab-land after unlock: ${afterUnlock.status} → ${afterUn
 await db.query(`delete from login_failures where key like 'senso:%' or key = 'venue:senso'`);
 await fetch(base4 + '/api/admin/pin', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie }, body: new URLSearchParams({ _action: 'revoke', id: good.id, _back: '/admin/team' }).toString() });
 log('drill PINs revoked; senso lock rows cleared so nobody stays locked out');
+// pre-go-live audit (2026-11-02, S1-04): 20 wrong PINs sent at the same moment from one address: no more than the limit (5) are
+// checked; the rest are refused before checking (before, every one of a burst was checked, so the lockout did not hold)
+await db.query(`delete from login_failures where key like 'senso:%' or key = 'venue:senso'`);
+const burst = await Promise.all(Array.from({ length: 20 }, (_, i) => post(base4, '/api/admin/login', { mode: 'pin', venue: 'senso', pin: String(917300 + i) })));
+const burstChecked = burst.filter((r) => /^wrong PIN \(|locked until/.test(msg(r.location))).length, burstRefused = burst.filter((r) => /try again at/.test(msg(r.location))).length;
+log(`--- 20 wrong PINs at once from address A on senso: ${burstChecked} checked, ${burstRefused} refused before checking, ${burst.filter((r) => r.setCookie).length} signed in`);
+const pass4 = burstChecked <= 5 && burstChecked + burstRefused === 20 && !burst.some((r) => r.setCookie);
+log(`Burst ${pass4 ? 'PASS' : 'FAIL'}`);
+await db.query(`delete from login_failures where key like 'senso:%' or key = 'venue:senso'`);
 await db.end();
-const pass = pass1 && pass2 && pass3 && afterUnlock.location === '/admin/kebab-land';
+const pass = pass1 && pass2 && pass3 && pass4 && afterUnlock.location === '/admin/kebab-land';
 log(`LOCKOUT DRILL ${pass ? 'PASS' : 'FAIL'}`);
 await fs.mkdir(out, { recursive: true });
 await fs.writeFile(path.join(out, 'lockout-drill.txt'), lines.join('\n') + '\n');

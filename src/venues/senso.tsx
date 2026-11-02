@@ -5,7 +5,7 @@
 import type { Section, SeasonId, Venue } from '@/lib/types';
 import { Bi } from '@/components/Bi';
 import { LangToggle } from '@/components/LangToggle';
-import { ItemList, MenuDialogs, SectionTabs, slug } from '@/components/menu-kit';
+import { ItemList, MenuDialogs, SectionTabs, anchors } from '@/components/menu-kit';
 import { seasonalCss, seasonalMotif } from '@/lib/seasonal';
 import { ALLERGY_NOTICE } from '@/lib/allergens';
 
@@ -29,7 +29,7 @@ export function SensoPage({ venue, sections, season, photos = true }: { venue: V
 
         <div className="mx-auto max-w-2xl px-4 pb-16">
           {sections.map((s, n) => (
-            <section key={s.id} id={slug(s.name.en ?? s.id)} data-id={s.id} className={s.seasonal ? 'scroll-mt-12 seasonal' : 'scroll-mt-12'}>
+            <section key={s.id} id={anchors(sections)[s.id]} data-id={s.id} className={s.seasonal ? 'scroll-mt-12 seasonal' : 'scroll-mt-12'}>
               {s.seasonal && <style dangerouslySetInnerHTML={{ __html: seasonalCss('senso') }} />}
               {n > 0 && <div className="section-divider" aria-hidden="true" />}
               {s.seasonal

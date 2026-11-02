@@ -548,6 +548,23 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   await api('/api/admin/item', { action: 'update', id: itemId, patch: { add_ons: [] } }, ck);
   await ph.close();
 }
+// ---- pre-go-live audit (2026-11-02): one test per fix
+{ // D-10: a section named like an element of the page itself does not take its id (before: "Welcome" covered the welcome screen, "Sheet" stopped every popup)
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); await signin(p, VENUE); const ck = await cookieOf(ph);
+  const made = [];
+  for (const name of ['Welcome', 'Sheet']) { const r = await api('/api/admin/section', { action: 'create', venue: VENUE, name: { en: name, fa: null } }, ck); const sid = r.json?.section?.id; made.push(sid); await api('/api/admin/item', { action: 'create', venue: VENUE, section_id: sid, name: { en: `Drill ${name} item`, fa: null }, price: 3 }, ck); }
+  const pub = await waitPublic((h) => made.every((id) => h.includes(`data-id="${id}"`)));
+  const html = await publicHtml(); const count = (id) => (html.match(new RegExp(`\\sid="${id}"`, 'g')) || []).length;
+  const ids = made.map((id) => (html.match(new RegExp(`<section[^>]*id="([^"]+)"[^>]*data-id="${id}"`)) || [])[1]);
+  const c = await browser.newContext(DEVICE); const q = await c.newPage();
+  await q.goto(`${base}/${VENUE}`); await q.click('#welcome button[data-lang="en"]'); await sleep(1200);
+  const card = q.locator(`main section[data-id="${made[1]}"] li.item`).first(); await card.scrollIntoViewIfNeeded(); await card.click();
+  const opened = await q.waitForSelector('#sheet[open]', { timeout: 3000 }).then(() => true).catch(() => false);
+  await c.close();
+  for (const id of made) await api('/api/admin/section', { action: 'delete', id, items: 'delete' }, ck);
+  check('t-section-ids', pub.ok && count('welcome') === 1 && count('sheet') === 1 && ids.every((x) => /^s-/.test(x || '')) && opened, `sections "Welcome" and "Sheet" on the public page: ids ${JSON.stringify(ids)}; one #welcome (${count('welcome')}) and one #sheet (${count('sheet')}); an item of "Sheet" opens its popup: ${opened}`);
+  await ph.close();
+}
 await laptop.close();
 await api('/api/admin/item', { action: 'delete', id: itemId }, cookie);
 await waitPublic((h) => !h.includes(`data-id="${itemId}"`));

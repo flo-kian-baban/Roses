@@ -11,18 +11,26 @@ import { allergenFa, dietaryFa } from '@/lib/allergens';
 import { Bi } from './Bi';
 
 export const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9؀-ۿ]+/g, '-').replace(/^-|-$/g, '');
-const sid = (s: Section) => slug(s.name.en ?? s.id);
+// Section anchors (pre-go-live audit D-10): "s-" and the English name as a slug, so a section can never take an id the page itself uses
+// (a section named "Welcome" covered the welcome screen, one named "Sheet" stopped every item popup; the artwork's symbols have ids too),
+// and a name used twice, or one with no letter or digit, gets a number. The tabs, the section list and the sections all read this map.
+export function anchors(sections: Section[]): Record<string, string> {
+  const out: Record<string, string> = {}, used = new Set<string>();
+  for (const s of sections) { const base = `s-${slug(s.name.en ?? '') || 'section'}`; let a = base; for (let n = 2; used.has(a); n++) a = `${base}-${n}`; used.add(a); out[s.id] = a; }
+  return out;
+}
 
 const ListIcon = () => <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13" /><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01" /></svg>;
 const CloseIcon = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>;
 
 export function SectionTabs({ sections }: { sections: Section[] }) {
+  const ids = anchors(sections);
   return (
     <nav id="tabs" aria-label="Sections" className="sticky top-0 z-20">
       <div className="mx-auto flex max-w-2xl items-stretch border-b border-(--c-tabs-line)">
         <button type="button" id="tabs-list" className="flex shrink-0 items-center px-4 text-(--c-tabs-list)" aria-label="All sections"><ListIcon /></button>
         <ul className="no-scrollbar flex flex-1 overflow-x-auto">
-          {sections.map((s) => <li key={s.id} className="shrink-0"><a href={`#${sid(s)}`} data-tab={sid(s)} className="tab"><Bi text={s.name} /></a></li>)}
+          {sections.map((s) => <li key={s.id} className="shrink-0"><a href={`#${ids[s.id]}`} data-tab={ids[s.id]} className="tab"><Bi text={s.name} /></a></li>)}
         </ul>
       </div>
     </nav>
@@ -197,7 +205,7 @@ export function MenuDialogs({ sections }: { sections: Section[] }) {
           <p className="text-[13px] font-semibold uppercase tracking-wide text-(--c-sheet-muted)"><span lang="en">Menu</span><span lang="fa" dir="rtl">منو</span></p>
           <button type="button" id="list-close" className="sheet-close list-close" aria-label="Close"><CloseIcon /></button>
         </div>
-        <ul tabIndex={-1} autoFocus className="pb-2">{sections.map((s) => <li key={s.id}><a href={`#${sid(s)}`} className="block px-5 py-3 text-[17px] font-semibold"><Bi text={s.name} /></a></li>)}</ul>
+        <ul tabIndex={-1} autoFocus className="pb-2">{sections.map((s) => <li key={s.id}><a href={`#${anchors(sections)[s.id]}`} className="block px-5 py-3 text-[17px] font-semibold"><Bi text={s.name} /></a></li>)}</ul>
       </dialog>
       <script dangerouslySetInnerHTML={{ __html: menuScript }} />
     </>

@@ -16,6 +16,14 @@ export async function createPin(data: { name: string; role: 'owner' | 'staff'; v
   return { id: r.rows[0].id, pin };
 }
 
+// Pre-go-live audit (2026-11-02, S1-01): an owner's PIN is for their own venues, so an owner creates, sees and revokes only PINs
+// whose venues are all theirs (a PIN for another venue would give its owner rights there); admins manage every PIN.
+export function within(s: Session, venues: string[]): boolean { return s.venues === 'all' || venues.every((v) => (s.venues as string[]).includes(v)); }
+
+export async function pinVenues(id: string): Promise<string[] | null> {
+  return (await pool.query<{ venue_ids: string[] }>('select venue_ids from pins where id = $1', [id])).rows[0]?.venue_ids ?? null;
+}
+
 export async function revokePin(id: string): Promise<void> {
   await pool.query(`update pins set revoked_at = now() where id = $1 and revoked_at is null`, [id]);
 }

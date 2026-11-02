@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
-import { canManage } from '@/lib/admin/auth';
-import { listAdmins, listPins, type PinRow } from '@/lib/admin/pins';
+import { canManage, isAdmin } from '@/lib/admin/auth';
+import { listAdmins, listPins, within, type PinRow } from '@/lib/admin/pins';
 import { Avatar, Badge, Card, CheckCard, Empty, LogoTile, Notice, PageHeader, When, input, primary, secondary, sm, type SP } from '../../_ui';
 import { Icon } from '../../_ui/icons';
 import { TopBar } from '../../_ui/TopBar';
@@ -16,7 +16,10 @@ export default async function Team({ searchParams }: { searchParams: Promise<SP>
   const { session, all, mine } = await adminContext();
   if (!session) redirect('/admin');
   if (!canManage(session)) return <TopBar session={session} venues={mine} active="team"><main className="mx-auto max-w-2xl px-4 py-8"><Forbidden what="Team (owner and admin only)" /></main></TopBar>;
-  const [pins, admins] = await Promise.all([listPins(), listAdmins()]);
+  // an owner sees, creates and revokes the PINs of their own venues only; the admin accounts are for admins (pre-go-live audit S1-01)
+  const admin = isAdmin(session), venues = admin ? all : mine;
+  const [allPins, admins] = await Promise.all([listPins(), admin ? listAdmins() : Promise.resolve([])]);
+  const pins = allPins.filter((p) => within(session, p.venue_ids));
   const active = pins.filter((p) => !p.revoked_at); const revoked = pins.filter((p) => p.revoked_at);
   return (
     <TopBar session={session} venues={mine} active="team">
@@ -35,7 +38,7 @@ export default async function Team({ searchParams }: { searchParams: Promise<SP>
                 </div>
               </fieldset>
               <fieldset><legend className="text-sm font-medium">Venues</legend>
-                <div className="mt-2 grid gap-2">{all.map((v) => <CheckCard key={v.id} name="venue_ids" value={v.id}><span className="flex items-center gap-2.5"><LogoTile venue={v} className="h-8 w-12" pad="p-1" /><span className="font-medium">{v.name.en}</span></span></CheckCard>)}</div>
+                <div className="mt-2 grid gap-2">{venues.map((v) => <CheckCard key={v.id} name="venue_ids" value={v.id}><span className="flex items-center gap-2.5"><LogoTile venue={v} className="h-8 w-12" pad="p-1" /><span className="font-medium">{v.name.en}</span></span></CheckCard>)}</div>
               </fieldset>
               <button className={`${primary} w-full`} type="submit"><Icon name="key" className="h-5 w-5" />Create PIN</button>
             </form>
@@ -44,7 +47,7 @@ export default async function Team({ searchParams }: { searchParams: Promise<SP>
             <Card title="Staff and owner PINs" icon="key" description={active.length ? `${active.length} active` : 'No active PIN yet.'}>
               {active.length === 0 ? <Empty icon="key" title="No PINs yet" hint="Create one on the left; it is shown once, write it down for the person." /> : <ul className="divide-y divide-line">{active.map((p) => <Pin key={p.id} p={p} venues={all} />)}</ul>}
             </Card>
-            <Card title="Admin accounts" icon="shield" description="Admins sign in with their PIN on any venue and see everything.">
+            {admin && <Card title="Admin accounts" icon="shield" description="Admins sign in with their PIN on any venue and see everything.">
               {admins.length === 0 ? <p className="text-sm text-ink-muted">No admin accounts yet.</p> : (
                 <ul className="divide-y divide-line">
                   {admins.map((a) => (
@@ -57,7 +60,7 @@ export default async function Team({ searchParams }: { searchParams: Promise<SP>
                 </ul>
               )}
               <p className="mt-4 text-xs text-ink-muted">Set or change an admin PIN on the laptop: <code className="rounded bg-neutral-100 px-1.5 py-0.5">npm run admin:create -- --email &lt;email&gt; --name &quot;&lt;name&gt;&quot; --pin &lt;digits&gt; --reset</code></p>
-            </Card>
+            </Card>}
             {revoked.length > 0 && (
               <details className="group rounded-[22px] border border-line bg-white shadow-card">
                 <summary className="flex items-center justify-between gap-3 p-4 font-medium sm:px-5"><span>Revoked PINs <span className="font-normal text-ink-muted">({revoked.length})</span></span><Icon name="down" className="h-5 w-5 text-ink-muted transition group-open:rotate-180" /></summary>

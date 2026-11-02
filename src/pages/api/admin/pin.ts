@@ -1,16 +1,22 @@
 import { route, redirect, forbidden, list, text } from '@/lib/admin/api';
 import { canManage } from '@/lib/admin/auth';
-import { createPin, revokePin } from '@/lib/admin/pins';
+import { createPin, pinVenues, revokePin, within } from '@/lib/admin/pins';
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
 
 export default route({}, async ({ res, session, body, back }) => {
   const s = session!;
   if (!canManage(s)) return forbidden(res, 'PINs are managed by the owner or an admin');
-  if (body._action === 'revoke') { await revokePin(body.id); return redirect(res, back, { revoked: '1' }); }
+  if (body._action === 'revoke') {
+    const venues = /^[0-9a-f-]{36}$/i.test(body.id ?? '') ? await pinVenues(body.id) : null;
+    if (!venues) return redirect(res, back, { error: 'PIN not found' });
+    if (!within(s, venues)) return forbidden(res, "an owner revokes the PINs of their own venues only");
+    await revokePin(body.id); return redirect(res, back, { revoked: '1' });
+  }
   const name = text(body, 'name'); const role = body.role === 'owner' ? 'owner' : 'staff'; const venueIds = list(body, 'venue_ids');
   if (!name) return redirect(res, back, { error: 'a name is required' });
   if (!venueIds.length) return redirect(res, back, { error: 'choose at least one venue' });
+  if (!within(s, venueIds)) return forbidden(res, 'an owner creates PINs for their own venues only');
   const { pin } = await createPin({ name, role, venueIds, createdBy: s.kind === 'admin' ? s.id : null });
   // Shown once, in this response only; never in a URL, log or database.
   res.setHeader('Cache-Control', 'no-store');

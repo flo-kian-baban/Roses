@@ -582,6 +582,20 @@ const errorToast = async (p) => { const t = p.locator('[data-toast-error]'); con
   await api('/api/admin/item', { action: 'update', id: itemId, patch: { description: { en: null, fa: null } } }, ck);
   await ph.close();
 }
+{ // D-03: an editor opened before someone else's change does not overwrite it (before: fixing the English name put back the old Persian one)
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE); const ck = await cookieOf(ph);
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { name: { en: NAME, fa: null } } }, ck);
+  await openEditor(p);
+  const other = await api('/api/admin/item', { action: 'update', id: itemId, patch: { name: { en: NAME, fa: 'نام دریل' } } }, ck); // meanwhile, elsewhere
+  await p.fill('.item-panel input[aria-label="Name"]', `${NAME} edited`); await p.keyboard.press('Enter');
+  const t = await errorToast(p); await sleep(400);
+  const row = (await db.query('select name from items where id=$1', [itemId])).rows[0].name;
+  const fa = await p.inputValue('.item-panel input[aria-label="Name (فارسی)"]').catch(() => null);
+  check('t-stale-refused', other.status === 200 && t.seen && /changed this item/.test(t.text) && row.en === NAME && row.fa === 'نام دریل' && fa === 'نام دریل', `the Persian name changed elsewhere after this editor opened, then the English name edited here → "${t.text}"; the database keeps ${JSON.stringify(row)}; the editor now shows the Persian "${fa}"`);
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { name: { en: NAME, fa: null } } }, ck);
+  await ph.close();
+}
 { // D-10: a section named like an element of the page itself does not take its id (before: "Welcome" covered the welcome screen, "Sheet" stopped every popup)
   const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); await signin(p, VENUE); const ck = await cookieOf(ph);
   const made = [];

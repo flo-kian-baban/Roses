@@ -33,10 +33,10 @@ export function DetailsTab({ venue, version, onSaved, onFail }: { venue: EditorV
     <div className="mx-auto w-full max-w-3xl space-y-4 px-3 pb-32 pt-4 sm:px-5" data-details-tab>
       {err && <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900">{err}</p>}
       <Group title="Name">
-        <TextField label="Name" value={v.name.en} required onCommit={(x) => save({ name: { ...v.name, en: x } })} />
-        <TextField label="Name (فارسی)" value={v.name.fa} dir="rtl" lang="fa" onCommit={(x) => save({ name: { ...v.name, fa: x } })} />
-        <TextField label="Tagline" value={v.tagline.en} placeholder="Optional, under the name in the page description" onCommit={(x) => save({ tagline: { ...v.tagline, en: x } })} />
-        <TextField label="Tagline (فارسی)" value={v.tagline.fa} dir="rtl" lang="fa" onCommit={(x) => save({ tagline: { ...v.tagline, fa: x } })} />
+        <TextField label="Name" value={v.name.en} required onCommit={(x) => save({ name: { en: x } })} />
+        <TextField label="Name (فارسی)" value={v.name.fa} dir="rtl" lang="fa" onCommit={(x) => save({ name: { fa: x } })} />
+        <TextField label="Tagline" value={v.tagline.en} placeholder="Optional, under the name in the page description" onCommit={(x) => save({ tagline: { en: x } })} />
+        <TextField label="Tagline (فارسی)" value={v.tagline.fa} dir="rtl" lang="fa" onCommit={(x) => save({ tagline: { fa: x } })} />
         <p className="text-xs text-ink-muted">Customers&rsquo; page: <a href={`/${v.id}`} target="_blank" rel="noreferrer" className="font-medium text-ink underline-offset-4 hover:underline">/{v.id}</a> (the address does not change when the name does).</p>
       </Group>
       <Group title="Logo">

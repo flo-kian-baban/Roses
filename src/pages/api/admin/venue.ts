@@ -6,7 +6,7 @@ import { jsonRoute, ApiError, revalidateVenue, biOf, boolOf, str, type JsonBody 
 import { canEditVenue, canManage } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
 import { createVenue, getVenueRow, updateVenue } from '@/lib/admin/venue';
-import type { Location, Logo, Venue } from '@/lib/types';
+import type { Bi, Location, Logo, Venue } from '@/lib/types';
 
 const details = (v: Venue) => ({ id: v.id, name: v.name, tagline: v.tagline, locations: v.locations, logo: v.brand?.logo ?? null, settings: v.settings, template: v.template, style: v.style, brandColors: v.brand?.colors ?? {} });
 
@@ -30,8 +30,11 @@ export default jsonRoute(async ({ req, res, session, body }) => {
   if (body.action !== 'update') throw new ApiError(400, 'unknown action');
   const p = (body.patch && typeof body.patch === 'object' ? body.patch : {}) as JsonBody;
   const patch: Parameters<typeof updateVenue>[1] = {};
-  if ('name' in p) { patch.name = biOf(p.name); if (!patch.name.en) throw new ApiError(400, 'The English name is required'); }
-  if ('tagline' in p) patch.tagline = biOf(p.tagline);
+  // the Details tab sends only the language edited (pre-go-live audit D-03): the other one stays as it is now, so a page opened before
+  // someone else's edit cannot put back its older text in the other language
+  const biIn = (cur: Bi, v: unknown): Bi => { const o = (v && typeof v === 'object' ? v : {}) as JsonBody; return { en: 'en' in o ? str(o.en) : cur.en, fa: 'fa' in o ? str(o.fa) : cur.fa }; };
+  if ('name' in p) { patch.name = biIn(venue.name, p.name); if (!patch.name.en) throw new ApiError(400, 'The English name is required'); }
+  if ('tagline' in p) patch.tagline = biIn(venue.tagline, p.tagline);
   if ('showPersianDrafts' in p) patch.settings = { ...venue.settings, showPersianDrafts: boolOf(p.showPersianDrafts) };
   if ('logo' in p) {
     const o = (p.logo && typeof p.logo === 'object' ? p.logo : null) as JsonBody | null;

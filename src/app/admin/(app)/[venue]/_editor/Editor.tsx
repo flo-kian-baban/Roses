@@ -16,7 +16,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import type { Bi, EditorItem, EditorSection, EditorVenue, Notes, Photo, SeasonId, SectionLayout } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
-import { call, retryable, type Resp } from './api';
+import { ApiFail, call, retryable, type Resp } from './api';
 import { SEASON_NAMES, reduce, type Filter, type Menu } from './state';
 import { MenuTab } from './MenuTab';
 import { ItemPanel, PhotoField } from './ItemPanel';
@@ -44,6 +44,8 @@ const SCREEN_OF_REGION = (r: Region): Screen => (r === 'welcome' ? 'welcome' : r
 export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: VenueInfo; me: Me; initial: Menu; tab: Tab; today: SeasonId }) {
   const [menu, dispatch] = useReducer(reduce, initial);
   const menuRef = useRef(menu); menuRef.current = menu;
+  // the version (updated_at) of each item as this editor last saw it, sent with its saves (pre-go-live audit D-03)
+  const versions = useRef(new Map<string, string>());
   const [tab, setTab] = useState<Tab>(initialTab);
   const go = (t: Tab) => { setTab(t); setPreviewOpen(false); setCompare(false); try { history.replaceState(null, '', TAB_HREF(venue.id, t)); } catch { /* ignore */ } };
   const [open, setOpen] = useState<{ id: string; section: string | null; selectName?: boolean } | null>(null); // selectName: a copy just made, its name selected
@@ -119,12 +121,12 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const chooseLang = (l: 'en' | 'fa') => { setLang(l); try { localStorage.setItem('roses-lang', l); } catch { /* ignore */ } };
 
   const apply = useCallback((r: Resp) => {
-    if (r.item) dispatch({ type: 'item', item: r.item as EditorItem });
+    if (r.item) { const it = r.item as EditorItem; versions.current.set(it.id, it.updated_at); dispatch({ type: 'item', item: it }); }
     if (r.section) dispatch({ type: 'section', section: r.section as Menu['sections'][number] });
     if (r.order) dispatch({ type: 'item-order', ...(r.order as { section_id: string; item_ids: string[] }) });
     if (r.section_order) dispatch({ type: 'section-order', section_ids: r.section_order as string[] });
     for (const o of (r.orders as { section_id: string; item_ids: string[] }[] | undefined) ?? []) dispatch({ type: 'item-order', ...o }); // a duplicate's sections, the copy right after the original
-    if (r.menu) dispatch({ type: 'replace', menu: r.menu as Menu });
+    if (r.menu) { versions.current.clear(); dispatch({ type: 'replace', menu: r.menu as Menu }); }
   }, []);
   const done = useCallback((r: Resp, text: string, f: Focus) => {
     if (!r.revisions.length) return;
@@ -152,7 +154,14 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     const mine = ++q.n; const run = q.tail.catch(() => undefined).then(send); q.tail = run;
     const r = await run; return { r, newest: q.n === mine };
   };
-  const itemCall = async (id: string, body: Record<string, unknown>, text: string) => { const { r, newest } = await inOrder(id, () => call('/api/admin/item', { ...body, id })); if (newest) apply(r); done(r, text, { id, alt: sectionOf(id) }); return r; };
+  // Each save carries the version of the item this editor holds, read when it is sent (after the item's earlier saves have answered);
+  // a newer change by someone else answers 409 with the item as it is now, which replaces the editor's copy (D-03).
+  const version = (id: string) => versions.current.get(id) ?? menuRef.current.items[id]?.updated_at ?? null;
+  const sendItem = async (id: string, body: Record<string, unknown>): Promise<Resp> => {
+    try { const r = await call('/api/admin/item', { ...body, id, base: version(id) }); const it = r.item as EditorItem | undefined; if (it) versions.current.set(it.id, it.updated_at); return r; }
+    catch (e) { const it = e instanceof ApiFail && e.status === 409 ? (e.extra.item as EditorItem | undefined) : undefined; if (it) { versions.current.set(it.id, it.updated_at); dispatch({ type: 'item', item: it }); } throw e; }
+  };
+  const itemCall = async (id: string, body: Record<string, unknown>, text: string) => { const { r, newest } = await inOrder(id, () => sendItem(id, body)); if (newest) apply(r); done(r, text, { id, alt: sectionOf(id) }); return r; };
 
   // Items. Simple patches are applied at once (the switch flips, the price shows) and put back if the server refuses.
   const itemUpdate = guard(async (id: string, patch: Record<string, unknown>, text: string = 'Saved') => {
@@ -160,7 +169,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     const optimistic = before && !('section_ids' in patch) ? { ...before, ...(patch as Partial<EditorItem>) } : null;
     if (optimistic) dispatch({ type: 'item', item: optimistic });
     try { await itemCall(id, { action: 'update', patch }, text); }
-    catch (e) { if (before) dispatch({ type: 'item', item: before }); throw e; }
+    catch (e) { if (before && !(e instanceof ApiFail && e.status === 409)) dispatch({ type: 'item', item: before }); throw e; } // a 409 already put the item as it is now
   });
   const itemNotes = guard(async (id: string, notes: Notes) => { await itemCall(id, { action: 'notes', notes }, 'Saved'); });
   // Researched allergen and dietary notes confirmed as they stand (Kian, 2026-10-12): they show to customers from now on; Undo puts the draft back.
@@ -181,7 +190,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   // Copy a choice group to other items (Kian via the PM, 2026-10-13): one call, one record per item, one toast whose Undo puts them all back.
   const itemCopyChoices = guard(async (id: string, group: string, targets: string[]) => {
     const { r } = await inOrder(id, () => call('/api/admin/item', { action: 'copy-choices', id, group, targets })); // after the item's own saves (Copy saves the group first)
-    for (const it of (r.items as EditorItem[]) ?? []) dispatch({ type: 'item', item: it });
+    for (const it of (r.items as EditorItem[]) ?? []) { versions.current.set(it.id, it.updated_at); dispatch({ type: 'item', item: it }); }
     done(r, r.revisions.length ? `Copied to ${r.revisions.length} item${r.revisions.length === 1 ? '' : 's'}` : 'Already there', { id, alt: sectionOf(id) });
   });
   const itemDelete = (id: string) => {

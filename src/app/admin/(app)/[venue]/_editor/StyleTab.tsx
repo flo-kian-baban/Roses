@@ -51,8 +51,8 @@ function countStyleChanges(a: StyleValues, b: StyleValues): number {
   return n;
 }
 
-export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefaults, onRegion, onEditing, picked, sections, onLayout, snapshot, onSnapshot, previewSeason, onPlay }: {
-  venueId: string; version: number; onSaved: (r: Resp, text?: string) => void; onApply: (r: Resp) => void; onLive: (vars: Record<string, string> | null) => void; onDefaults: (vars: Record<string, string>) => void;
+export function StyleTab({ venueId, version, onSaved, onFail, onApply, onLive, onDefaults, onRegion, onEditing, picked, sections, onLayout, snapshot, onSnapshot, previewSeason, onPlay }: {
+  venueId: string; version: number; onSaved: (r: Resp, text?: string) => void; onFail: (e: unknown, again?: () => Promise<unknown>) => void; onApply: (r: Resp) => void; onLive: (vars: Record<string, string> | null) => void; onDefaults: (vars: Record<string, string>) => void;
   onRegion: (r: Region | null) => void; onEditing: (editing: boolean) => void; picked: Picked; sections: EditorSection[]; onLayout: (id: string, layout: SectionLayout) => Promise<void>;
   snapshot: StyleSnapshot | null; onSnapshot: React.Dispatch<React.SetStateAction<StyleSnapshot | null>>; // the visit's snapshot, held by the editor
   previewSeason: Season | null; onPlay: (tx?: string, season?: Season) => void; // the preview's season (the bar's, else the page's) and Play for a season's transition (with the concept just chosen)
@@ -121,22 +121,22 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
     if (!data) return;
     setPending({});
     try { const r = await call('/api/admin/style', { action: 'update', venue: venueId, patch: { colors: { [key]: value } } }); apply(r); setFail((f) => (f?.key === key ? null : f)); onSaved(r, text); }
-    catch (e) { onLive(null); const x = e as ApiFail; if (x.extra?.guard) setFail({ key, error: x.message, suggestion: (x.extra.guard as { suggestion: Fail['suggestion'] }).suggestion, refused: value ?? undefined }); else setErr(x.message); }
+    catch (e) { onLive(null); const x = e as ApiFail; if (x.extra?.guard) setFail({ key, error: x.message, suggestion: (x.extra.guard as { suggestion: Fail['suggestion'] }).suggestion, refused: value ?? undefined }); else { setErr(x.message); onFail(e, () => setColor(key, value, text)); } }
   };
   const setLayout = async (key: string, value: string | boolean) => {
     if (!data) return;
     const before = data; setData({ ...data, values: { ...data.values, [key]: value } });
     try { const r = await call('/api/admin/style', { action: 'update', venue: venueId, patch: { [key]: value } }); apply(r); onSaved(r); }
-    catch (e) { setData(before); setErr((e as Error).message); }
+    catch (e) { setData(before); setErr((e as Error).message); onFail(e, () => setLayout(key, value)); }
   };
   const setSectionLayout = async (id: string, layout: SectionLayout) => {
     setLayoutBusy(id);
-    try { await onLayout(id, layout); } catch (e) { setErr((e as Error).message); } finally { setLayoutBusy(null); }
+    try { await onLayout(id, layout); } catch (e) { setErr((e as Error).message); } finally { setLayoutBusy(null); } // the editor's toast has it too, with Try again
   };
   const reset = async (group?: GroupId) => {
     setFail(null);
     try { const r = await call('/api/admin/style', { action: 'reset', venue: venueId, ...(group ? { group } : {}) }); apply(r); setConfirmReset(false); onSaved(r, group ? 'Group reset' : 'All colours reset'); }
-    catch (e) { setErr((e as Error).message); }
+    catch (e) { setErr((e as Error).message); onFail(e, () => reset(group)); throw e; } // the confirmation shows it and its button works again
   };
   // Discard this session's changes: the style back to the snapshot in one record, then each section whose layout changed; one
   // "Discarded · Undo" for all of it (the undo route restores every record together). A Discard starts the session again from
@@ -154,7 +154,7 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
       setConfirmDiscard(false);
       onSnapshot({ style, layouts: { ...Object.fromEntries(sections.map((x) => [x.id, x.layout])), ...snapshot.layouts } });
       onSaved({ ...(last ?? { ok: true }), revisions }, 'Discarded');
-    } catch (e) { setErr((e as Error).message); }
+    } catch (e) { setErr((e as Error).message); onFail(e, discard); throw e; } // the confirmation shows it and its button works again
   };
 
   if (err && !data) return <p role="alert" className="mx-auto mt-6 max-w-3xl rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900">{err}</p>;
@@ -191,7 +191,7 @@ export function StyleTab({ venueId, version, onSaved, onApply, onLive, onDefault
                     onChoose={async (sid, id) => { onPlay(id, sid); if (id !== data.values[TX_KEYS[sid]]) await setLayout(TX_KEYS[sid], id); }} />}
                   {toks.map((t) => <TokenRow key={t.key} token={t} res={resolved[t.key]} base={t.on ? resolved[t.on] : null} baseLabel={t.on ? baseName(t.on) : null} open={openToken === t.key} palette={data.palette} fail={fail?.key === t.key ? fail : null}
                     onOpen={() => { setOpenToken(openToken === t.key ? null : t.key); onRegion(g.id); }} onLive={(v) => live(t.key, v)} onSet={(v, text) => setColor(t.key, v, text)} />)}
-                  <div className="mt-2 px-3"><button type="button" className={btnSmall} disabled={!groupCustom} onClick={() => reset(g.id)}><Icon name="undo" className="h-4 w-4" />Reset group to venue default</button></div>
+                  <div className="mt-2 px-3"><button type="button" className={btnSmall} disabled={!groupCustom} onClick={() => { void reset(g.id).catch(() => undefined); }}><Icon name="undo" className="h-4 w-4" />Reset group to venue default</button></div>
                 </div>
               )}
             </section>

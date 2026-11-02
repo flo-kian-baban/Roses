@@ -9,7 +9,7 @@ import { call, type Resp } from './api';
 import { uploadImage } from './upload';
 import { Badge, Switch, TextField, btnDanger, btnSecondary } from './ui';
 
-export function DetailsTab({ venue, version, onSaved }: { venue: EditorVenue; version: number; onSaved: (r: Resp, text?: string) => void }) {
+export function DetailsTab({ venue, version, onSaved, onFail }: { venue: EditorVenue; version: number; onSaved: (r: Resp, text?: string) => void; onFail: (e: unknown, again?: () => Promise<unknown>) => void }) {
   const [v, setV] = useState<EditorVenue>(venue);
   const [err, setErr] = useState<string | null>(null);
   const [confirmRemove, setConfirmRemove] = useState<number | null>(null);
@@ -23,7 +23,7 @@ export function DetailsTab({ venue, version, onSaved }: { venue: EditorVenue; ve
   }, [venue.id, version]);
   const save = async (patch: Record<string, unknown>, text = 'Saved') => {
     try { setErr(null); const r = await call('/api/admin/venue', { action: 'update', id: v.id, patch }); if (r.venue) setV(r.venue as EditorVenue); onSaved(r, text); }
-    catch (e) { setErr((e as Error).message); throw e; }
+    catch (e) { setErr((e as Error).message); onFail(e, () => save(patch, text)); throw e; }
   };
   const locPatch = (i: number, l: Partial<Location> & { confirmed?: boolean }) => save({ locations: v.locations.map((x, k) => (k === i ? { ...x, ...l } : x)) });
   const addLocation = () => save({ locations: [...v.locations, { label: { en: v.locations.length ? 'New location' : v.name.en, fa: null }, address: null, phone: null, hours: { en: null, fa: null } }] }, 'Location added');

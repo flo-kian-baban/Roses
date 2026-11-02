@@ -16,7 +16,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import type { Bi, EditorItem, EditorSection, EditorVenue, Notes, Photo, SeasonId, SectionLayout } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
-import { call, type Resp } from './api';
+import { call, retryable, type Resp } from './api';
 import { SEASON_NAMES, reduce, type Filter, type Menu } from './state';
 import { MenuTab } from './MenuTab';
 import { ItemPanel, PhotoField } from './ItemPanel';
@@ -32,7 +32,7 @@ import { ConfirmSheet, MoneyField, Sheet, TextField, btnDanger, btnPrimary, btnS
 export type Me = { name: string; role: 'admin' | 'owner' | 'staff'; canNotes: boolean; canManage: boolean };
 export type VenueInfo = EditorVenue;
 type Tab = 'menu' | 'style' | 'details';
-type Toast = { text: string; revisions: number[]; key: number; error?: boolean };
+type Toast = { text: string; revisions: number[]; key: number; error?: boolean; retry?: () => Promise<unknown> };
 type Confirm = { title: string; body: React.ReactNode; label: string; action: () => Promise<void> };
 export type DeleteMode = { items: 'move'; target: string } | { items: 'delete' };
 
@@ -43,6 +43,7 @@ const SCREEN_OF_REGION = (r: Region): Screen => (r === 'welcome' ? 'welcome' : r
 // today: today's season in Toronto, as the public page is rendered for it (seasonal items, Kian, 2026-10-12).
 export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: VenueInfo; me: Me; initial: Menu; tab: Tab; today: SeasonId }) {
   const [menu, dispatch] = useReducer(reduce, initial);
+  const menuRef = useRef(menu); menuRef.current = menu;
   const [tab, setTab] = useState<Tab>(initialTab);
   const go = (t: Tab) => { setTab(t); setPreviewOpen(false); setCompare(false); try { history.replaceState(null, '', TAB_HREF(venue.id, t)); } catch { /* ignore */ } };
   const [open, setOpen] = useState<{ id: string; section: string | null; selectName?: boolean } | null>(null); // selectName: a copy just made, its name selected
@@ -111,7 +112,8 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const playTransition = useCallback((tx?: string, s?: Season) => { if (s) setSeason(s === nowSeason.current ? null : s); setPlay((x) => ({ n: x.n + 1, tx: tx ?? null })); }, []);
   const played = useCallback(() => setStyleScreen('menu'), []); // a played transition ends on the menu, and the bar says so
 
-  useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), toast.error ? 6000 : 10000); return () => clearTimeout(t); }, [toast]);
+  // a failure that Try again can fix stays until then or until it is closed (pre-go-live audit D-01); other messages go by themselves
+  useEffect(() => { if (!toast || toast.retry) return; const t = setTimeout(() => setToast(null), toast.error ? 8000 : 10000); return () => clearTimeout(t); }, [toast]);
   useEffect(() => { if (!highlight) return; const t = setTimeout(() => setHighlight(null), 2500); return () => clearTimeout(t); }, [highlight]);
   useEffect(() => { try { const l = localStorage.getItem('roses-lang'); if (l === 'fa') setLang('fa'); } catch { /* ignore */ } }, []);
   const chooseLang = (l: 'en' | 'fa') => { setLang(l); try { localStorage.setItem('roses-lang', l); } catch { /* ignore */ } };
@@ -130,6 +132,16 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     setReloadKey((k) => k + 1);
     setFocus(f);
   }, []);
+  // Pre-go-live audit (2026-11-02, D-01/D-02): one place, always in view, for a save that did not go through: the toast turns red with
+  // the reason and, when trying again can help (no connection, the server failed), "Try again" sends the same change again; it stays
+  // until then or until it is closed. The caller still gets the error (a field keeps what was typed and says "Not saved").
+  const fail = useCallback((e: unknown, again?: () => Promise<unknown>) => {
+    const msg = (e as Error).message || 'Something went wrong'; const can = !!again && retryable(e);
+    setToast({ text: can ? `Not saved. ${msg}` : msg, revisions: [], key: Date.now(), error: true, retry: can ? again : undefined });
+  }, []);
+  const guard = <A extends unknown[]>(fn: (...a: A) => Promise<unknown>) => async (...a: A): Promise<void> => {
+    try { await fn(...a); } catch (e) { fail(e, () => guard(fn)(...a)); throw e; }
+  };
   const sectionOf = (id: string) => open?.id === id && open.section ? open.section : menu.items[id]?.placements[0]?.section_id ?? null;
   // One item's saves reach the server one after another, in the order they were made, and only the newest answer is applied: two quick
   // saves sent together (a choice's name saved on Tab, its price on Enter) could land in the other order, the older value winning in the
@@ -143,35 +155,35 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const itemCall = async (id: string, body: Record<string, unknown>, text: string) => { const { r, newest } = await inOrder(id, () => call('/api/admin/item', { ...body, id })); if (newest) apply(r); done(r, text, { id, alt: sectionOf(id) }); return r; };
 
   // Items. Simple patches are applied at once (the switch flips, the price shows) and put back if the server refuses.
-  const itemUpdate = async (id: string, patch: Record<string, unknown>, text = 'Saved') => {
-    const before = menu.items[id];
+  const itemUpdate = guard(async (id: string, patch: Record<string, unknown>, text: string = 'Saved') => {
+    const before = menuRef.current.items[id];
     const optimistic = before && !('section_ids' in patch) ? { ...before, ...(patch as Partial<EditorItem>) } : null;
     if (optimistic) dispatch({ type: 'item', item: optimistic });
     try { await itemCall(id, { action: 'update', patch }, text); }
     catch (e) { if (before) dispatch({ type: 'item', item: before }); throw e; }
-  };
-  const itemNotes = async (id: string, notes: Notes) => { await itemCall(id, { action: 'notes', notes }, 'Saved'); };
+  });
+  const itemNotes = guard(async (id: string, notes: Notes) => { await itemCall(id, { action: 'notes', notes }, 'Saved'); });
   // Researched allergen and dietary notes confirmed as they stand (Kian, 2026-10-12): they show to customers from now on; Undo puts the draft back.
-  const itemConfirm = async (id: string) => { await itemCall(id, { action: 'confirm' }, 'Confirmed'); };
+  const itemConfirm = guard(async (id: string) => { await itemCall(id, { action: 'confirm' }, 'Confirmed'); });
   const itemCreate = async (sectionId: string, data: { name: string; price: number | null; photo: Photo | null }) => {
     const r = await call('/api/admin/item', { action: 'create', venue: venue.id, section_id: sectionId, name: { en: data.name, fa: null }, price: data.price, photo: data.photo });
     apply(r); const item = r.item as EditorItem; done(r, 'Added', { id: item.id, alt: sectionId }); setHighlight(item.id);
     setOpen({ id: item.id, section: sectionId }); // the editor opens on the new item, for its description and sizes (Kian via the PM, 2026-10-13)
   };
   // "Looks good" on a field's Draft tag (Kian, 2026-10-13): that field's draft flag goes, nothing else; Undo puts it back.
-  const itemLooksGood = async (id: string, field: string) => { await itemCall(id, { action: 'looks-good', field }, 'Looks good'); };
+  const itemLooksGood = guard(async (id: string, field: string) => { await itemCall(id, { action: 'looks-good', field }, 'Looks good'); });
   // Duplicate (Kian, 2026-10-13): a hidden copy in the same sections, right after the original; the editor opens on it with its name
   // selected; one Undo removes it (its editor then closes, the copy being gone).
-  const itemDuplicate = async (id: string) => {
+  const itemDuplicate = guard(async (id: string) => {
     const { r } = await inOrder(id, () => call('/api/admin/item', { action: 'duplicate', id })); apply(r); const copy = r.item as EditorItem; // after the item's own saves, so the copy is of what is on screen
     done(r, 'Duplicated', { id: copy.id, alt: sectionOf(id) }); setOpen({ id: copy.id, section: sectionOf(id), selectName: true });
-  };
+  });
   // Copy a choice group to other items (Kian via the PM, 2026-10-13): one call, one record per item, one toast whose Undo puts them all back.
-  const itemCopyChoices = async (id: string, group: string, targets: string[]) => {
+  const itemCopyChoices = guard(async (id: string, group: string, targets: string[]) => {
     const { r } = await inOrder(id, () => call('/api/admin/item', { action: 'copy-choices', id, group, targets })); // after the item's own saves (Copy saves the group first)
     for (const it of (r.items as EditorItem[]) ?? []) dispatch({ type: 'item', item: it });
     done(r, r.revisions.length ? `Copied to ${r.revisions.length} item${r.revisions.length === 1 ? '' : 's'}` : 'Already there', { id, alt: sectionOf(id) });
-  };
+  });
   const itemDelete = (id: string) => {
     const it = menu.items[id]; if (!it) return;
     setConfirm({ title: 'Delete this item?', body: <>“{it.name.en}” will be removed from the menu. You can undo for 10 seconds.</>, label: 'Delete', action: async () => {
@@ -179,18 +191,18 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
       dispatch({ type: 'item-removed', id }); setOpen(null); setConfirm(null); done(r, 'Deleted', sec ? { id: sec } : null);
     } });
   };
-  const itemMove = async (sectionId: string, id: string, index: number) => { const r = await call('/api/admin/item', { action: 'move', id, section_id: sectionId, index }); apply(r); done(r, 'Moved', { id, alt: sectionId }); };
+  const itemMove = guard(async (sectionId: string, id: string, index: number) => { const r = await call('/api/admin/item', { action: 'move', id, section_id: sectionId, index }); apply(r); done(r, 'Moved', { id, alt: sectionId }); });
 
   // Sections.
-  const sectionUpdate = async (id: string, patch: Record<string, unknown>, text = 'Saved') => {
-    const before = menu.sections.find((s) => s.id === id);
+  const sectionUpdate = guard(async (id: string, patch: Record<string, unknown>, text: string = 'Saved') => {
+    const before = menuRef.current.sections.find((s) => s.id === id);
     if (before && ('listed' in patch || 'layout' in patch)) dispatch({ type: 'section', section: { ...before, ...('listed' in patch ? { listed: !!patch.listed } : {}), ...('layout' in patch ? { layout: patch.layout as SectionLayout } : {}) } as EditorSection });
     try { const r = await call('/api/admin/section', { action: 'update', id, patch }); apply(r); done(r, text, { id }); }
     catch (e) { if (before) dispatch({ type: 'section', section: before }); throw e; }
-  };
+  });
   const sectionCreate = async (name: string) => { const r = await call('/api/admin/section', { action: 'create', venue: venue.id, name: { en: name, fa: null } }); apply(r); const s = r.section as Menu['sections'][number]; done(r, 'Added', { id: s.id }); setAddingSection(false); requestAnimationFrame(() => document.getElementById(`sec-${s.id}`)?.scrollIntoView({ block: 'center' })); };
-  const sectionMove = async (id: string, direction: 'up' | 'down') => { const r = await call('/api/admin/section', { action: 'move', id, direction }); apply(r); done(r, 'Moved', { id }); };
-  const sectionReorder = async (ids: string[]) => { const r = await call('/api/admin/section', { action: 'reorder', venue: venue.id, section_ids: ids }); apply(r); done(r, 'Moved', null); };
+  const sectionMove = guard(async (id: string, direction: 'up' | 'down') => { const r = await call('/api/admin/section', { action: 'move', id, direction }); apply(r); done(r, 'Moved', { id }); });
+  const sectionReorder = guard(async (ids: string[]) => { const r = await call('/api/admin/section', { action: 'reorder', venue: venue.id, section_ids: ids }); apply(r); done(r, 'Moved', null); });
   // Deleting a section with items asks once: move them to another section (the default) or delete them too (Kian, 2026-10-08). Undo restores either.
   const sectionDelete = (id: string) => {
     const s = menu.sections.find((x) => x.id === id); if (!s) return;
@@ -204,12 +216,12 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     done(r, mode.items === 'move' ? 'Deleted · items moved' : 'Deleted', mode.items === 'move' ? { id: mode.target } : null);
   };
 
-  const undo = async () => {
-    if (!toast?.revisions.length) return;
-    const revisions = toast.revisions, key = Date.now(); setToast({ text: 'Undoing…', revisions: [], key });
+  const undo = async (again?: number[]): Promise<void> => {
+    const revisions = again ?? toast?.revisions ?? []; if (!revisions.length) return;
+    const key = Date.now(); setToast({ text: 'Undoing…', revisions: [], key });
     // a change saved while the undo was in flight keeps its own "Saved · Undo" (the undo route regenerates the public page before it answers, so a late answer must not wipe a newer toast)
     try { const r = await call('/api/admin/undo', { venue: venue.id, revisions }); apply(r); setToast((t) => (t && t.key !== key ? t : { text: 'Undone', revisions: [], key: Date.now() })); setReloadKey((k) => k + 1); }
-    catch (e) { setToast({ text: (e as Error).message, revisions: [], key: Date.now(), error: true }); }
+    catch (e) { fail(e, () => undo(revisions)); }
   };
   // Style and Details tabs report their saves here (the toast, the Undo and the preview reload are shared).
   const savedElsewhere = (r: Resp, text = 'Saved') => done(r, text, null);
@@ -232,7 +244,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const previewProps = { venueId: venue.id, reloadKey, focus, view, onNow: setNow, onPick, styleMode: tab === 'style', region: tab === 'style' ? region : NO_REGION, onPlayed: played };
   const phoneStyle = !desktop && tab === 'style' && me.canManage; // the Style tab on a phone: the preview on top, the controls in a bottom sheet
   const bar = (phone: boolean) => <PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone={phone} />;
-  const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} previewSeason={season ?? now.season} onPlay={playTransition} />;
+  const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onFail={fail} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} previewSeason={season ?? now.season} onPlay={playTransition} />;
 
   const panel = openItem && <ItemPanel key={openItem.id} selectName={!!open?.selectName} toast={!!toast} item={openItem} venueId={venue.id} season={today} sections={menu.sections} sectionId={open?.section ?? null} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onLooksGood={(f) => itemLooksGood(openItem.id, f)} onDuplicate={() => itemDuplicate(openItem.id)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (
@@ -256,7 +268,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
           <div className="glass sticky top-[100px] z-20 shadow-[inset_0_-1px_0_var(--color-line)]" data-style-bar><div className="mx-auto w-full max-w-3xl px-4 py-2 sm:px-6">{bar(false)}</div></div>
           {styleTab}
         </>}
-        {tab === 'details' && me.canManage && <DetailsTab venue={venue} version={reloadKey} onSaved={savedElsewhere} />}
+        {tab === 'details' && me.canManage && <DetailsTab venue={venue} version={reloadKey} onSaved={savedElsewhere} onFail={fail} />}
       </div>
       {openItem && wide ? <div className="hidden lg:block">{panel}</div> : null}
       <aside className="hidden border-l border-line bg-fill lg:block">
@@ -284,8 +296,9 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
       {deleting && menu.sections.some((s) => s.id === deleting) && <DeleteSectionSheet section={menu.sections.find((s) => s.id === deleting)!} others={menu.sections.filter((s) => s.id !== deleting && !s.seasonal)} items={menu.items} onClose={() => setDeleting(null)} onDelete={(mode) => sectionDeleteWith(deleting, mode)} />}
       {confirm && <ConfirmSheet title={confirm.title} body={confirm.body} label={confirm.label} onConfirm={confirm.action} onClose={() => setConfirm(null)} />}
       {toast && (
-        <div className={`toast fixed bottom-5 left-1/2 z-[80] flex -translate-x-1/2 items-center gap-1 rounded-full py-1.5 pl-4 pr-1.5 text-[15px] font-medium text-white shadow-pop ${toast.error ? 'bg-red-600' : 'bg-ink'}`} role="status" style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}>
+        <div className={`toast fixed bottom-5 left-1/2 z-[80] flex w-max max-w-[calc(100vw-24px)] -translate-x-1/2 items-center gap-1 py-1.5 pl-4 pr-1.5 text-[15px] font-medium text-white shadow-pop ${toast.retry ? 'rounded-3xl' : 'rounded-full'} ${toast.error ? 'bg-red-600' : 'bg-ink'}`} role={toast.error ? 'alert' : 'status'} data-toast-error={toast.error ? '' : undefined} style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}>
           <span>{toast.text}</span>
+          {toast.retry && <><button type="button" onClick={() => { const again = toast.retry!; setToast(null); void again().catch(() => undefined); }} className="flex h-11 shrink-0 items-center gap-1 rounded-full px-3 font-semibold hover:bg-white/15" data-try-again>Try again</button><button type="button" onClick={() => setToast(null)} aria-label="Close" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-white/15"><Icon name="close" className="h-4 w-4" /></button></>}
           {toast.revisions.length > 0 && <><span className="text-white/50">·</span><button type="button" onClick={() => { void undo(); }} className="flex h-11 items-center gap-1 rounded-full px-3 font-semibold hover:bg-white/15"><Icon name="undo" className="h-4 w-4" />Undo</button></>}
         </div>
       )}

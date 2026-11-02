@@ -549,6 +549,39 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   await ph.close();
 }
 // ---- pre-go-live audit (2026-11-02): one test per fix
+const openEditor = async (p) => { await p.goto(`${base}/admin/${VENUE}`); await p.waitForSelector('[data-item]'); await p.fill('input[aria-label="Search items"]', NAME); await p.locator(`#sec-${sec.id} [data-item="${itemId}"] button[aria-label^="Edit"]`).click(); await p.waitForSelector(`.item-panel[aria-label="Edit ${NAME}"]`); };
+const errorToast = async (p) => { const t = p.locator('[data-toast-error]'); const seen = await t.waitFor({ state: 'visible', timeout: 4000 }).then(() => true).catch(() => false); return { seen, text: seen ? (await t.innerText()).replace(/\s+/g, ' ') : '', inView: seen && await t.evaluate((el) => { const r = el.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; }) }; };
+{ // D-01: a save that does not go through is shown where the person sees it, with Try again (before: the section's switch flipped back with no message)
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE); const ck = await cookieOf(ph);
+  await p.route('**/api/admin/section', (r) => r.abort());
+  const sw = p.locator(`#sec-${sec.id} header input[role=switch]`); await sw.scrollIntoViewIfNeeded(); await sw.click();
+  const t = await errorToast(p);
+  const still = (await db.query('select listed from sections where id=$1', [sec.id])).rows[0].listed;
+  await p.unroute('**/api/admin/section');
+  await p.click('[data-toast-error] [data-try-again]').catch(() => {});
+  const w = await waitDb('select listed from sections where id=$1', [sec.id], (r) => r?.listed === false, 6000);
+  check('t-fail-visible', t.seen && t.inView && /Not saved/.test(t.text) && /Try again/.test(t.text) && still === true && w.ok, `the section's switch with no connection → "${t.text}" (in view: ${t.inView}); still shown in the database: ${still}; Try again with the connection back → hidden in the database ${w.ok ? `after ${w.ms} ms` : 'NOT within 6 s'}`);
+  await api('/api/admin/section', { action: 'update', id: sec.id, patch: { listed: true } }, ck);
+  await ph.close();
+}
+{ // D-02: a save that does not go through keeps what was typed ("Not saved"), and Try again saves it (before: the field went back and the text was lost)
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE); const ck = await cookieOf(ph);
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { description: { en: 'Drill description before', fa: null } } }, ck);
+  await openEditor(p);
+  const TYPED = 'Drill description typed with no connection';
+  await p.route('**/api/admin/item', (r) => r.abort());
+  const field = p.locator('.item-panel textarea[aria-label="Description"]'); await field.click(); await field.fill(TYPED); await p.keyboard.press('Tab');
+  const t = await errorToast(p); await sleep(400);
+  const kept = await field.inputValue(), saved = (await db.query('select description from items where id=$1', [itemId])).rows[0].description.en;
+  await p.unroute('**/api/admin/item');
+  await p.click('[data-toast-error] [data-try-again]').catch(() => {});
+  const w = await waitDb('select description from items where id=$1', [itemId], (r) => r?.description?.en === TYPED, 6000);
+  check('t-fail-keeps-text', t.seen && /Try again/.test(t.text) && kept === TYPED && saved === 'Drill description before' && w.ok, `a description typed with no connection: still in the field ${kept === TYPED}, "${t.text}"; the database kept "${saved}"; Try again with the connection back → saved ${w.ok ? `after ${w.ms} ms` : 'NOT within 6 s'}`);
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { description: { en: null, fa: null } } }, ck);
+  await ph.close();
+}
 { // D-10: a section named like an element of the page itself does not take its id (before: "Welcome" covered the welcome screen, "Sheet" stopped every popup)
   const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); await signin(p, VENUE); const ck = await cookieOf(ph);
   const made = [];

@@ -10,6 +10,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { AddOn, EditorItem, EditorSection, Variant } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
+import { retryable } from './api';
 import { Badge, LooksGood, MoneyField, Sheet, Switch, btnGhost, btnPrimary, btnSecondary, cardCls, cellCls } from './ui';
 
 type Patch = (p: Record<string, unknown>) => Promise<void>;
@@ -55,7 +56,7 @@ export function PriceOrSizes({ item, onPatch, hint, onLooksGood }: { item: Edito
     const variants = next.filter(sizeDone).map((r) => ({ label: { en: r.en.trim(), fa: r.fa.trim() || null }, price: priceOf(r.price) as number }));
     if (normV(variants) === normV(item.variants)) return;
     mine.current = normV(variants);
-    void onPatch({ variants, price: variants.length ? null : (item.price ?? removedPrice ?? null) }).catch(() => { mine.current = normV(item.variants); setRows(sizeRows(item.variants)); });
+    void onPatch({ variants, price: variants.length ? null : (item.price ?? removedPrice ?? null) }).catch((e) => { if (retryable(e)) return; mine.current = normV(item.variants); setRows(sizeRows(item.variants)); }); // the rows stay for the toast's Try again (D-02)
   };
   const set = (k: number, p: Partial<SizeRow>) => setRows((cur) => cur.map((r) => (r.key === k ? { ...r, ...p } : r)));
   const enterPrice = (r: SizeRow) => {
@@ -113,7 +114,7 @@ export function Choices({ item, onPatch, onCopy, onLooksGood }: { item: EditorIt
     const add_ons: AddOn[] = flat(next).filter(choiceDone).map((r) => ({ group: { en: groupName(r.group) || null, fa: r.groupFa.trim() || null }, label: { en: r.en.trim(), fa: r.fa.trim() || null }, price: (priceOf(r.price) as number | null) ?? 0, required: r.required }));
     if (normA(add_ons) === normA(item.add_ons)) return;
     mine.current = normA(add_ons);
-    void onPatch({ add_ons }).catch(() => { mine.current = normA(item.add_ons); setRows(choiceRows(item.add_ons)); });
+    void onPatch({ add_ons }).catch((e) => { if (retryable(e)) return; mine.current = normA(item.add_ons); setRows(choiceRows(item.add_ons)); }); // the rows stay for the toast's Try again (D-02)
   };
   const set = (k: number, p: Partial<ChoiceRow>) => setRows((cur) => cur.map((r) => (r.key === k ? { ...r, ...p } : r)));
   const setGroup = (name: string, p: Partial<ChoiceRow>) => setRows((cur) => cur.map((r) => (r.group === name ? { ...r, ...p } : r)));

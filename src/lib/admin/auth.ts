@@ -8,7 +8,8 @@ export const COOKIE = 'roses_session';
 const SESSION_HOURS = 12;
 const SCRYPT = { N: 16384, r: 8, p: 1, keylen: 32 };
 
-export type Session = { kind: 'admin' | 'pin'; id: string; name: string; role: 'admin' | 'owner' | 'staff'; venues: string[] | 'all' };
+// `cred` (admins only): a fingerprint of the account's credentials at sign-in (credOf in pins.ts), so a PIN or password reset ends the session.
+export type Session = { kind: 'admin' | 'pin'; id: string; name: string; role: 'admin' | 'owner' | 'staff'; venues: string[] | 'all'; cred?: string };
 
 export function hashSecret(secret: string): string {
   const salt = randomBytes(16);
@@ -40,7 +41,7 @@ export async function readSessionToken(token: string | undefined | null): Promis
     const { payload } = await jwtVerify(token, secretKey(), { algorithms: ['HS256'] });
     const p = payload as unknown as Session;
     if (!p.kind || !p.id) return null;
-    return { kind: p.kind, id: p.id, name: p.name, role: p.role, venues: p.venues };
+    return { kind: p.kind, id: p.id, name: p.name, role: p.role, venues: p.venues, ...(typeof p.cred === 'string' ? { cred: p.cred } : {}) };
   } catch { return null; }
 }
 
@@ -50,6 +51,7 @@ export function parseCookies(header: string | undefined): Record<string, string>
   return out;
 }
 
+// The token's claims only. Every route reads the session through liveSession (pins.ts), which checks the person in the database.
 export async function sessionFromRequest(req: IncomingMessage): Promise<Session | null> {
   return readSessionToken(parseCookies(req.headers.cookie)[COOKIE]);
 }

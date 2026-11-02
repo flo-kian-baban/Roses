@@ -5,6 +5,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { sessionFromRequest, canEditVenue, canManage } from '@/lib/admin/auth';
 import { getVenueRow } from '@/lib/admin/venue';
+import { liveSession } from '@/lib/admin/pins';
 import { newKey, storage, EXT_TYPES } from '@/lib/storage';
 
 export const config = { api: { bodyParser: false, responseLimit: false } };
@@ -56,7 +57,7 @@ export function dimensions(buf: Buffer, ext: string): { width: number; height: n
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); res.status(405).json({ ok: false, error: 'POST only' }); return; }
-  const session = await sessionFromRequest(req);
+  const session = await liveSession(await sessionFromRequest(req));
   if (!session) { res.status(401).json({ ok: false, error: 'not signed in' }); return; }
   const venueId = String(req.query.venue ?? ''); const kind = req.query.kind === 'logo' ? 'logo' : 'photo';
   const venue = await getVenueRow(venueId);

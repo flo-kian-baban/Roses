@@ -250,6 +250,9 @@ const ownerCookie = await cookieOf(ownerCtx);
   for (const p of [staff, owner]) await post('/api/admin/pin', { _action: 'revoke', id: p.id, _back: '/admin/team' }, ac);
   const r = await post('/api/admin/login', { mode: 'pin', venue: 'senso', pin: staff.pin });
   check('b-revoked', !r.setCookie && /wrong PIN/.test(errorOf(r.location) || ''), `revoked staff PIN → ${r.status}, error="${errorOf(r.location)}", cookie set: ${!!r.setCookie}`);
+  // pre-go-live audit (2026-11-02, S1-03): the revoked PIN's session from before ends too (before, its cookie kept editing for up to 12 hours)
+  const old = await api('/api/admin/item', { action: 'update', id: item.id, patch: {} }, staffCookie);
+  check('revoked-session', old.status === 401, `the revoked staff PIN's earlier session (its cookie) → POST /api/admin/item ${old.status} "${old.json?.error}"`);
   await ap.close(); await actx.close(); }
 await db.query(`delete from login_failures where key like 'senso:%'`);
 await browser.close(); await db.end();

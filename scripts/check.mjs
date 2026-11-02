@@ -314,6 +314,12 @@ try {
   adminId = (await db.query('insert into admins (email, password_hash, pin_hash, name) values ($1,$2,$3,$4) returning id', [adminEmail, adminHash, adminPinHash, SUITE_ADMIN_NAME])).rows[0].id;
   await step('production build (.next-check)', async () => { const r = await run('npx', ['next', 'build'], { env: { NEXT_DIST_DIR: DIST, ROSES_APP_NAME: 'roses-check:build' }, logFile: 'build.log' }); return { pass: r.status === 0, evidence: ['build.log'], note: r.status === 0 ? 'next build ok' : `exit ${r.status}` }; }, 'build');
   if (!results.at(-1).pass) throw new Error('build failed; stopping');
+  // pre-go-live audit (2026-11-02, S1-07): Next.js 16.0.0–16.4.0 carry GHSA-2464-fhr4-w9xw and GHSA-673q-mjm6-r5xr (critical) and GHSA-p3m5-59mp-jv5r (high)
+  await step('Next.js without the advisories of 16.0.0–16.4.0 (GHSA-2464-fhr4-w9xw, GHSA-673q-mjm6-r5xr, GHSA-p3m5-59mp-jv5r): installed ≥ 16.4.1 and pinned to that exact release in package.json', async () => {
+    const installed = JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version, declared = JSON.parse(fs.readFileSync('package.json', 'utf8')).dependencies.next;
+    const [a, b, c] = installed.split(/[.-]/).map(Number); const fixed = a > 16 || (a === 16 && (b > 4 || (b === 4 && c >= 1)));
+    return { pass: fixed && declared === installed, note: `installed next ${installed}; package.json "${declared}"` };
+  }, 'next-advisories');
   await step(`performance fixture ${perf.pointer?.id ?? '(none)'}: verified against its committed pointer, restored into ${perfName}, migrations, its uploads copied, its own production build (${PERF_DIST}) from it`, async () => {
     if (!perf.ok) return { pass: false, note: perfNote };
     const pgAdmin = new pg.Client({ connectionString: adminUrl }); await pgAdmin.connect(); await pgAdmin.query(`create database "${perfName}"`); await pgAdmin.end();

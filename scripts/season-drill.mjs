@@ -204,7 +204,7 @@ for (const inst of INSTANTS) {
       if (!a.section || a.sectionId !== f.section) problems.push('no Seasonal section');
       if (a.firstSection !== f.section) problems.push(`first section ${a.firstSection}`);
       if (a.title.en !== TITLES[S].en || a.title.fa !== TITLES[S].fa) problems.push(`title ${a.title.en} / ${a.title.fa}`);
-      if (a.firstTab !== TITLES[S].en.toLowerCase().replace(/[^a-z0-9]+/g, '-')) problems.push(`first tab #${a.firstTab}`);
+      if (a.firstTab !== `s-${TITLES[S].en.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`) problems.push(`first tab #${a.firstTab}`); // section anchors are "s-" + the name since the pre-go-live audit (D-10)
       const wantIn = [...f.pre.filter((p) => p.listed && p.seasons.includes(S)).map((p) => p.id), want]; // the venue's own items of the season first, in their order
       if (a.inSection.join() !== wantIn.join()) problems.push(`in the section: ${a.inSection.map((id) => f.names[id]?.en ?? id).join(', ') || 'nothing'} (wanted ${wantIn.map((id) => f.names[id]?.en ?? id).join(', ')})`);
       const leaked = [...others, ...f.preTagged.filter((p) => !p.seasons.includes(S)).map((p) => p.id)].filter((id) => a.onPage.has(id)); if (leaked.length) problems.push(`out of season on the page: ${leaked.map((id) => f.names[id].en).join(', ')}`);

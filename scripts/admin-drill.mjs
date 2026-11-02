@@ -181,6 +181,12 @@ await opage.click('[role=dialog] [data-halal="yes"]');
 const wn = await waitDb('select notes from items where id=$1', [item.id], (r) => r?.notes?.halal === true);
 await snap(opage, 'owner-notes-saved');
 check('h-owner', wn.ok && wn.row.notes.allergens.includes('tree nuts'), `owner saved notes in the panel with the chips (Tree nuts, then Halal; each tap on its own): ${JSON.stringify(wn.row?.notes)}`);
+// pre-go-live audit (2026-11-02, S1-02): Undo takes back one's own change only (before, staff could undo the owner's notes record and clear them)
+{ const rev = (await db.query(`select id from revisions where table_name = 'items' and row_id = $1 and by->>'id' = $2 order by id desc limit 1`, [item.id, owner.id])).rows[0]?.id;
+  const before = (await db.query('select notes from items where id=$1', [item.id])).rows[0].notes;
+  const u = await api('/api/admin/undo', { venue: 'senso', revisions: [Number(rev)] }, staffCookie);
+  const after = (await db.query('select notes from items where id=$1', [item.id])).rows[0].notes;
+  check('undo-own-only', !!rev && u.status === 403 && JSON.stringify(after) === JSON.stringify(before), `staff Undo of the owner's notes record ${rev} → ${u.status} "${u.json?.error}"; the notes unchanged: ${JSON.stringify(after) === JSON.stringify(before)}`); }
 { const adminCtx2 = await browser.newContext(DEVICE); const ap = await loginPage(adminCtx2, 'admin', { email, password }); const ac = await cookieOf(adminCtx2); const r = await api('/api/admin/item', { action: 'notes', id: item.id, notes: { allergens: '', halal: null } }, ac); const n2 = (await db.query('select notes from items where id=$1', [item.id])).rows[0].notes; check('h-admin', r.status === 200 && n2.allergens.length === 0 && n2.halal === null, `admin cleared the notes again: ${JSON.stringify(n2)}`); await ap.close(); await adminCtx2.close(); }
 
 // venue details API: staff gets 403; the owner reads and edits (Details tab), Undo puts it back

@@ -5,7 +5,6 @@
 import type { Bi, Notes } from './types';
 import words from './allergens.json';
 
-export const ALLERGENS: { en: string; fa: string }[] = words.allergens;
 const FA = new Map<string, string>([...words.allergens, ...words.ownerWords].map((a) => [a.en, a.fa]));
 export const allergenFa = (word: string): string => FA.get(word.trim().toLowerCase()) ?? word;
 const DIETARY_FA = new Map<string, string>(words.dietary.map((d) => [d.en.toLowerCase(), d.fa]));

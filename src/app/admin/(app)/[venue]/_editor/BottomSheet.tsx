@@ -27,7 +27,7 @@ export function BottomSheet({ detent, onDetent, max = 'full', top, header, child
   }, []);
   const heights: Record<Detent, number> = { collapsed: headH, half: Math.max(headH, Math.floor(vh * 0.55 - top)), full: Math.max(headH, vh - top) };
   const allowed = ORDER.slice(0, ORDER.indexOf(max) + 1);
-  useEffect(() => { if (!allowed.includes(detent)) onDetent(max); }, [max]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!allowed.includes(detent)) onDetent(max); }, [max]);
   const height = dragging ?? heights[allowed.includes(detent) ? detent : max];
   const nearest = (h: number) => allowed.reduce((a, b) => (Math.abs(heights[b] - h) < Math.abs(heights[a] - h) ? b : a));
   const onPointerDown = (e: React.PointerEvent) => { if ((e.target as Element).closest('button:not([data-style-sheet-handle]), a, input, select, label')) return; drag.current = { y0: e.clientY, h0: height, moved: false }; (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); };

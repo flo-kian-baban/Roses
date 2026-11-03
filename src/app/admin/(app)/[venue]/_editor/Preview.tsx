@@ -74,13 +74,13 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
     setVars: (vars) => { varsRef.current = vars; const d = activeDoc(); if (d) applyVars(d, vars); },
   }));
   // The view, applied to the loaded frame as it changes (each part on its own, so a season switch never re-opens a popup).
-  useEffect(() => { const d = activeDoc(); if (d) applyScreen(d, view); }, [view.screen]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (!view.replay) return; const d = activeDoc(); if (d) replayWelcome(d); }, [view.replay]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { const d = activeDoc(); if (d) applyLang(d, view.lang); }, [view.lang]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { const d = activeDoc(); if (d) applyGreet(d, view.slot); }, [view.slot]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { const d = activeDoc(); if (d) seasonP.current = applySeason(d, venueId, view.season, () => viewRef.current.season === view.season).then((swapped) => { if (swapped && d === activeDoc()) { applyScreen(d, viewRef.current); if (regionRef.current.region) applyRegion(d, regionRef.current.region, false); } }); }, [view.season]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const d = activeDoc(); if (d) applyScreen(d, view); }, [view.screen]);
+  useEffect(() => { if (!view.replay) return; const d = activeDoc(); if (d) replayWelcome(d); }, [view.replay]);
+  useEffect(() => { const d = activeDoc(); if (d) applyLang(d, view.lang); }, [view.lang]);
+  useEffect(() => { const d = activeDoc(); if (d) applyGreet(d, view.slot); }, [view.slot]);
+  useEffect(() => { const d = activeDoc(); if (d) seasonP.current = applySeason(d, venueId, view.season, () => viewRef.current.season === view.season).then((swapped) => { if (swapped && d === activeDoc()) { applyScreen(d, viewRef.current); if (regionRef.current.region) applyRegion(d, regionRef.current.region, false); } }); }, [view.season]);
   // The open group's region (or a re-assertion of it): outlined in the loaded frame, scrolled to when out of view.
-  useEffect(() => { const d = activeDoc(); if (d) applyRegion(d, region.region, true); }, [region]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const d = activeDoc(); if (d) applyRegion(d, region.region, true); }, [region]);
 
   // A save (reloadKey) loads the page into the hidden slot (location.replace: a preview reload never adds a history entry); while a
   // transition plays it waits for the end of the play.
@@ -93,10 +93,10 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
     reloading.current = true; setLoading(true);
     const w = frames[next].current?.contentWindow; if (w) w.location.replace(`/${venueId}?preview=${reloadKeyRef.current}.${Date.now()}`);
   };
-  useEffect(() => { if (playing.current) { deferred.current = true; return; } reload(); }, [venueId, reloadKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (playing.current) { deferred.current = true; return; } reload(); }, [venueId, reloadKey]);
   // Play: now, or once the frame being reloaded is in (a transition just chosen is saved, then played from the fresh page). Declared after
   // the reload above, so a save and a play in the same render see the reload first.
-  useEffect(() => { if (!view.play) return; const d = activeDoc(); if (reloading.current || !d) { playWanted.current = true; return; } play(d, false, viewRef.current.playTx); }, [view.play]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!view.play) return; const d = activeDoc(); if (reloading.current || !d) { playWanted.current = true; return; } play(d, false, viewRef.current.playTx); }, [view.play]);
 
   const onLoad = (slot: 0 | 1) => () => {
     if (slot !== loadingSlot.current) return;
@@ -134,7 +134,7 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
     const el = box.current;
     const fit = () => { const cs = getComputedStyle(el); const h = el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom); const w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); setScale(Math.max(0.4, Math.min(1, h / outerH, w / outerW))); };
     fit(); const ro = new ResizeObserver(fit); ro.observe(el); return () => ro.disconnect();
-  }, [frame]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [frame]);
   const [time, setTime] = useState('');
   useEffect(() => {
     if (!frame) return;

@@ -74,9 +74,9 @@ export function StyleTab({ venueId, version, onSaved, onFail, onApply, onLive, o
       .then(async (r) => { const j = await r.json().catch(() => null); if (!r.ok || !j?.ok) throw new Error(j?.error || `Could not load the style options (${r.status})`); if (live) { setData(j as Data); setErr(null); onSnapshot((s) => s ?? { style: (j as Data).style, layouts: Object.fromEntries(sections.map((x) => [x.id, x.layout])) }); } })
       .catch((e) => { if (live) setErr((e as Error).message); });
     return () => { live = false; };
-  }, [venueId, version]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [venueId, version]);
   useEffect(() => { if (!err) return; const t = setTimeout(() => setErr(null), 6000); return () => clearTimeout(t); }, [err]);
-  useEffect(() => { onEditing(openToken !== null); }, [openToken]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { onEditing(openToken !== null); }, [openToken]);
 
   const venue = useMemo(() => (data ? { template: data.template.id, brand: data.brand, style: data.style } : null), [data]);
   const resolved: Resolved = useMemo(() => (venue ? resolveColors(venue, pending) : {}), [venue, pending]);
@@ -85,7 +85,7 @@ export function StyleTab({ venueId, version, onSaved, onFail, onApply, onLive, o
   const tokensOfGroup = (g: GroupId) => (data?.tokens ?? []).filter((t) => t.group === g);
   const label = (key: string) => data?.tokens.find((t) => t.key === key)?.label ?? key;
   const varsOf = (res: Resolved) => Object.fromEntries(Object.entries(res).map(([k, r]) => [cssVar(k), r.value]));
-  useEffect(() => { if (venue) onDefaults(varsOf(defaults)); }, [defaults]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (venue) onDefaults(varsOf(defaults)); }, [defaults]);
 
   const open = (g: GroupId | null, token?: string | null) => {
     setOpenGroup(g); setOpenToken(g ? token ?? tokensOfGroup(g)[0]?.key ?? null : null); onRegion(g);
@@ -111,7 +111,7 @@ export function StyleTab({ venueId, version, onSaved, onFail, onApply, onLive, o
     handledPick.current = picked.n;
     if (openGroup === picked.region) { onRegion(picked.region); return; }
     open(picked.region);
-  }, [picked, data]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [picked, data]);
 
   const apply = (r: Resp) => setData((d) => (d ? { ...d, style: r.style as StyleValues, values: r.values as StyleValues, tokens: r.tokens as TokenDef[], palette: r.palette as Data['palette'], brand: r.brand as Brand | null } : d));
   // Live: the colour under the picker shows in the preview before it is saved (every Auto token linked to it follows).

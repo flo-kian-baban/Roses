@@ -174,7 +174,6 @@ export const luminance = (h: string): number => { const [r, g, b] = rgb(h); retu
 export const contrast = (a: string, b: string): number => { const la = luminance(a), lb = luminance(b); const [hi, lo] = la > lb ? [la, lb] : [lb, la]; return (hi + 0.05) / (lo + 0.05); };
 export const mix = (a: string, b: string, t: number): string => { const x = rgb(a), y = rgb(b); return hex([x[0] + (y[0] - x[0]) * t, x[1] + (y[1] - x[1]) * t, x[2] + (y[2] - x[2]) * t]); };
 export const isLight = (h: string) => luminance(h) > 0.3;
-export const isDark = (h: string) => !isLight(h);
 
 // The Auto rules. `page` is the resolved page text and background (the first candidates for text on any base).
 function derive(rule: Rule, base: string, page: { text: string; bg: string }): string {
@@ -311,14 +310,3 @@ export function palette(brand: Brand | null | undefined): { label: string; value
   return out;
 }
 
-// The colours every element had before the tokens (the white kit of 2026-10-07), per template, for the suite's day-one check.
-// Three places had pure black (#000000) where the kit's ink (#1d1d1f) is now used, listed here so the difference is on record.
-// The welcome screen's tokens (2026-10-09) are new and have no pre-token look; the day-one check skips them.
-export const PRE_TOKEN_LOOK: Record<string, Record<string, string>> = {
-  senso: { 'page.bg': '#ffffff', 'page.text': '#1d1d1f', 'page.band': '#f3f3f3', 'header.bg': '#ffffff', 'header.langBg': '#f2f2f2', 'header.langText': '#1d1d1f', 'tabs.bg': '#ffffff', 'tabs.text': '#6b6b6b', 'tabs.active': '#000000', 'tabs.indicator': '#000000', 'tabs.list': '#000000', 'tabs.line': '#e6e6e6', 'headings.title': '#1d1d1f', 'headings.note': '#6b6b6b', 'rows.bg': '#ffffff', 'rows.name': '#1d1d1f', 'rows.desc': '#6b6b6b', 'rows.price': '#1d1d1f', 'rows.chipBg': '#f3f3f3', 'rows.chipText': '#1d1d1f', 'rows.photo': '#f3f3f3', 'rows.line': '#e6e6e6', 'sheet.bg': '#ffffff', 'sheet.title': '#000000', 'sheet.price': '#000000', 'sheet.body': '#545454', 'sheet.muted': '#6b6b6b', 'sheet.line': '#e6e6e6', 'sheet.hero': '#f3f3f3', 'sheet.closeBg': '#ffffff', 'sheet.closeIcon': '#000000', 'sheet.dim': '#000000', 'footer.bg': '#ffffff', 'footer.label': '#1d1d1f', 'footer.address': '#6b6b6b', 'footer.hours': '#6b6b6b', 'footer.phone': '#042c7c' },
-  'kebab-land': { 'page.bg': '#ffffff', 'page.text': '#1d1d1f', 'page.band': '#f3f3f3', 'header.bg': '#ffffff', 'header.tile': '#141414', 'header.langBg': '#f2f2f2', 'header.langText': '#1d1d1f', 'tabs.bg': '#ffffff', 'tabs.text': '#6b6b6b', 'tabs.active': '#000000', 'tabs.indicator': '#000000', 'tabs.list': '#000000', 'tabs.line': '#e6e6e6', 'headings.title': '#1d1d1f', 'headings.note': '#6b6b6b', 'rows.bg': '#ffffff', 'rows.name': '#1d1d1f', 'rows.desc': '#6b6b6b', 'rows.price': '#1d1d1f', 'rows.chipBg': '#f3f3f3', 'rows.chipText': '#1d1d1f', 'rows.photo': '#f3f3f3', 'rows.line': '#e6e6e6', 'sheet.bg': '#ffffff', 'sheet.title': '#000000', 'sheet.price': '#000000', 'sheet.body': '#545454', 'sheet.muted': '#6b6b6b', 'sheet.line': '#e6e6e6', 'sheet.hero': '#f3f3f3', 'sheet.closeBg': '#ffffff', 'sheet.closeIcon': '#000000', 'sheet.dim': '#000000', 'footer.bg': '#ffffff', 'footer.label': '#b92e2e', 'footer.address': '#1d1d1f', 'footer.hours': '#6b6b6b', 'footer.phone': '#b92e2e' },
-};
-// The tokens whose day-one default differs from the pre-token look, and why.
-export const DAY_ONE_DIFFERENCES: { keys: string[]; before: string; after: string; why: string }[] = [
-  { keys: ['tabs.active', 'tabs.indicator', 'tabs.list', 'sheet.title', 'sheet.price', 'sheet.closeIcon'], before: '#000000', after: '#1d1d1f', why: 'pure black in the kit CSS replaced by the page text colour (the kit\'s ink), so these follow the Page text token' },
-];

@@ -42,7 +42,10 @@ export default function KebabLand({ venue, sections, season }: Props) {
         <meta name="description" content={venue.tagline.en ?? `${venue.name.en} menu`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content={colors['page.bg'].value} />
-        {venue.brand.logo && <link rel="icon" href={venue.brand.logo.url} />}
+        {/* square icons drawn from the logo on the venue's own colour (pre-go-live audit, Part B #4; tools/brand/share-images.mjs): the tab icon and
+            the home-screen icon; the preview image (kebab-land-share.png) waits for the final domain, which its og:image needs */}
+        <link rel="icon" type="image/png" sizes="192x192" href="/brand/kebab-land-icon.png" />
+        <link rel="apple-touch-icon" href="/brand/kebab-land-touch.png" />
         {venue.brand.logo && <link rel="preload" as="image" href={venue.brand.logo.url} fetchPriority="high" />}
         <script dangerouslySetInnerHTML={{ __html: headScript(style.welcome !== false) }} />
       </Head>

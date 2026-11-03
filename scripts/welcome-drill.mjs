@@ -22,7 +22,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import zlib from 'node:zlib';
-import { chromium, devices } from 'playwright';
+import { chromium, devices, webkit } from 'playwright';
 import { connectDb, loadEnv } from './load-env.mjs';
 
 loadEnv();
@@ -244,6 +244,83 @@ for (const venue of VENUES) {
       measure(`${venue}: inline code for the welcome screen (${season} scene): ${(inlineGz / 1024).toFixed(1)} KB gzipped (${(inlineRaw / 1024).toFixed(1)} KB raw); its stylesheet block ${(cssGz / 1024).toFixed(1)} KB gzipped`);
     }
   }
+}
+
+
+// ---- pre-go-live audit, Part B (the PM's fix batch A2, 2026-11-03): one check per fix on the customers' pages ----
+{ const enter = async (page, venue, lang = 'en') => { await page.goto(`${base}/${venue}`); await page.click(`#welcome button[data-lang="${lang}"]`).catch(() => {}); await sleep(1100); };
+  const wk = await webkit.launch();
+  // #1: in Persian the footer's address and phone number read left to right (their digit groups showed reversed)
+  for (const venue of VENUES) {
+    const ctx = await browser.newContext(DEVICE); const p = await ctx.newPage(); await enter(p, venue, 'fa');
+    const locs = (await db.query('select locations from venues where id=$1', [venue])).rows[0].locations;
+    const want = locs.flatMap((l) => [l.address, l.phone]).filter(Boolean);
+    const got = await p.evaluate(() => [...document.querySelectorAll('footer bdi[dir="ltr"]')].map((b) => ({ text: b.textContent.trim(), dir: getComputedStyle(b).direction })));
+    check(`persian-footer-${venue}`, want.length > 0 && want.every((w) => got.some((g) => g.text === w && g.dir === 'ltr')), `${venue} in Persian: the footer's ${want.length} address and phone line(s) each in a left-to-right run: ${JSON.stringify(got)}`);
+    await ctx.close();
+  }
+  // #3 (WebKit): the next long popup opens at its top, its ✕ in view
+  { const tall = (await db.query(`select id from items where venue_id='senso' and listed order by jsonb_array_length(add_ons) + jsonb_array_length(variants) desc, length(coalesce(description->>'en','')) desc limit 2`)).rows.map((r) => r.id);
+    const ctx = await wk.newContext({ ...devices['iPhone 13'] }); const p = await ctx.newPage(); await enter(p, 'senso');
+    const openItem = async (id) => { const li = p.locator(`main li.item[data-id="${id}"]`).first(); await li.scrollIntoViewIfNeeded(); await li.click(); await p.waitForSelector('#sheet[open]'); await sleep(500); };
+    await openItem(tall[0]); const scrolled = await p.evaluate(() => { const d = document.getElementById('sheet'); d.scrollTop = d.scrollHeight; return d.scrollTop; });
+    await p.click('#sheet-close'); await sleep(600);
+    await openItem(tall[1]);
+    const st = await p.evaluate(() => { const d = document.getElementById('sheet'), x = document.getElementById('sheet-close').getBoundingClientRect(); return { top: d.scrollTop, closeTop: Math.round(x.top), closeBottom: Math.round(x.bottom) }; });
+    check('popup-top-webkit', scrolled > 0 && st.top === 0 && st.closeTop >= 0 && st.closeBottom <= 664, `WebKit, iPhone 13: a long popup scrolled ${scrolled} px and closed, the next long one opens at scroll ${st.top} with its ✕ at ${st.closeTop}–${st.closeBottom} px`);
+    await ctx.close(); }
+  // #7 (WebKit): a photo whose host does not answer shows the grey placeholder, not a broken-image icon
+  { const ctx = await wk.newContext({ ...devices['iPhone 13'] }); await ctx.route(/^https:\/\/(mealsymedia\.s3\.amazonaws\.com|roseskebablands\.com|sensocafe\.ca)\//, (r) => r.abort());
+    const p = await ctx.newPage(); await enter(p, 'kebab-land');
+    for (let y = 0; y < 6; y++) { await p.evaluate(() => window.scrollBy(0, innerHeight)); await sleep(400); }
+    const imgs = await p.evaluate(() => [...document.querySelectorAll('main img')].map((i) => ({ src: i.getAttribute('src') || '', w: i.naturalWidth, complete: i.complete })));
+    const linked = imgs.filter((i) => !i.src.startsWith('/')), broken = imgs.filter((i) => i.complete && i.w === 0);
+    const li = p.locator('main li.item[data-photo^="https://"]').first(); await li.scrollIntoViewIfNeeded(); await li.click(); await p.waitForSelector('#sheet[open]'); await sleep(900);
+    const hero = await p.evaluate(() => ({ hidden: document.getElementById('sheet-hero').hidden, has: document.getElementById('sheet').classList.contains('has-photo') }));
+    check('photo-fallback', linked.length > 0 && broken.length === 0 && hero.hidden && !hero.has, `Kebab Land with its photo host not answering (WebKit): ${linked.length} photo(s) reached, ${linked.filter((i) => i.src.startsWith('data:')).length} turned into the placeholder, broken images left ${broken.length}; a popup's photo left out: ${hero.hidden && !hero.has}`);
+    await ctx.close(); }
+  // #8: the language button, the popup's ✕, the section list's ✕ and a footer phone link take a tap over 44 × 44 px
+  { const ctx = await browser.newContext(DEVICE); const p = await ctx.newPage(); await enter(p, 'senso');
+    const hit = (sel) => p.evaluate((sel) => { const el = document.querySelector(sel); if (!el) return null; const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; return [[-21.5, -21.5], [21.5, -21.5], [-21.5, 21.5], [21.5, 21.5]].every(([dx, dy]) => { const t = document.elementFromPoint(cx + dx, cy + dy); return !!t && (t === el || el.contains(t)); }); }, sel);
+    const res = { language: await hit('#lang-toggle') };
+    await p.locator('main li.item').first().click(); await p.waitForSelector('#sheet[open]'); await sleep(500); res.popupClose = await hit('#sheet-close'); await p.keyboard.press('Escape'); await sleep(600);
+    await p.click('#tabs-list'); await p.waitForSelector('#sections-dialog[open]'); await sleep(500); res.listClose = await hit('#list-close'); await p.keyboard.press('Escape'); await sleep(600);
+    await p.locator('footer a[href^="tel:"]').first().scrollIntoViewIfNeeded(); await sleep(300); res.phone = await hit('footer a[href^="tel:"]');
+    check('tap-areas', Object.values(res).every((x) => x === true), `44 × 44 px around each control's centre answers to it: ${JSON.stringify(res)}`);
+    await ctx.close(); }
+  // #10 (WebKit and the keyboard): an item given focus back when its popup closes shows no ring after a tap, and shows it after the keyboard
+  { const ctx = await wk.newContext({ ...devices['iPhone 13'] }); const p = await ctx.newPage(); await enter(p, 'senso');
+    const li = p.locator('main li.item').nth(2); await li.scrollIntoViewIfNeeded(); await li.tap(); await p.waitForSelector('#sheet[open]'); await sleep(500); await p.locator('#sheet-close').tap(); await sleep(700);
+    const touch = await p.evaluate(() => { const a = document.activeElement; return { item: !!a?.matches?.('li.item'), outline: a ? getComputedStyle(a).outlineStyle : null }; });
+    await ctx.close();
+    const c2 = await browser.newContext(DEVICE); const q = await c2.newPage(); await enter(q, 'senso');
+    await q.locator('main li.item').nth(2).focus(); await q.keyboard.press('Enter'); await q.waitForSelector('#sheet[open]'); await sleep(500); await q.keyboard.press('Escape'); await sleep(700);
+    const keys = await q.evaluate(() => { const a = document.activeElement; return { item: !!a?.matches?.('li.item'), outline: a ? getComputedStyle(a).outlineStyle : null }; });
+    await c2.close();
+    check('focus-ring-touch', touch.outline === 'none' && keys.item && keys.outline !== 'none', `after a tap and the ✕ (WebKit): focus on the item ${touch.item}, its outline ${touch.outline}; after Enter and Escape: focus on the item ${keys.item}, its outline ${keys.outline}`); }
+  // #14: the keyboard path: the language chosen with Enter puts the focus on the menu's first heading; the category tabs are one stop, the arrows move between them
+  { const ctx = await browser.newContext(DEVICE); const p = await ctx.newPage(); await p.goto(`${base}/senso`); await p.focus('#welcome button[data-lang="en"]'); await p.keyboard.press('Enter'); await sleep(1100);
+    const first = await p.evaluate(() => { const a = document.activeElement, h = document.querySelector('main h2'); return { onHeading: a === h, text: h?.textContent?.trim() }; });
+    const stops = await p.evaluate(() => document.querySelectorAll('#tabs a[data-tab][tabindex="0"]').length);
+    const all = await p.evaluate(() => document.querySelectorAll('#tabs a[data-tab]').length);
+    await p.focus('#tabs a[data-tab][tabindex="0"]'); await p.keyboard.press('ArrowRight');
+    const moved = await p.evaluate(() => { const tabs = [...document.querySelectorAll('#tabs a[data-tab]')]; return { at: tabs.indexOf(document.activeElement), stop: tabs.findIndex((t) => t.tabIndex === 0) }; });
+    await p.keyboard.press('Tab'); const after = await p.evaluate(() => document.activeElement?.id || document.activeElement?.tagName);
+    check('keyboard-menu', first.onHeading && stops === 1 && all > 1 && moved.at === 1 && moved.stop === 1, `Enter on English → the focus on the first heading "${first.text}": ${first.onHeading}; the ${all} category tabs are ${stops} tab stop; ArrowRight → tab ${moved.at} focused (its stop ${moved.stop}); Tab from there → ${after}`);
+    await ctx.close(); }
+  // #9: an address that does not exist: a bilingual page, a link back to the venue when the address starts with one, none otherwise
+  { const r = await fetch(`${base}/senso/nope`); const t = await r.text();
+    const ctx = await browser.newContext(DEVICE); const p = await ctx.newPage();
+    await p.goto(`${base}/senso/nope`); const link = await p.locator('[data-back-to-menu]').getAttribute('href', { timeout: 5000 }).catch(() => null);
+    await p.goto(`${base}/nope`); await sleep(800); const none = await p.locator('[data-back-to-menu]').count();
+    await ctx.close();
+    check('not-found', r.status === 404 && t.includes('Page not found') && t.includes('صفحه پیدا نشد') && link === '/senso' && none === 0, `GET /senso/nope → ${r.status}, both languages: ${t.includes('Page not found') && t.includes('صفحه پیدا نشد')}; its link back → ${link}; /nope offers a link: ${none > 0}`); }
+  // #4: the square icons are linked and the preview images are there (their og: tags wait for the final domain)
+  { const png = async (u) => { const r = await fetch(base + u); const b = Buffer.from(await r.arrayBuffer()); return r.status === 200 && b.subarray(1, 4).toString() === 'PNG' ? `${b.readUInt32BE(16)}x${b.readUInt32BE(20)}` : `HTTP ${r.status}`; };
+    const res = {};
+    for (const venue of VENUES) { const html = await publicHtml(venue); res[venue] = { iconLinked: html.includes(`rel="icon" type="image/png" sizes="192x192" href="/brand/${venue}-icon.png"`), touchLinked: html.includes(`rel="apple-touch-icon" href="/brand/${venue}-touch.png"`), icon: await png(`/brand/${venue}-icon.png`), touch: await png(`/brand/${venue}-touch.png`), share: await png(`/brand/${venue}-share.png`) }; }
+    check('share-icons', Object.values(res).every((x) => x.iconLinked && x.touchLinked && x.icon === '192x192' && x.touch === '180x180' && x.share === '1200x630'), `per venue: ${JSON.stringify(res)}`); }
+  await wk.close();
 }
 
 // (recordings and one still per season per venue: scripts/season-drill.mjs, which renders every season with a fixed server clock)

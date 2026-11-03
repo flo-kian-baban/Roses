@@ -26,7 +26,8 @@
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 /* Frosted bars (sidebar, top bar, tabs, sticky toolbars). */
-.glass { background: rgba(255, 255, 255, .78); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); }
+/* .94: the rows scrolling under a frosted bar no longer show through enough to sit over its text (pre-go-live audit, Part B #12; was .78) */
+.glass { background: rgba(255, 255, 255, .94); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); }
 /* Listed switch: a native checkbox drawn as an iOS-style toggle, so forms and drills work unchanged. */
 .admin .switch { appearance: none; -webkit-appearance: none; flex: none; width: 51px; height: 31px; margin: 0; border-radius: 9999px; background: #e9e9eb; position: relative; cursor: pointer; transition: background .2s ease; }
 .admin .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 9999px; background: #fff; box-shadow: 0 3px 8px rgba(0, 0, 0, .15), 0 1px 1px rgba(0, 0, 0, .16); transition: transform .2s cubic-bezier(.2, .8, .2, 1); }

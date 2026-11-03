@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '../../../_ui/icons';
 import { retryable } from './api';
-import { parsePrice } from '@/lib/rules';
+import { parsePrice, priceInput } from '@/lib/rules';
 
 export const btn = 'inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-4 text-[15px] font-semibold whitespace-nowrap transition active:scale-[.97] disabled:cursor-not-allowed disabled:opacity-50';
 export const btnPrimary = `${btn} bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.28),0_8px_20px_-8px_rgba(238,106,58,.7)]`;
@@ -65,14 +65,14 @@ export function TextField({ value, onCommit, label, placeholder, dir, lang, mult
 // A price that saves itself. Empty means "no price".
 // inline: the label to the left of the field on one row (the item editor's price, 2026-10-13).
 export function MoneyField({ value, onCommit, label = 'Price', hint, autoFocus, compact, inline, className = '' }: { value: number | null | undefined; onCommit: (v: number | null) => void | Promise<void>; label?: string; hint?: string; autoFocus?: boolean; compact?: boolean; inline?: boolean; className?: string }) {
-  const [draft, setDraft] = useState(value == null ? '' : String(value));
+  const [draft, setDraft] = useState(priceInput(value));
   const [err, setErr] = useState<string | null>(null);
-  const unsaved = useUnsaved(value == null ? '' : String(value), setDraft, () => setErr(null));
+  const unsaved = useUnsaved(priceInput(value), setDraft, () => setErr(null));
   const commit = async () => {
     const n = parsePrice(draft); // the server's own reading of a price (pre-go-live audit S2-07): "1,50" is 1.50, "1e3" is not a price
     if (n === 'bad') { setErr('Not a price (for example 12.50)'); return; }
     if (n === (value ?? null)) { setErr(null); return; }
-    try { setErr(null); await onCommit(n); unsaved.current = null; } catch (e) { const keep = retryable(e); setErr(keep ? `Not saved. ${(e as Error).message}` : (e as Error).message); if (keep) { unsaved.current = n == null ? '' : String(n); setDraft(draft); } else setDraft(value == null ? '' : String(value)); }
+    try { setErr(null); await onCommit(n); unsaved.current = null; } catch (e) { const keep = retryable(e); setErr(keep ? `Not saved. ${(e as Error).message}` : (e as Error).message); if (keep) { unsaved.current = priceInput(n); setDraft(draft); } else setDraft(priceInput(value)); }
   };
   return (
     <label className={`${inline ? 'flex flex-wrap items-center gap-x-3' : 'block'} ${className}`}>

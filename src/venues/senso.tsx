@@ -40,12 +40,14 @@ export function SensoPage({ venue, sections, season, photos = true }: { venue: V
             </section>
           ))}
 
+          {/* An address and a phone number read left to right in Persian too (pre-go-live audit, Part B #1: the digit groups showed reversed); the
+              phone link's tap area reaches 44 px (#8, .tap-pad in public.css) */}
           <footer className="mt-10 space-y-5 bg-(--c-footer-bg) text-[15px]">
             {venue.locations.map((l, n) => (
               <div key={n}>
                 <Bi as="p" text={l.label} className="font-semibold text-(--c-footer-label)" />
-                {l.address && <p className="text-(--c-footer-address)">{l.address}</p>}
-                {l.phone && <p><a href={`tel:${l.phone.replace(/[^\d+]/g, '')}`} className="font-medium text-(--c-footer-phone) underline-offset-4 hover:underline">{l.phone}</a></p>}
+                {l.address && <p className="text-(--c-footer-address)"><bdi dir="ltr">{l.address}</bdi></p>}
+                {l.phone && <p><a href={`tel:${l.phone.replace(/[^\d+]/g, '')}`} className="tap-pad font-medium text-(--c-footer-phone) underline-offset-4 hover:underline"><bdi dir="ltr">{l.phone}</bdi></a></p>}
                 <Bi as="p" text={l.hours} className="text-(--c-footer-hours)" />
               </div>
             ))}

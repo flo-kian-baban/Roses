@@ -13,7 +13,7 @@ import { Icon } from '../../../_ui/icons';
 import { SEASON_NAMES, attention, money, needs, priceSummary, seasonState, seasonsCtx, type Filter, type Need, type Menu as MenuData, type Seasons } from './state';
 import { Badge, Menu, Photo, Switch, btnSecondary } from './ui';
 import { retryable } from './api';
-import { parsePrice } from '@/lib/rules';
+import { parsePrice, priceInput } from '@/lib/rules';
 
 export type MenuTabProps = {
   menu: MenuData; season: SeasonId; canNotes: boolean; filter: Filter; setFilter: (f: Filter) => void; query: string; setQuery: (q: string) => void; highlightId: string | null;
@@ -24,7 +24,7 @@ export type MenuTabProps = {
 };
 type Drag = { kind: 'item'; id: string; section: string } | { kind: 'section'; id: string };
 type Over = { id: string; after: boolean } | null;
-const LABEL: Record<Exclude<Filter, 'all'>, (n: number) => string> = { none: (n) => `${n} in no section`, price: (n) => `${n} need${n === 1 ? 's' : ''} a price`, draft: (n) => `${n} Persian draft${n === 1 ? '' : 's'}`, fa: (n) => `${n} missing Persian`, photo: (n) => `${n} without a photo`, season: (n) => `${n} out of season`, allergens: (n) => `Allergens to confirm (${n})` };
+const LABEL: Record<Exclude<Filter, 'all'>, (n: number) => string> = { none: (n) => `${n} in no section`, price: (n) => `${n} need${n === 1 ? 's' : ''} a price`, draft: (n) => `${n} Persian draft${n === 1 ? '' : 's'}`, fa: (n) => `${n} missing Persian`, photo: (n) => `${n} without a photo`, season: (n) => `${n} out of season`, allergens: (n) => `Allergens to confirm (${n})`, hidden: (n) => `Hidden items (${n})` };
 
 export function MenuTab(p: MenuTabProps) {
   const { menu, filter, setFilter, query, setQuery } = p;
@@ -38,7 +38,8 @@ export function MenuTab(p: MenuTabProps) {
   const anyAttention = Object.values(counts).some((n) => n > 0);
   const q = query.trim().toLowerCase();
   const matches = (i: EditorItem) => !q || (i.name.en ?? '').toLowerCase().includes(q) || (i.name.fa ?? '').includes(query.trim());
-  const keep = (i: EditorItem, orphan: boolean) => (filter === 'all' || (filter === 'none' ? orphan : needs(i, ctx)[filter as Need])) && matches(i);
+  // a need is looked for among the shown items (the bar counts them only); "Hidden items" lists the hidden ones (Part B #5)
+  const keep = (i: EditorItem, orphan: boolean) => (filter === 'all' || (filter === 'none' ? orphan : filter === 'hidden' ? !i.listed : i.listed && needs(i, ctx)[filter as Need])) && matches(i);
   const narrowing = filter !== 'all' || !!q;
   const groups = useMemo(() => {
     const g = menu.sections.map((s) => ({ s, ids: s.item_ids.filter((id) => menu.items[id] && keep(menu.items[id], false)) }));
@@ -89,7 +90,7 @@ export function MenuTab(p: MenuTabProps) {
         <div className="flex gap-2">
           <label className="relative min-w-0 flex-1">
             <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
-            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search items" aria-label="Search items" autoComplete="off" className="h-11 w-full rounded-full border-0 bg-fill pl-10 pr-9 text-base placeholder:text-neutral-500 focus:bg-white focus:outline-none focus:ring-[3px] focus:ring-accent/25" />
+            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search" aria-label="Search items" autoComplete="off" className="h-11 w-full rounded-full border-0 bg-fill pl-10 pr-9 text-base placeholder:text-neutral-500 focus:bg-white focus:outline-none focus:ring-[3px] focus:ring-accent/25" />
             {query && <button type="button" onClick={() => setQuery('')} className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-ink-muted" aria-label="Clear search"><Icon name="close" className="h-4 w-4" /></button>}
           </label>
           <label className="relative shrink-0">
@@ -109,8 +110,9 @@ export function MenuTab(p: MenuTabProps) {
           onDragOver={dnd.overRow('section', s.id)} onDrop={dnd.drop('section', s.id)}>
           <header className={`flex items-center gap-1 py-1.5 pl-1 pr-2 ${s.listed ? '' : 'opacity-70'}`} draggable={fine && !s.seasonal} onDragStart={dnd.start({ kind: 'section', id: s.id })} onDragEnd={dnd.end}>
             <button type="button" onClick={() => toggle(s.id)} aria-expanded={!collapsed.has(s.id)} aria-label={collapsed.has(s.id) ? `Expand ${s.name.en}` : `Collapse ${s.name.en}`} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-fill"><Icon name="down" className={`h-5 w-5 transition ${collapsed.has(s.id) ? '-rotate-90' : ''}`} /></button>
-            <button type="button" onClick={() => toggle(s.id)} className="flex min-h-11 min-w-0 flex-1 items-center gap-x-2 text-left">
-              <span className="truncate text-[17px] font-semibold leading-6">{s.name.en}</span>
+            {/* the name wraps (two lines at most) instead of "Senso …" on a 360 px phone (Part B #6) */}
+            <button type="button" onClick={() => toggle(s.id)} className="flex min-h-11 min-w-0 flex-1 flex-wrap items-center gap-x-2 text-left" data-section-name="">
+              <span className="line-clamp-2 min-w-0 text-[17px] font-semibold leading-6 [overflow-wrap:anywhere]">{s.name.en}</span>
               <span className="shrink-0 text-sm leading-6 tabular-nums text-ink-muted">{s.item_ids.length}</span>
               {s.name.fa && <span lang="fa" dir="rtl" className="hidden min-w-0 truncate text-[14px] leading-6 text-ink-muted sm:inline">{s.name.fa}</span>}
               {/* the badges sit inside the name button, so on a small phone they do not squeeze its tap area below 44 px (the PM, 2026-10-09) */}
@@ -210,7 +212,7 @@ function PriceCell({ item, onPrice, onOpen }: { item: EditorItem; onPrice: (v: n
   );
   return (
     <span className="relative shrink-0">
-      <button type="button" data-price data-unsaved={unsaved ? '' : undefined} onClick={() => { committed.current = false; const shown = unsaved ? unsaved.v : item.price; setDraft(shown == null ? '' : String(shown)); setEditing(true); }} className={`min-h-11 min-w-[4.5rem] rounded-lg px-2 text-right text-[15px] font-semibold tabular-nums hover:bg-fill ${unsaved ? 'text-red-600 underline decoration-dotted' : item.price == null ? 'text-neutral-400' : ''}`} aria-label={unsaved ? `Price ${unsaved.v == null ? 'cleared' : money(unsaved.v)}, not saved. Tap to change` : item.price == null ? 'No price. Tap to add one' : `Price ${money(item.price)}. Tap to change`}>
+      <button type="button" data-price data-unsaved={unsaved ? '' : undefined} onClick={() => { committed.current = false; const shown = unsaved ? unsaved.v : item.price; setDraft(priceInput(shown)); setEditing(true); }} className={`min-h-11 min-w-[4.5rem] rounded-lg px-2 text-right text-[15px] font-semibold tabular-nums hover:bg-fill ${unsaved ? 'text-red-600 underline decoration-dotted' : item.price == null ? 'text-neutral-400' : ''}`} aria-label={unsaved ? `Price ${unsaved.v == null ? 'cleared' : money(unsaved.v)}, not saved. Tap to change` : item.price == null ? 'No price. Tap to add one' : `Price ${money(item.price)}. Tap to change`}>
         {unsaved ? (unsaved.v == null ? 'No price' : money(unsaved.v)) : item.price == null ? 'Add price' : money(item.price)}
       </button>
       {err && <span role="alert" className="absolute right-0 top-full z-10 mt-0.5 whitespace-nowrap rounded-md bg-red-600 px-2 py-0.5 text-[12px] text-white">{err}</span>}

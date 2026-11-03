@@ -45,12 +45,13 @@ export function headScript(welcome = true): string {
 // The tap: the language like the header toggle (src/components/LangToggle.tsx), stored; the menu behind made reachable again
 // (it is inert while the overlay is up); the fade (200 ms, none under reduced motion), then "off"; the page put at the top (Kian,
 // 2026-10-09, later: after the choice the menu always starts from the top, even when the URL carries a section anchor, which the
-// browser had scrolled to behind the overlay; the earlier rule that scrolled to the anchor after the choice is withdrawn).
+// browser had scrolled to behind the overlay; the earlier rule that scrolled to the anchor after the choice is withdrawn). The focus moves
+// to the menu's first heading (pre-go-live audit, Part B #14: it fell to the page body).
 const welcomeScript = `(function(){var h=document.documentElement,w=document.getElementById('welcome');if(!w||h.dataset.welcome!=='show')return;
 var s=h.dataset.langSaved;if(s){var b=w.querySelector('button[data-lang="'+s+'"]');if(b)b.setAttribute('aria-pressed','true')}
 var inert=function(v){var m=document.querySelector('main');if(m)m.inert=v};document.addEventListener('DOMContentLoaded',function(){if(h.dataset.welcome==='show')inert(true)});
 var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-var choose=function(n){h.dataset.lang=n;h.lang=n;h.dir=n==='fa'?'rtl':'ltr';try{localStorage.setItem('roses-lang',n)}catch(e){}inert(false);h.dataset.welcome='done';
+var choose=function(n){h.dataset.lang=n;h.lang=n;h.dir=n==='fa'?'rtl':'ltr';try{localStorage.setItem('roses-lang',n)}catch(e){}inert(false);h.dataset.welcome='done';var hd=document.querySelector('main h2');if(hd){if(!hd.hasAttribute('tabindex'))hd.setAttribute('tabindex','-1');try{hd.focus({preventScroll:true})}catch(e){}}
 var off=function(){if(h.dataset.welcome==='done')h.dataset.welcome='off'};if(reduced)off();else{w.addEventListener('transitionend',off,{once:true});setTimeout(off,320)}
 window.scrollTo(0,0)};
 w.querySelectorAll('button[data-lang]').forEach(function(b){b.addEventListener('click',function(){choose(b.getAttribute('data-lang'))})})})();`;

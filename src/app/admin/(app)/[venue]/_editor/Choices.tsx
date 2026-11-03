@@ -12,10 +12,10 @@ import type { AddOn, EditorItem, EditorSection, Variant } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
 import { retryable } from './api';
 import { Badge, LooksGood, MoneyField, Sheet, Switch, btnGhost, btnPrimary, btnSecondary, cardCls, cellCls } from './ui';
-import { COUNTS, LIMITS, parsePrice } from '@/lib/rules';
+import { COUNTS, LIMITS, parsePrice, priceInput } from '@/lib/rules';
 
 type Patch = (p: Record<string, unknown>) => Promise<void>;
-const priceText = (n: number | null | undefined) => (n == null ? '' : String(n));
+const priceText = (n: number | null | undefined) => priceInput(n); // two decimals (Part B #11)
 // What a saved list is, for telling our own save's echo (keep the rows and the cursor) from Undo or another change (re-read them).
 const normV = (v: Variant[]) => JSON.stringify(v.map((x) => [x.label.en || null, x.label.fa || null, x.price == null ? null : Number(x.price)]));
 const normA = (a: AddOn[]) => JSON.stringify(a.map((x) => [x.group?.en || null, x.group?.fa || null, x.label.en || null, x.label.fa || null, Number(x.price) || 0, !!x.required]));
@@ -113,7 +113,7 @@ export function PriceOrSizes({ item, onPatch, hint, onLooksGood }: { item: Edito
 
 // ---- Choices ----
 type ChoiceRow = { group: string; groupFa: string; en: string; fa: string; price: string; required: boolean; key: number };
-const choiceRows = (a: AddOn[]): ChoiceRow[] => a.map((x) => ({ group: x.group.en ?? '', groupFa: x.group.fa ?? '', en: x.label.en ?? '', fa: x.label.fa ?? '', price: x.price ? String(x.price) : '', required: !!x.required, key: ++seq }));
+const choiceRows = (a: AddOn[]): ChoiceRow[] => a.map((x) => ({ group: x.group.en ?? '', groupFa: x.group.fa ?? '', en: x.label.en ?? '', fa: x.label.fa ?? '', price: x.price ? priceInput(x.price) : '', required: !!x.required, key: ++seq }));
 const choiceDone = (r: ChoiceRow) => !!r.en.trim() && priceOf(r.price) !== 'bad';
 // groups in the order they first appear; the rows of a group together (a group's name is its key)
 function groupsOf(rows: ChoiceRow[]): { name: string; gkey: number; rows: ChoiceRow[] }[] {

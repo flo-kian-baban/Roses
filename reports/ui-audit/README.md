@@ -4,6 +4,8 @@ The PM's brief of 2026-11-02, Part B. **Report only**: nothing in the product ch
 
 ## Ranked findings
 
+**Outcome (the PM's ruling of 2026-11-03, built in the fix batch A2 on branch `ux`):** #1–#14 fixed as proposed, with these rulings: #5 counts the shown items only, plus one "Hidden items" chip; #4 the two preview images and the square icons are made and the icons linked, the Open Graph tags wait for the final domain; #2 was fixed in Part A (af30f19) and its residual in A1; not #15 (after launch); #16 was not in the list (A1's H-06 made server faults one plain line). Each fix has a check in the suite (the welcome drill for the customers' pages, the editor drill for the admin).
+
 | # | Issue | Where | Severity | Proposed fix | Effort | Stills |
 |---|---|---|---|---|---|---|
 | 1 | In Persian the footer's addresses and phone numbers are displayed out of order: "9218 Yonge St, Richmond Hill, ON" reads "Yonge St, Richmond Hill, ON 9218", Kebab Land's number shows its three digit groups in reverse order, Senso's moves the area code to the end. Tap-to-call still dials the right number; anyone reading or copying it gets a wrong one. | Public footer, both venues, Persian, every viewport and engine | High | Mark the address and the phone number as left-to-right runs inside the Persian page (`<bdi dir="ltr">`, as the prices already are). Nothing changes in English. | S | `kebab-land-fa-i13-webkit-11-footer.jpg`, `senso-fa-i13-webkit-11-footer.jpg` |

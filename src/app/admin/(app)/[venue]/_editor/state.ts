@@ -50,7 +50,7 @@ export function reduce(m: Menu, a: Action): Menu {
   }
 }
 
-export type Filter = 'all' | 'price' | 'draft' | 'fa' | 'photo' | 'season' | 'allergens' | 'none';
+export type Filter = 'all' | 'price' | 'draft' | 'fa' | 'photo' | 'season' | 'allergens' | 'none' | 'hidden';
 export type Need = Exclude<Filter, 'all' | 'none'>;
 
 // The listing rule, the server's own (pre-go-live audit H-04: one function, src/lib/rules.ts).
@@ -70,14 +70,19 @@ export function seasonState(i: EditorItem, ctx: Seasons | null): 'out' | 'none' 
 }
 // allergens: allergen or dietary notes drafted from research, waiting for an owner's or admin's Confirm (Kian, 2026-10-12; the bar shows it to them only)
 export const notesToConfirm = (i: EditorItem) => !!i.drafts?.some((f) => f === 'allergens' || f === 'dietary');
-export const needs = (i: EditorItem, ctx: Seasons | null = null) => ({ price: !!listingProblem(i), draft: i.fa_draft.length > 0, fa: persianMissing(i), photo: !i.photo, season: !!seasonState(i, ctx), allergens: notesToConfirm(i) });
+export const needs = (i: EditorItem, ctx: Seasons | null = null) => ({ price: !!listingProblem(i), draft: i.fa_draft.length > 0, fa: persianMissing(i), photo: !i.photo, season: !!seasonState(i, ctx), allergens: notesToConfirm(i), hidden: !i.listed });
 export const seasonsCtx = (m: Menu, season: SeasonId): Seasons => ({ season, seasonalId: m.sections.find((s) => s.seasonal)?.id ?? null });
 export const SEASON_NAMES: Record<SeasonId, string> = { fall: 'Fall', winter: 'Winter', spring: 'Spring', summer: 'Summer' };
 
-// Counts for the Needs-attention bar; "none" = items in no section (hidden from customers until moved; Kian, 2026-10-08).
+// Counts for the Needs-attention bar; "none" = items in no section (hidden from customers until moved; Kian, 2026-10-08). The needs are
+// counted for the shown items only, and the hidden ones sit behind one "Hidden items" chip (the PM, 2026-11-03, pre-go-live audit Part B
+// #5: before, the bar counted the import's hidden website-only items too, "138 need a price" on Senso, which staff could never clear).
 export function attention(m: Menu, ctx: Seasons | null = null): Record<Exclude<Filter, 'all'>, number> {
-  const c = { price: 0, draft: 0, fa: 0, photo: 0, season: 0, allergens: 0, none: m.orphans.filter((id) => m.items[id]).length };
-  for (const i of Object.values(m.items)) { const n = needs(i, ctx); if (n.price) c.price++; if (n.draft) c.draft++; if (n.fa) c.fa++; if (n.photo) c.photo++; if (n.season) c.season++; if (n.allergens) c.allergens++; }
+  const c = { price: 0, draft: 0, fa: 0, photo: 0, season: 0, allergens: 0, none: m.orphans.filter((id) => m.items[id]).length, hidden: 0 };
+  for (const i of Object.values(m.items)) {
+    if (!i.listed) { c.hidden++; continue; }
+    const n = needs(i, ctx); if (n.price) c.price++; if (n.draft) c.draft++; if (n.fa) c.fa++; if (n.photo) c.photo++; if (n.season) c.season++; if (n.allergens) c.allergens++;
+  }
   return c;
 }
 

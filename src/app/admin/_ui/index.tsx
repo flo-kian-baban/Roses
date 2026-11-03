@@ -2,14 +2,16 @@
 import type { Venue } from '@/lib/types';
 import type { Session } from '@/lib/admin/auth';
 import { Icon, type IconName } from './icons';
+import { messageOf } from '@/lib/admin/messages';
 
 export type SP = Record<string, string | string[] | undefined>;
 export const one = (sp: SP, k: string) => (Array.isArray(sp[k]) ? sp[k]?.[0] : sp[k]) as string | undefined;
 
+// A form post's outcome: the error code's own wording (src/lib/admin/messages.ts; never the text of the address), or a success line.
 export function Notice({ sp }: { sp: SP }) {
   const error = one(sp, 'error'); const revoked = one(sp, 'revoked'); const unlocked = one(sp, 'unlocked'); const seen = one(sp, 'seen');
-  if (error) return <p role="alert" className="mb-5 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900"><Icon name="alert" className="mt-0.5 h-5 w-5 text-red-600" /><span>{error}</span></p>;
-  const ok = revoked ? 'PIN revoked.' : unlocked ? `PIN login unlocked for ${unlocked}.` : seen ? 'Alert marked as seen.' : null;
+  if (error) return <p role="alert" className="mb-5 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900"><Icon name="alert" className="mt-0.5 h-5 w-5 text-red-600" /><span>{messageOf(error, { at: one(sp, 'at'), left: one(sp, 'left'), paused: one(sp, 'paused') })}</span></p>;
+  const ok = revoked ? 'PIN revoked.' : unlocked === 'admin-pins' ? 'Admin PINs work again.' : unlocked && /^[a-z0-9-]{1,60}$/.test(unlocked) ? `PIN sign-in unlocked for ${unlocked}.` : seen ? 'Alert marked as seen.' : null;
   return ok ? <p role="status" className="mb-5 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[15px] text-emerald-900"><Icon name="check" className="mt-0.5 h-5 w-5 text-emerald-600" /><span>{ok}</span></p> : null;
 }
 

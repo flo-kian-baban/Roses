@@ -32,6 +32,11 @@ const transcript = []; const results = []; const measures = [];
 const t0 = Date.now();
 const log = (step, text) => { const l = { at: new Date().toISOString(), ms: Date.now() - t0, step, text: String(text) }; transcript.push(l); console.log(`${l.at} [${step}] ${l.text}`); };
 const check = (step, ok, text) => { results.push({ step, ok, text }); log(step, `${ok ? 'PASS' : 'FAIL'}: ${text}`); };
+// Pre-go-live audit (the PM, 2026-11-03, S2-10): the customers' page carries a script policy of hashes; the preview swaps scripts into it
+// (another season's artwork engine, a transition). Every frame reports what its policy refused; the preview's frames must report nothing.
+const cspWatch = () => { document.addEventListener('securitypolicyviolation', (e) => { try { (window.top.__cspSeen ||= []).push(`${location.pathname} ${e.violatedDirective} ${e.blockedURI} ${(e.sample || '').slice(0, 60)}`); } catch { /* another origin */ } }); };
+const cspSeen = [];
+const collectCsp = async (pg) => { try { cspSeen.push(...(await pg.evaluate(() => window.__cspSeen || []))); } catch { /* closed */ } };
 const measure = (text) => { measures.push(text); console.log(`MEASURE: ${text}`); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const db = await connectDb('preview-drill', (t) => log('db', t));
@@ -62,7 +67,7 @@ const STYLE_TAB = `a[href="/admin/${VENUE}?tab=style"]:visible`, MENU_TAB = `a[h
 
 // ---- A. phone (iPhone 13): the task target from the Menu tab, then every switch timed
 {
-  const phone = await browser.newContext(DEVICE); const p = await phone.newPage();
+  const phone = await browser.newContext(DEVICE); await phone.addInitScript(cspWatch); const p = await phone.newPage();
   p.on('pageerror', (e) => log('pageerror', e.message));
   await signin(p, VENUE);
   // the Menu tab and its full-screen preview carry no bar (Kian, 2026-10-10: the bar belongs to the Style tab)
@@ -107,12 +112,12 @@ const STYLE_TAB = `a[href="/admin/${VENUE}?tab=style"]:visible`, MENU_TAB = `a[h
   check('bar-timing-phone', t.every((x) => x.ok) && firstParticle.marked && (!firstParticle.engine || replaced.oldGone) && restarted, `every switch shows within 300 ms on the phone (worst ${worst} ms): ${t.map((x) => `${x.label} ${x.ms ?? 'never'} ms`).join(', ')}; Replay on the ${firstParticle.scene} scene 1.5 s into the entrance: the logo's entrance animation back at ${replaced.logoAnim} ms (restarted: ${restarted})${firstParticle.engine ? `, a fresh artwork scene drawn (old particles gone: ${replaced.oldGone}, ${replaced.particles} particles)` : ` (a fixed scene: ${replaced.particles} particles restart with it)`}`);
   measure(`preview bar on the phone: every switch within ${worst} ms (screens, languages, seasons fetched from the admin API, times of day, Replay)`);
   await p.click('[data-preview-lang="en"]'); await p.click(`[data-preview-season="${pageSeason}"]`); await p.click('[data-preview-slot="afternoon"]'); await p.click('[data-preview-screen="menu"]');
-  await phone.close();
+  await collectCsp(p); await phone.close();
 }
 
 // ---- B. laptop: the bar at the top of the Style tab, the Style tab's screen across the tabs, the screen kept through a save, a language
 // tap on the previewed welcome screen
-const laptop = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const l = await laptop.newPage();
+const laptop = await browser.newContext({ viewport: { width: 1440, height: 900 } }); await laptop.addInitScript(cspWatch); const l = await laptop.newPage();
 l.on('pageerror', (e) => log('pageerror', e.message));
 await signin(l, VENUE); await frameReady(l); await sleep(300);
 const cookie = await cookieOf(laptop);
@@ -221,6 +226,8 @@ await laptop.close();
   const same = Object.keys(after).every((v) => after[v] === htmlBefore[v]);
   check('public-unchanged', same && markers(after.senso) === 0 && markers(after['kebab-land']) === 0, `the customers' HTML of both venues is byte-identical before and after the drill (${same}; senso ${after.senso.length} B, kebab-land ${after['kebab-land'].length} B) and carries no preview markup (${markers(after.senso) + markers(after['kebab-land'])} markers)`);
 }
+await collectCsp(l);
+check('preview-csp', cspSeen.length === 0, `scripts the preview swapped into the customers' page (seasons, transitions, menus) refused by its CSP: ${cspSeen.length ? JSON.stringify(cspSeen.slice(0, 5)) : 'none'}`);
 await browser.close(); await db.end();
 const pass = results.every((r) => r.ok);
 await fs.writeFile(path.join(out, 'preview-drill.json'), JSON.stringify({ base, at: new Date().toISOString(), pass, results, measures, transcript }, null, 2));

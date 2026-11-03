@@ -14,9 +14,10 @@
 // sheet (collapsed / half / full; half while a colour is being edited, so at least 45 % of the screen stays preview); the Menu and
 // Details tabs keep their layout with the Preview button. Compare (Style tab): the venue's default colours in the preview while held.
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
-import type { Bi, EditorItem, EditorSection, EditorVenue, Notes, Photo, SeasonId, SectionLayout } from '@/lib/types';
+import type { EditorItem, EditorSection, EditorVenue, Notes, Photo, SeasonId, SectionLayout } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
-import { ApiFail, call, retryable, type Resp } from './api';
+import { ApiFail, call, newKey, retryable, slowSavePending, type Resp } from './api';
+import { LIMITS } from '@/lib/rules';
 import { SEASON_NAMES, reduce, type Filter, type Menu } from './state';
 import { MenuTab } from './MenuTab';
 import { ItemPanel, PhotoField } from './ItemPanel';
@@ -27,7 +28,8 @@ import { SCREENS, type PageNow, type Screen, type View, type ViewPatch } from '.
 import { StyleTab, type Picked, type StyleSnapshot } from './StyleTab';
 import type { Season, Slot } from '@/lib/welcome';
 import { DetailsTab } from './DetailsTab';
-import { ConfirmSheet, MoneyField, Sheet, TextField, btnDanger, btnPrimary, btnSecondary, fieldCls } from './ui';
+import { ConfirmSheet, Sheet, TextField, btnDanger, btnPrimary, btnSecondary, fieldCls } from './ui';
+import { parsePrice } from '@/lib/rules';
 
 export type Me = { name: string; role: 'admin' | 'owner' | 'staff'; canNotes: boolean; canManage: boolean };
 export type VenueInfo = EditorVenue;
@@ -36,6 +38,14 @@ type Toast = { text: string; revisions: number[]; key: number; error?: boolean; 
 type Confirm = { title: string; body: React.ReactNode; label: string; action: () => Promise<void> };
 export type DeleteMode = { items: 'move'; target: string } | { items: 'delete' };
 
+const UNDO_ARM_MS = 600; // Undo answers taps from 600 ms after its toast appears (pre-go-live audit D-09)
+// Whether an item read back from the server holds a patch (D-05): every field the patch sets, as the server stores it.
+const norm = (v: unknown): string => JSON.stringify(v ?? null, (_k, x) => (typeof x === 'string' && x.trim() === '' ? null : x));
+function applied(it: EditorItem, patch: Record<string, unknown>): boolean {
+  return Object.entries(patch).every(([k, v]) => k === 'section_ids'
+    ? Array.isArray(v) && v.length === it.placements.length && v.every((sid) => it.placements.some((p) => p.section_id === sid))
+    : k === 'price' ? (v == null ? it.price == null : Number(v) === Number(it.price)) : norm((it as unknown as Record<string, unknown>)[k]) === norm(v));
+}
 const PHONE_TOP = 100; // where the phone Style layout's preview starts: under the admin's top bar (56 px) and the layout's own tab row (44 px)
 const TAB_HREF = (venueId: string, t: Tab) => `/admin/${venueId}${t === 'menu' ? '' : `?tab=${t}`}`;
 const SCREEN_OF_REGION = (r: Region): Screen => (r === 'welcome' ? 'welcome' : r === 'sheet' ? 'sheet' : 'menu');
@@ -55,6 +65,9 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const [deleting, setDeleting] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<Confirm | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
+  // Undo answers taps from 600 ms after its toast appears (pre-go-live audit D-09: a second tap on "+ Add item" landed on it, 3 of 7 runs)
+  const [armed, setArmed] = useState(false);
+  useEffect(() => { setArmed(false); if (!toast) return; const t = setTimeout(() => setArmed(true), UNDO_ARM_MS); return () => clearTimeout(t); }, [toast?.key]);
   const [focus, setFocus] = useState<Focus>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -114,6 +127,16 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const playTransition = useCallback((tx?: string, s?: Season) => { if (s) setSeason(s === nowSeason.current ? null : s); setPlay((x) => ({ n: x.n + 1, tx: tx ?? null })); }, []);
   const played = useCallback(() => setStyleScreen('menu'), []); // a played transition ends on the menu, and the bar says so
 
+  // Pre-go-live audit (the PM's fix batch, 2026-11-03). D-06: while a save is slow, leaving or reloading the page asks first. D-07: when the
+  // page is hidden (another app, a reload, Back), the field being typed in is left, so it saves itself as on any other exit (the save is
+  // sent with keepalive and arrives after the page has gone); before, what was being typed was lost.
+  useEffect(() => {
+    const leave = (e: BeforeUnloadEvent) => { if (slowSavePending()) { e.preventDefault(); e.returnValue = ''; } };
+    const hide = () => { const el = document.activeElement as HTMLElement | null; if (el && el !== document.body && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) el.blur(); };
+    const vis = () => { if (document.visibilityState === 'hidden') hide(); };
+    window.addEventListener('beforeunload', leave); window.addEventListener('pagehide', hide); document.addEventListener('visibilitychange', vis);
+    return () => { window.removeEventListener('beforeunload', leave); window.removeEventListener('pagehide', hide); document.removeEventListener('visibilitychange', vis); };
+  }, []);
   // a failure that Try again can fix stays until then or until it is closed (pre-go-live audit D-01); other messages go by themselves
   useEffect(() => { if (!toast || toast.retry) return; const t = setTimeout(() => setToast(null), toast.error ? 8000 : 10000); return () => clearTimeout(t); }, [toast]);
   useEffect(() => { if (!highlight) return; const t = setTimeout(() => setHighlight(null), 2500); return () => clearTimeout(t); }, [highlight]);
@@ -128,12 +151,21 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     for (const o of (r.orders as { section_id: string; item_ids: string[] }[] | undefined) ?? []) dispatch({ type: 'item-order', ...o }); // a duplicate's sections, the copy right after the original
     if (r.menu) { versions.current.clear(); dispatch({ type: 'replace', menu: r.menu as Menu }); }
   }, []);
+  // The customers' page regenerated again on request (pre-go-live audit H-13): Try again on the toast that says it did not update.
+  const publish = useCallback(async (): Promise<void> => {
+    try { const r = await call('/api/admin/publish', { venue: venue.id }); if (r.published === false) throw new ApiFail(503, 'The customers\' page did not update yet.'); setToast({ text: 'Customers\' page updated', revisions: [], key: Date.now() }); setReloadKey((k) => k + 1); }
+    catch (e) { setToast({ text: `Saved, but the customers' page did not update. ${(e as Error).message}`, revisions: [], key: Date.now(), error: true, retry: () => publish() }); }
+  }, [venue.id]);
   const done = useCallback((r: Resp, text: string, f: Focus) => {
+    if (r.published === false) { // saved, but the customers' page was not regenerated (before, the toast said "Saved" and customers kept the old menu up to an hour)
+      setToast({ text: `${text}, but the customers' page did not update.`, revisions: r.revisions, key: Date.now(), error: true, retry: () => publish() });
+      setReloadKey((k) => k + 1); setFocus(f); return;
+    }
     if (!r.revisions.length) return;
     setToast({ text, revisions: r.revisions, key: Date.now() });
     setReloadKey((k) => k + 1);
     setFocus(f);
-  }, []);
+  }, [publish]);
   // Pre-go-live audit (2026-11-02, D-01/D-02): one place, always in view, for a save that did not go through: the toast turns red with
   // the reason and, when trying again can help (no connection, the server failed), "Try again" sends the same change again; it stays
   // until then or until it is closed. The caller still gets the error (a field keeps what was typed and says "Not saved").
@@ -169,13 +201,25 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     const optimistic = before && !('section_ids' in patch) ? { ...before, ...(patch as Partial<EditorItem>) } : null;
     if (optimistic) dispatch({ type: 'item', item: optimistic });
     try { await itemCall(id, { action: 'update', patch }, text); }
-    catch (e) { if (before && !(e instanceof ApiFail && e.status === 409)) dispatch({ type: 'item', item: before }); throw e; } // a 409 already put the item as it is now
+    catch (e) {
+      // No answer (no connection, or none within 15 s): the save may have gone through. The item is read again before anything is put back
+      // (pre-go-live audit D-05): the screen shows what the server holds, a save that did arrive counts as saved, and a Try again carries
+      // the version read, so it is not refused as someone else's change.
+      if (e instanceof ApiFail && e.status === 0) {
+        const now = (await call('/api/admin/item', { action: 'get', id }).catch(() => null))?.item as EditorItem | undefined;
+        if (now) { versions.current.set(now.id, now.updated_at); dispatch({ type: 'item', item: now }); if (applied(now, patch)) { setToast({ text, revisions: [], key: Date.now() }); setReloadKey((k) => k + 1); return; } }
+        else if (before) dispatch({ type: 'item', item: before });
+        throw e;
+      }
+      if (before && !(e instanceof ApiFail && e.status === 409)) dispatch({ type: 'item', item: before }); throw e; // a 409 already put the item as it is now
+    }
   });
   const itemNotes = guard(async (id: string, notes: Notes) => { await itemCall(id, { action: 'notes', notes }, 'Saved'); });
   // Researched allergen and dietary notes confirmed as they stand (Kian, 2026-10-12): they show to customers from now on; Undo puts the draft back.
   const itemConfirm = guard(async (id: string) => { await itemCall(id, { action: 'confirm' }, 'Confirmed'); });
-  const itemCreate = async (sectionId: string, data: { name: string; price: number | null; photo: Photo | null }) => {
-    const r = await call('/api/admin/item', { action: 'create', venue: venue.id, section_id: sectionId, name: { en: data.name, fa: null }, price: data.price, photo: data.photo });
+  // key: the sheet's own key (D-05): an Add whose answer was lost, tapped again, answers the item it made instead of a second one.
+  const itemCreate = async (sectionId: string, data: { name: string; price: number | null; photo: Photo | null; key: string }) => {
+    const r = await call('/api/admin/item', { action: 'create', venue: venue.id, section_id: sectionId, name: { en: data.name, fa: null }, price: data.price, photo: data.photo, key: data.key });
     apply(r); const item = r.item as EditorItem; done(r, 'Added', { id: item.id, alt: sectionId }); setHighlight(item.id);
     setOpen({ id: item.id, section: sectionId }); // the editor opens on the new item, for its description and sizes (Kian via the PM, 2026-10-13)
   };
@@ -203,13 +247,16 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const itemMove = guard(async (sectionId: string, id: string, index: number) => { const r = await call('/api/admin/item', { action: 'move', id, section_id: sectionId, index }); apply(r); done(r, 'Moved', { id, alt: sectionId }); });
 
   // Sections.
+  // A rename or a note carries the name and note as this editor last saw them; someone else's change since answers 409 with the section as
+  // it is now, which replaces the editor's copy (pre-go-live audit, the residual of D-03).
   const sectionUpdate = guard(async (id: string, patch: Record<string, unknown>, text: string = 'Saved') => {
     const before = menuRef.current.sections.find((s) => s.id === id);
     if (before && ('listed' in patch || 'layout' in patch)) dispatch({ type: 'section', section: { ...before, ...('listed' in patch ? { listed: !!patch.listed } : {}), ...('layout' in patch ? { layout: patch.layout as SectionLayout } : {}) } as EditorSection });
-    try { const r = await call('/api/admin/section', { action: 'update', id, patch }); apply(r); done(r, text, { id }); }
-    catch (e) { if (before) dispatch({ type: 'section', section: before }); throw e; }
+    const base = before && ('name' in patch || 'note' in patch) ? { ...('name' in patch ? { name: before.name } : {}), ...('note' in patch ? { note: before.note } : {}) } : undefined;
+    try { const r = await call('/api/admin/section', { action: 'update', id, patch, ...(base ? { base } : {}) }); apply(r); done(r, text, { id }); }
+    catch (e) { const fresh = e instanceof ApiFail && e.status === 409 ? (e.extra.section as EditorSection | undefined) : undefined; if (fresh) dispatch({ type: 'section', section: fresh }); else if (before) dispatch({ type: 'section', section: before }); throw e; }
   });
-  const sectionCreate = async (name: string) => { const r = await call('/api/admin/section', { action: 'create', venue: venue.id, name: { en: name, fa: null } }); apply(r); const s = r.section as Menu['sections'][number]; done(r, 'Added', { id: s.id }); setAddingSection(false); requestAnimationFrame(() => document.getElementById(`sec-${s.id}`)?.scrollIntoView({ block: 'center' })); };
+  const sectionCreate = async (name: string, key: string) => { const r = await call('/api/admin/section', { action: 'create', venue: venue.id, name: { en: name, fa: null }, key }); apply(r); const s = r.section as Menu['sections'][number]; done(r, 'Added', { id: s.id }); setAddingSection(false); requestAnimationFrame(() => document.getElementById(`sec-${s.id}`)?.scrollIntoView({ block: 'center' })); };
   const sectionMove = guard(async (id: string, direction: 'up' | 'down') => { const r = await call('/api/admin/section', { action: 'move', id, direction }); apply(r); done(r, 'Moved', { id }); });
   const sectionReorder = guard(async (ids: string[]) => { const r = await call('/api/admin/section', { action: 'reorder', venue: venue.id, section_ids: ids }); apply(r); done(r, 'Moved', null); });
   // Deleting a section with items asks once: move them to another section (the default) or delete them too (Kian, 2026-10-08). Undo restores either.
@@ -255,7 +302,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const bar = (phone: boolean) => <PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone={phone} />;
   const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onFail={fail} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} previewSeason={season ?? now.season} onPlay={playTransition} />;
 
-  const panel = openItem && <ItemPanel key={openItem.id} selectName={!!open?.selectName} toast={!!toast} item={openItem} venueId={venue.id} season={today} sections={menu.sections} sectionId={open?.section ?? null} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onLooksGood={(f) => itemLooksGood(openItem.id, f)} onDuplicate={() => itemDuplicate(openItem.id)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
+  const panel = openItem && <ItemPanel key={openItem.id} selectName={!!open?.selectName} toast={!!toast} item={openItem} venueId={venue.id} season={today} sections={menu.sections} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onLooksGood={(f) => itemLooksGood(openItem.id, f)} onDuplicate={() => itemDuplicate(openItem.id)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
   return (
     <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
       <div className="relative min-w-0">
@@ -308,7 +355,8 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
         <div className={`toast fixed bottom-5 left-1/2 z-[80] flex w-max max-w-[calc(100vw-24px)] -translate-x-1/2 items-center gap-1 py-1.5 pl-4 pr-1.5 text-[15px] font-medium text-white shadow-pop ${toast.retry ? 'rounded-3xl' : 'rounded-full'} ${toast.error ? 'bg-red-600' : 'bg-ink'}`} role={toast.error ? 'alert' : 'status'} data-toast-error={toast.error ? '' : undefined} style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}>
           <span>{toast.text}</span>
           {toast.retry && <><button type="button" onClick={() => { const again = toast.retry!; setToast(null); void again().catch(() => undefined); }} className="flex h-11 shrink-0 items-center gap-1 rounded-full px-3 font-semibold hover:bg-white/15" data-try-again>Try again</button><button type="button" onClick={() => setToast(null)} aria-label="Close" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-white/15"><Icon name="close" className="h-4 w-4" /></button></>}
-          {toast.revisions.length > 0 && <><span className="text-white/50">·</span><button type="button" onClick={() => { void undo(); }} className="flex h-11 items-center gap-1 rounded-full px-3 font-semibold hover:bg-white/15"><Icon name="undo" className="h-4 w-4" />Undo</button></>}
+          {/* a tap within 600 ms of the toast appearing is the end of the tap that made it (a second tap on "+ Add item"), not an Undo (D-09) */}
+          {toast.revisions.length > 0 && <><span className="text-white/50">·</span><button type="button" data-undo disabled={!armed} onClick={() => { if (!armed) return; void undo(); }} className="flex h-11 items-center gap-1 rounded-full px-3 font-semibold hover:bg-white/15"><Icon name="undo" className="h-4 w-4" />Undo</button></>}
         </div>
       )}
     </div>
@@ -317,21 +365,22 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
 
 // "+ Add item": name, price and an optional photo from the phone (uploaded when the item is added). Created shown when it has a price.
 // In the Seasonal section the item is tagged with today's season by the server (seasonNote: its name, said under the fields).
-function AddItemSheet({ venueId, sectionName, seasonNote, onClose, onAdd }: { venueId: string; sectionName: string; seasonNote: string | null; onClose: () => void; onAdd: (d: { name: string; price: number | null; photo: Photo | null }) => Promise<void> }) {
+function AddItemSheet({ venueId, sectionName, seasonNote, onClose, onAdd }: { venueId: string; sectionName: string; seasonNote: string | null; onClose: () => void; onAdd: (d: { name: string; price: number | null; photo: Photo | null; key: string }) => Promise<void> }) {
   const [name, setName] = useState(''); const [price, setPrice] = useState(''); const [photo, setPhoto] = useState<Photo | null>(null);
   const [busy, setBusy] = useState(false); const [err, setErr] = useState<string | null>(null);
+  const [key] = useState(newKey); // one key for this one add, whatever the tries (D-05)
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const t = price.trim().replace(/^\$/, ''); const n = t === '' ? null : Number(t);
+    const n = parsePrice(price);
     if (!name.trim()) { setErr('The name is required'); return; }
-    if (n !== null && (!Number.isFinite(n) || n < 0)) { setErr('Not a price'); return; }
+    if (n === 'bad') { setErr('Not a price (for example 12.50)'); return; }
     setBusy(true); setErr(null);
-    try { await onAdd({ name: name.trim(), price: n, photo: photo ? { ...photo, alt: { en: name.trim(), fa: null } } : null }); } catch (x) { setErr((x as Error).message); setBusy(false); }
+    try { await onAdd({ name: name.trim(), price: n, photo: photo ? { ...photo, alt: { en: name.trim(), fa: null } } : null, key }); } catch (x) { setErr((x as Error).message); setBusy(false); }
   };
   return (
     <Sheet title={`Add item to ${sectionName}`} onClose={onClose}>
       <form onSubmit={submit} className="space-y-4">
-        <label className="block"><span className="mb-1 block text-sm font-medium">Name</span><input className={fieldCls} name="name" value={name} onChange={(e) => setName(e.target.value)} autoFocus required aria-label="Name" /></label>
+        <label className="block"><span className="mb-1 block text-sm font-medium">Name</span><input className={fieldCls} name="name" value={name} onChange={(e) => setName(e.target.value)} autoFocus required maxLength={LIMITS.name} aria-label="Name" /></label>
         <label className="block"><span className="mb-1 block text-sm font-medium">Price</span><span className="relative block"><span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-neutral-500">$</span><input className={`${fieldCls} pl-8 tabular-nums`} name="price" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0.00" aria-label="Price" /></span><span className="mt-1 block text-xs text-ink-muted">With a price the item is shown to customers at once; without one it stays hidden.</span></label>
         <div><span className="mb-1 block text-sm font-medium">Photo <span className="font-normal text-ink-muted">(optional)</span></span><PhotoField venueId={venueId} photo={photo} alt={{ en: name, fa: null }} onChange={async (p) => setPhoto(p)} /></div>
         {seasonNote && <p className="text-xs text-ink-muted">Tagged {seasonNote}: customers see it as a {seasonNote.toLowerCase()} special. Change its seasons in the item.</p>}
@@ -342,12 +391,13 @@ function AddItemSheet({ venueId, sectionName, seasonNote, onClose, onAdd }: { ve
   );
 }
 
-function AddSectionSheet({ onClose, onAdd }: { onClose: () => void; onAdd: (name: string) => Promise<void> }) {
+function AddSectionSheet({ onClose, onAdd }: { onClose: () => void; onAdd: (name: string, key: string) => Promise<void> }) {
   const [name, setName] = useState(''); const [busy, setBusy] = useState(false); const [err, setErr] = useState<string | null>(null);
+  const [key] = useState(newKey); // one key for this one add (D-05)
   return (
     <Sheet title="Add section" onClose={onClose}>
-      <form onSubmit={async (e) => { e.preventDefault(); if (!name.trim()) { setErr('The name is required'); return; } setBusy(true); setErr(null); try { await onAdd(name.trim()); } catch (x) { setErr((x as Error).message); setBusy(false); } }} className="space-y-4">
-        <label className="block"><span className="mb-1 block text-sm font-medium">Name</span><input className={fieldCls} value={name} onChange={(e) => setName(e.target.value)} autoFocus required aria-label="Section name" placeholder="For example Desserts" /></label>
+      <form onSubmit={async (e) => { e.preventDefault(); if (!name.trim()) { setErr('The name is required'); return; } setBusy(true); setErr(null); try { await onAdd(name.trim(), key); } catch (x) { setErr((x as Error).message); setBusy(false); } }} className="space-y-4">
+        <label className="block"><span className="mb-1 block text-sm font-medium">Name</span><input className={fieldCls} value={name} onChange={(e) => setName(e.target.value)} autoFocus required maxLength={LIMITS.section} aria-label="Section name" placeholder="For example Desserts" /></label>
         <p className="text-xs text-ink-muted">It goes last; move it with the section menu. Customers see it once it has a shown item.</p>
         {err && <p role="alert" className="text-sm text-red-600">{err}</p>}
         <button type="submit" className={`${btnPrimary} w-full`} disabled={busy}>Add section</button>
@@ -360,10 +410,10 @@ function RenameSheet({ section: s, onClose, onPatch }: { section: Menu['sections
   return (
     <Sheet title="Rename section" onClose={onClose}>
       <div className="space-y-4">
-        <TextField label="Name" value={s.name.en} required onCommit={(v) => onPatch({ name: { ...s.name, en: v } })} autoFocus />
-        <TextField label="Name (فارسی)" value={s.name.fa} dir="rtl" lang="fa" onCommit={(v) => onPatch({ name: { ...s.name, fa: v } })} />
-        <TextField label="Note under the heading" value={s.note?.en} placeholder="Optional" onCommit={(v) => onPatch({ note: { ...(s.note ?? { en: null, fa: null }), en: v } })} />
-        <TextField label="Note (فارسی)" value={s.note?.fa} dir="rtl" lang="fa" onCommit={(v) => onPatch({ note: { ...(s.note ?? { en: null, fa: null }), fa: v } })} />
+        <TextField label="Name" value={s.name.en} required maxLength={LIMITS.section} onCommit={(v) => onPatch({ name: { ...s.name, en: v } })} autoFocus />
+        <TextField label="Name (فارسی)" value={s.name.fa} dir="rtl" lang="fa" maxLength={LIMITS.section} onCommit={(v) => onPatch({ name: { ...s.name, fa: v } })} />
+        <TextField label="Note under the heading" value={s.note?.en} placeholder="Optional" maxLength={LIMITS.note} onCommit={(v) => onPatch({ note: { ...(s.note ?? { en: null, fa: null }), en: v } })} />
+        <TextField label="Note (فارسی)" value={s.note?.fa} dir="rtl" lang="fa" maxLength={LIMITS.note} onCommit={(v) => onPatch({ note: { ...(s.note ?? { en: null, fa: null }), fa: v } })} />
         <p className="text-xs text-ink-muted">Each field saves when you leave it.</p>
         <button type="button" className={`${btnSecondary} w-full`} onClick={onClose}>Done</button>
       </div>
@@ -405,5 +455,4 @@ function DeleteSectionSheet({ section: s, others, items, onClose, onDelete }: { 
     </Sheet>
   );
 }
-void MoneyField;
-export type { Bi };
+

@@ -8,6 +8,8 @@
 // go to --out. Needs the production server at --base and DRILL_ADMIN_EMAIL / DRILL_ADMIN_PASSWORD (+ DRILL_ADMIN_PIN).
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
+import zlib from 'node:zlib';
 import { chromium, devices } from 'playwright';
 import { connectDb, loadEnv } from './load-env.mjs';
 
@@ -39,6 +41,12 @@ async function waitPublic(venue, pred, ms = 10000) { const t = Date.now(); let h
 async function waitDb(sql, params, pred, ms = 5000) { const t = Date.now(); let row; while (Date.now() - t < ms) { row = (await db.query(sql, params)).rows[0]; if (pred(row)) return { ok: true, ms: Date.now() - t, row }; await sleep(50); } return { ok: false, ms: Date.now() - t, row }; }
 async function loginPage(ctx, mode, fields) { const page = await ctx.newPage(); await page.goto(`${base}/admin/login${mode === 'admin' ? '?mode=admin' : ''}`); for (const [k, v] of Object.entries(fields)) { if (k === 'venue') await page.check(`input[name=venue][value=${v}]`); else await page.fill(`input[name=${k}]`, v); } await page.click('button[type=submit]'); await page.waitForLoadState('domcontentloaded'); return page; }
 const cookieOf = async (ctx) => (await ctx.cookies()).filter((c) => c.name === 'roses_session').map((c) => `${c.name}=${c.value}`)[0];
+// Pre-go-live audit (the PM's fix batch, 2026-11-03): a request with headers of the drill's choosing, and a small valid PNG built here.
+async function raw(p, { method = 'POST', headers = {}, body, cookie } = {}) { const r = await fetch(base + p, { method, redirect: 'manual', headers: { ...(cookie ? { cookie } : {}), ...headers }, body }); const text = await r.text().catch(() => ''); let json = null; try { json = JSON.parse(text); } catch { /* not JSON */ } return { status: r.status, headers: r.headers, text, json, location: r.headers.get('location') }; }
+const crc = (b) => { let c = 0xffffffff; for (const x of b) { c ^= x; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; } return (c ^ 0xffffffff) >>> 0; };
+const chunk = (t, d) => { const l = Buffer.alloc(4); l.writeUInt32BE(d.length); const td = Buffer.concat([Buffer.from(t, 'latin1'), d]); const c = Buffer.alloc(4); c.writeUInt32BE(crc(td)); return Buffer.concat([l, td, c]); };
+const pngOf = (w, h) => { const ih = Buffer.alloc(13); ih.writeUInt32BE(w, 0); ih.writeUInt32BE(h, 4); ih[8] = 8; ih[9] = 6; return Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), chunk('IHDR', ih), chunk('IDAT', zlib.deflateSync(Buffer.alloc((w * 4 + 1) * h))), chunk('IEND', Buffer.alloc(0))]); };
+const upload = async (venue, kind, body, type, cookie) => { const r = await fetch(`${base}/api/admin/upload?venue=${venue}&kind=${kind}`, { method: 'POST', headers: { 'content-type': type, cookie }, body }); return { status: r.status, json: await r.json().catch(() => null) }; };
 const openItem = async (page, id) => { await page.click(`[data-item="${id}"] button[aria-label^="Edit"]`); await page.waitForSelector('[role=dialog]'); };
 
 // a previous run that stopped early may have left drill PINs active: revoke them first
@@ -166,7 +174,7 @@ check('h-staff-ui', !staffNotesField && /set by the owner or an admin/.test(staf
   const r2 = await api('/api/admin/section', { action: 'update', id: sec.id, patch: { name: { en: sec.name, fa: null }, layout: 'grid' } }, staffCookie);
   const still = (await db.query('select layout from sections where id=$1', [sec.id])).rows[0].layout;
   check('layout-staff-403', r.status === 403 && r2.status === 403 && still === 'list', `staff POST section layout=grid → ${r.status} "${r.json?.error}"; with a rename in the same patch → ${r2.status}; "${sec.name}" still ${still}`); }
-{ const r = await fetch(`${base}/admin/new`, { headers: { cookie: staffCookie } }); const html = await r.text(); check('staff-add-venue', /owner and admin only/.test(html) && !/Create venue/.test(html), `staff GET /admin/new → refusal shown: ${/owner and admin only/.test(html)}, no form`); }
+{ const r = await fetch(`${base}/admin/new`, { headers: { cookie: staffCookie } }); const html = await r.text(); check('staff-add-venue', /admin only/.test(html) && !/Create venue/.test(html), `staff GET /admin/new → refusal shown: ${/admin only/.test(html)}, no form`); }
 const ownerCtx = await browser.newContext(DEVICE);
 const opage = await loginPage(ownerCtx, 'pin', { venue: 'senso', pin: owner.pin }); await opage.waitForSelector('[data-item]');
 await opage.fill('input[aria-label="Search items"]', 'Turkish Coffee');
@@ -244,6 +252,164 @@ const ownerCookie = await cookieOf(ownerCtx);
   await opage.click('[role=status] button:has-text("Undo")'); await opage.waitForSelector('[role=status]:has-text("Undone")');
   const on = await waitPublic('senso', hasWelcome);
   check('style-welcome-switch', off.ok && on.ok, `Welcome screen switch off → no overlay and no head decision in the public HTML after ${off.ms} ms; Undo → back after ${on.ms} ms`); }
+
+// ---- Pre-go-live audit, the PM's fix batch of 2026-11-03 (A1): one check per fix the API or a page can show ----
+const ac = ((await post('/api/admin/login', { mode: 'admin', email, password })).setCookie || '').split(';')[0];
+const target = (await db.query(`select id, name, description, price, variants, add_ons, components, photo, listed, serves, seasons from items where venue_id='senso' and not listed and price is null and jsonb_array_length(variants)=0 order by name->>'en' offset 1 limit 1`)).rows[0];
+const restoreTarget = async () => { await db.query('update items set name=$2, description=$3, price=$4, variants=$5, add_ons=$6, components=$7, photo=$8, listed=$9, serves=$10, seasons=$11 where id=$1', [target.id, target.name, target.description, target.price, JSON.stringify(target.variants), JSON.stringify(target.add_ons), JSON.stringify(target.components), target.photo, target.listed, target.serves, target.seasons]); };
+const getJson = (body) => ({ headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+// S1-08: a POST from another site is refused (Origin or Sec-Fetch-Site); a JSON route refuses a form body
+{ const g = { action: 'get', id: target.id };
+  const evil = await raw('/api/admin/item', { ...getJson(g), headers: { 'content-type': 'application/json', origin: 'https://evil.example' }, cookie: staffCookie });
+  const sameSite = await raw('/api/admin/item', { ...getJson(g), headers: { 'content-type': 'application/json', 'sec-fetch-site': 'same-site' }, cookie: staffCookie });
+  const own = await raw('/api/admin/item', { ...getJson(g), headers: { 'content-type': 'application/json', origin: base, 'sec-fetch-site': 'same-origin' }, cookie: staffCookie });
+  const formEvil = await raw('/api/admin/pin', { headers: { 'content-type': 'application/x-www-form-urlencoded', origin: 'https://evil.example' }, body: form({ _action: 'create', name: 'Drill forged', role: 'staff', venue_ids: 'senso', _back: '/admin/team' }), cookie: ac });
+  const forged = (await db.query(`select count(*)::int as n from pins where name='Drill forged'`)).rows[0].n;
+  check('csrf-refused', evil.status === 403 && sameSite.status === 403 && own.status === 200 && formEvil.status === 403 && forged === 0, `POST /api/admin/item from Origin https://evil.example → ${evil.status}; with Sec-Fetch-Site same-site → ${sameSite.status}; from the app's own origin → ${own.status}; a forged Team form (Origin https://evil.example) → ${formEvil.status}, PINs made: ${forged}`);
+  const f = await raw('/api/admin/item', { headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: form({ action: 'delete', id: target.id }), cookie: staffCookie });
+  const still = (await db.query('select 1 from items where id=$1', [target.id])).rowCount === 1;
+  check('json-only', f.status === 415 && still, `a form-encoded "action=delete" to the JSON item route → ${f.status} "${f.json?.error}"; the item still there: ${still}`); }
+// S1-08 and S2-10: headers on the admin and the public page; the page's own CSP lists every inline script's hash and nothing inline otherwise
+{ const a = await fetch(`${base}/admin`, { redirect: 'manual' }); const acsp = a.headers.get('content-security-policy') || '';
+  const pg = await fetch(`${base}/senso`); const html = await pg.text(); const pcsp = pg.headers.get('content-security-policy') || '';
+  const meta = (html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)"/)?.[1] || '').replace(/&#x27;/g, "'").replace(/&amp;/g, '&');
+  const scripts = [...html.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  const hashes = scripts.map((x) => `'sha256-${createHash('sha256').update(x, 'utf8').digest('base64')}'`);
+  const scriptSrc = (meta.match(/script-src ([^;]+)/) || [])[1] || '';
+  const ok = /frame-ancestors 'none'/.test(acsp) && a.headers.get('x-frame-options') === 'DENY' && a.headers.get('x-content-type-options') === 'nosniff' && !!a.headers.get('referrer-policy')
+    && /frame-ancestors 'self'/.test(pcsp) && hashes.length >= 4 && hashes.every((h) => scriptSrc.includes(h)) && !/unsafe-inline|unsafe-eval/.test(scriptSrc) && /img-src 'self' data: https:\/\/mealsymedia/.test(meta);
+  check('security-headers', ok, `/admin: CSP "${acsp}", X-Frame-Options ${a.headers.get('x-frame-options')}, nosniff ${a.headers.get('x-content-type-options')}, Referrer-Policy ${a.headers.get('referrer-policy')}; /senso: header CSP "${pcsp}", its <meta> CSP allows ${scriptSrc.split(' ').length} script hashes, the page's ${hashes.length} inline scripts all among them: ${hashes.every((h) => scriptSrc.includes(h))}; 'unsafe-inline' or eval in script-src: ${/unsafe-inline|unsafe-eval/.test(scriptSrc)}`);
+  const fonts = [...html.matchAll(/<link[^>]+href="([^"]+\.css)"/g)].map((m) => m[1]); let css = ''; for (const f of fonts) css += await (await fetch(base + f)).text();
+  check('fonts-removed', fonts.length > 0 && !/tinos|montserrat/i.test(css + html), `the public page's ${fonts.length} stylesheet(s) and HTML name Tinos or Montserrat: ${/tinos|montserrat/i.test(css + html)} (H-17: two fonts loaded on every page, never used)`);
+  const ctx = await browser.newContext(DEVICE); await ctx.addInitScript(() => { window.__csp = []; document.addEventListener('securitypolicyviolation', (e) => window.__csp.push(`${e.violatedDirective} ${e.blockedURI} ${e.sample || ''}`.trim())); });
+  const seen = {};
+  for (const v of ['senso', 'kebab-land']) { const p = await ctx.newPage(); await p.goto(`${base}/${v}`); await p.click('#welcome button[data-lang="en"]').catch(() => undefined); await p.waitForTimeout(1000);
+    await p.click('main li.item'); await p.waitForSelector('#sheet[open]', { timeout: 5000 }).catch(() => undefined); await p.keyboard.press('Escape'); await p.waitForTimeout(500);
+    await p.click('#tabs-list').catch(() => undefined); await p.waitForTimeout(600); seen[v] = await p.evaluate(() => window.__csp); await p.close(); }
+  await ctx.close();
+  check('csp-no-violation', Object.values(seen).every((x) => x.length === 0), `the public pages under their CSP, the welcome tap, an item popup and the section list: violations ${JSON.stringify(seen)}`); }
+// S1-11: "+ Add venue" is for admins
+{ const r = await api('/api/admin/venue', { action: 'create', name: { en: 'Drill owner venue', fa: null } }, ownerCookie);
+  const html = await (await fetch(`${base}/admin/new`, { headers: { cookie: ownerCookie } })).text();
+  const made = (await db.query(`select count(*)::int as n from venues where name->>'en' = 'Drill owner venue'`)).rows[0].n;
+  check('owner-add-venue-403', r.status === 403 && made === 0 && /admin only/.test(html) && !/Create venue/.test(html), `owner POST "+ Add venue" → ${r.status} "${r.json?.error}", venues made: ${made}; owner GET /admin/new → refusal: ${/admin only/.test(html)}, no form`); }
+// S1-21: a PIN for a venue that does not exist is refused; an owner's PIN records the owner
+{ const bad = await post('/api/admin/pin', { _action: 'create', name: 'Drill nowhere', role: 'staff', venue_ids: 'nowhere', _back: '/admin/team' }, ac);
+  const none = (await db.query(`select count(*)::int as n from pins where name='Drill nowhere'`)).rows[0].n;
+  const made = await post('/api/admin/pin', { _action: 'create', name: 'Drill by owner', role: 'staff', venue_ids: 'senso', _back: '/admin/team' }, ownerCookie);
+  const row = (await db.query(`select id from pins where name='Drill by owner' order by created_at desc limit 1`)).rows[0];
+  const who = row ? (await db.query(`select by->>'name' as n from revisions where table_name='pins' and row_id=$1 and action='create'`, [row.id])).rows[0]?.n : null;
+  const team = await (await fetch(`${base}/admin/team`, { headers: { cookie: ownerCookie } })).text();
+  check('pin-create-checks', bad.status === 303 && errorOf(bad.location) === 'venue-unknown' && none === 0 && /class="pin">\d{6}</.test(made.text) && who === 'Drill owner' && team.includes('by Drill owner'), `a PIN for venue "nowhere" → ${bad.status} error=${errorOf(bad.location)}, PINs made: ${none}; the owner's new staff PIN → recorded as made by "${who}", Team says "by Drill owner": ${team.includes('by Drill owner')}`);
+  if (row) await post('/api/admin/pin', { _action: 'revoke', id: row.id, _back: '/admin/team' }, ac); }
+// S2-01: a combo part keeps only what it is; another venue's item is refused
+{ const kl = (await db.query(`select id from items where venue_id='kebab-land' limit 1`)).rows[0].id;
+  const other = await api('/api/admin/item', { action: 'update', id: target.id, patch: { components: [{ item_id: kl, label: { en: 'Part', fa: null }, qty: 1 }] } }, staffCookie);
+  const deep = {}; let d = deep; for (let i = 0; i < 2000; i++) { d.x = {}; d = d.x; }
+  const extra = await api('/api/admin/item', { action: 'update', id: target.id, patch: { components: [{ item_id: null, label: { en: 'Drill part', fa: null }, qty: 2, evil: deep, price: 9 }] } }, staffCookie);
+  const parts = (await db.query('select components from items where id=$1', [target.id])).rows[0].components;
+  const editor = await fetch(`${base}/admin/senso`, { headers: { cookie: staffCookie } });
+  check('components-strict', other.status === 400 && extra.status === 200 && parts.length === 1 && JSON.stringify(Object.keys(parts[0]).sort()) === '["item_id","label","qty"]' && editor.status === 200, `a combo part naming a Kebab Land item → ${other.status} "${other.json?.error}"; one with a 2000-deep extra value and a price → ${extra.status}, stored keys ${JSON.stringify(Object.keys(parts[0] || {}).sort())}; the venue's editor still answers ${editor.status}`); }
+// S2-04: new photo and logo addresses are uploads or the menus' own photo hosts
+{ const tries = {}; for (const u of ['//evil.example/x.jpg', '/\\evil.example/x.jpg', 'https://evil.example/x.jpg', 'javascript:alert(1)']) tries[u] = (await api('/api/admin/item', { action: 'update', id: target.id, patch: { photo: { url: u } } }, staffCookie)).status;
+  const known = await api('/api/admin/item', { action: 'update', id: target.id, patch: { photo: { url: 'https://mealsymedia.s3.amazonaws.com/drill.jpg' } } }, staffCookie);
+  const logo = await api('/api/admin/venue', { action: 'update', id: 'senso', patch: { logo: { url: 'https://evil.example/logo.png', width: 100, height: 50 } } }, ownerCookie);
+  check('photo-hosts', Object.values(tries).every((x) => x === 400) && known.status === 200 && logo.status === 400, `photo addresses ${JSON.stringify(tries)}; a linked photo on mealsymedia.s3.amazonaws.com → ${known.status}; a logo at https://evil.example → ${logo.status}`); }
+// S2-06: a wrong type is refused with the reason, nothing changed
+{ const place0 = (await db.query('select section_id from item_sections where item_id=$1', [target.id])).rows.map((r) => r.section_id).sort().join();
+  const v0 = (await db.query(`select locations, brand->'logo' as logo from venues where id='senso'`)).rows[0];
+  const rs = { section_ids: await api('/api/admin/item', { action: 'update', id: target.id, patch: { section_ids: 'x' } }, staffCookie), listed: await api('/api/admin/item', { action: 'update', id: target.id, patch: { listed: 'yes' } }, staffCookie), variants: await api('/api/admin/item', { action: 'update', id: target.id, patch: { variants: 'x' } }, staffCookie), locations: await api('/api/admin/venue', { action: 'update', id: 'senso', patch: { locations: {} } }, ownerCookie), logo: await api('/api/admin/venue', { action: 'update', id: 'senso', patch: { logo: 'x' } }, ownerCookie) };
+  const place1 = (await db.query('select section_id from item_sections where item_id=$1', [target.id])).rows.map((r) => r.section_id).sort().join();
+  const v1 = (await db.query(`select locations, brand->'logo' as logo from venues where id='senso'`)).rows[0];
+  check('strict-readers', Object.values(rs).every((r) => r.status === 400) && place0 === place1 && JSON.stringify(v0) === JSON.stringify(v1), `${Object.entries(rs).map(([k, r]) => `${k} → ${r.status} "${r.json?.error}"`).join('; ')}; the item's sections, the locations and the logo unchanged: ${place0 === place1 && JSON.stringify(v0) === JSON.stringify(v1)}`); }
+// S2-02: the limits (names 100, descriptions 500, labels 60, section names 60, tagline 160, location fields 200; 20 sizes, 10 groups of 20, 20 parts)
+{ const L = (n) => 'x'.repeat(n); const up = (patch) => api('/api/admin/item', { action: 'update', id: target.id, patch }, staffCookie);
+  const loc0 = (await db.query(`select locations from venues where id='senso'`)).rows[0].locations;
+  const sec0 = (await db.query(`select id from sections where venue_id='senso' and not seasonal order by position limit 1`)).rows[0].id;
+  const cases = {
+    'name 101': await up({ name: { en: L(101), fa: null } }), 'description 501': await up({ description: { en: L(501), fa: null } }),
+    'size name 61': await up({ variants: [{ label: { en: L(61), fa: null }, price: 5 }] }), '21 sizes': await up({ variants: Array.from({ length: 21 }, (_, i) => ({ label: { en: `S${i}`, fa: null }, price: 1 })) }),
+    '11 choice groups': await up({ add_ons: Array.from({ length: 11 }, (_, i) => ({ group: { en: `G${i}`, fa: null }, label: { en: 'x', fa: null }, price: 0 })) }), '21 choices in a group': await up({ add_ons: Array.from({ length: 21 }, (_, i) => ({ group: { en: 'G', fa: null }, label: { en: `c${i}`, fa: null }, price: 0 })) }),
+    '21 combo parts': await up({ components: Array.from({ length: 21 }, (_, i) => ({ item_id: null, label: { en: `p${i}`, fa: null }, qty: 1 })) }),
+    'section name 61': await api('/api/admin/section', { action: 'update', id: sec0, patch: { name: { en: L(61), fa: null } } }, staffCookie),
+    'tagline 161': await api('/api/admin/venue', { action: 'update', id: 'senso', patch: { tagline: { en: L(161) } } }, ownerCookie),
+    'address 201': await api('/api/admin/venue', { action: 'update', id: 'senso', patch: { locations: loc0.map((l, i) => (i === 0 ? { ...l, address: L(201) } : l)) } }, ownerCookie),
+  };
+  const fits = await up({ name: { en: L(100), fa: null } });
+  check('length-limits', Object.values(cases).every((r) => r.status === 400) && fits.status === 200, `${Object.entries(cases).map(([k, r]) => `${k} → ${r.status}`).join('; ')}; a 100-character name → ${fits.status}`); }
+// S2-03 and S2-14: direction marks and control characters dropped; an invisible-only name is empty; a row's sizes isolated on the public page
+{ const r = await api('/api/admin/item', { action: 'update', id: target.id, patch: { name: { en: 'Drill‮ clean\u0007 name⁦', fa: null } } }, staffCookie);
+  const stored = (await db.query(`select name->>'en' as n from items where id=$1`, [target.id])).rows[0].n;
+  const z = await api('/api/admin/item', { action: 'update', id: target.id, patch: { name: { en: '​‌‏', fa: null } } }, staffCookie);
+  const sized = (await db.query(`select id from items where venue_id='senso' and listed and price is null and jsonb_array_length(variants) > 1 order by name->>'en' limit 1`)).rows[0];
+  const html = await publicHtml('senso'); const at = sized ? html.indexOf(`data-id="${sized.id}"`) : -1; const rowHtml = at >= 0 ? html.slice(at, html.indexOf('</li>', at)) : '';
+  check('text-cleaned', r.status === 200 && stored === 'Drill clean name' && z.status === 400 && /<bdi><span/.test(rowHtml) && /<bdi dir="ltr" class="tabular-nums">\$/.test(rowHtml), `a name with U+202E, U+0007 and U+2066 → stored "${stored}"; a name of only zero-width characters → ${z.status} "${z.json?.error}"; on the public page a row with sizes isolates each size's name and amount: ${/<bdi><span/.test(rowHtml) && /<bdi dir="ltr" class="tabular-nums">\$/.test(rowHtml)}`); }
+// S2-07 and H-14: one reading of a price on both sides
+{ const res = {}; for (const [k, v] of [['blank', ' '], ['dollar', '$'], ['hex', '0x10'], ['exponent', '1e3'], ['thousandth', '0.001'], ['comma', '1,50'], ['persian', '۱۲.۵۰']]) { const x = await api('/api/admin/item', { action: 'update', id: target.id, patch: { price: v } }, staffCookie); res[k] = { status: x.status, price: x.status === 200 ? (await db.query('select price from items where id=$1', [target.id])).rows[0].price : undefined }; }
+  check('price-pattern', res.blank.status === 200 && res.blank.price === null && ['dollar', 'hex', 'exponent', 'thousandth'].every((k) => res[k].status === 400) && Number(res.comma.price) === 1.5 && Number(res.persian.price) === 12.5, `prices sent: ${Object.entries(res).map(([k, x]) => `${k} → ${x.status}${x.price !== undefined ? ` (${x.price})` : ''}`).join('; ')}`); }
+await restoreTarget();
+// S2-15: a phone number has 7 to 15 digits; Persian digits are read as Western
+{ const loc0 = (await db.query(`select locations from venues where id='senso'`)).rows[0].locations;
+  const bad = await api('/api/admin/venue', { action: 'update', id: 'senso', patch: { locations: loc0.map((l, i) => (i === 0 ? { ...l, phone: '------' } : l)) } }, ownerCookie);
+  const fa = await api('/api/admin/venue', { action: 'update', id: 'senso', patch: { locations: loc0.map((l, i) => (i === 0 ? { ...l, phone: '۹۰۵ ۵۵۵ ۰۱۰۰' } : l)) } }, ownerCookie);
+  const phone = (await db.query(`select locations->0->>'phone' as p from venues where id='senso'`)).rows[0].p;
+  await db.query(`update venues set locations = $1 where id = 'senso'`, [JSON.stringify(loc0)]); await api('/api/admin/publish', { venue: 'senso' }, ownerCookie);
+  check('phone-digits', bad.status === 400 && fa.status === 200 && phone === '905 555 0100', `a phone "------" → ${bad.status} "${bad.json?.error}"; one typed in Persian digits → ${fa.status}, stored "${phone}"`); }
+// S2-21: a PIN typed with Persian digits signs in
+{ const fa = staff.pin.replace(/\d/g, (x) => String.fromCharCode(0x06f0 + Number(x)));
+  const r = await post('/api/admin/login', { mode: 'pin', venue: 'senso', pin: fa });
+  check('pin-persian-digits', r.status === 303 && r.location === '/admin/senso' && !!r.setCookie, `the staff PIN typed in Persian digits → ${r.status} to ${r.location}, cookie set: ${!!r.setCookie}`); }
+// S2-18: the sign-in page shows its own words for a code, never the address's text
+{ const evil = await (await fetch(`${base}/admin/senso?error=${encodeURIComponent('Your PIN expired. Call 555-0100 now')}`)).text();
+  const known = await (await fetch(`${base}/admin/senso?error=wrong-pin&left=3`)).text();
+  check('signin-messages', !evil.includes('Call 555-0100') && evil.includes('Something went wrong. Try again.') && known.includes('Wrong PIN (3 tries left).'), `?error=<text of anyone's choosing> shows it: ${evil.includes('Call 555-0100')} (the page's own line instead: ${evil.includes('Something went wrong. Try again.')}); ?error=wrong-pin&left=3 → "Wrong PIN (3 tries left).": ${known.includes('Wrong PIN (3 tries left).')}`); }
+// H-05: another cookie with a stray "%" does not break the admin API
+{ const r = await raw('/api/admin/item', { ...getJson({ action: 'get', id: target.id }), headers: { 'content-type': 'application/json', cookie: `other=%E0%A4%A; ${staffCookie}` } });
+  check('stray-cookie', r.status === 200 && r.json?.item?.id === target.id, `a request carrying another cookie "other=%E0%A4%A" beside the session → ${r.status}`); }
+// H-06: a server fault answers 500 with one plain line (the suite's test seam simulates a database fault)
+{ const r = await raw('/api/admin/item', { ...getJson({ action: 'get', id: target.id }), headers: { 'content-type': 'application/json', 'x-roses-test': 'fault' }, cookie: staffCookie });
+  check('server-fault-500', r.status === 500 && r.json?.error === 'Something went wrong on the server. Try again.' && !/relation|does not exist/.test(r.text), `a database fault → ${r.status} "${r.json?.error}"; the database's own text in the answer: ${/relation|does not exist/.test(r.text)}`); }
+// H-13: a save whose customers' page did not regenerate says so; the publish route regenerates it
+{ const r = await raw('/api/admin/item', { ...getJson({ action: 'update', id: target.id, patch: { serves: '2' } }), headers: { 'content-type': 'application/json', 'x-roses-test': 'unpublished' }, cookie: staffCookie });
+  const p = await api('/api/admin/publish', { venue: 'senso' }, staffCookie);
+  check('publish-reported', r.status === 200 && r.json?.published === false && p.status === 200 && p.json?.published === true, `a save whose page regeneration failed → ${r.status} with published: ${r.json?.published}; POST /api/admin/publish → ${p.status}, published: ${p.json?.published}`); }
+await restoreTarget();
+// D-05: one "+ Add item" sent twice with its key makes one item
+{ const key = `drill-${Date.now().toString(36)}`; const sid = (await db.query(`select id from sections where venue_id='senso' and not seasonal order by position limit 1`)).rows[0].id;
+  const body = { action: 'create', venue: 'senso', section_id: sid, name: { en: 'Drill once', fa: null }, price: null, key };
+  const a = await api('/api/admin/item', body, staffCookie), b = await api('/api/admin/item', body, staffCookie);
+  const n = (await db.query(`select count(*)::int as n from items where name->>'en' = 'Drill once'`)).rows[0].n;
+  check('create-once', a.status === 200 && b.status === 200 && a.json?.item?.id === b.json?.item?.id && b.json?.repeated === true && n === 1, `the same add sent twice with its key → ${a.status}, ${b.status}, the same item: ${a.json?.item?.id === b.json?.item?.id} (second marked repeated: ${b.json?.repeated}); items made: ${n}`);
+  if (a.json?.item?.id) await api('/api/admin/item', { action: 'delete', id: a.json.item.id }, staffCookie); }
+// D-15: six Style saves sent at once each build on the last; every accepted colour is kept
+{ const before = (await db.query(`select style from venues where id='senso'`)).rows[0].style;
+  const g = await (await fetch(`${base}/api/admin/style?venue=senso`, { headers: { cookie: ownerCookie } })).json();
+  const html = await publicHtml('senso'); const cssVar = (k) => `--c-${k.replace(/\./g, '-').replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`;
+  const six = (g.tokens || []).map((t) => [t.key, (html.match(new RegExp(`${cssVar(t.key)}:(#[0-9a-f]{6})`)) || [])[1]]).filter(([, c]) => c).slice(0, 6)
+    .map(([k, c]) => { const b = parseInt(c.slice(5, 7), 16); return [k, `${c.slice(0, 5)}${(b > 0 ? b - 1 : b + 1).toString(16).padStart(2, '0')}`]; });
+  const rs = await Promise.all(six.map(([k, c]) => api('/api/admin/style', { action: 'update', venue: 'senso', patch: { colors: { [k]: c } } }, ownerCookie)));
+  const accepted = six.filter((_, i) => rs[i].status === 200); const after = (await db.query(`select coalesce(style->'colors', '{}'::jsonb) as c from venues where id='senso'`)).rows[0].c;
+  const kept = accepted.filter(([k, c]) => after[k] === c).length;
+  await db.query(`update venues set style = $1 where id = 'senso'`, [JSON.stringify(before)]); await api('/api/admin/publish', { venue: 'senso' }, ownerCookie);
+  check('style-concurrent', six.length === 6 && accepted.length >= 4 && kept === accepted.length, `6 colour saves sent at once (each a token's colour moved by one step): ${accepted.length} accepted, ${six.length - accepted.length} refused by the readability guard; kept at the end: ${kept} of ${accepted.length} (before the fix: 1)`); }
+// residual of D-03: the locations and a section's name carry their version; an older one is refused (409) and nothing changes
+{ const cur = (await db.query(`select locations from venues where id='senso'`)).rows[0].locations;
+  const r = await api('/api/admin/venue', { action: 'update', id: 'senso', patch: { locations: cur.map((l, i) => (i === 0 ? { ...l, hours: { ...l.hours, en: 'Drill hours' } } : l)) }, base: { locations: cur.map((l, i) => (i === 0 ? { ...l, address: `${l.address} (older)` } : l)) } }, ownerCookie);
+  const after = (await db.query(`select locations from venues where id='senso'`)).rows[0].locations;
+  const s0 = (await db.query(`select id, name from sections where venue_id='senso' and not seasonal order by position limit 1`)).rows[0];
+  const r2 = await api('/api/admin/section', { action: 'update', id: s0.id, patch: { name: { en: 'Drill rename', fa: s0.name.fa } }, base: { name: { en: 'An older name', fa: s0.name.fa } } }, staffCookie);
+  const name = (await db.query('select name from sections where id=$1', [s0.id])).rows[0].name;
+  check('versions-stale-409', r.status === 409 && JSON.stringify(after) === JSON.stringify(cur) && Array.isArray(r.json?.venue?.locations) && r2.status === 409 && name.en === s0.name.en && r2.json?.section?.id === s0.id, `locations saved over an older copy → ${r.status} "${r.json?.error}", unchanged: ${JSON.stringify(after) === JSON.stringify(cur)}; a section renamed over an older name → ${r2.status}, still "${name.en}"`); }
+// H-04: the database refuses a shown item with an unpriced size (before, only "no price and no sizes" was refused)
+{ const ls = (await db.query(`select id, variants from items where listed and price is null and jsonb_array_length(variants) > 0 limit 1`)).rows[0];
+  let err = null; try { await db.query('update items set variants = $2 where id = $1', [ls.id, JSON.stringify([...ls.variants, { label: { en: 'Drill size', fa: null }, price: null }])]); } catch (e) { err = e; }
+  check('f-check-sizes', !!err && err.constraint === 'listed_requires_price', `SQL adding an unpriced size to a shown item → ${err ? `${err.code} ${err.constraint}` : 'no error (unexpected)'}`); }
+// S2-09: uploads read whole (an image with a page after it, an SVG with a script, an image of 20000 px refused)
+{ const good = await upload('senso', 'photo', pngOf(4, 3), 'image/png', staffCookie);
+  const html = await upload('senso', 'photo', Buffer.concat([pngOf(4, 3), Buffer.from('<html><script>alert(1)</script></html>')]), 'image/png', staffCookie);
+  const svg = await upload('senso', 'logo', Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><script>alert(1)</script></svg>'), 'image/svg+xml', ownerCookie);
+  const huge = await upload('senso', 'photo', pngOf(20000, 1), 'image/png', staffCookie);
+  check('upload-structure', good.status === 200 && good.json?.width === 4 && good.json?.height === 3 && html.status === 400 && svg.status === 400 && huge.status === 400, `a 4 × 3 PNG → ${good.status} (${good.json?.width} × ${good.json?.height}); the same PNG with a web page after it → ${html.status} "${html.json?.error}"; an SVG logo with a script → ${svg.status}; a PNG 20000 px wide → ${huge.status}`); }
 // "+ Add venue" (step 2): admin, from the venue dropdown, on the phone
 { const actx = await browser.newContext(DEVICE); const ap = await loginPage(actx, 'admin', { email, password }); await ap.waitForSelector('[data-item]');
   let taps = 0; const tap = async (sel) => { taps++; await ap.click(sel); };
@@ -258,13 +424,17 @@ const ownerCookie = await cookieOf(ownerCtx);
   const dd = await ap.$$eval('header details a[href^="/admin/"]', (els) => els.map((e) => e.getAttribute('href')));
   check('add-venue', taps === 3 && row?.template === 'default' && secs === 1 && seasonalSecs === 1 && pub.status === 200 && html.includes('Drill venue') && html.includes('--c-page-bg:') && dd.includes(`/admin/${id}`), `+ Add venue: ${taps} taps (venue menu, Add venue, Create) + the name → /admin/${id} (Details tab) ${landed} ms after Create; venues row template=${row?.template}, ${secs} starting section and ${seasonalSecs} Seasonal section; GET /${id} → ${pub.status} in ${pubMs} ms (default template, name on the page: ${html.includes('Drill venue')}); in the venue dropdown: ${dd.includes(`/admin/${id}`)}`);
   measure(`+ Add venue: ${taps} taps + the name; Details tab open ${landed} ms after Create; the new page answers ${pub.status} (${pubMs} ms)`);
+  // S2-09: the upload quota, on this new venue (100 files an hour per venue)
+  { const ok = []; for (let i = 0; i < 100; i++) ok.push((await upload(id, 'photo', pngOf(1 + (i % 3), 1), 'image/png', ac)).status);
+    const over = await upload(id, 'photo', pngOf(2, 2), 'image/png', ac);
+    check('upload-quota', ok.every((x) => x === 200) && over.status === 429, `100 photos uploaded to "${id}" → all 200: ${ok.every((x) => x === 200)}; the 101st within the hour → ${over.status} "${over.json?.error}"`); }
   await ap.close(); await actx.close(); }
 
 // revoke drill PINs; revoked staff PIN refused
 { const actx = await browser.newContext(DEVICE); const ap = await loginPage(actx, 'admin', { email, password }); const ac = await cookieOf(actx);
   for (const p of [staff, owner]) await post('/api/admin/pin', { _action: 'revoke', id: p.id, _back: '/admin/team' }, ac);
   const r = await post('/api/admin/login', { mode: 'pin', venue: 'senso', pin: staff.pin });
-  check('b-revoked', !r.setCookie && /wrong PIN/.test(errorOf(r.location) || ''), `revoked staff PIN → ${r.status}, error="${errorOf(r.location)}", cookie set: ${!!r.setCookie}`);
+  check('b-revoked', !r.setCookie && errorOf(r.location) === 'wrong-pin', `revoked staff PIN → ${r.status}, error="${errorOf(r.location)}", cookie set: ${!!r.setCookie}`);
   // pre-go-live audit (2026-11-02, S1-03): the revoked PIN's session from before ends too (before, its cookie kept editing for up to 12 hours)
   const old = await api('/api/admin/item', { action: 'update', id: item.id, patch: {} }, staffCookie);
   check('revoked-session', old.status === 401, `the revoked staff PIN's earlier session (its cookie) → POST /api/admin/item ${old.status} "${old.json?.error}"`);

@@ -45,15 +45,19 @@ export async function readSessionToken(token: string | undefined | null): Promis
   } catch { return null; }
 }
 
-export function parseCookies(header: string | undefined): Record<string, string> {
-  const out: Record<string, string> = {};
-  for (const part of (header || '').split(';')) { const i = part.indexOf('='); if (i > 0) out[part.slice(0, i).trim()] = decodeURIComponent(part.slice(i + 1).trim()); }
-  return out;
+// The session cookie's value only (pre-go-live audit H-05: every cookie of the domain was decoded, so another site's cookie with a stray
+// "%" made every admin request fail, sign-in included). A value that cannot be decoded is no session.
+export function sessionCookie(header: string | undefined): string | null {
+  for (const part of (header || '').split(';')) {
+    const i = part.indexOf('='); if (i <= 0 || part.slice(0, i).trim() !== COOKIE) continue;
+    try { return decodeURIComponent(part.slice(i + 1).trim()); } catch { return null; }
+  }
+  return null;
 }
 
 // The token's claims only. Every route reads the session through liveSession (pins.ts), which checks the person in the database.
 export async function sessionFromRequest(req: IncomingMessage): Promise<Session | null> {
-  return readSessionToken(parseCookies(req.headers.cookie)[COOKIE]);
+  return readSessionToken(sessionCookie(req.headers.cookie));
 }
 
 // Secure is set when the request arrived over https (directly or behind a proxy that says so), or when COOKIE_SECURE=1.

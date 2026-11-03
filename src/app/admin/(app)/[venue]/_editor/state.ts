@@ -1,6 +1,7 @@
 // Editor state: the whole menu of one venue (sections in order, items by id, items in no section) and the small
 // pure helpers the client needs. No database code here (this module runs in the browser).
 import type { Bi, EditorItem, EditorMenu, EditorSection, SeasonId, Variant } from '@/lib/types';
+import { listingProblem } from '@/lib/rules';
 
 export type Menu = EditorMenu;
 export type Action =
@@ -52,11 +53,8 @@ export function reduce(m: Menu, a: Action): Menu {
 export type Filter = 'all' | 'price' | 'draft' | 'fa' | 'photo' | 'season' | 'allergens' | 'none';
 export type Need = Exclude<Filter, 'all' | 'none'>;
 
-export function listingProblem(i: { price: number | null; variants: Variant[] }): string | null {
-  if (i.price != null) return null;
-  if (i.variants.length && i.variants.every((v) => v.price != null)) return null;
-  return i.variants.length ? 'Every size needs a price before the item can be shown' : 'The item needs a price before it can be shown';
-}
+// The listing rule, the server's own (pre-go-live audit H-04: one function, src/lib/rules.ts).
+export { listingProblem };
 export function persianMissing(i: { name: Bi; description: Bi; variants?: Variant[] }): boolean {
   return !!(i.name.en && !i.name.fa) || !!(i.description?.en && !i.description.fa) || !!i.variants?.some((v) => v.label.en && !v.label.fa);
 }

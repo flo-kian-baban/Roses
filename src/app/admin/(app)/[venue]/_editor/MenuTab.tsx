@@ -8,10 +8,12 @@
 // item with today's season); it cannot be renamed, moved or deleted. Items hidden by their seasons today show "Out of season" (or "No
 // season" in the Seasonal section) and count in the Needs-attention bar.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { EditorItem, EditorSection, SeasonId } from '@/lib/types';
+import type { EditorItem, SeasonId } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
-import { SEASON_NAMES, attention, listingProblem, money, needs, priceSummary, seasonState, seasonsCtx, type Filter, type Need, type Menu as MenuData, type Seasons } from './state';
+import { SEASON_NAMES, attention, money, needs, priceSummary, seasonState, seasonsCtx, type Filter, type Need, type Menu as MenuData, type Seasons } from './state';
 import { Badge, Menu, Photo, Switch, btnSecondary } from './ui';
+import { retryable } from './api';
+import { parsePrice } from '@/lib/rules';
 
 export type MenuTabProps = {
   menu: MenuData; season: SeasonId; canNotes: boolean; filter: Filter; setFilter: (f: Filter) => void; query: string; setQuery: (q: string) => void; highlightId: string | null;
@@ -42,7 +44,7 @@ export function MenuTab(p: MenuTabProps) {
     const g = menu.sections.map((s) => ({ s, ids: s.item_ids.filter((id) => menu.items[id] && keep(menu.items[id], false)) }));
     const o = narrowing ? menu.orphans.filter((id) => menu.items[id] && keep(menu.items[id], true)) : []; // in no section: only when asked for
     return { sections: narrowing ? g.filter((x) => x.ids.length > 0) : g, orphans: o };
-  }, [menu, filter, q, ctx]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [menu, filter, q, ctx]);
   const shown = groups.sections.reduce((n, g) => n + g.ids.length, 0) + groups.orphans.length;
   const toggle = (id: string) => setCollapsed((c) => { const n = new Set(c); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const jump = (id: string) => { setCollapsed((c) => { const n = new Set(c); n.delete(id); return n; }); requestAnimationFrame(() => document.getElementById(`sec-${id}`)?.scrollIntoView({ block: 'start', behavior: 'smooth' })); };
@@ -102,7 +104,7 @@ export function MenuTab(p: MenuTabProps) {
         {narrowing && <p className="mt-2 flex items-center gap-2 text-sm text-ink-muted"><span>{shown} item{shown === 1 ? '' : 's'}{filter !== 'all' && <> · {LABEL[filter](counts[filter]).replace(/^\d+ /, '').replace(/ \(\d+\)$/, '')}</>}</span><button type="button" onClick={() => { setFilter('all'); setQuery(''); }} className="font-medium text-ink underline-offset-4 hover:underline">Show all</button></p>}
       </div>
 
-      {groups.sections.map(({ s, ids }, n) => (
+      {groups.sections.map(({ s, ids }) => (
         <section key={s.id} id={`sec-${s.id}`} className={`relative mt-3 scroll-mt-40 rounded-2xl border border-line bg-white shadow-card ${dropCls(s.id)}`}
           onDragOver={dnd.overRow('section', s.id)} onDrop={dnd.drop('section', s.id)}>
           <header className={`flex items-center gap-1 py-1.5 pl-1 pr-2 ${s.listed ? '' : 'opacity-70'}`} draggable={fine && !s.seasonal} onDragStart={dnd.start({ kind: 'section', id: s.id })} onDragEnd={dnd.end}>
@@ -179,20 +181,25 @@ function Row({ item, ctx, sectionId, fine, dropCls, highlighted, onOpen, onToggl
 }
 
 // The price, edited in place: one tap turns it into a field; Enter or leaving the field saves. Items with sizes open the editor instead.
+// A price whose save did not go through stays on screen, marked "Not saved", until the toast's Try again saves it or it is edited again
+// (pre-go-live audit, the residual of D-02: before, the old price came back while Try again held the typed one).
 function PriceCell({ item, onPrice, onOpen }: { item: EditorItem; onPrice: (v: number | null) => Promise<void>; onOpen: () => void }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const [err, setErr] = useState<string | null>(null);
+  const [unsaved, setUnsaved] = useState<{ v: number | null } | null>(null);
   const committed = useRef(false);
-  useEffect(() => { if (!err) return; const t = setTimeout(() => setErr(null), 4000); return () => clearTimeout(t); }, [err]);
+  useEffect(() => { if (!err || unsaved) return; const t = setTimeout(() => setErr(null), 4000); return () => clearTimeout(t); }, [err, unsaved]);
+  useEffect(() => { if (unsaved && item.price === unsaved.v) { setUnsaved(null); setErr(null); } }, [item.price, unsaved]);
   if (item.variants.length) return <button type="button" onClick={onOpen} className="min-h-11 shrink-0 rounded-lg px-2 text-right text-[15px] font-semibold tabular-nums hover:bg-fill" aria-label={`Sizes: ${priceSummary(item)}. Tap to edit`}>{priceSummary(item)}</button>;
   const commit = async () => {
     if (committed.current) return; committed.current = true;
-    const t = draft.trim().replace(/^\$/, ''); const n = t === '' ? null : Number(t);
+    const n = parsePrice(draft); // the server's own reading (pre-go-live audit S2-07)
     setEditing(false);
-    if (n !== null && (!Number.isFinite(n) || n < 0)) { setErr('Not a price'); return; }
-    if (n === item.price) return;
-    try { await onPrice(n); } catch (e) { setErr((e as Error).message); }
+    if (n === 'bad') { setErr('Not a price'); return; }
+    if (n === item.price) { setUnsaved(null); return; }
+    setUnsaved(null);
+    try { await onPrice(n); } catch (e) { if (retryable(e)) { setUnsaved({ v: n }); setErr('Not saved'); } else setErr((e as Error).message); }
   };
   if (editing) return (
     <span className="relative shrink-0">
@@ -203,11 +210,10 @@ function PriceCell({ item, onPrice, onOpen }: { item: EditorItem; onPrice: (v: n
   );
   return (
     <span className="relative shrink-0">
-      <button type="button" data-price onClick={() => { committed.current = false; setDraft(item.price == null ? '' : String(item.price)); setEditing(true); }} className={`min-h-11 min-w-[4.5rem] rounded-lg px-2 text-right text-[15px] font-semibold tabular-nums hover:bg-fill ${item.price == null ? 'text-neutral-400' : ''}`} aria-label={item.price == null ? 'No price. Tap to add one' : `Price ${money(item.price)}. Tap to change`}>
-        {item.price == null ? 'Add price' : money(item.price)}
+      <button type="button" data-price data-unsaved={unsaved ? '' : undefined} onClick={() => { committed.current = false; const shown = unsaved ? unsaved.v : item.price; setDraft(shown == null ? '' : String(shown)); setEditing(true); }} className={`min-h-11 min-w-[4.5rem] rounded-lg px-2 text-right text-[15px] font-semibold tabular-nums hover:bg-fill ${unsaved ? 'text-red-600 underline decoration-dotted' : item.price == null ? 'text-neutral-400' : ''}`} aria-label={unsaved ? `Price ${unsaved.v == null ? 'cleared' : money(unsaved.v)}, not saved. Tap to change` : item.price == null ? 'No price. Tap to add one' : `Price ${money(item.price)}. Tap to change`}>
+        {unsaved ? (unsaved.v == null ? 'No price' : money(unsaved.v)) : item.price == null ? 'Add price' : money(item.price)}
       </button>
       {err && <span role="alert" className="absolute right-0 top-full z-10 mt-0.5 whitespace-nowrap rounded-md bg-red-600 px-2 py-0.5 text-[12px] text-white">{err}</span>}
     </span>
   );
 }
-export { listingProblem };

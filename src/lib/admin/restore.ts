@@ -40,7 +40,7 @@ export async function undoRevisions(ids: number[], by: By): Promise<Result & { r
     }
     await client.query('commit');
     return { ok: true, id: rows[0]?.row_id ?? '', revisions: written };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
 async function undoOne(client: PoolClient, r: Revision, by: By): Promise<Result> {

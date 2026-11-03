@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '../../../_ui/icons';
 import { retryable } from './api';
+import { parsePrice } from '@/lib/rules';
 
 export const btn = 'inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-4 text-[15px] font-semibold whitespace-nowrap transition active:scale-[.97] disabled:cursor-not-allowed disabled:opacity-50';
 export const btnPrimary = `${btn} bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.28),0_8px_20px_-8px_rgba(238,106,58,.7)]`;
@@ -25,20 +26,23 @@ export function Switch({ checked, onChange, label, disabled }: { checked: boolea
 // A field's text follows the saved value (Undo, another save), except text whose save did not go through (no connection, the server failed):
 // that stays in the field, marked "Not saved", until it is saved (pre-go-live audit D-02: before, the field went back to the saved text and
 // what was typed was lost). The caller sets `.current` to the unsaved text, and back to null once a save goes through.
-function useUnsaved(saved: string, setDraft: (v: string) => void) {
+// cleared: called when the text that did not go through is saved after all (the toast's Try again), so its "Not saved" goes too.
+function useUnsaved(saved: string, setDraft: (v: string) => void, cleared?: () => void) {
   const unsaved = useRef<string | null>(null);
-  useEffect(() => { if (unsaved.current !== null && saved !== unsaved.current) return; unsaved.current = null; setDraft(saved); }, [saved]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (unsaved.current !== null && saved !== unsaved.current) return; if (unsaved.current !== null) cleared?.(); unsaved.current = null; setDraft(saved); }, [saved]);
   return unsaved;
 }
 
+
 // Text that saves itself: commits on blur or Enter when the value changed; re-syncs when the saved value changes (Undo).
-export function TextField({ value, onCommit, label, placeholder, dir, lang, multiline, inputMode, hint, badge, required, autoFocus, className = '', compact }: {
+// maxLength: the field's limit (pre-go-live audit S2-02, src/lib/rules.ts LIMITS); a longer text saved before the limit stays as it is.
+export function TextField({ value, onCommit, label, placeholder, dir, lang, multiline, inputMode, hint, badge, required, autoFocus, className = '', compact, maxLength }: {
   value: string | null | undefined; onCommit: (v: string | null) => void | Promise<void>; label?: string; placeholder?: string; dir?: 'rtl' | 'ltr'; lang?: string; multiline?: boolean;
-  inputMode?: 'text' | 'decimal' | 'numeric' | 'url'; hint?: string; badge?: React.ReactNode; required?: boolean; autoFocus?: boolean; className?: string; compact?: boolean;
+  inputMode?: 'text' | 'decimal' | 'numeric' | 'url'; hint?: string; badge?: React.ReactNode; required?: boolean; autoFocus?: boolean; className?: string; compact?: boolean; maxLength?: number;
 }) {
   const [draft, setDraft] = useState(value ?? '');
   const [err, setErr] = useState<string | null>(null);
-  const unsaved = useUnsaved(value ?? '', setDraft);
+  const unsaved = useUnsaved(value ?? '', setDraft, () => setErr(null));
   const commit = async () => {
     const v = draft.trim();
     if (v === (value ?? '')) return;
@@ -46,7 +50,7 @@ export function TextField({ value, onCommit, label, placeholder, dir, lang, mult
     // a save that did not go through keeps what was typed, marked 'Not saved', when trying again can help (pre-go-live audit D-02)
     try { setErr(null); await onCommit(v === '' ? null : v); unsaved.current = null; } catch (e) { const keep = retryable(e); setErr(keep ? `Not saved. ${(e as Error).message}` : (e as Error).message); if (keep) { unsaved.current = v; setDraft(draft); } else setDraft(value ?? ''); }
   };
-  const common = { value: draft, placeholder, dir, lang, autoFocus, 'aria-label': label, onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setDraft(e.target.value), onBlur: () => { void commit(); } };
+  const common = { value: draft, placeholder, dir, lang, autoFocus, maxLength, 'aria-label': label, onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setDraft(e.target.value), onBlur: () => { void commit(); } };
   return (
     <label className={`block ${className}`}>
       {label && !compact && <span className="mb-1 flex items-center gap-2 text-sm font-medium">{label}{required && <span className="text-ink-muted">*</span>}{badge}</span>}
@@ -63,13 +67,12 @@ export function TextField({ value, onCommit, label, placeholder, dir, lang, mult
 export function MoneyField({ value, onCommit, label = 'Price', hint, autoFocus, compact, inline, className = '' }: { value: number | null | undefined; onCommit: (v: number | null) => void | Promise<void>; label?: string; hint?: string; autoFocus?: boolean; compact?: boolean; inline?: boolean; className?: string }) {
   const [draft, setDraft] = useState(value == null ? '' : String(value));
   const [err, setErr] = useState<string | null>(null);
-  const unsaved = useUnsaved(value == null ? '' : String(value), setDraft);
+  const unsaved = useUnsaved(value == null ? '' : String(value), setDraft, () => setErr(null));
   const commit = async () => {
-    const t = draft.trim().replace(/^\$/, '');
-    const n = t === '' ? null : Number(t);
-    if (n !== null && (!Number.isFinite(n) || n < 0)) { setErr('Not a price'); return; }
+    const n = parsePrice(draft); // the server's own reading of a price (pre-go-live audit S2-07): "1,50" is 1.50, "1e3" is not a price
+    if (n === 'bad') { setErr('Not a price (for example 12.50)'); return; }
     if (n === (value ?? null)) { setErr(null); return; }
-    try { setErr(null); await onCommit(n); unsaved.current = null; } catch (e) { const keep = retryable(e); setErr(keep ? `Not saved. ${(e as Error).message}` : (e as Error).message); if (keep) { unsaved.current = draft.trim(); setDraft(draft); } else setDraft(value == null ? '' : String(value)); }
+    try { setErr(null); await onCommit(n); unsaved.current = null; } catch (e) { const keep = retryable(e); setErr(keep ? `Not saved. ${(e as Error).message}` : (e as Error).message); if (keep) { unsaved.current = n == null ? '' : String(n); setDraft(draft); } else setDraft(value == null ? '' : String(value)); }
   };
   return (
     <label className={`${inline ? 'flex flex-wrap items-center gap-x-3' : 'block'} ${className}`}>
@@ -151,13 +154,13 @@ export const cellCls = 'block w-full min-w-0 bg-transparent px-3 py-2.5 text-bas
 // A field inside a card that saves itself (as TextField: on leaving it, or Enter on one line; re-synced when the saved value changes, e.g.
 // Undo). `lines`: a text box that shows its first line while it is not being edited (so the card stays one row tall), grows to its text
 // while it is, and marks a longer text with a fade and "…".
-export function CellText({ value, onCommit, label, placeholder, dir, lang, required, lines, className = '', inputRef, onFocusChange }: {
+export function CellText({ value, onCommit, label, placeholder, dir, lang, required, lines, className = '', inputRef, onFocusChange, maxLength }: {
   value: string | null | undefined; onCommit: (v: string | null) => void | Promise<void>; label: string; placeholder?: string; dir?: 'rtl' | 'ltr'; lang?: string;
-  required?: boolean; lines?: boolean; className?: string; inputRef?: (el: HTMLInputElement | HTMLTextAreaElement | null) => void; onFocusChange?: (focused: boolean) => void;
+  required?: boolean; lines?: boolean; className?: string; inputRef?: (el: HTMLInputElement | HTMLTextAreaElement | null) => void; onFocusChange?: (focused: boolean) => void; maxLength?: number;
 }) {
   const [draft, setDraft] = useState(value ?? '');
   const [err, setErr] = useState<string | null>(null);
-  const unsaved = useUnsaved(value ?? '', setDraft);
+  const unsaved = useUnsaved(value ?? '', setDraft, () => setErr(null));
   const [focused, setFocused] = useState(false);
   const [more, setMore] = useState(false); // a longer text than the one line shown
   const ta = useRef<HTMLTextAreaElement | null>(null);
@@ -167,7 +170,7 @@ export function CellText({ value, onCommit, label, placeholder, dir, lang, requi
     if (focused) el.style.height = `${Math.max(44, el.scrollHeight)}px`;
     setMore(!focused && el.scrollWidth > el.clientWidth + 1);
   }, [draft, focused]);
-  useEffect(() => { onFocusChange?.(focused); }, [focused]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { onFocusChange?.(focused); }, [focused]);
   const commit = async () => {
     const v = draft.trim();
     if (v === (value ?? '')) return;
@@ -175,7 +178,7 @@ export function CellText({ value, onCommit, label, placeholder, dir, lang, requi
     // a save that did not go through keeps what was typed, marked 'Not saved', when trying again can help (pre-go-live audit D-02)
     try { setErr(null); await onCommit(v === '' ? null : v); unsaved.current = null; } catch (e) { const keep = retryable(e); setErr(keep ? `Not saved. ${(e as Error).message}` : (e as Error).message); if (keep) { unsaved.current = v; setDraft(draft); } else setDraft(value ?? ''); }
   };
-  const common = { value: draft, placeholder, dir, lang, 'aria-label': label, onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setDraft(e.target.value), onFocus: () => setFocused(true), onBlur: () => { setFocused(false); void commit(); } };
+  const common = { value: draft, placeholder, dir, lang, maxLength, 'aria-label': label, onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setDraft(e.target.value), onFocus: () => setFocused(true), onBlur: () => { setFocused(false); void commit(); } };
   return (
     <span className={`relative block min-w-0 flex-1 ${className}`}>
       {lines

@@ -15,6 +15,9 @@
 html { background: var(--c-page-bg); color: var(--c-page-text); }
 body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
 h1, h2 { font-family: var(--font-heading); font-weight: 700; }
+/* A very long unbroken word (a name typed without spaces) wraps instead of widening the page past the phone's width (pre-go-live audit
+   D-17: a 300-character word made the page 769 px wide on a 390 px phone). The menu, its two sheets and the footer only. */
+main, footer, dialog { overflow-wrap: anywhere; }
 html[data-lang="fa"] h1, html[data-lang="fa"] h2 { font-family: var(--font-persian); }
 
 /* Language switching: both languages are in the HTML; CSS shows one. */

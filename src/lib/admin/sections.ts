@@ -27,12 +27,17 @@ export async function listSections(venueId: string): Promise<SectionRow[]> {
   return (await pool.query<SectionRow>(`select ${COLS} from sections where venue_id = $1 order by seasonal desc, position, name->>'en'`, [venueId])).rows;
 }
 
-export async function updateSection(id: string, patch: SectionPatch, by: By): Promise<Result> {
+// base: the name and note as the editor last saw them (pre-go-live audit, the residual of D-03): when someone else changed one since, the
+// save is refused (409) instead of putting back the editor's older text. A field compares as text, so a missing Persian equals null.
+const bi = (b: unknown) => { const o = (b && typeof b === 'object' ? b : {}) as Record<string, unknown>; return JSON.stringify([o.en ?? null, o.fa ?? null]); };
+export const SECTION_CHANGED = 'Someone else changed this section since you opened it. The latest version is now on screen; make your change again if it is still needed.';
+export async function updateSection(id: string, patch: SectionPatch, by: By, base: { name?: unknown; note?: unknown } | null = null): Promise<Result> {
   const client = await pool.connect();
   try {
     await client.query('begin');
     const row = (await client.query<SectionRow>(`select ${COLS} from sections where id = $1 for update`, [id])).rows[0];
     if (!row) { await client.query('rollback'); return { ok: false, error: 'section not found' }; }
+    if (base && (('name' in base && bi(base.name) !== bi(row.name)) || ('note' in base && bi(base.note) !== bi(row.note)))) { await client.query('rollback'); return { ok: false, error: SECTION_CHANGED, conflict: true }; }
     const before: SectionSnapshot = { name: row.name, note: row.note, position: row.position, listed: row.listed, fa_draft: row.fa_draft, layout: row.layout };
     const next: SectionSnapshot = { ...before, ...Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined)) } as SectionSnapshot;
     if (!next.name?.en) { await client.query('rollback'); return { ok: false, error: 'The English name is required' }; }
@@ -44,20 +49,26 @@ export async function updateSection(id: string, patch: SectionPatch, by: By): Pr
     const revision = await recordRevision(client, { venueId: row.venue_id, table: 'sections', rowId: id, action: onlyListing ? (next.listed ? 'list' : 'unlist') : 'update', before, after: next, by });
     await client.query('commit');
     return { ok: true, id, revision };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
-export async function createSection(venueId: string, data: { name: Bi; note?: Bi }, by: By): Promise<Result> {
+// clientKey: as for items (pre-go-live audit D-05), one "Add section" sent again answers the section it already created.
+export async function createSection(venueId: string, data: { name: Bi; note?: Bi }, by: By, clientKey: string | null = null): Promise<Result & { repeated?: boolean }> {
   const client = await pool.connect();
   try {
     await client.query('begin');
+    if (clientKey) {
+      await client.query('select pg_advisory_xact_lock(hashtext($1))', [`section-create:${clientKey}`]);
+      const prior = (await client.query<{ id: number; row_id: string }>(`select r.id, r.row_id from revisions r join sections s on s.id::text = r.row_id where r.venue_id = $1 and r.table_name = 'sections' and r.action = 'create' and r.after->>'client_key' = $2 and r.by->>'id' = $3 and r.at > now() - interval '1 day' order by r.id desc limit 1`, [venueId, clientKey, by.id])).rows[0];
+      if (prior) { await client.query('rollback'); return { ok: true, id: prior.row_id, revision: Number(prior.id), repeated: true }; }
+    }
     const max = (await client.query<{ m: number | null }>('select max(position) as m from sections where venue_id = $1', [venueId])).rows[0].m ?? -1;
     const snap: SectionSnapshot = { name: data.name, note: data.note ?? { en: null, fa: null }, position: max + 1, listed: true, fa_draft: [], layout: 'list' };
     const r = await client.query<{ id: string }>(`insert into sections (venue_id, name, note, position, listed, fa_draft, updated_by) values ($1,$2,$3,$4,$5,$6,$7) returning id`, [venueId, snap.name, snap.note, snap.position, snap.listed, snap.fa_draft, by]);
-    const revision = await recordRevision(client, { venueId, table: 'sections', rowId: r.rows[0].id, action: 'create', before: null, after: snap, by });
+    const revision = await recordRevision(client, { venueId, table: 'sections', rowId: r.rows[0].id, action: 'create', before: null, after: clientKey ? { ...snap, client_key: clientKey } : snap, by });
     await client.query('commit');
     return { ok: true, id: r.rows[0].id, revision };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
 export async function deleteSection(id: string, by: By, mode: DeleteItems = { items: 'keep' }): Promise<Result & { revisions?: number[]; orphaned?: string[] }> {
@@ -96,7 +107,7 @@ export async function deleteSection(id: string, by: By, mode: DeleteItems = { it
     const revision = await recordRevision(client, { venueId: row.venue_id, table: 'sections', rowId: id, action: 'delete', before, after: null, by }); // written last: Undo puts the section back before its items
     await client.query('commit');
     return { ok: true, id, revision, revisions: [revision, ...itemRevisions], orphaned };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
 // New order of all the venue's sections (drag on a laptop, Move up / Move down on a phone). One 'reorder' record on the venue.
@@ -113,7 +124,7 @@ export async function reorderSections(venueId: string, order: string[], by: By):
     const revision = await recordRevision(client, { venueId, table: 'venues', rowId: venueId, action: 'reorder', before: { sections: before }, after: { sections: order }, by });
     await client.query('commit');
     return { ok: true, id: venueId, revision, order };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 export async function venueSectionOrder(client: Q, venueId: string): Promise<string[]> {
   return (await client.query<{ id: string }>(`select id from sections where venue_id = $1 and not seasonal order by position, name->>'en'`, [venueId])).rows.map((r) => r.id); // the Seasonal section stays first, outside the order

@@ -12,6 +12,7 @@ import type { AddOn, EditorItem, EditorSection, Variant } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
 import { retryable } from './api';
 import { Badge, LooksGood, MoneyField, Sheet, Switch, btnGhost, btnPrimary, btnSecondary, cardCls, cellCls } from './ui';
+import { COUNTS, LIMITS, parsePrice } from '@/lib/rules';
 
 type Patch = (p: Record<string, unknown>) => Promise<void>;
 const priceText = (n: number | null | undefined) => (n == null ? '' : String(n));
@@ -20,7 +21,8 @@ const normV = (v: Variant[]) => JSON.stringify(v.map((x) => [x.label.en || null,
 const normA = (a: AddOn[]) => JSON.stringify(a.map((x) => [x.group?.en || null, x.group?.fa || null, x.label.en || null, x.label.fa || null, Number(x.price) || 0, !!x.required]));
 const UNNAMED = '​'; // a new group's stand-in name until it is named (a zero-width space, which trim() keeps: never saved)
 const groupName = (g: string) => (g.startsWith(UNNAMED) ? '' : g.trim());
-const priceOf = (t: string): number | null | 'bad' => { const s = t.trim().replace(/^\$/, ''); if (!s) return null; const n = Number(s); return Number.isFinite(n) && n >= 0 ? n : 'bad'; };
+// A typed price as the server reads it (pre-go-live audit S2-07, H-14: "1,50" is 1.50; "abc" is not a price and the row says so).
+const priceOf = (t: string): number | null | 'bad' => parsePrice(t);
 // One row: the English name, the Persian name, the price, Remove. In the page the price comes right after the name, so Tab goes there.
 const rowCls = 'grid grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)_5.25rem_2.75rem] items-stretch';
 const faCellCls = `${cellCls} col-start-2 row-start-1 border-l border-line text-right text-[15px]`;
@@ -36,27 +38,42 @@ function useFocus() {
 }
 
 // ---- The price, or the sizes ----
-type SizeRow = { en: string; fa: string; price: string; key: number };
+// kept: the row is one of the item's saved sizes (so an empty price is a size losing its price, not a size still being typed).
+type SizeRow = { en: string; fa: string; price: string; key: number; kept?: boolean };
 let seq = 0;
-const sizeRows = (v: Variant[]): SizeRow[] => v.map((x) => ({ en: x.label.en ?? '', fa: x.label.fa ?? '', price: priceText(x.price), key: ++seq }));
+const sizeRows = (v: Variant[]): SizeRow[] => v.map((x) => ({ en: x.label.en ?? '', fa: x.label.fa ?? '', price: priceText(x.price), key: ++seq, kept: true }));
 const sizeDone = (r: SizeRow) => !!r.en.trim() && typeof priceOf(r.price) === 'number';
+// Why a row cannot be saved as it stands (pre-go-live audit): a price that is not one (H-14: before, the row was dropped without a word),
+// or a saved size whose price was cleared (D-08: before, the size was deleted at once).
+const sizeProblem = (r: SizeRow): string | null => (priceOf(r.price) === 'bad' ? 'Not a price (for example 12.50)' : r.kept && r.en.trim() && priceOf(r.price) === null ? 'A size needs a price' : null);
 
 export function PriceOrSizes({ item, onPatch, hint, onLooksGood }: { item: EditorItem; onPatch: Patch; hint?: string; onLooksGood: (field: string) => void }) {
   const [rows, setRows] = useState<SizeRow[]>(() => sizeRows(item.variants));
+  const [held, setHeld] = useState(false); // a row's problem shown (the save waits for it)
   const f = useFocus();
   const saved = normV(item.variants), mine = useRef(saved);
+  // Rows whose save did not go through stay on screen, marked, until they are saved (the toast's Try again) or edited again (pre-go-live
+  // audit, the residual of D-02: before, the saved sizes came back on screen while Try again held the typed ones).
+  const failed = useRef<string | null>(null); const [notSaved, setNotSaved] = useState(false);
   // the saved sizes, plus the rows still being typed (they are not in the item yet); our own save's echo changes nothing on screen
-  useEffect(() => { if (saved === mine.current) return; mine.current = saved; setRows((cur) => [...sizeRows(item.variants), ...cur.filter((r) => !sizeDone(r))]); }, [saved]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (failed.current !== null) { if (saved !== failed.current) return; failed.current = null; setNotSaved(false); }
+    if (saved === mine.current) return; mine.current = saved; setRows((cur) => [...sizeRows(item.variants), ...cur.filter((r) => !sizeDone(r) && !r.kept)]);
+  }, [saved]);
   const add = () => {
+    if (rows.length >= COUNTS.sizes) return;
     // the first size takes the item's one price, so "+ Size" is one tap and nothing is typed twice
     const r: SizeRow = { en: '', fa: '', price: rows.length === 0 && item.price != null ? priceText(item.price) : '', key: ++seq };
     setRows((cur) => [...cur, r]); f.focus(`n${r.key}`);
   };
   const save = (next: SizeRow[] = rows, removedPrice?: number | null) => {
+    if (next.some(sizeProblem)) { setHeld(true); return; } // nothing is saved while a row has a problem; the row says what it is
+    setHeld(false);
     const variants = next.filter(sizeDone).map((r) => ({ label: { en: r.en.trim(), fa: r.fa.trim() || null }, price: priceOf(r.price) as number }));
     if (normV(variants) === normV(item.variants)) return;
-    mine.current = normV(variants);
-    void onPatch({ variants, price: variants.length ? null : (item.price ?? removedPrice ?? null) }).catch((e) => { if (retryable(e)) return; mine.current = normV(item.variants); setRows(sizeRows(item.variants)); }); // the rows stay for the toast's Try again (D-02)
+    mine.current = normV(variants); failed.current = null; setNotSaved(false);
+    const want = normV(variants);
+    void onPatch({ variants, price: variants.length ? null : (item.price ?? removedPrice ?? null) }).catch((e) => { if (retryable(e)) { failed.current = want; setNotSaved(true); return; } mine.current = normV(item.variants); setRows(sizeRows(item.variants)); }); // the rows stay for the toast's Try again (D-02)
   };
   const set = (k: number, p: Partial<SizeRow>) => setRows((cur) => cur.map((r) => (r.key === k ? { ...r, ...p } : r)));
   const enterPrice = (r: SizeRow) => {
@@ -65,7 +82,7 @@ export function PriceOrSizes({ item, onPatch, hint, onLooksGood }: { item: Edito
     const last = rows[rows.length - 1];
     if (last.key === r.key) add(); else f.focus(`n${rows[rows.findIndex((x) => x.key === r.key) + 1].key}`);
   };
-  const plus = (ghost: boolean) => <button type="button" className={`${ghost ? `${btnGhost} text-accent-strong` : btnSecondary} min-h-11 px-3 text-sm`} onClick={add}><Icon name="plus" className="h-4 w-4" />Size</button>;
+  const plus = (ghost: boolean) => <button type="button" className={`${ghost ? `${btnGhost} text-accent-strong` : btnSecondary} min-h-11 px-3 text-sm`} onClick={add} disabled={rows.length >= COUNTS.sizes}><Icon name="plus" className="h-4 w-4" />Size</button>;
   // the one price stays on screen until a size is saved (a size row being typed does not replace it yet)
   const priceRow = item.variants.length === 0 && (
     <div className="flex items-start gap-2" data-price-row="">
@@ -76,19 +93,20 @@ export function PriceOrSizes({ item, onPatch, hint, onLooksGood }: { item: Edito
   if (rows.length === 0) return priceRow;
   return (<>{priceRow}
     <div className={cardCls} data-sizes="">
-      <div className="flex min-h-11 items-center gap-2 bg-fill/70 pl-3"><span className="flex-1 text-[15px] font-semibold">Sizes</span>{item.fa_draft.includes('variants') && <><Badge tone="blue">FA · Draft</Badge><LooksGood label="the Persian of the sizes" onClick={() => onLooksGood('variants')} /></>}</div>
-      {rows.map((r, i) => (
-        <div key={r.key} className={rowCls}>
-          <input ref={f.ref(`n${r.key}`)} className={`${cellCls} col-start-1 row-start-1`} value={r.en} placeholder="e.g. Small" aria-label={`Size ${i + 1}`}
+      <div className="flex min-h-11 items-center gap-2 bg-fill/70 pl-3"><span className="flex-1 text-[15px] font-semibold">Sizes</span>{notSaved && <Badge tone="red">Not saved</Badge>}{item.fa_draft.includes('variants') && <><Badge tone="blue">FA · Draft</Badge><LooksGood label="the Persian of the sizes" onClick={() => onLooksGood('variants')} /></>}</div>
+      {rows.map((r, i) => (<div key={r.key} data-size-row="">
+        <div className={rowCls}>
+          <input ref={f.ref(`n${r.key}`)} className={`${cellCls} col-start-1 row-start-1`} value={r.en} maxLength={LIMITS.label} placeholder="e.g. Small" aria-label={`Size ${i + 1}`}
             onChange={(e) => set(r.key, { en: e.target.value })} onBlur={() => save()} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); f.el(`p${r.key}`)?.focus(); } }} />
           <span className="relative col-start-3 row-start-1 block border-l border-line"><span className="pointer-events-none absolute inset-y-0 left-2.5 flex items-center text-neutral-500">$</span>
             <input ref={f.ref(`p${r.key}`)} className={`${cellCls} pl-6 tabular-nums`} value={r.price} inputMode="decimal" placeholder="Price" aria-label={`Size ${i + 1} price`}
               onFocus={(e) => e.target.select()} onChange={(e) => set(r.key, { price: e.target.value })} onBlur={() => save()} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); enterPrice(r); } }} /></span>
-          <input className={faCellCls} dir="rtl" lang="fa" value={r.fa} placeholder="فارسی" aria-label={`Size ${i + 1} (Persian)`} onChange={(e) => set(r.key, { fa: e.target.value })} onBlur={() => save()} />
+          <input className={faCellCls} dir="rtl" lang="fa" value={r.fa} maxLength={LIMITS.label} placeholder="فارسی" aria-label={`Size ${i + 1} (Persian)`} onChange={(e) => set(r.key, { fa: e.target.value })} onBlur={() => save()} />
           <button type="button" aria-label={`Remove size ${r.en || i + 1}`} onClick={() => { const next = rows.filter((x) => x.key !== r.key); setRows(next); save(next, priceOf(r.price) === 'bad' ? null : (priceOf(r.price) as number | null)); }} className={removeCls}><Icon name="close" className="h-4 w-4" /></button>
         </div>
-      ))}
-      <div className="flex min-h-11 items-center px-1">{plus(true)}<span className="ml-auto pr-3 text-xs text-ink-muted">Name, Tab, price, Enter</span></div>
+        {held && sizeProblem(r) && <p role="alert" className="px-3 pb-2 text-xs text-red-600" data-row-problem="">{sizeProblem(r)}</p>}
+      </div>))}
+      <div className="flex min-h-11 items-center px-1">{plus(true)}<span className="ml-auto pr-3 text-xs text-ink-muted">{rows.length >= COUNTS.sizes ? `At most ${COUNTS.sizes} sizes` : 'Name, Tab, price, Enter'}</span></div>
     </div>
   </>);
 }
@@ -106,59 +124,70 @@ function groupsOf(rows: ChoiceRow[]): { name: string; gkey: number; rows: Choice
 
 export function Choices({ item, onPatch, onCopy, onLooksGood }: { item: EditorItem; onPatch: Patch; onCopy: (group: string) => void; onLooksGood: (field: string) => void }) {
   const [rows, setRows] = useState<ChoiceRow[]>(() => choiceRows(item.add_ons));
+  const [held, setHeld] = useState(false); // a choice's price is not a price: shown on its row, nothing saved until it is fixed (H-14)
   const f = useFocus();
   const saved = normA(item.add_ons), mine = useRef(saved);
-  useEffect(() => { if (saved === mine.current) return; mine.current = saved; setRows((cur) => [...choiceRows(item.add_ons), ...cur.filter((r) => !choiceDone(r))]); }, [saved]); // eslint-disable-line react-hooks/exhaustive-deps
+  const failed = useRef<string | null>(null); const [notSaved, setNotSaved] = useState(false); // as the sizes: typed rows stay until saved
+  useEffect(() => {
+    if (failed.current !== null) { if (saved !== failed.current) return; failed.current = null; setNotSaved(false); }
+    if (saved === mine.current) return; mine.current = saved; setRows((cur) => [...choiceRows(item.add_ons), ...cur.filter((r) => !choiceDone(r))]);
+  }, [saved]);
   const flat = (next: ChoiceRow[]) => groupsOf(next).flatMap((g) => g.rows);
   const save = (next: ChoiceRow[] = rows) => {
+    if (next.some((r) => r.en.trim() && priceOf(r.price) === 'bad')) { setHeld(true); return; }
+    setHeld(false);
     const add_ons: AddOn[] = flat(next).filter(choiceDone).map((r) => ({ group: { en: groupName(r.group) || null, fa: r.groupFa.trim() || null }, label: { en: r.en.trim(), fa: r.fa.trim() || null }, price: (priceOf(r.price) as number | null) ?? 0, required: r.required }));
     if (normA(add_ons) === normA(item.add_ons)) return;
-    mine.current = normA(add_ons);
-    void onPatch({ add_ons }).catch((e) => { if (retryable(e)) return; mine.current = normA(item.add_ons); setRows(choiceRows(item.add_ons)); }); // the rows stay for the toast's Try again (D-02)
+    mine.current = normA(add_ons); failed.current = null; setNotSaved(false);
+    const want = normA(add_ons);
+    void onPatch({ add_ons }).catch((e) => { if (retryable(e)) { failed.current = want; setNotSaved(true); return; } mine.current = normA(item.add_ons); setRows(choiceRows(item.add_ons)); }); // the rows stay for the toast's Try again (D-02)
   };
   const set = (k: number, p: Partial<ChoiceRow>) => setRows((cur) => cur.map((r) => (r.key === k ? { ...r, ...p } : r)));
   const setGroup = (name: string, p: Partial<ChoiceRow>) => setRows((cur) => cur.map((r) => (r.group === name ? { ...r, ...p } : r)));
-  const addRow = (g: { name: string; rows: ChoiceRow[] }) => { const last = g.rows[g.rows.length - 1]; const r: ChoiceRow = { group: g.name, groupFa: last?.groupFa ?? '', en: '', fa: '', price: '', required: !!last?.required, key: ++seq }; setRows((cur) => { const at = cur.lastIndexOf(last) + 1; return [...cur.slice(0, at), r, ...cur.slice(at)]; }); f.focus(`n${r.key}`); };
+  const addRow = (g: { name: string; rows: ChoiceRow[] }) => { if (g.rows.length >= COUNTS.options) return; const last = g.rows[g.rows.length - 1]; const r: ChoiceRow = { group: g.name, groupFa: last?.groupFa ?? '', en: '', fa: '', price: '', required: !!last?.required, key: ++seq }; setRows((cur) => { const at = cur.lastIndexOf(last) + 1; return [...cur.slice(0, at), r, ...cur.slice(at)]; }); f.focus(`n${r.key}`); };
   // a new group: its name first (unique while unnamed), then Tab or Enter to its first choice
-  const addGroup = () => { const r: ChoiceRow = { group: `${UNNAMED}${++seq}`, groupFa: '', en: '', fa: '', price: '', required: false, key: ++seq }; setRows((cur) => [...cur, r]); f.focus(`g${r.key}`); };
+  const addGroup = () => { if (groupsOf(rows).length >= COUNTS.groups) return; const r: ChoiceRow = { group: `${UNNAMED}${++seq}`, groupFa: '', en: '', fa: '', price: '', required: false, key: ++seq }; setRows((cur) => [...cur, r]); f.focus(`g${r.key}`); };
   const groups = groupsOf(rows);
   const shown = (name: string) => (name.startsWith(UNNAMED) ? '' : name);
   return (
     <div data-choices="" className="space-y-2">
       {item.fa_draft.includes('addOns') && <div className="flex min-h-11 items-center gap-2 rounded-xl bg-sky-50 pl-3"><span className="flex-1 text-[13px] text-sky-950">The Persian of the choices is a draft.</span><LooksGood label="the Persian of the choices" onClick={() => onLooksGood('addOns')} /></div>}
+      {notSaved && <p role="alert" className="text-xs font-medium text-red-600">The choices below are not saved yet: use Try again in the message at the bottom.</p>}
       {groups.map((g, gi) => (
         <div key={g.gkey} className={cardCls} data-choice-group={shown(g.name)}>
           <div className={`${rowCls} bg-fill/70`}>
-            <input ref={f.ref(`g${g.gkey}`)} className={`${cellCls} col-start-1 row-start-1 font-semibold`} value={shown(g.name)} placeholder="Group, e.g. Milk" aria-label={`Choice group ${gi + 1}`}
+            <input ref={f.ref(`g${g.gkey}`)} className={`${cellCls} col-start-1 row-start-1 font-semibold`} value={shown(g.name)} maxLength={LIMITS.label} placeholder="Group, e.g. Milk" aria-label={`Choice group ${gi + 1}`}
               onChange={(e) => { const v = e.target.value; setRows((cur) => cur.map((r) => (r.group === g.name ? { ...r, group: v || `${UNNAMED}${g.gkey}` } : r))); }}
               onBlur={() => save()} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); f.el(`n${g.rows[0].key}`)?.focus(); } }} />
-            <input className={faCellCls} dir="rtl" lang="fa" value={g.rows[0].groupFa} placeholder="نام گروه" aria-label={`Choice group ${gi + 1} (Persian)`}
+            <input className={faCellCls} dir="rtl" lang="fa" value={g.rows[0].groupFa} maxLength={LIMITS.label} placeholder="نام گروه" aria-label={`Choice group ${gi + 1} (Persian)`}
               onChange={(e) => setGroup(g.name, { groupFa: e.target.value })} onBlur={() => save()} />
             {g.rows.some(choiceDone) && !g.name.startsWith(UNNAMED)
               ? <button type="button" className="col-span-2 col-start-3 row-start-1 flex min-h-11 items-center justify-center gap-1 border-l border-line px-2 text-sm font-semibold text-accent-strong hover:bg-white" aria-label="Copy to other items…" onClick={() => { save(); onCopy(g.name); }}><Icon name="layers" className="h-4 w-4" />Copy to…</button>
               : <span className="col-span-2 col-start-3 row-start-1 border-l border-line" />}
           </div>
-          {g.rows.map((r, i) => (
-            <div key={r.key} className={rowCls}>
-              <input ref={f.ref(`n${r.key}`)} className={`${cellCls} col-start-1 row-start-1`} value={r.en} placeholder="e.g. Oat milk" aria-label={`${shown(g.name) || 'Choice'} ${i + 1}`}
+          {g.rows.map((r, i) => (<div key={r.key} data-choice-row="">
+            <div className={rowCls}>
+              <input ref={f.ref(`n${r.key}`)} className={`${cellCls} col-start-1 row-start-1`} value={r.en} maxLength={LIMITS.label} placeholder="e.g. Oat milk" aria-label={`${shown(g.name) || 'Choice'} ${i + 1}`}
                 onChange={(e) => set(r.key, { en: e.target.value })} onBlur={() => save()} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); f.el(`p${r.key}`)?.focus(); } }} />
               <span className="relative col-start-3 row-start-1 block border-l border-line"><span className="pointer-events-none absolute inset-y-0 left-2.5 flex items-center text-neutral-500">+$</span>
                 <input ref={f.ref(`p${r.key}`)} className={`${cellCls} pl-8 tabular-nums`} value={r.price} inputMode="decimal" placeholder="0" aria-label={`${shown(g.name) || 'Choice'} ${i + 1} extra price`}
                   onFocus={(e) => e.target.select()} onChange={(e) => set(r.key, { price: e.target.value })} onBlur={() => save()}
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); save(); if (!r.en.trim()) return; const last = g.rows[g.rows.length - 1]; if (last.key === r.key) addRow(g); else f.focus(`n${g.rows[i + 1].key}`); } }} /></span>
-              <input className={faCellCls} dir="rtl" lang="fa" value={r.fa} placeholder="فارسی" aria-label={`${shown(g.name) || 'Choice'} ${i + 1} (Persian)`} onChange={(e) => set(r.key, { fa: e.target.value })} onBlur={() => save()} />
+              <input className={faCellCls} dir="rtl" lang="fa" value={r.fa} maxLength={LIMITS.label} placeholder="فارسی" aria-label={`${shown(g.name) || 'Choice'} ${i + 1} (Persian)`} onChange={(e) => set(r.key, { fa: e.target.value })} onBlur={() => save()} />
               <button type="button" aria-label={`Remove add-on ${r.en || i + 1}`} onClick={() => { const next = rows.filter((x) => x.key !== r.key); setRows(next); save(next); }} className={removeCls}><Icon name="close" className="h-4 w-4" /></button>
             </div>
-          ))}
+            {held && r.en.trim() && priceOf(r.price) === 'bad' && <p role="alert" className="px-3 pb-2 text-xs text-red-600" data-row-problem="">Not a price (for example 0.75)</p>}
+          </div>))}
           <div className="flex min-h-11 flex-wrap items-center justify-between gap-x-2 px-1">
-            <button type="button" className={`${btnGhost} min-h-11 px-3 text-sm text-accent-strong`} onClick={() => addRow(g)}><Icon name="plus" className="h-4 w-4" />Add a choice</button>
+            <button type="button" className={`${btnGhost} min-h-11 px-3 text-sm text-accent-strong`} onClick={() => addRow(g)} disabled={g.rows.length >= COUNTS.options}><Icon name="plus" className="h-4 w-4" />{g.rows.length >= COUNTS.options ? `At most ${COUNTS.options}` : 'Add a choice'}</button>
             <label className="flex min-h-11 items-center gap-2 pr-2 text-sm"><Switch checked={g.rows.every((r) => r.required)} label="Customer must pick one" onChange={(v) => { const next = rows.map((r) => (r.group === g.name ? { ...r, required: v } : r)); setRows(next); save(next); }} />Must pick one</label>
           </div>
         </div>
       ))}
       <div className="flex items-center gap-2">
-        <button type="button" className={`${btnSecondary} min-h-11 px-3 text-sm`} onClick={addGroup}><Icon name="plus" className="h-4 w-4" />Choice group</button>
+        <button type="button" className={`${btnSecondary} min-h-11 px-3 text-sm`} onClick={addGroup} disabled={groups.length >= COUNTS.groups}><Icon name="plus" className="h-4 w-4" />Choice group</button>
         {!groups.length && <span className="text-xs text-ink-muted">Milk, extras, sauces…</span>}
+        {groups.length >= COUNTS.groups && <span className="text-xs text-ink-muted">At most {COUNTS.groups} groups</span>}
       </div>
     </div>
   );

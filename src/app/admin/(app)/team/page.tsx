@@ -59,7 +59,7 @@ export default async function Team({ searchParams }: { searchParams: Promise<SP>
                   ))}
                 </ul>
               )}
-              <p className="mt-4 text-xs text-ink-muted">Set or change an admin PIN on the laptop: <code className="rounded bg-neutral-100 px-1.5 py-0.5">npm run admin:create -- --email &lt;email&gt; --name &quot;&lt;name&gt;&quot; --pin &lt;digits&gt; --reset</code></p>
+              <p className="mt-4 text-xs text-ink-muted">Set or change an admin PIN on the laptop: <code className="rounded bg-neutral-100 px-1.5 py-0.5">npm run admin:create -- --email &lt;email&gt; --name &quot;&lt;name&gt;&quot; --pin &lt;6 or more digits&gt; --reset</code></p>
             </Card>}
             {revoked.length > 0 && (
               <details className="group rounded-[22px] border border-line bg-white shadow-card">
@@ -83,7 +83,7 @@ function Pin({ p, venues }: { p: PinRow; venues: Venue[] }) {
         <p className="flex flex-wrap items-center gap-1.5 text-xs text-ink-muted">
           <Badge tone={p.role === 'owner' ? 'accent' : 'grey'}>{p.role === 'owner' ? 'Owner' : 'Staff'}</Badge>
           <span>{p.venue_ids.map((id) => venues.find((v) => v.id === id)?.name.en ?? id).join(', ')}</span>
-          <span>· created <When at={p.created_at} style="date" /></span>
+          <span>· created <When at={p.created_at} style="date" />{p.created_by_name ? ` by ${p.created_by_name}` : ''}</span>
           {p.last_used_at && <span>· used <When at={p.last_used_at} /></span>}
           {p.revoked_at && <span>· revoked <When at={p.revoked_at} style="date" /></span>}
         </p>

@@ -30,7 +30,7 @@ export default async function VenueEditor({ params, searchParams }: { params: Pr
       {(one(sp, 'error') || one(sp, 'unlocked') || one(sp, 'seen')) && <div className="mx-auto max-w-3xl px-4 pt-4"><Notice sp={sp} /></div>}
       {alerts.length > 0 && (
         <div className="mx-auto max-w-3xl px-4 pt-4">
-          <Card tone="danger" icon="bell" title="Alerts" description="PIN sign-in problems that need an admin.">
+          <Card tone="danger" icon="bell" title="Alerts" description="PIN sign-in problems for an admin to look at.">
             <ul className="divide-y divide-red-100">
               {alerts.map((a) => (
                 <li key={a.id} className="py-3 first:pt-0 last:pb-0">
@@ -38,6 +38,7 @@ export default async function VenueEditor({ params, searchParams }: { params: Pr
                   <p className="mt-1 text-xs text-ink-muted"><When at={a.created_at} /></p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {a.venue_id && <form method="post" action="/api/admin/alert"><input type="hidden" name="_action" value="unlock" /><input type="hidden" name="venue" value={a.venue_id} /><input type="hidden" name="_back" value={back} /><button className={`${primary} ${sm}`} type="submit">Unlock PIN login</button></form>}
+                    {a.kind === 'admin-pin-cap' && <form method="post" action="/api/admin/alert"><input type="hidden" name="_action" value="unlock-admin-pins" /><input type="hidden" name="_back" value={back} /><button className={`${primary} ${sm}`} type="submit">Unlock admin PINs</button></form>}
                     <form method="post" action="/api/admin/alert"><input type="hidden" name="_action" value="seen" /><input type="hidden" name="id" value={a.id} /><input type="hidden" name="_back" value={back} /><button className={`${secondary} ${sm}`} type="submit">Mark as seen</button></form>
                   </div>
                 </li>

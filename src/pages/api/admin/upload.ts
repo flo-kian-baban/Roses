@@ -1,15 +1,21 @@
 // Photo and logo upload (step 2): the file is the request body (the browser sends the resized image as image/jpeg,
-// image/png or image/webp; SVG for logos only), at most 8 MB, checked by its first bytes, stored behind the storage
-// interface and answered with its address, key and pixel size. No multipart parsing, no dependency.
+// image/png or image/webp; SVG for logos only), at most 8 MB, stored behind the storage interface and answered with its
+// address, key and pixel size. No multipart parsing, no dependency. Pre-go-live audit (the PM's fix batch, 2026-11-03, S2-09): the whole
+// file is checked as one image of its type and its pixel size read from it (src/lib/admin/image-check.ts), and each venue has a quota:
+// 100 files an hour, 2000 files and 500 MB in all (UPLOAD_QUOTA_HOUR, UPLOAD_QUOTA_FILES, UPLOAD_QUOTA_MB override them, for tests only).
 //   POST /api/admin/upload?venue=<id>&kind=photo|logo      body: the image bytes
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { sessionFromRequest, canEditVenue, canManage } from '@/lib/admin/auth';
+import { refuseCrossSite } from '@/lib/admin/api';
+import { checkImage } from '@/lib/admin/image-check';
 import { getVenueRow } from '@/lib/admin/venue';
 import { liveSession } from '@/lib/admin/pins';
 import { newKey, storage, EXT_TYPES } from '@/lib/storage';
 
 export const config = { api: { bodyParser: false, responseLimit: false } };
 const MAX = 8 * 1024 * 1024;
+const num = (v: string | undefined, d: number): number => { const n = Number(v); return v && Number.isInteger(n) && n > 0 ? n : d; };
+const QUOTA = () => ({ hour: num(process.env.UPLOAD_QUOTA_HOUR, 100), files: num(process.env.UPLOAD_QUOTA_FILES, 2000), bytes: num(process.env.UPLOAD_QUOTA_MB, 500) * 1024 * 1024 });
 const TYPE_EXT: Record<string, keyof typeof EXT_TYPES> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/svg+xml': 'svg' };
 
 function sniff(buf: Buffer): keyof typeof EXT_TYPES | null {
@@ -20,43 +26,10 @@ function sniff(buf: Buffer): keyof typeof EXT_TYPES | null {
   if (head.startsWith('<') && /<svg[\s>]/i.test(buf.subarray(0, 4096).toString('utf8'))) return 'svg';
   return null;
 }
-// Pixel size from the file itself (PNG IHDR, JPEG SOF, WebP VP8/VP8L/VP8X, SVG width/height or viewBox).
-export function dimensions(buf: Buffer, ext: string): { width: number; height: number } | null {
-  try {
-    if (ext === 'png') return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
-    if (ext === 'jpg') {
-      let i = 2;
-      while (i + 9 < buf.length) {
-        if (buf[i] !== 0xff) { i++; continue; }
-        const m = buf[i + 1];
-        if (m === 0xd8 || m === 0x01 || (m >= 0xd0 && m <= 0xd7)) { i += 2; continue; }
-        const len = buf.readUInt16BE(i + 2);
-        if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) return { height: buf.readUInt16BE(i + 5), width: buf.readUInt16BE(i + 7) };
-        i += 2 + len;
-      }
-      return null;
-    }
-    if (ext === 'webp') {
-      const chunk = buf.subarray(12, 16).toString('latin1');
-      if (chunk === 'VP8 ') return { width: buf.readUInt16LE(26) & 0x3fff, height: buf.readUInt16LE(28) & 0x3fff };
-      if (chunk === 'VP8L') { const b = buf.readUInt32LE(21); return { width: (b & 0x3fff) + 1, height: ((b >> 14) & 0x3fff) + 1 }; }
-      if (chunk === 'VP8X') return { width: buf.readUIntLE(24, 3) + 1, height: buf.readUIntLE(27, 3) + 1 };
-      return null;
-    }
-    if (ext === 'svg') {
-      const s = buf.subarray(0, 4096).toString('utf8'); const tag = s.match(/<svg[^>]*>/i)?.[0] ?? '';
-      const num = (k: string) => { const m = tag.match(new RegExp(`\\s${k}="\\s*([\\d.]+)`, 'i')); return m ? Math.round(Number(m[1])) : null; };
-      const w = num('width'), h = num('height'); if (w && h) return { width: w, height: h };
-      const vb = tag.match(/viewBox="\s*[\d.-]+[\s,]+[\d.-]+[\s,]+([\d.]+)[\s,]+([\d.]+)/i); if (vb) return { width: Math.round(Number(vb[1])), height: Math.round(Number(vb[2])) };
-      return null;
-    }
-  } catch { /* fall through */ }
-  return null;
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); res.status(405).json({ ok: false, error: 'POST only' }); return; }
+  if (refuseCrossSite(req, res)) return; // pre-go-live audit S1-08
   const session = await liveSession(await sessionFromRequest(req));
   if (!session) { res.status(401).json({ ok: false, error: 'not signed in' }); return; }
   const venueId = String(req.query.venue ?? ''); const kind = req.query.kind === 'logo' ? 'logo' : 'photo';
@@ -72,7 +45,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!buf.length) { res.status(400).json({ ok: false, error: 'The file is empty' }); return; }
   const ext = sniff(buf);
   if (!ext || ext !== declared) { res.status(400).json({ ok: false, error: 'The file is not the image type it says it is' }); return; }
-  const dim = dimensions(buf, ext);
+  const checked = checkImage(buf, ext);
+  if (!checked.ok) { res.status(400).json({ ok: false, error: `This file cannot be used: ${checked.error}. Try another photo, or save it again as a JPEG or PNG.` }); return; }
+  const q = QUOTA(), used = await storage.usage(venue.id);
+  if (used.lastHour >= q.hour) { res.status(429).json({ ok: false, error: `${q.hour} photos were uploaded for this venue in the last hour; try again later.` }); return; }
+  if (used.files >= q.files || used.bytes + buf.length > q.bytes) { res.status(413).json({ ok: false, error: 'This venue\'s photo storage is full. Ask an admin to clear unused photos (npm run uploads:clean).' }); return; }
   const stored = await storage.put(newKey(venue.id, kind, ext), buf, EXT_TYPES[ext]);
-  res.status(200).json({ ok: true, url: stored.url, key: stored.key, width: dim?.width ?? null, height: dim?.height ?? null, bytes: buf.length });
+  res.status(200).json({ ok: true, url: stored.url, key: stored.key, width: checked.width, height: checked.height, bytes: buf.length });
 }

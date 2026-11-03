@@ -147,12 +147,12 @@ Admin pages (App Router; the app defines no server actions): `/admin` signs in o
 |---|---|
 | `DATABASE_URL` | Set; TLS as the host requires; the host's pooled connection (each instance opens up to 5) |
 | `SESSION_SECRET` | Set: a new random value of 32+ characters, not the laptop's |
-| `TRUST_PROXY` | `1` on Vercel (S1-09); never on a host reached directly |
+| `TRUST_PROXY` | `1` on Vercel (S1-09; since 2026-11-03 the number of proxies in front of the app, the address read that many hops from the right); never on a host reached directly |
 | `COOKIE_SECURE` | `1` |
 | `UPLOAD_DIR`, `STORAGE_DRIVER` | Only local disk exists, which cannot work on Vercel (S1-24) |
 | `NODE_ENV` | `production` (set by `next start` and by Vercel) |
 | `ROSES_NOW`, `ROSES_CHECK_SUITE` | Never set |
-| `PREVIEW_BUILD`, `LOCKOUT_*`, `VENUE_CAP_*`, `NEXT_DIST_DIR`, `ROSES_APP_NAME` | Unset |
+| `LOCKOUT_*`, `VENUE_CAP_*`, `ADMIN_PIN_CAP_*`, `UPLOAD_QUOTA_*`, `NEXT_DIST_DIR`, `ROSES_APP_NAME`, `CLIENT_IP_HEADER` | Unset (`CLIENT_IP_HEADER` only to name a host's own client-address header). `PREVIEW_BUILD` no longer exists (S1-10, removed 2026-11-03) |
 
 Secrets: no key, token, password hash, database dump or `.env` file in any stored git object (4,591 files across every branch, 2026-11-02), apart from S1-06 above.
 

@@ -1,11 +1,13 @@
 // Items: read, create, update, show/hide, move, delete. Every change goes through one transaction that also writes
 // the revision row (the silent change record; Undo restores the row from it). Listing rule (PM): an item can be
-// shown only if it has a price, or every size has a price.
+// shown only if it has a price, or every size has a price (src/lib/rules.ts, shared with the editor; pre-go-live audit H-04).
 import type { Pool, PoolClient } from 'pg';
 import { pool } from '@/lib/db';
 import type { Basis, Bi, Variant, AddOn, Component, Notes, Placement, EditorItem, Photo, SeasonId } from '@/lib/types';
 type Q = Pool | PoolClient;
 import { recordRevision, type By } from './revisions';
+import { listingProblem } from '@/lib/rules';
+export { listingProblem };
 
 export type { Notes, Placement };
 export type ItemRow = {
@@ -21,20 +23,6 @@ const COLS = 'id, venue_id, name, description, price, variants, add_ons, compone
 // The research basis of an item (src/lib/types.ts Basis), from its internal source column: the research import's entry, if any.
 export const BASIS_SQL = `jsonb_path_query_first(source, '$[*] ? (@.source == "research")')`;
 export const basisOf = (b: Record<string, unknown> | null | undefined): Basis | null => (b ? { ingredients: Array.isArray(b.ingredients) ? b.ingredients.map(String) : [], source: typeof b.url === 'string' ? b.url : null, sourceTitle: typeof b.sourceTitle === 'string' ? b.sourceTitle : null, note: typeof b.note === 'string' ? b.note : null, file: typeof b.file === 'string' ? b.file : null } : null);
-
-export function listingProblem(i: { price: string | number | null; variants: Variant[] }): string | null {
-  if (i.price != null && i.price !== '') return null;
-  if (i.variants.length && i.variants.every((v) => v.price != null)) return null;
-  return i.variants.length ? 'Every size needs a price before the item can be shown' : 'The item needs a price before it can be shown';
-}
-
-export function persianMissing(i: { name: Bi; description: Bi; variants?: Variant[] }): string[] {
-  const out: string[] = [];
-  if (i.name.en && !i.name.fa) out.push('name');
-  if (i.description?.en && !i.description.fa) out.push('description');
-  if (i.variants?.some((v) => v.label.en && !v.label.fa)) out.push('sizes');
-  return out;
-}
 
 export async function getItem(id: string): Promise<(ItemRow & { placements: Placement[]; basis?: Record<string, unknown> | null }) | null> {
   const r = await pool.query<ItemRow & { basis: Record<string, unknown> | null }>(`select ${COLS}, ${BASIS_SQL} as basis from items where id = $1`, [id]);
@@ -82,7 +70,7 @@ function clearResearchDrafts(drafts: string[], before: ItemSnapshot, after: Item
 }
 
 // `revision` is the id of the change record written (absent when nothing changed).
-export type Result = { ok: true; id: string; revision?: number } | { ok: false; error: string; conflict?: boolean };
+export type Result = { ok: true; id: string; revision?: number } | { ok: false; error: string; conflict?: boolean; fault?: boolean };
 // Pre-go-live audit (2026-11-02, D-03): a save carries the version of the item the editor holds (its updated_at); when the item was changed
 // since, by someone else or on another device, the save is refused instead of putting back the editor's older copy of the other fields.
 export const CHANGED = 'Someone else changed this item since you opened it. The latest version is now on screen; make your change again if it is still needed.';
@@ -125,13 +113,20 @@ export async function updateItem(id: string, patch: ItemPatch, by: By, base: str
     const revision = await recordRevision(client, { venueId: row.venue_id, table: 'items', rowId: id, action, before, after: next, by });
     await client.query('commit');
     return { ok: true, id, revision };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
-export async function createItem(venueId: string, data: ItemPatch & { name: Bi }, by: By): Promise<Result> {
+// clientKey (pre-go-live audit D-05): the editor's key for one "+ Add item"; sending it again (its answer was lost, the person tapped Add
+// again) answers the item that key already created instead of a second one. Kept in the create record, no new column.
+export async function createItem(venueId: string, data: ItemPatch & { name: Bi }, by: By, clientKey: string | null = null): Promise<Result & { repeated?: boolean }> {
   const client = await pool.connect();
   try {
     await client.query('begin');
+    if (clientKey) {
+      await client.query('select pg_advisory_xact_lock(hashtext($1))', [`item-create:${clientKey}`]);
+      const prior = (await client.query<{ id: number; row_id: string }>(`select r.id, r.row_id from revisions r join items i on i.id::text = r.row_id where r.venue_id = $1 and r.table_name = 'items' and r.action = 'create' and r.after->>'client_key' = $2 and r.by->>'id' = $3 and r.at > now() - interval '1 day' order by r.id desc limit 1`, [venueId, clientKey, by.id])).rows[0];
+      if (prior) { await client.query('rollback'); return { ok: true, id: prior.row_id, revision: Number(prior.id), repeated: true }; }
+    }
     const snap: ItemSnapshot = {
       name: data.name, description: data.description ?? { en: null, fa: null }, price: data.price ?? null, variants: data.variants ?? [], add_ons: data.add_ons ?? [], components: data.components ?? [],
       serves: data.serves ?? null, photo: data.photo ?? null, notes: data.notes ?? { allergens: [], dietary: [], halal: null, text: { en: null, fa: null } }, listed: !!data.listed, fa_draft: [], placements: [],
@@ -150,10 +145,10 @@ export async function createItem(venueId: string, data: ItemPatch & { name: Bi }
       await client.query('insert into item_sections (item_id, section_id, position) values ($1,$2,$3)', [id, sid, pos]);
       snap.placements.push({ section_id: sid, position: pos });
     }
-    const revision = await recordRevision(client, { venueId, table: 'items', rowId: id, action: 'create', before: null, after: snap, by });
+    const revision = await recordRevision(client, { venueId, table: 'items', rowId: id, action: 'create', before: null, after: clientKey ? { ...snap, client_key: clientKey } : snap, by });
     await client.query('commit');
     return { ok: true, id, revision };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
 export async function deleteItem(id: string, by: By): Promise<Result> {
@@ -167,7 +162,7 @@ export async function deleteItem(id: string, by: By): Promise<Result> {
     const revision = await recordRevision(client, { venueId: row.venue_id, table: 'items', rowId: id, action: 'delete', before, after: null, by });
     await client.query('commit');
     return { ok: true, id, revision };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
 // Duplicate (Kian, 2026-10-13): a copy of the item named "<name> (copy)" in both languages, hidden, in the same sections (right after the
@@ -199,14 +194,14 @@ export async function duplicateItem(id: string, by: By): Promise<Result & { orde
     for (const p of placements) orders.push({ section_id: p.section_id, item_ids: await sectionOrder(client, p.section_id) });
     await client.query('commit');
     return { ok: true, id: copyId, revision, orders };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
 // Copy choices (Kian via the PM, 2026-10-13): one choice group of an item (its add-ons with that group's English name, '' for the rows
 // with no group) copied to other items of the venue in one transaction. On each target a group of the same name is replaced where it
 // stands, otherwise the rows are added at the end; one change record per item changed, so one Undo (the toast carries them all) puts
 // every item back. Targets that would not change are left alone.
-export async function copyChoices(sourceId: string, group: string, targetIds: string[], by: By): Promise<{ ok: true; revisions: number[]; ids: string[] } | { ok: false; error: string }> {
+export async function copyChoices(sourceId: string, group: string, targetIds: string[], by: By): Promise<{ ok: true; revisions: number[]; ids: string[] } | { ok: false; error: string; fault?: boolean }> {
   const client = await pool.connect();
   try {
     await client.query('begin');
@@ -230,7 +225,7 @@ export async function copyChoices(sourceId: string, group: string, targetIds: st
     }
     await client.query('commit');
     return { ok: true, revisions, ids };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
 // Moves an item to `index` within one section (drag on a laptop, Move up / Move down on a phone). Positions of the
@@ -250,7 +245,7 @@ export async function moveItem(sectionId: string, itemId: string, index: number,
     const revision = await recordRevision(client, { venueId: sec.venue_id, table: 'sections', rowId: sectionId, action: 'reorder', before: { items: before }, after: { items: after }, by });
     await client.query('commit');
     return { ok: true, id: itemId, revision, order: after };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
 export async function sectionOrder(client: Q, sectionId: string): Promise<string[]> {
@@ -271,10 +266,13 @@ export async function applyItemSnapshot(client: Q, venueId: string, id: string, 
   for (const p of snap.placements ?? []) await client.query('insert into item_sections (item_id, section_id, position) select $1, $2, $3 where exists (select 1 from sections where id = $2) on conflict do nothing', [id, p.section_id, p.position]);
 }
 
-export function dbError(e: unknown): string {
+// A database error as staff read it: the price rule's own words, or one plain line for anything else (a server fault: the route answers
+// 500 and the details go to the server log; pre-go-live audit H-06: before, the database's own text reached the staff toast).
+export function dbError(e: unknown): { error: string; fault?: boolean } {
   const err = e as { code?: string; constraint?: string; message?: string };
-  if (err.constraint === 'listed_requires_price') return 'The item needs a price before it can be shown (database rule)';
-  return err.message || 'database error';
+  if (err.constraint === 'listed_requires_price') return { error: 'The item needs a price before it can be shown (every size, when it has sizes)' };
+  console.error('admin database error', e);
+  return { error: 'Something went wrong on the server. Try again.', fault: true };
 }
 
 function stripUndefined<T extends object>(o: T): Partial<T> {

@@ -19,20 +19,30 @@ export async function listVenueRows(): Promise<Venue[]> {
   return (await pool.query<Venue>(`select ${COLS} from venues order by id`)).rows;
 }
 
-export async function updateVenue(id: string, patch: Partial<VenueSnapshot>, by: By): Promise<Result> {
+// `patch` is either the change itself or a function that builds it from the row as it is now, read under the row's lock (pre-go-live
+// audit D-15: Style saves arriving together each merged into the style they had read before, so the last one put back the others'
+// colours; built inside the lock, each merges into the one before it). A function may throw (a refusal): nothing is written then.
+export async function updateVenue(id: string, patch: Partial<VenueSnapshot> | ((row: Venue) => Partial<VenueSnapshot>), by: By): Promise<Result> {
   const client = await pool.connect();
+  let open = false;
   try {
-    await client.query('begin');
+    await client.query('begin'); open = true;
     const row = (await client.query<Venue>(`select ${COLS} from venues where id = $1 for update`, [id])).rows[0];
-    if (!row) { await client.query('rollback'); return { ok: false, error: 'venue not found' }; }
+    if (!row) { await client.query('rollback'); open = false; return { ok: false, error: 'venue not found' }; }
+    let change: Partial<VenueSnapshot>;
+    try { change = typeof patch === 'function' ? patch(row) : patch; } catch (e) { await client.query('rollback'); open = false; throw e; }
     const before: VenueSnapshot = { name: row.name, tagline: row.tagline, locations: row.locations, settings: row.settings, brand: row.brand, style: row.style };
-    const next: VenueSnapshot = { ...before, ...Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined)) } as VenueSnapshot;
-    if (same(before, next)) { await client.query('rollback'); return { ok: true, id }; }
+    const next: VenueSnapshot = { ...before, ...Object.fromEntries(Object.entries(change).filter(([, v]) => v !== undefined)) } as VenueSnapshot;
+    if (same(before, next)) { await client.query('rollback'); open = false; return { ok: true, id }; }
     await applyVenueSnapshot(client, id, next, by);
     const revision = await recordRevision(client, { venueId: id, table: 'venues', rowId: id, action: 'update', before, after: next, by });
-    await client.query('commit');
+    await client.query('commit'); open = false;
     return { ok: true, id, revision };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) {
+    if (open) await client.query('rollback');
+    if (e && typeof e === 'object' && 'status' in e) throw e; // a refusal from the builder (ApiError) reaches the route as it is
+    return { ok: false, ...dbError(e) };
+  } finally { client.release(); }
 }
 
 // Older records (before step 2) carry no brand or style: those columns are then left as they are.
@@ -63,5 +73,5 @@ export async function createVenue(data: { name: Bi; id?: string | null }, by: By
     await recordRevision(client, { venueId: id, table: 'sections', rowId: sec.rows[0].id, action: 'create', before: null, after: { name: { en: 'Menu', fa: 'منو' }, note: { en: null, fa: null }, position: 0, listed: true, fa_draft: [] }, by });
     await client.query('commit');
     return { ok: true, id };
-  } catch (e) { await client.query('rollback'); return { ok: false, error: dbError(e) }; } finally { client.release(); }
+  } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }

@@ -41,12 +41,14 @@ function Serves({ item }: { item: Item }) {
   return item.serves ? <span className="chip"><span lang="en">Serves {item.serves}</span><span lang="fa" dir="rtl">برای {item.serves} نفر</span></span> : null;
 }
 
+// A row's prices; with sizes, each size's name and amount are isolated (pre-go-live audit S2-03: a direction mark in a name, pasted from
+// Word, used to reorder the rest of the line: "SmallLarge $19 · $12.50").
 function PriceLine({ item }: { item: Item }) {
   if (item.price != null) return <p className="mt-1 text-[15px] text-(--c-rows-price)"><span className="shrink-0 tabular-nums">{price(item.price)}</span></p>;
   if (item.variants.length === 0) return null;
   return (
     <p className="mt-1 text-[15px] text-(--c-rows-price)">
-      {item.variants.map((v, n) => <span key={n}>{n > 0 && ' · '}<Bi text={v.label} /> {v.price != null && <span className="tabular-nums">{price(v.price)}</span>}</span>)}
+      {item.variants.map((v, n) => <span key={n}>{n > 0 && ' · '}<bdi><Bi text={v.label} /></bdi> {v.price != null && <bdi dir="ltr" className="tabular-nums">{price(v.price)}</bdi>}</span>)}
     </p>
   );
 }

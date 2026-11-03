@@ -1,14 +1,18 @@
 // Venue, JSON (owner and admin; staff get 403):
-//   update  { action:'update', id, patch:{ name, tagline, locations, showPersianDrafts, logo } }   the Details tab
-//   create  { action:'create', name:{en,fa} }                                                    "+ Add venue" (default template)
+//   update  { action:'update', id, patch:{ name, tagline, locations, showPersianDrafts, logo }, base?:{ locations } }   the Details tab
+//   create  { action:'create', name:{en,fa} }                                                    "+ Add venue" (default template; admin only)
 //   GET ?id=<venue>                                                                              the details as the tab holds them
-import { jsonRoute, ApiError, revalidateVenue, biOf, boolOf, str, type JsonBody } from '@/lib/admin/api';
-import { canEditVenue, canManage } from '@/lib/admin/auth';
+import { jsonRoute, ApiError, refusal, revalidateVenue, biOf, boolOf, isObj, photoUrlOk, str, textOf, type JsonBody } from '@/lib/admin/api';
+import { canEditVenue, canManage, isAdmin } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
-import { createVenue, getVenueRow, updateVenue } from '@/lib/admin/venue';
+import { createVenue, getVenueRow, updateVenue, type VenueSnapshot } from '@/lib/admin/venue';
 import type { Bi, Location, Logo, Venue } from '@/lib/types';
+import { LIMITS, phoneOf } from '@/lib/rules';
 
 const details = (v: Venue) => ({ id: v.id, name: v.name, tagline: v.tagline, locations: v.locations, logo: v.brand?.logo ?? null, settings: v.settings, template: v.template, style: v.style, brandColors: v.brand?.colors ?? {} });
+// Two lists of locations compared as data (the order of an object's keys does not count).
+const canon = (x: unknown): string => JSON.stringify(x, (_k, v) => (v && typeof v === 'object' && !Array.isArray(v) ? Object.fromEntries(Object.entries(v as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b))) : v));
+export const LOCATIONS_CHANGED = 'Someone else changed the locations since you opened this page. They are now on screen as they are; make your change again if it is still needed.';
 
 export default jsonRoute(async ({ req, res, session, body }) => {
   if (!canManage(session)) throw new ApiError(403, 'venue details are edited by the owner or an admin');
@@ -18,9 +22,11 @@ export default jsonRoute(async ({ req, res, session, body }) => {
     return { revisions: [], venue: details(v) };
   }
   if (body.action === 'create') {
-    const name = biOf(body.name); if (!name.en) throw new ApiError(400, 'The name is required');
+    // pre-go-live audit (the PM, 2026-11-03, S1-11): "+ Add venue" is for admins (an owner's new venue was public and theirs to open: 403)
+    if (!isAdmin(session)) throw new ApiError(403, 'Adding a venue is for an admin');
+    const name = biOf(body.name, 'The name', LIMITS.venueName); if (!name.en) throw new ApiError(400, 'The name is required');
     const r = await createVenue({ name, id: str(body.id) }, byOf(session));
-    if (!r.ok) throw new ApiError(400, r.error);
+    if (!r.ok) throw refusal(r);
     await revalidateVenue(res, r.id);
     return { revisions: [], venue: r.id };
   }
@@ -28,40 +34,55 @@ export default jsonRoute(async ({ req, res, session, body }) => {
   if (!venue) throw new ApiError(404, 'venue not found');
   if (!canEditVenue(session, venue.id)) throw new ApiError(403, 'no access to this venue');
   if (body.action !== 'update') throw new ApiError(400, 'unknown action');
-  const p = (body.patch && typeof body.patch === 'object' ? body.patch : {}) as JsonBody;
-  const patch: Parameters<typeof updateVenue>[1] = {};
-  // the Details tab sends only the language edited (pre-go-live audit D-03): the other one stays as it is now, so a page opened before
-  // someone else's edit cannot put back its older text in the other language
-  const biIn = (cur: Bi, v: unknown): Bi => { const o = (v && typeof v === 'object' ? v : {}) as JsonBody; return { en: 'en' in o ? str(o.en) : cur.en, fa: 'fa' in o ? str(o.fa) : cur.fa }; };
-  if ('name' in p) { patch.name = biIn(venue.name, p.name); if (!patch.name.en) throw new ApiError(400, 'The English name is required'); }
-  if ('tagline' in p) patch.tagline = biIn(venue.tagline, p.tagline);
-  if ('showPersianDrafts' in p) patch.settings = { ...venue.settings, showPersianDrafts: boolOf(p.showPersianDrafts) };
-  if ('logo' in p) {
-    const o = (p.logo && typeof p.logo === 'object' ? p.logo : null) as JsonBody | null;
-    let logo: Logo | null = null;
-    if (o) {
-      const url = str(o.url); const width = Number(o.width), height = Number(o.height);
-      if (!url || !(url.startsWith('/uploads/') || url.startsWith('/brand/') || /^https?:\/\/\S+$/i.test(url))) throw new ApiError(400, 'the logo must be an uploaded file');
-      if (!(width > 0 && height > 0)) throw new ApiError(400, 'the logo size could not be read; try a PNG or JPEG');
-      logo = { url, width: Math.round(width), height: Math.round(height), key: str(o.key) };
-    }
-    patch.brand = { ...venue.brand, logo };
-  }
-  if ('locations' in p) {
-    const locs = (Array.isArray(p.locations) ? p.locations : []).map((l, i): Location => {
-      const o = (l && typeof l === 'object' ? l : {}) as JsonBody; const prev = venue.locations[i];
-      const loc: Location = { label: biOf(o.label), address: str(o.address), phone: str(o.phone), hours: biOf(o.hours) };
-      if (prev?.confirm?.length && !boolOf(o.confirmed)) { // "to confirm" marks clear per field when it is edited, or for the location when confirmed
-        const still = prev.confirm.filter((f) => (f === 'address' && loc.address === prev.address) || (f === 'phone' && loc.phone === prev.phone) || (f === 'hours' && loc.hours.en === prev.hours.en));
-        if (still.length) loc.confirm = still;
+  if (!isObj(body.patch)) throw new ApiError(400, 'patch: expected an object');
+  const p = body.patch as JsonBody;
+  const base = isObj(body.base) ? body.base : null;
+  // Pre-go-live audit (the PM's fix batch, 2026-11-03): every field read strictly with its limit (S2-02, S2-06: a list of locations must be a
+  // list, a logo an object or null); the change is built from the venue as it is under the row's lock (D-15); a change of the locations
+  // carries them as the tab last saw them (base.locations) and is refused (409, with the details as they are now) when someone else changed
+  // them since (the residual of D-03: before, the tab wrote its whole older copy back).
+  const r = await updateVenue(venue.id, (row) => {
+    const patch: Partial<VenueSnapshot> = {};
+    // the Details tab sends only the language edited (pre-go-live audit D-03): the other one stays as it is now
+    const biIn = (cur: Bi, v: unknown, what: string, max: number): Bi => { if (!isObj(v)) throw new ApiError(400, `${what}: expected { en } or { fa }`); return { en: 'en' in v ? textOf(v.en, what, max) : cur.en, fa: 'fa' in v ? textOf(v.fa, `${what} (Persian)`, max) : cur.fa }; };
+    if ('name' in p) { patch.name = biIn(row.name, p.name, 'The name', LIMITS.venueName); if (!patch.name.en) throw new ApiError(400, 'The English name is required'); }
+    if ('tagline' in p) patch.tagline = biIn(row.tagline, p.tagline, 'The tagline', LIMITS.tagline);
+    if ('showPersianDrafts' in p) patch.settings = { ...row.settings, showPersianDrafts: boolOf(p.showPersianDrafts, 'showPersianDrafts') };
+    if ('logo' in p) {
+      if (p.logo !== null && !isObj(p.logo)) throw new ApiError(400, 'logo: expected { url, width, height } or null');
+      let logo: Logo | null = null;
+      if (p.logo) {
+        const o = p.logo; const url = str(o.url); const width = Number(o.width), height = Number(o.height);
+        // pre-go-live audit S2-04: a new logo is an uploaded file (or one of the logos the app ships); before, any https address passed
+        if (!url || (url !== row.brand?.logo?.url && !photoUrlOk(url, 'logo'))) throw new ApiError(400, 'the logo must be an uploaded file');
+        if (!(width > 0 && height > 0)) throw new ApiError(400, 'the logo size could not be read; try a PNG or JPEG');
+        logo = { url, width: Math.round(width), height: Math.round(height), key: str(o.key) };
       }
-      return loc;
-    });
-    if (locs.some((l) => l.phone && !/^[\d\s()+\-.]{7,20}$/.test(l.phone))) throw new ApiError(400, 'a phone number can hold digits, spaces, (), + and - only');
-    patch.locations = locs;
-  }
-  const r = await updateVenue(venue.id, patch, byOf(session));
-  if (!r.ok) throw new ApiError(400, r.error);
+      patch.brand = { ...row.brand, logo };
+    }
+    if ('locations' in p) {
+      if (!Array.isArray(p.locations)) throw new ApiError(400, 'locations: expected a list');
+      if (p.locations.length > 10) throw new ApiError(400, 'At most 10 locations');
+      if (base && 'locations' in base && canon(base.locations) !== canon(row.locations)) throw new ApiError(409, LOCATIONS_CHANGED, { venue: details(row) });
+      const L = LIMITS.location;
+      patch.locations = p.locations.map((l, i): Location => {
+        if (!isObj(l)) throw new ApiError(400, 'a location must be an object');
+        const prev = row.locations[i];
+        const phone = textOf(l.phone, 'The phone number', L);
+        const ph = phone == null ? null : phoneOf(phone);
+        if (ph === 'bad') throw new ApiError(400, 'A phone number has 7 to 15 digits and can hold spaces, (), + and - only');
+        const loc: Location = { label: biOf(l.label, 'The label', L), address: textOf(l.address, 'The address', L), phone: ph, hours: biOf(l.hours, 'The hours', L) };
+        const confirmed = l.confirmed === undefined ? false : boolOf(l.confirmed, 'confirmed');
+        if (prev?.confirm?.length && !confirmed) { // "to confirm" marks clear per field when it is edited, or for the location when confirmed
+          const still = prev.confirm.filter((f) => (f === 'address' && loc.address === prev.address) || (f === 'phone' && loc.phone === prev.phone) || (f === 'hours' && loc.hours.en === prev.hours.en));
+          if (still.length) loc.confirm = still;
+        }
+        return loc;
+      });
+    }
+    return patch;
+  }, byOf(session));
+  if (!r.ok) throw refusal(r);
   await revalidateVenue(res, venue.id);
   const after = await getVenueRow(venue.id);
   return { revisions: r.revision ? [r.revision] : [], venue: after && details(after) };

@@ -2,18 +2,37 @@
 import { createHash, randomInt } from 'node:crypto';
 import { pool } from '@/lib/db';
 import { hashSecret, verifySecret, type Session } from './auth';
+import { recordRevision, type By } from './revisions';
 
 export type PinRow = { id: string; name: string; role: 'owner' | 'staff'; venue_ids: string[]; created_at: string; revoked_at: string | null; last_used_at: string | null; created_by_name: string | null };
 
+// created_by_name: the admin who made it, or, for a PIN an owner made, the owner (from its change record: pre-go-live audit S1-21).
 export async function listPins(): Promise<PinRow[]> {
-  return (await pool.query<PinRow>(`select p.id, p.name, p.role, p.venue_ids, p.created_at, p.revoked_at, p.last_used_at, a.name as created_by_name from pins p left join admins a on a.id = p.created_by order by p.revoked_at nulls first, p.created_at desc`)).rows;
+  return (await pool.query<PinRow>(`select p.id, p.name, p.role, p.venue_ids, p.created_at, p.revoked_at, p.last_used_at,
+      coalesce(a.name, (select r.by->>'name' from revisions r where r.table_name = 'pins' and r.row_id = p.id::text and r.action = 'create' order by r.id limit 1)) as created_by_name
+    from pins p left join admins a on a.id = p.created_by order by p.revoked_at nulls first, p.created_at desc`)).rows;
 }
 
-// Returns the PIN once; only its hash is stored.
-export async function createPin(data: { name: string; role: 'owner' | 'staff'; venueIds: string[]; createdBy: string | null }): Promise<{ id: string; pin: string }> {
-  const pin = String(randomInt(0, 1_000_000)).padStart(6, '0');
-  const r = await pool.query<{ id: string }>(`insert into pins (name, role, venue_ids, pin_hash, created_by) values ($1,$2,$3,$4,$5) returning id`, [data.name, data.role, data.venueIds, hashSecret(pin), data.createdBy]);
-  return { id: r.rows[0].id, pin };
+// Returns the PIN once; only its hash is stored. Pre-go-live audit (the PM's fix batch, 2026-11-03, S1-21): every venue must exist; a new
+// PIN never equals an active PIN or an admin PIN (it would sign one of them in as the other; drawn again on a clash, checked against every
+// hash); the person who made it is recorded (an owner in the PIN's change record: pins.created_by holds admins only).
+export async function createPin(data: { name: string; role: 'owner' | 'staff'; venueIds: string[]; by: By }): Promise<{ id: string; pin: string } | { error: 'venue-unknown' }> {
+  const known = (await pool.query<{ id: string }>('select id from venues where id = any($1)', [data.venueIds])).rows.length;
+  if (known !== new Set(data.venueIds).size) return { error: 'venue-unknown' };
+  const hashes = [
+    ...(await pool.query<{ h: string }>('select pin_hash as h from pins where revoked_at is null')).rows,
+    ...(await pool.query<{ h: string }>('select pin_hash as h from admins where pin_hash is not null')).rows,
+  ].map((r) => r.h);
+  let pin = '';
+  for (let tries = 0; tries < 20; tries++) { pin = String(randomInt(0, 1_000_000)).padStart(6, '0'); if (!hashes.some((h) => verifySecret(pin, h))) break; }
+  const client = await pool.connect();
+  try {
+    await client.query('begin');
+    const r = await client.query<{ id: string }>(`insert into pins (name, role, venue_ids, pin_hash, created_by) values ($1,$2,$3,$4,$5) returning id`, [data.name, data.role, data.venueIds, hashSecret(pin), data.by.kind === 'admin' ? data.by.id : null]);
+    await recordRevision(client, { venueId: data.venueIds[0], table: 'pins', rowId: r.rows[0].id, action: 'create', before: null, after: { name: data.name, role: data.role, venue_ids: data.venueIds }, by: data.by });
+    await client.query('commit');
+    return { id: r.rows[0].id, pin };
+  } catch (e) { await client.query('rollback'); throw e; } finally { client.release(); }
 }
 
 // Pre-go-live audit (2026-11-02, S1-01): an owner's PIN is for their own venues, so an owner creates, sees and revokes only PINs
@@ -30,7 +49,8 @@ export async function revokePin(id: string): Promise<void> {
 
 // Checks the PIN against every active PIN of the venue, then against the admin accounts that have a PIN
 // (Kian's decision of 2026-10-07: admins sign in with a PIN, no email typing). A handful of rows; scrypt per row.
-export async function verifyPinLogin(venueId: string, pin: string): Promise<Session | null> {
+// admins: false while admin PINs are paused after many wrong PINs across the venues (pre-go-live audit, [Q3]).
+export async function verifyPinLogin(venueId: string, pin: string, opts: { admins?: boolean } = {}): Promise<Session | null> {
   const rows = (await pool.query<{ id: string; name: string; role: 'owner' | 'staff'; venue_ids: string[]; pin_hash: string }>(
     `select id, name, role, venue_ids, pin_hash from pins where revoked_at is null and $1 = any(venue_ids)`, [venueId])).rows;
   for (const p of rows) {
@@ -39,6 +59,7 @@ export async function verifyPinLogin(venueId: string, pin: string): Promise<Sess
       return { kind: 'pin', id: p.id, name: p.name, role: p.role, venues: p.venue_ids };
     }
   }
+  if (opts.admins === false) return null;
   const admins = (await pool.query<{ id: string; name: string; pin_hash: string; password_hash: string | null }>('select id, name, pin_hash, password_hash from admins where pin_hash is not null')).rows;
   for (const a of admins) if (verifySecret(pin, a.pin_hash)) return { kind: 'admin', id: a.id, name: a.name, role: 'admin', venues: 'all', cred: credOf(a) };
   return null;

@@ -20,19 +20,20 @@ import { SEASON_NAMES, listingProblem, notesToConfirm, seasonState } from './sta
 import { uploadImage } from './upload';
 import { retryable } from './api';
 import { CellText, Group, LangTag, LooksGood, Photo, Switch, TextField, btnDanger, btnGhost, btnSecondary, cardCls } from './ui';
+import { COUNTS, LIMITS } from '@/lib/rules';
 import { Choices, CopyChoicesSheet, PriceOrSizes } from './Choices';
 import { GoodToKnow, notesSummary } from './GoodToKnow';
 import { SectionPicker } from './SectionPicker';
 
 export type ItemPanelProps = {
-  item: EditorItem; venueId: string; sections: EditorSection[]; items: Record<string, EditorItem>; sectionId: string | null; canNotes: boolean; column?: boolean; season: SeasonId; notesFirst?: boolean;
+  item: EditorItem; venueId: string; sections: EditorSection[]; items: Record<string, EditorItem>; canNotes: boolean; column?: boolean; season: SeasonId; notesFirst?: boolean;
   selectName?: boolean; toast?: boolean;
   onPatch: (patch: Record<string, unknown>) => Promise<void>; onNotes: (notes: Notes) => Promise<void>; onConfirm: () => Promise<void>; onCopy: (group: string, ids: string[]) => Promise<void>; onDelete: () => void;
   onLooksGood: (field: string) => Promise<void>; onDuplicate: () => Promise<void>;
   onMove: (sectionId: string, id: string, index: number) => Promise<void>; onClose: () => void;
 };
 
-export function ItemPanel({ item, venueId, sections, items, sectionId, canNotes, column, season, notesFirst, selectName, toast, onPatch, onNotes, onConfirm, onCopy, onDelete, onLooksGood, onDuplicate, onMove, onClose }: ItemPanelProps) {
+export function ItemPanel({ item, venueId, sections, items, canNotes, column, season, notesFirst, selectName, toast, onPatch, onNotes, onConfirm, onCopy, onDelete, onLooksGood, onDuplicate, onMove, onClose }: ItemPanelProps) {
   const toConfirm = canNotes && notesToConfirm(item), onNotesFirst = !!notesFirst && toConfirm;
   const [allergensOpen, setAllergensOpen] = useState(toConfirm); // open while drafts wait for Confirm (the PM, 2026-10-13); it stays as the person leaves it
   const [otherOpen, setOtherOpen] = useState(false);
@@ -82,13 +83,13 @@ export function ItemPanel({ item, venueId, sections, items, sectionId, canNotes,
         <div className="flex gap-3">
           <PhotoThumb venueId={venueId} photo={item.photo} alt={{ en: item.name.en, fa: item.name.fa }} onChange={(p) => patch({ photo: p })} />
           <div className={`${cardCls} min-w-0 flex-1 self-start`}>
-            <FieldRow lang="EN"><CellText label="Name" value={item.name.en} required placeholder="Name" className="[&_input]:text-[17px] [&_input]:font-semibold" inputRef={(el) => { nameRef.current = el; }} onCommit={(v) => patch({ name: { ...item.name, en: v } })} /></FieldRow>
-            <FieldRow lang="FA" draft={faDraft('name')} missing={!item.name.fa} looksGood={() => looksGood('name.fa')} what="the Persian name"><CellText label="Name (فارسی)" value={item.name.fa} dir="rtl" lang="fa" placeholder="نام فارسی" onCommit={(v) => patch({ name: { ...item.name, fa: v } })} /></FieldRow>
+            <FieldRow lang="EN"><CellText label="Name" value={item.name.en} required maxLength={LIMITS.name} placeholder="Name" className="[&_input]:text-[17px] [&_input]:font-semibold" inputRef={(el) => { nameRef.current = el; }} onCommit={(v) => patch({ name: { ...item.name, en: v } })} /></FieldRow>
+            <FieldRow lang="FA" draft={faDraft('name')} missing={!item.name.fa} looksGood={() => looksGood('name.fa')} what="the Persian name"><CellText label="Name (فارسی)" maxLength={LIMITS.name} value={item.name.fa} dir="rtl" lang="fa" placeholder="نام فارسی" onCommit={(v) => patch({ name: { ...item.name, fa: v } })} /></FieldRow>
           </div>
         </div>
         <div className={`${cardCls} mt-2`} role="group" aria-label="Description">
-          <FieldRow lang="EN" draft={item.drafts.includes('description')} looksGood={() => looksGood('description.en')} what="the English description"><CellText lines label="Description" value={item.description.en} placeholder="Description" onCommit={(v) => patch({ description: { ...item.description, en: v } })} /></FieldRow>
-          <FieldRow lang="FA" draft={faDraft('description')} missing={!!item.description.en && !item.description.fa} looksGood={() => looksGood('description.fa')} what="the Persian description"><CellText lines label="Description (فارسی)" value={item.description.fa} dir="rtl" lang="fa" placeholder="توضیح فارسی" onCommit={(v) => patch({ description: { ...item.description, fa: v } })} /></FieldRow>
+          <FieldRow lang="EN" draft={item.drafts.includes('description')} looksGood={() => looksGood('description.en')} what="the English description"><CellText lines maxLength={LIMITS.description} label="Description" value={item.description.en} placeholder="Description" onCommit={(v) => patch({ description: { ...item.description, en: v } })} /></FieldRow>
+          <FieldRow lang="FA" draft={faDraft('description')} missing={!!item.description.en && !item.description.fa} looksGood={() => looksGood('description.fa')} what="the Persian description"><CellText lines maxLength={LIMITS.description} label="Description (فارسی)" value={item.description.fa} dir="rtl" lang="fa" placeholder="توضیح فارسی" onCommit={(v) => patch({ description: { ...item.description, fa: v } })} /></FieldRow>
         </div>
 
         {/* price & choices */}
@@ -131,7 +132,7 @@ export function ItemPanel({ item, venueId, sections, items, sectionId, canNotes,
             </div>
             <div className="space-y-4 border-t border-line pt-4">
               <Parts item={item} onPatch={patch} onLooksGood={looksGood} />
-              <TextField label="Serves" value={item.serves} placeholder="2 or 3-4 (for platters)" onCommit={(v) => patch({ serves: v })} />
+              <TextField label="Serves" maxLength={LIMITS.label} value={item.serves} placeholder="2 or 3-4 (for platters)" onCommit={(v) => patch({ serves: v })} />
               {canNotes && <NoteFields notes={item.notes} onNotes={onNotes} setErr={setErr} />}
             </div>
           </div>
@@ -239,8 +240,8 @@ function NoteFields({ notes, onNotes, setErr }: { notes: Notes; onNotes: (n: Not
   const t = notes.text ?? { en: null, fa: null };
   return (
     <div className="space-y-2">
-      <TextField label="Note for customers" value={t.en} onCommit={(v) => save({ ...t, en: v })} />
-      <TextField label="Note for customers (فارسی)" value={t.fa} dir="rtl" lang="fa" onCommit={(v) => save({ ...t, fa: v })} />
+      <TextField label="Note for customers" maxLength={LIMITS.note} value={t.en} onCommit={(v) => save({ ...t, en: v })} />
+      <TextField label="Note for customers (فارسی)" maxLength={LIMITS.note} value={t.fa} dir="rtl" lang="fa" onCommit={(v) => save({ ...t, fa: v })} />
     </div>
   );
 }
@@ -259,13 +260,13 @@ function Parts({ item, onPatch, onLooksGood }: { item: EditorItem; onPatch: (p: 
         {rows.map((c, i) => (
           <div key={i} className="grid grid-cols-[3.5rem_1fr_1fr_2.25rem] items-center gap-1.5">
             <TextField compact value={String(c.qty)} inputMode="numeric" placeholder="Qty" label={`Part ${i + 1} quantity`} onCommit={(x) => set(i, { ...c, qty: Math.max(1, Math.trunc(Number(x) || 1)) })} />
-            <TextField compact value={c.label.en} placeholder="Part" label={`Part ${i + 1}`} onCommit={(x) => set(i, { ...c, label: { ...c.label, en: x } })} />
-            <TextField compact value={c.label.fa} placeholder="فارسی" dir="rtl" lang="fa" label={`Part ${i + 1} (Persian)`} onCommit={(x) => set(i, { ...c, label: { ...c.label, fa: x } })} />
+            <TextField compact maxLength={LIMITS.label} value={c.label.en} placeholder="Part" label={`Part ${i + 1}`} onCommit={(x) => set(i, { ...c, label: { ...c.label, en: x } })} />
+            <TextField compact maxLength={LIMITS.label} value={c.label.fa} placeholder="فارسی" dir="rtl" lang="fa" label={`Part ${i + 1} (Persian)`} onCommit={(x) => set(i, { ...c, label: { ...c.label, fa: x } })} />
             <button type="button" aria-label={`Remove part ${c.label.en || i + 1}`} onClick={() => save(rows.filter((_, k) => k !== i))} className="flex h-11 w-11 items-center justify-center rounded-full text-ink-muted hover:bg-fill hover:text-red-600"><Icon name="close" className="h-4 w-4" /></button>
           </div>
         ))}
       </div>
-      <button type="button" className={`${btnGhost} mt-2 min-h-11 px-3 text-sm text-accent-strong`} onClick={() => setRows([...rows, { item_id: null, label: { en: null, fa: null }, qty: 1 }])}><Icon name="plus" className="h-4 w-4" />Add a part</button>
+      <button type="button" className={`${btnGhost} mt-2 min-h-11 px-3 text-sm text-accent-strong`} disabled={rows.length >= COUNTS.parts} onClick={() => setRows([...rows, { item_id: null, label: { en: null, fa: null }, qty: 1 }])}><Icon name="plus" className="h-4 w-4" />{rows.length >= COUNTS.parts ? `At most ${COUNTS.parts} parts` : 'Add a part'}</button>
     </div>
   );
 }

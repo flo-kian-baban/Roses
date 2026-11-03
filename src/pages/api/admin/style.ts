@@ -8,7 +8,7 @@
 //   POST { action:'restore', venue, style }             puts the whole style back to a snapshot the Style tab took when it opened (Kian, 2026-10-09,
 //                                                      "Discard this session's changes"): layout keys and colours validated, every readable pair
 //                                                      checked by the guard, one record on the venue (Undo works)
-import { jsonRoute, ApiError, revalidateVenue, str, type JsonBody } from '@/lib/admin/api';
+import { jsonRoute, ApiError, refusal, revalidateVenue, str, type JsonBody } from '@/lib/admin/api';
 import { canEditVenue, canManage } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
 import { getVenueRow, updateVenue } from '@/lib/admin/venue';
@@ -25,6 +25,11 @@ export default jsonRoute(async ({ req, res, session, body }) => {
   const answer = (v: typeof venue) => ({ template: { id: template.id, name: template.name }, groups: GROUPS, tokens: tokensOf(v.template), palette: palette(v.brand), layout: template.options(v.brand), values: styleOf(v), style: v.style ?? {}, brand: v.brand ?? null });
   if (req.method === 'GET') return answer(venue);
 
+  if (!['update', 'restore', 'reset'].includes(String(body.action))) throw new ApiError(400, 'unknown action');
+  // Pre-go-live audit (the PM's fix batch, 2026-11-03, D-15): the new style is built from the venue as it is under the row's lock, so saves
+  // arriving together each build on the one before (before, each merged into the style read before the save and the last one won: 6
+  // colours saved at once, 1 kept). `venue` below is that locked row.
+  const r = await updateVenue(venue.id, (venue) => {
   const current = (venue.style ?? {}) as StyleValues & { colors?: Record<string, string> };
   let next: Record<string, unknown>;
   if (body.action === 'update') {
@@ -79,9 +84,9 @@ export default jsonRoute(async ({ req, res, session, body }) => {
     next = { ...current, colors: merged };
     if (!group) { delete next.accent; delete next.tile; } // the pre-token colour choices go too
   } else throw new ApiError(400, 'unknown action');
-
-  const r = await updateVenue(venue.id, { style: next as StyleValues }, byOf(session));
-  if (!r.ok) throw new ApiError(400, r.error);
+  return { style: next as StyleValues };
+  }, byOf(session));
+  if (!r.ok) throw refusal(r);
   await revalidateVenue(res, venue.id);
   const after = (await getVenueRow(venue.id))!;
   return { revisions: r.revision ? [r.revision] : [], ...answer(after) };

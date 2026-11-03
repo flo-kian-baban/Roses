@@ -266,7 +266,7 @@ const scratchEnv = { DATABASE_URL: scratchUrl, ROSES_DB: scratchName, BACKUP_DIR
 // that night answered 404 in a run). Read only from here: UPLOAD_DIR as the working server is started with, else ./uploads.
 const WORK_UPLOADS = path.resolve(process.env.UPLOAD_DIR || 'uploads');
 const listUploads = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir, { recursive: true }).map(String).filter((f) => /\.(jpg|png|webp|svg)$/.test(f)).map((f) => f.split(path.sep).join('/')) : []);
-if (fs.existsSync(WORK_UPLOADS)) fs.cpSync(WORK_UPLOADS, scratchEnv.UPLOAD_DIR, { recursive: true });
+if (fs.existsSync(WORK_UPLOADS)) fs.cpSync(WORK_UPLOADS, scratchEnv.UPLOAD_DIR, { recursive: true, preserveTimestamps: true }); // their own times: the upload quota counts the last hour's files (pre-go-live audit S2-09)
 const uploadsCopied = listUploads(scratchEnv.UPLOAD_DIR);
 const uploadKeys = [...(await db.query(`select photo->>'key' as k from items where photo->>'key' is not null union select brand->'logo'->>'key' from venues where brand->'logo'->>'key' is not null`)).rows.map((r) => r.k)];
 const uploadsMissing = uploadKeys.filter((k) => !uploadsCopied.includes(k));
@@ -321,6 +321,25 @@ try {
     const [a, b, c] = installed.split(/[.-]/).map(Number); const fixed = a > 16 || (a === 16 && (b > 4 || (b === 4 && c >= 1)));
     return { pass: fixed && declared === installed && !pkg.dependencies.zod, note: `installed next ${installed}; package.json "${declared}"; zod a production dependency: ${!!pkg.dependencies.zod}` };
   }, 'dependency-advisories');
+  // pre-go-live audit (the PM's fix batch, 2026-11-03, S1-12 and S1-13): Node 22 declared for the host (engines) and run by the suite; every
+  // dependency pinned to the exact release installed (react and its types floated on "latest"); chrome-launcher, used by the Lighthouse
+  // step, declared instead of borrowed from lighthouse's own dependencies
+  await step('dependencies pinned: package.json engines "node": "22.x" and the suite running on Node 22; every dependency and devDependency an exact version equal to the installed one; chrome-launcher declared', async () => {
+    const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8')); const all = { ...pkg.dependencies, ...pkg.devDependencies };
+    const loose = Object.entries(all).filter(([, v]) => !/^\d+\.\d+\.\d+$/.test(String(v))).map(([k, v]) => `${k} ${v}`);
+    const off = Object.entries(all).filter(([k, v]) => { try { return JSON.parse(fs.readFileSync(`node_modules/${k}/package.json`, 'utf8')).version !== v; } catch { return true; } }).map(([k, v]) => `${k} declared ${v}`);
+    const node22 = process.version.startsWith('v22.');
+    return { pass: pkg.engines?.node === '22.x' && node22 && !loose.length && !off.length && !!pkg.devDependencies?.['chrome-launcher'], note: `engines ${JSON.stringify(pkg.engines ?? null)}; the suite on Node ${process.version}; not exact: ${loose.join(', ') || 'none'}; not as installed: ${off.join(', ') || 'none'}; chrome-launcher ${pkg.devDependencies?.['chrome-launcher'] ?? 'not declared'}` };
+  }, 'dependency-pins');
+  // pre-go-live audit (H-09): the TypeScript check of src on its own, with unused locals and parameters reported too (no linter, the PM's
+  // ruling); on a config of its own in the run folder, so a stale .next/types of an older build is not read
+  await step('typecheck: tsc --noEmit over src with unused locals and parameters (0 errors)', async () => {
+    const cfg = path.join(out, 'tsconfig.typecheck.json'), up = path.relative(out, '.') || '.';
+    fs.writeFileSync(cfg, JSON.stringify({ extends: `${up}/tsconfig.json`, compilerOptions: { incremental: false, noUnusedLocals: true, noUnusedParameters: true }, include: [`${up}/next-env.d.ts`, `${up}/src/**/*.ts`, `${up}/src/**/*.tsx`, `${up}/${DIST}/types/**/*.ts`] }, null, 2));
+    const r = await run(process.execPath, ['node_modules/typescript/bin/tsc', '--noEmit', '-p', cfg], { logFile: 'typecheck.log' });
+    const errors = (r.stdout.match(/error TS\d+/g) || []).length;
+    return { pass: r.status === 0 && errors === 0, evidence: ['typecheck.log', 'tsconfig.typecheck.json'], note: r.status === 0 ? '0 errors' : `${errors} error(s), exit ${r.status}` };
+  }, 'typecheck');
   await step(`performance fixture ${perf.pointer?.id ?? '(none)'}: verified against its committed pointer, restored into ${perfName}, migrations, its uploads copied, its own production build (${PERF_DIST}) from it`, async () => {
     if (!perf.ok) return { pass: false, note: perfNote };
     const pgAdmin = new pg.Client({ connectionString: adminUrl }); await pgAdmin.connect(); await pgAdmin.query(`create database "${perfName}"`); await pgAdmin.end();
@@ -328,7 +347,7 @@ try {
     if (d.status !== 0) return { pass: false, note: `pg_restore failed: ${d.stderr.slice(0, 300)}` };
     const m = await run('node', ['scripts/db-migrate.mjs'], { env: { DATABASE_URL: perfUrl, ROSES_DB: perfName, ROSES_APP_NAME: 'roses-check:perf-migrate' }, logFile: 'perf/migrate.log' });
     if (m.status !== 0) return { pass: false, evidence: ['perf/migrate.log'], note: `migrations failed (exit ${m.status})` };
-    fs.cpSync(path.join(perf.dir, 'uploads'), perfUploads, { recursive: true });
+    fs.cpSync(path.join(perf.dir, 'uploads'), perfUploads, { recursive: true, preserveTimestamps: true });
     perfDb = new pg.Client({ connectionString: perfUrl, application_name: 'roses-check:suite' }); await perfDb.connect();
     await perfDb.query('insert into admins (email, password_hash, pin_hash, name) values ($1,$2,$3,$4)', [adminEmail, adminHash, adminPinHash, SUITE_ADMIN_NAME]); // for the temporary venue, as on the scratch copy
     const counts = (await perfDb.query(`select (select count(*) from items)::int as items, (select count(*) from items where photo->>'key' is not null)::int as uploaded`)).rows[0];
@@ -348,7 +367,8 @@ try {
 
   await step(`servers on ${PORT} and ${PROXY_PORT} (TRUST_PROXY=1), ports picked free at start, each port's listener the process the suite spawned`, async () => {
     for (const p of [PORT, PROXY_PORT]) if (!(await portFree(p, '127.0.0.1')) || !(await portFree(p, '::1'))) return { pass: false, note: `port ${p} was taken after it was picked; whatever listens there is left alone` };
-    const a = startServer(PORT, {}, `server-${PORT}.log`), b = startServer(PROXY_PORT, { TRUST_PROXY: '1' }, `server-${PROXY_PORT}.log`);
+    // ROSES_CHECK_SUITE=1: the suite's own flag (never set in production) turns on the admin API's test seams the drills use (src/lib/admin/api.ts)
+    const a = startServer(PORT, { ROSES_CHECK_SUITE: '1' }, `server-${PORT}.log`), b = startServer(PROXY_PORT, { TRUST_PROXY: '1', ROSES_CHECK_SUITE: '1' }, `server-${PROXY_PORT}.log`);
     const up = (await waitHttp(`${base}/senso`)) && (await waitHttp(`http://127.0.0.1:${PROXY_PORT}/senso`));
     const own = [a, b].map((p) => ({ port: p.port, pid: p.pid, alive: p.exitCode === null, listeners: listeners(p.port) }));
     const mine = own.every((o) => o.alive && o.listeners.length > 0 && o.listeners.every((x) => x === o.pid));

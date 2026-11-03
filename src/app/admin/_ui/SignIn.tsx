@@ -38,7 +38,7 @@ export function SignIn({ venues, venue, sp, path }: { venues: Venue[]; venue?: V
             )}
             <label className={`${venue ? '' : 'mt-5 '}block`}>
               <span className="text-sm font-medium">PIN</span>
-              <input className={`${input} py-3.5 text-center text-3xl font-semibold tracking-[.5em] tabular-nums`} name="pin" type="password" inputMode="numeric" pattern="[0-9]{4,6}" maxLength={6} autoComplete="one-time-code" placeholder="••••" required autoFocus />
+              <input className={`${input} py-3.5 text-center text-3xl font-semibold tracking-[.5em] tabular-nums`} name="pin" type="password" inputMode="numeric" pattern="[0-9\u06F0-\u06F9\u0660-\u0669]{4,12}" maxLength={12} autoComplete="one-time-code" placeholder="••••" required autoFocus />
             </label>
             <button className={`${primary} mt-5 w-full py-3 text-[17px]`} type="submit">Sign in</button>
           </form>

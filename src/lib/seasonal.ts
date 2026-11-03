@@ -9,7 +9,6 @@ import type { Bi, SeasonId } from '@/lib/types';
 import { ART_SCENES } from '@/components/welcome-art';
 
 export const SEASON_IDS: SeasonId[] = ['fall', 'winter', 'spring', 'summer'];
-export const isSeasonId = (v: unknown): v is SeasonId => typeof v === 'string' && (SEASON_IDS as string[]).includes(v);
 // The tags as saved: known seasons only, each once, in the order of the year as the admin shows them.
 export const seasonsOf = (v: unknown): SeasonId[] => (Array.isArray(v) ? SEASON_IDS.filter((s) => v.includes(s)) : []);
 

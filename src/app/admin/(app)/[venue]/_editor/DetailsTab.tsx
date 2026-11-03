@@ -5,7 +5,8 @@
 import { useEffect, useState } from 'react';
 import type { EditorVenue, Location, Logo } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
-import { call, type Resp } from './api';
+import { ApiFail, call, type Resp } from './api';
+import { LIMITS } from '@/lib/rules';
 import { uploadImage } from './upload';
 import { Badge, Switch, TextField, btnDanger, btnSecondary } from './ui';
 
@@ -21,9 +22,12 @@ export function DetailsTab({ venue, version, onSaved, onFail }: { venue: EditorV
     fetch(`/api/admin/venue?id=${encodeURIComponent(venue.id)}`, { credentials: 'same-origin' }).then(async (r) => { const j = await r.json().catch(() => null); if (live && r.ok && j?.ok && j.venue) setV(j.venue as EditorVenue); }).catch(() => undefined);
     return () => { live = false; };
   }, [venue.id, version]);
+  // A change of the locations carries them as this tab last saw them (base): someone else's change since is refused (409, with the details
+  // as they are now, which replace this tab's copy; pre-go-live audit, the residual of D-03).
   const save = async (patch: Record<string, unknown>, text = 'Saved') => {
-    try { setErr(null); const r = await call('/api/admin/venue', { action: 'update', id: v.id, patch }); if (r.venue) setV(r.venue as EditorVenue); onSaved(r, text); }
-    catch (e) { setErr((e as Error).message); onFail(e, () => save(patch, text)); throw e; }
+    const base = 'locations' in patch ? { locations: v.locations } : undefined;
+    try { setErr(null); const r = await call('/api/admin/venue', { action: 'update', id: v.id, patch, ...(base ? { base } : {}) }); if (r.venue) setV(r.venue as EditorVenue); onSaved(r, text); }
+    catch (e) { if (e instanceof ApiFail && e.status === 409 && e.extra.venue) setV(e.extra.venue as EditorVenue); setErr((e as Error).message); onFail(e, () => save(patch, text)); throw e; }
   };
   const locPatch = (i: number, l: Partial<Location> & { confirmed?: boolean }) => save({ locations: v.locations.map((x, k) => (k === i ? { ...x, ...l } : x)) });
   const addLocation = () => save({ locations: [...v.locations, { label: { en: v.locations.length ? 'New location' : v.name.en, fa: null }, address: null, phone: null, hours: { en: null, fa: null } }] }, 'Location added');
@@ -33,10 +37,10 @@ export function DetailsTab({ venue, version, onSaved, onFail }: { venue: EditorV
     <div className="mx-auto w-full max-w-3xl space-y-4 px-3 pb-32 pt-4 sm:px-5" data-details-tab>
       {err && <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900">{err}</p>}
       <Group title="Name">
-        <TextField label="Name" value={v.name.en} required onCommit={(x) => save({ name: { en: x } })} />
-        <TextField label="Name (فارسی)" value={v.name.fa} dir="rtl" lang="fa" onCommit={(x) => save({ name: { fa: x } })} />
-        <TextField label="Tagline" value={v.tagline.en} placeholder="Optional, under the name in the page description" onCommit={(x) => save({ tagline: { en: x } })} />
-        <TextField label="Tagline (فارسی)" value={v.tagline.fa} dir="rtl" lang="fa" onCommit={(x) => save({ tagline: { fa: x } })} />
+        <TextField label="Name" value={v.name.en} required maxLength={LIMITS.venueName} onCommit={(x) => save({ name: { en: x } })} />
+        <TextField label="Name (فارسی)" value={v.name.fa} dir="rtl" lang="fa" maxLength={LIMITS.venueName} onCommit={(x) => save({ name: { fa: x } })} />
+        <TextField label="Tagline" value={v.tagline.en} placeholder="Optional, under the name in the page description" maxLength={LIMITS.tagline} onCommit={(x) => save({ tagline: { en: x } })} />
+        <TextField label="Tagline (فارسی)" value={v.tagline.fa} dir="rtl" lang="fa" maxLength={LIMITS.tagline} onCommit={(x) => save({ tagline: { fa: x } })} />
         <p className="text-xs text-ink-muted">Customers&rsquo; page: <a href={`/${v.id}`} target="_blank" rel="noreferrer" className="font-medium text-ink underline-offset-4 hover:underline">/{v.id}</a> (the address does not change when the name does).</p>
       </Group>
       <Group title="Logo">
@@ -49,14 +53,14 @@ export function DetailsTab({ venue, version, onSaved, onFail }: { venue: EditorV
             <div key={i} className="space-y-3 rounded-2xl border border-line p-3" data-location={i}>
               <div className="flex items-center justify-between gap-2"><span className="text-sm font-semibold">{l.label.en || `Location ${i + 1}`}</span>{confirm.size > 0 && <button type="button" className={`${btnSecondary} min-h-11 px-3 text-sm`} onClick={() => locPatch(i, { confirmed: true })}><Icon name="check" className="h-4 w-4" />Mark confirmed</button>}</div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <TextField label="Label" value={l.label.en} placeholder="Dine-in, Take-out…" onCommit={(x) => locPatch(i, { label: { ...l.label, en: x } })} />
-                <TextField label="Label (فارسی)" value={l.label.fa} dir="rtl" lang="fa" onCommit={(x) => locPatch(i, { label: { ...l.label, fa: x } })} />
+                <TextField label="Label" maxLength={LIMITS.location} value={l.label.en} placeholder="Dine-in, Take-out…" onCommit={(x) => locPatch(i, { label: { ...l.label, en: x } })} />
+                <TextField label="Label (فارسی)" maxLength={LIMITS.location} value={l.label.fa} dir="rtl" lang="fa" onCommit={(x) => locPatch(i, { label: { ...l.label, fa: x } })} />
               </div>
-              <TextField label="Address" value={l.address} badge={confirm.has('address') ? <Badge tone="amber">To confirm</Badge> : null} onCommit={(x) => locPatch(i, { address: x })} />
-              <TextField label="Phone" value={l.phone} inputMode="text" placeholder="(905) 555 0100" badge={confirm.has('phone') ? <Badge tone="amber">To confirm</Badge> : null} onCommit={(x) => locPatch(i, { phone: x })} />
+              <TextField label="Address" maxLength={LIMITS.location} value={l.address} badge={confirm.has('address') ? <Badge tone="amber">To confirm</Badge> : null} onCommit={(x) => locPatch(i, { address: x })} />
+              <TextField label="Phone" maxLength={LIMITS.location} value={l.phone} inputMode="text" placeholder="(905) 555 0100" badge={confirm.has('phone') ? <Badge tone="amber">To confirm</Badge> : null} onCommit={(x) => locPatch(i, { phone: x })} />
               <div className="grid gap-3 sm:grid-cols-2">
-                <TextField label="Hours" value={l.hours.en} placeholder="11 AM – 11 PM, every day" badge={confirm.has('hours') ? <Badge tone="amber">To confirm</Badge> : null} onCommit={(x) => locPatch(i, { hours: { ...l.hours, en: x } })} />
-                <TextField label="Hours (فارسی)" value={l.hours.fa} dir="rtl" lang="fa" onCommit={(x) => locPatch(i, { hours: { ...l.hours, fa: x } })} />
+                <TextField label="Hours" maxLength={LIMITS.location} value={l.hours.en} placeholder="11 AM – 11 PM, every day" badge={confirm.has('hours') ? <Badge tone="amber">To confirm</Badge> : null} onCommit={(x) => locPatch(i, { hours: { ...l.hours, en: x } })} />
+                <TextField label="Hours (فارسی)" maxLength={LIMITS.location} value={l.hours.fa} dir="rtl" lang="fa" onCommit={(x) => locPatch(i, { hours: { ...l.hours, fa: x } })} />
               </div>
               {confirmRemove === i
                 ? <div className="flex flex-wrap items-center gap-2 text-sm"><span>Remove this location?</span><button type="button" className={`${btnDanger} min-h-11 px-3 text-sm`} onClick={() => { setConfirmRemove(null); void removeLocation(i); }}>Remove</button><button type="button" className={`${btnSecondary} min-h-11 px-3 text-sm`} onClick={() => setConfirmRemove(null)}>Cancel</button></div>

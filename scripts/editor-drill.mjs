@@ -612,6 +612,139 @@ const errorToast = async (p) => { const t = p.locator('[data-toast-error]'); con
   check('t-section-ids', pub.ok && count('welcome') === 1 && count('sheet') === 1 && ids.every((x) => /^s-/.test(x || '')) && opened, `sections "Welcome" and "Sheet" on the public page: ids ${JSON.stringify(ids)}; one #welcome (${count('welcome')}) and one #sheet (${count('sheet')}); an item of "Sheet" opens its popup: ${opened}`);
   await ph.close();
 }
+// ---- pre-go-live audit, the PM's fix batch of 2026-11-03 (A1): one test per fix the editor shows
+{ // D-05: an Add whose answer was lost, tapped again, makes one item (the server got the first one; the browser saw no answer)
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE); const ck = await cookieOf(ph); const ONCE = 'Drill once in the editor';
+  await db.query(`delete from items where venue_id=$1 and name->>'en'=$2`, [VENUE, ONCE]);
+  let lost = 0; await p.route('**/api/admin/item', async (r) => { if (lost === 0 && r.request().postDataJSON()?.action === 'create') { lost++; await r.fetch().catch(() => null); await r.abort(); } else await r.continue(); });
+  await p.click(`[aria-label="Add item to ${sec.name}"]`); await p.fill('[role=dialog] input[name=name]', ONCE); await p.fill('[role=dialog] input[name=price]', '2'); await p.press('[role=dialog] input[name=price]', 'Enter');
+  const err = await p.waitForSelector('[role=dialog] [role=alert]', { timeout: 6000 }).then((e) => e.innerText()).catch(() => '');
+  await p.click('[role=dialog] button[type=submit]');
+  const opened = await p.waitForSelector(`.item-panel[aria-label="Edit ${ONCE}"]`, { timeout: 6000 }).then(() => true).catch(() => false);
+  const n = (await db.query(`select count(*)::int as n from items where venue_id=$1 and name->>'en'=$2`, [VENUE, ONCE])).rows[0].n;
+  check('t-create-once', lost === 1 && /connection/i.test(err) && opened && n === 1, `"+ Add item" whose answer was lost (the server made it) → the sheet said "${err.trim()}"; Add tapped again → the editor opened on it: ${opened}; items named "${ONCE}": ${n}`);
+  await p.unroute('**/api/admin/item');
+  for (const r of (await db.query(`select id from items where venue_id=$1 and name->>'en'=$2`, [VENUE, ONCE])).rows) await api('/api/admin/item', { action: 'delete', id: r.id }, ck);
+  await ph.close();
+}
+{ // D-06: a save with no answer within 15 s fails with Try again; while a save is slow, leaving asks first
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE); const ck = await cookieOf(ph);
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { description: { en: 'Drill before the timeout', fa: null } } }, ck);
+  await openEditor(p);
+  await p.route('**/api/admin/item', async (r) => { if (r.request().postDataJSON()?.action === 'update') { await sleep(16500); await r.continue().catch(() => undefined); } else await r.continue(); });
+  const field = p.locator('.item-panel textarea[aria-label="Description"]'); await field.click(); await field.fill('Drill typed before the timeout'); const t0 = Date.now(); await p.keyboard.press('Tab');
+  const t = await p.locator('[data-toast-error]').waitFor({ state: 'visible', timeout: 20000 }).then(async () => (await p.locator('[data-toast-error]').innerText()).replace(/\s+/g, ' ')).catch(() => '');
+  const after = Date.now() - t0;
+  const saved = (await db.query('select description from items where id=$1', [itemId])).rows[0].description.en;
+  await p.unroute('**/api/admin/item');
+  await p.click('[data-toast-error] [data-try-again]').catch(() => {});
+  const w = await waitDb('select description from items where id=$1', [itemId], (r) => r?.description?.en === 'Drill typed before the timeout', 6000);
+  // the page-leave guard: a save held 3 s, the page closed 1.3 s into it
+  let dialog = null; p.on('dialog', async (d) => { dialog = d.type(); await d.accept().catch(() => undefined); });
+  await p.route('**/api/admin/item', async (r) => { await sleep(3000); await r.continue().catch(() => undefined); });
+  await field.click(); await field.fill('Drill typed while a save is slow'); await p.keyboard.press('Tab'); await sleep(1300);
+  await p.close({ runBeforeUnload: true }); await sleep(800);
+  check('t-save-timeout', /15 seconds/.test(t) && /Try again/.test(t) && after >= 14500 && after < 19000 && saved === 'Drill before the timeout' && w.ok && dialog === 'beforeunload', `a save with no answer → after ${after} ms: "${t}"; the database kept "${saved}"; Try again → saved ${w.ok ? `after ${w.ms} ms` : 'NOT within 6 s'}; closing the page during a slow save asked first: ${dialog}`);
+  await ph.close();
+}
+{ // D-07: text typed and not yet left is saved when the page goes away (a reload here)
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE);
+  await openEditor(p);
+  const TYPED = 'Drill typed then reloaded';
+  const field = p.locator('.item-panel textarea[aria-label="Description"]'); await field.click(); await field.fill(TYPED);
+  await p.reload(); await p.waitForSelector('[data-item]');
+  const w = await waitDb('select description from items where id=$1', [itemId], (r) => r?.description?.en === TYPED, 5000);
+  check('t-hidden-saves', w.ok, `a description typed and the page reloaded without leaving the field → in the database ${w.ok ? `after ${w.ms} ms` : `NOT within 5 s (it holds "${w.row?.description?.en}")`}`);
+  await ph.close();
+}
+{ // D-08, H-14 and the residual of D-02 in the size rows; the residual in the in-place price
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE); const ck = await cookieOf(ph);
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { listed: false } }, ck);
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { price: null, variants: [{ label: { en: 'Small', fa: null }, price: 3 }, { label: { en: 'Large', fa: null }, price: 5 }] } }, ck);
+  await openEditor(p);
+  const price = (i) => p.locator(`.item-panel input[aria-label="Size ${i} price"]`);
+  const sizes = async () => (await db.query('select variants from items where id=$1', [itemId])).rows[0].variants.map((v) => [v.label.en, v.price == null ? null : Number(v.price)]);
+  await price(2).fill(''); await p.keyboard.press('Tab'); await sleep(500);
+  const need = await p.locator('.item-panel [data-row-problem]').first().innerText().catch(() => '');
+  const kept = await sizes();
+  await price(2).fill('5'); await p.keyboard.press('Tab'); await sleep(300);
+  check('t-size-needs-price', /needs a price/.test(need) && JSON.stringify(kept) === JSON.stringify([['Small', 3], ['Large', 5]]), `a saved size's price cleared → the row says "${need.trim()}"; the sizes kept: ${JSON.stringify(kept)}`);
+  await price(1).fill('1,50'); await p.keyboard.press('Tab');
+  const comma = await waitDb('select variants from items where id=$1', [itemId], (r) => Number(r?.variants?.[0]?.price) === 1.5, 4000);
+  await price(2).fill('abc'); await p.keyboard.press('Tab'); await sleep(500);
+  const bad = await p.locator('.item-panel [data-row-problem]').first().innerText().catch(() => '');
+  const after = await sizes();
+  check('t-row-bad-price', comma.ok && /Not a price/.test(bad) && JSON.stringify(after) === JSON.stringify([['Small', 1.5], ['Large', 5]]), `"1,50" in a size's price → saved as ${comma.row?.variants?.[0]?.price}; "abc" → the row says "${bad.trim()}", the sizes stay ${JSON.stringify(after)}`);
+  await price(2).fill('5'); await p.keyboard.press('Tab'); await sleep(300);
+  // the typed rows stay on screen, marked, while Try again holds them (before: the saved sizes came back)
+  await p.route('**/api/admin/item', (r) => r.abort());
+  await price(1).fill('7'); await p.keyboard.press('Tab');
+  const t = await errorToast(p); await sleep(500);
+  const onScreen = await price(1).inputValue(), mark = await p.locator('.item-panel [data-sizes]').innerText().then((x) => /Not saved/.test(x)).catch(() => false);
+  await p.unroute('**/api/admin/item');
+  await p.click('[data-toast-error] [data-try-again]').catch(() => {});
+  const w = await waitDb('select variants from items where id=$1', [itemId], (r) => Number(r?.variants?.[0]?.price) === 7, 6000); await sleep(400);
+  const markAfter = await p.locator('.item-panel [data-sizes]').innerText().then((x) => /Not saved/.test(x)).catch(() => true);
+  // the price edited in place on the Menu tab
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { variants: [], price: 4.5 } }, ck);
+  await p.goto(`${base}/admin/${VENUE}`); await p.waitForSelector('[data-item]'); await p.fill('input[aria-label="Search items"]', NAME);
+  await p.route('**/api/admin/item', (r) => r.abort());
+  const cell = p.locator(`#sec-${sec.id} [data-item="${itemId}"] [data-price]`); await cell.click(); await p.keyboard.type('9'); await p.keyboard.press('Enter');
+  await errorToast(p); await sleep(400);
+  const cellText = await cell.innerText(), cellMarked = (await cell.getAttribute('data-unsaved')) !== null;
+  await p.unroute('**/api/admin/item');
+  await p.click('[data-toast-error] [data-try-again]').catch(() => {});
+  const w2 = await waitDb('select price from items where id=$1', [itemId], (r) => Number(r?.price) === 9, 6000); await sleep(400);
+  const cellAfter = (await cell.getAttribute('data-unsaved')) === null;
+  check('t-typed-kept', t.seen && onScreen === '7' && mark && w.ok && !markAfter && /\$9/.test(cellText) && cellMarked && w2.ok && cellAfter, `a size's price typed with no connection: the row still shows "${onScreen}" marked Not saved (${mark}); Try again → saved ${w.ok ? 'yes' : 'NO'}, mark gone ${!markAfter}; the price in place typed with no connection shows "${cellText.trim()}" marked (${cellMarked}); Try again → saved ${w2.ok ? 'yes' : 'NO'}, mark gone ${cellAfter}`);
+  await ph.close();
+}
+{ // D-09: a tap within 600 ms of the toast appearing is not an Undo
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE);
+  let undos = 0; await p.route('**/api/admin/undo', async (r) => { undos++; await r.continue(); });
+  await p.fill('input[aria-label="Search items"]', NAME);
+  const cell = p.locator(`#sec-${sec.id} [data-item="${itemId}"] [data-price]`); await cell.click(); await p.keyboard.type('8'); await p.keyboard.press('Enter');
+  const undo = p.locator('[role=status] [data-undo]'); await undo.waitFor({ state: 'visible', timeout: 5000 });
+  const disabledAtFirst = await undo.isDisabled(); await undo.click({ force: true }).catch(() => {}); // the tap as it lands, without waiting for the button
+  await sleep(300); const early = undos;
+  await sleep(500); await undo.click().catch(() => {});
+  const w = await waitDb('select price from items where id=$1', [itemId], (r) => Number(r?.price) === 9, 5000);
+  check('t-undo-guard', disabledAtFirst && early === 0 && undos === 1 && w.ok, `Undo tapped the moment its toast appeared (the button not yet active: ${disabledAtFirst}) → undo requests ${early}; tapped again 800 ms later → ${undos}, the price back to $9: ${w.ok}`);
+  await ph.close();
+}
+{ // H-13: a save whose customers' page did not update says so, with Try again (the suite's test seam stands in for a failed regeneration)
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE);
+  await p.route('**/api/admin/item', async (r) => { if (r.request().postDataJSON()?.action === 'update') await r.continue({ headers: { ...r.request().headers(), 'x-roses-test': 'unpublished' } }); else await r.continue(); });
+  await p.fill('input[aria-label="Search items"]', NAME);
+  const cell = p.locator(`#sec-${sec.id} [data-item="${itemId}"] [data-price]`); await cell.click(); await p.keyboard.type('6'); await p.keyboard.press('Enter');
+  const t = await errorToast(p);
+  await p.unroute('**/api/admin/item');
+  await p.click('[data-toast-error] [data-try-again]').catch(() => {});
+  const ok = await p.locator('[role=status]:has-text("Customers\' page updated")').waitFor({ state: 'visible', timeout: 6000 }).then(() => true).catch(() => false);
+  check('t-not-published', t.seen && /did not update/.test(t.text) && /Try again/.test(t.text) && ok, `a save whose page regeneration failed → "${t.text}"; Try again → "Customers' page updated": ${ok}`);
+  await ph.close();
+}
+{ // D-17: a very long word wraps instead of widening the public page
+  const ph = await browser.newContext(DEVICE); const p0 = await ph.newPage(); await signin(p0, VENUE); const ck = await cookieOf(ph); await p0.close();
+  const WORD = 'Drill' + 'x'.repeat(95);
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { name: { en: WORD, fa: null }, price: 4.5, listed: true } }, ck);
+  await waitPublic((h) => h.includes(WORD));
+  const c = await browser.newContext(DEVICE); const q = await c.newPage(); await q.goto(`${base}/${VENUE}`); await q.click('#welcome button[data-lang="en"]'); await sleep(1200);
+  const row = q.locator(`main li.item[data-id="${itemId}"]`).first(); await row.scrollIntoViewIfNeeded();
+  const pageW = await q.evaluate(() => ({ scroll: document.documentElement.scrollWidth, view: innerWidth }));
+  await row.click(); await q.waitForSelector('#sheet[open]', { timeout: 3000 }).catch(() => {}); await sleep(500);
+  const sheetW = await q.evaluate(() => { const d = document.getElementById('sheet'); return d ? { scroll: d.scrollWidth, client: d.clientWidth } : null; });
+  await c.close();
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { name: { en: NAME, fa: null } } }, ck);
+  check('t-long-word', pageW.scroll <= pageW.view && !!sheetW && sheetW.scroll <= sheetW.client + 1, `an item named with one ${WORD.length}-character word: the page ${pageW.scroll} px wide on a ${pageW.view} px phone; its popup ${sheetW?.scroll} px in ${sheetW?.client} px`);
+  await ph.close();
+}
 await laptop.close();
 await api('/api/admin/item', { action: 'delete', id: itemId }, cookie);
 await waitPublic((h) => !h.includes(`data-id="${itemId}"`));

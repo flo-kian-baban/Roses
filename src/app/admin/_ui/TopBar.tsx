@@ -1,7 +1,7 @@
 // The admin frame (Kian's admin rebuild, 2026-10-07): one top bar with the venue dropdown, Team (owner and admin)
 // and the account menu. Plain links and native <details> dropdowns; the page editor below it is a client component.
 import type { Session } from '@/lib/admin/auth';
-import { canManage } from '@/lib/admin/auth';
+import { canManage, isAdmin } from '@/lib/admin/auth';
 import type { Venue } from '@/lib/types';
 import { Icon } from './icons';
 import { Avatar, LogoTile, roleLabel } from './index';
@@ -24,7 +24,7 @@ export function TopBar({ session, venues, venue, active, children }: { session: 
               </a>
             ))}
             {venues.length === 0 && <p className="px-3 py-2 text-sm text-ink-muted">No venue on this PIN.</p>}
-            {manage && <a href="/admin/new" className="mt-1 flex items-center gap-2.5 rounded-xl border-t border-line px-2 py-2.5 text-[15px] font-medium text-accent-strong hover:bg-neutral-50"><span className="flex h-9 w-12 items-center justify-center rounded-xl border border-dashed border-neutral-300"><Icon name="plus" className="h-4 w-4" /></span>Add venue</a>}
+            {isAdmin(session) && <a href="/admin/new" className="mt-1 flex items-center gap-2.5 rounded-xl border-t border-line px-2 py-2.5 text-[15px] font-medium text-accent-strong hover:bg-neutral-50"><span className="flex h-9 w-12 items-center justify-center rounded-xl border border-dashed border-neutral-300"><Icon name="plus" className="h-4 w-4" /></span>Add venue</a>}
           </div>
         </details>
         <div className="flex-1" />

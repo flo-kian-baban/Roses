@@ -15,6 +15,16 @@ export async function getRevisions(ids: number[]): Promise<Revision[]> {
   return (await pool.query<Revision>('select id, venue_id, table_name, row_id, action, before, after, by, at from revisions where id = any($1)', [ids])).rows;
 }
 
+// True when a row of these records was changed after them by someone other than `by` (pre-go-live audit S1-02).
+export async function changedSinceByOthers(revs: Revision[], by: { kind: string; id: string }): Promise<boolean> {
+  const ids = revs.map((r) => r.id);
+  for (const r of revs) {
+    const later = await pool.query(`select 1 from revisions where table_name = $1 and row_id = $2 and id > $3 and not (id = any($4)) and not (by->>'kind' = $5 and by->>'id' = $6) limit 1`, [r.table_name, r.row_id, r.id, ids, by.kind, by.id]);
+    if (later.rowCount) return true;
+  }
+  return false;
+}
+
 // Undoes the given records, newest first, in one transaction. Returns the ids of the records the undo wrote.
 export async function undoRevisions(ids: number[], by: By): Promise<Result & { revisions?: number[] }> {
   const client = await pool.connect();

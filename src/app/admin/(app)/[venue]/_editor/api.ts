@@ -3,6 +3,10 @@ export type Resp = { ok: true; revisions: number[] } & Record<string, unknown>;
 // `extra`: whatever else the refusal carried (the readability guard's suggested colour, for the one-tap fix).
 export class ApiFail extends Error { status: number; extra: Record<string, unknown>; constructor(status: number, message: string, extra: Record<string, unknown> = {}) { super(message); this.status = status; this.extra = extra; } }
 
+// A failure that trying again can fix: no connection, or the server failed (pre-go-live audit D-01/D-02). A refusal (400/403), a sign-out
+// (401) or a newer change by someone else (409) cannot be fixed by sending the same thing again.
+export const retryable = (e: unknown): boolean => !(e instanceof ApiFail) || e.status === 0 || e.status >= 500;
+
 export async function call(path: string, body: Record<string, unknown>): Promise<Resp> {
   let r: Response;
   try { r = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) }); }

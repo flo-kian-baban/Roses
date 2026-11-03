@@ -36,7 +36,7 @@ export type Basis = { ingredients: string[]; source: string | null; sourceTitle?
 export type EditorItem = {
   id: string; name: Bi; description: Bi; price: number | null; variants: Variant[]; add_ons: AddOn[]; components: Component[];
   serves: string | null; photo: Photo | null; notes: Notes; listed: boolean; fa_draft: string[]; placements: Placement[]; seasons: SeasonId[];
-  drafts: string[]; basis: Basis | null;
+  drafts: string[]; basis: Basis | null; updated_at: string; // the version the editor holds (pre-go-live audit D-03)
 };
 export type EditorSection = { id: string; name: Bi; note: Bi; position: number; listed: boolean; fa_draft: string[]; layout: SectionLayout; seasonal: boolean; item_ids: string[] };
 export type EditorMenu = { sections: EditorSection[]; items: Record<string, EditorItem>; orphans: string[] };

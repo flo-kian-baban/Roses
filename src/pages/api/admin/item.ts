@@ -72,8 +72,9 @@ export default jsonRoute(async ({ res, session, body }) => {
   if (!item) throw new ApiError(404, 'item not found');
   if (!canEditVenue(session, item.venue_id)) throw new ApiError(403, 'no access to this venue');
   let r;
-  if (body.action === 'update') r = await updateItem(id, readPatch((body.patch && typeof body.patch === 'object' ? body.patch : {}) as JsonBody), by);
-  else if (body.action === 'notes') { if (!canEditNotes(session)) throw new ApiError(403, 'Allergen, dietary and halal notes are set by the owner or an admin only'); r = await updateItem(id, { notes: readNotes(body.notes) }, by); }
+  const base = str(body.base); // the version of the item the editor holds (D-03): a save over a newer change is refused with 409 and the item as it is now
+  if (body.action === 'update') r = await updateItem(id, readPatch((body.patch && typeof body.patch === 'object' ? body.patch : {}) as JsonBody), by, base);
+  else if (body.action === 'notes') { if (!canEditNotes(session)) throw new ApiError(403, 'Allergen, dietary and halal notes are set by the owner or an admin only'); r = await updateItem(id, { notes: readNotes(body.notes) }, by, base); }
   else if (body.action === 'confirm') { if (!canEditNotes(session)) throw new ApiError(403, 'Allergen and dietary notes are confirmed by the owner or an admin only'); r = await updateItem(id, { drafts: (item.drafts ?? []).filter((f) => f !== 'allergens' && f !== 'dietary') }, by); }
   else if (body.action === 'looks-good') {
     const f = LOOKS_GOOD[typeof body.field === 'string' ? body.field : ''];
@@ -102,7 +103,7 @@ export default jsonRoute(async ({ res, session, body }) => {
   }
   else if (body.action === 'delete') r = await deleteItem(id, by);
   else throw new ApiError(400, 'unknown action');
-  if (!r.ok) throw new ApiError(400, r.error);
+  if (!r.ok) throw r.conflict ? new ApiError(409, r.error, { item: await editorItem(id) }) : new ApiError(400, r.error);
   await revalidateVenue(res, item.venue_id);
   return { revisions: r.revision ? [r.revision] : [], item: body.action === 'delete' ? null : await editorItem(id) };
 });

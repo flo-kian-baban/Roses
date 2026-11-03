@@ -48,7 +48,7 @@ export function toEditorItem(row: ItemRow & { placements: Placement[]; basis?: R
   return {
     id: row.id, name: row.name, description: row.description, price: row.price == null ? null : Number(row.price), variants: row.variants, add_ons: row.add_ons, components: row.components,
     serves: row.serves, photo: row.photo, notes: row.notes, listed: row.listed, fa_draft: row.fa_draft, placements: row.placements, seasons: row.seasons ?? [],
-    drafts: row.drafts ?? [], basis: basisOf(row.basis),
+    drafts: row.drafts ?? [], basis: basisOf(row.basis), updated_at: new Date(row.updated_at).toISOString(),
   };
 }
 export async function editorItem(id: string): Promise<EditorItem | null> { const r = await getItem(id); return r ? toEditorItem(r) : null; }
@@ -82,15 +82,20 @@ function clearResearchDrafts(drafts: string[], before: ItemSnapshot, after: Item
 }
 
 // `revision` is the id of the change record written (absent when nothing changed).
-export type Result = { ok: true; id: string; revision?: number } | { ok: false; error: string };
+export type Result = { ok: true; id: string; revision?: number } | { ok: false; error: string; conflict?: boolean };
+// Pre-go-live audit (2026-11-02, D-03): a save carries the version of the item the editor holds (its updated_at); when the item was changed
+// since, by someone else or on another device, the save is refused instead of putting back the editor's older copy of the other fields.
+export const CHANGED = 'Someone else changed this item since you opened it. The latest version is now on screen; make your change again if it is still needed.';
+const stale = (now: unknown, base: string) => new Date(now as string).getTime() !== new Date(base).getTime();
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
-export async function updateItem(id: string, patch: ItemPatch, by: By): Promise<Result> {
+export async function updateItem(id: string, patch: ItemPatch, by: By, base: string | null = null): Promise<Result> {
   const client = await pool.connect();
   try {
     await client.query('begin');
     const row = (await client.query<ItemRow>(`select ${COLS} from items where id = $1 for update`, [id])).rows[0];
     if (!row) { await client.query('rollback'); return { ok: false, error: 'item not found' }; }
+    if (base && stale(row.updated_at, base)) { await client.query('rollback'); return { ok: false, error: CHANGED, conflict: true }; }
     const before = (await itemSnapshot(client, id))!;
     const { section_ids: _s, ...fields } = patch; void _s;
     const next: ItemSnapshot = { ...before, ...stripUndefined(fields) } as ItemSnapshot;

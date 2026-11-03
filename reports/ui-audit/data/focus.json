@@ -1,0 +1,2242 @@
+[
+ {
+  "venue": "senso",
+  "lang": "en",
+  "engine": "chromium",
+  "onLoad": {
+   "tag": "body"
+  },
+  "welcome": [
+   {
+    "tag": "button",
+    "text": "English",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "button",
+    "text": "فارسی",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "button",
+    "text": "English",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "button",
+    "text": "فارسی",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   }
+  ],
+  "welcomeLeaks": 0,
+  "afterChoice": {
+   "tag": "body"
+  },
+  "menu": [
+   {
+    "tag": "button",
+    "id": "lang-toggle",
+    "cls": "rounded-full",
+    "text": "Switch language / تغییر زبان",
+    "ring": true,
+    "inView": true,
+    "where": "header"
+   },
+   {
+    "tag": "button",
+    "id": "tabs-list",
+    "cls": "flex",
+    "text": "All sections",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Fall Menuمنوی پاییز",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Senso Signatureویژه سنسو",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Hot Beverageنوشیدنی گرم",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Tea & Herbal Teaچاى و دمنوش",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Cold Beverageنوشیدنی سرد",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Fresh Juiceآبمیوه طبیعی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Dessertدسر",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Ice Creamبستنی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Milkshakeمیلک شیک",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Persian Breakfastصبحانه",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Saladسالاد",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Appetizerپیش غذا",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Main Courseغذا اصلی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Senso Pizzaپیتزا",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Beverageنوشیدنی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Extraافزودنی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Senso Pumpkin Omeletteاملت ک",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Cheesecakeچیزکیک کدو",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Cakeکیک کدو حلوایی$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Latteلاته کدو حلوایی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Warm Pumpkin & Ice Creamکدو ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   }
+  ],
+  "noRing": [],
+  "offscreen": 0,
+  "popupOpen": true,
+  "focusInPopup": {
+   "tag": "div",
+   "id": "sheet-content",
+   "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+   "ring": false,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupTab": {
+   "tag": "button",
+   "id": "sheet-close",
+   "cls": "sheet-close",
+   "text": "Close",
+   "ring": true,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupClosed": true,
+  "focusAfterClose": {
+   "tag": "li",
+   "cls": "item",
+   "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+   "ring": true,
+   "inView": true,
+   "where": "menu"
+  },
+  "focusBackOnItem": true,
+  "listOpen": true,
+  "focusInList": {
+   "tag": "ul",
+   "cls": "pb-2",
+   "text": "Fall Menuمنوی پاییزSenso Sig",
+   "ring": false,
+   "inView": false,
+   "where": "dialog"
+  },
+  "focusAfterList": {
+   "tag": "button",
+   "id": "tabs-list",
+   "cls": "flex",
+   "text": "All sections",
+   "ring": true,
+   "inView": true,
+   "where": "tabs"
+  }
+ },
+ {
+  "venue": "senso",
+  "lang": "fa",
+  "engine": "chromium",
+  "onLoad": {
+   "tag": "body"
+  },
+  "welcome": [
+   {
+    "tag": "button",
+    "text": "English",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "button",
+    "text": "فارسی",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "button",
+    "text": "English",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "button",
+    "text": "فارسی",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   }
+  ],
+  "welcomeLeaks": 0,
+  "afterChoice": {
+   "tag": "body"
+  },
+  "menu": [
+   {
+    "tag": "button",
+    "id": "lang-toggle",
+    "cls": "rounded-full",
+    "text": "Switch language / تغییر زبان",
+    "ring": true,
+    "inView": true,
+    "where": "header"
+   },
+   {
+    "tag": "button",
+    "id": "tabs-list",
+    "cls": "flex",
+    "text": "All sections",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Fall Menuمنوی پاییز",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Senso Signatureویژه سنسو",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Hot Beverageنوشیدنی گرم",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Tea & Herbal Teaچاى و دمنوش",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Cold Beverageنوشیدنی سرد",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Fresh Juiceآبمیوه طبیعی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Dessertدسر",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Ice Creamبستنی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Milkshakeمیلک شیک",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Persian Breakfastصبحانه",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Saladسالاد",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Appetizerپیش غذا",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Main Courseغذا اصلی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Senso Pizzaپیتزا",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Beverageنوشیدنی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Extraافزودنی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Senso Pumpkin Omeletteاملت ک",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Cheesecakeچیزکیک کدو",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Cakeکیک کدو حلوایی$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Latteلاته کدو حلوایی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Warm Pumpkin & Ice Creamکدو ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   }
+  ],
+  "noRing": [],
+  "offscreen": 0,
+  "popupOpen": true,
+  "focusInPopup": {
+   "tag": "div",
+   "id": "sheet-content",
+   "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+   "ring": false,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupTab": {
+   "tag": "button",
+   "id": "sheet-close",
+   "cls": "sheet-close",
+   "text": "Close",
+   "ring": true,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupClosed": true,
+  "focusAfterClose": {
+   "tag": "li",
+   "cls": "item",
+   "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+   "ring": true,
+   "inView": true,
+   "where": "menu"
+  },
+  "focusBackOnItem": true,
+  "listOpen": true,
+  "focusInList": {
+   "tag": "ul",
+   "cls": "pb-2",
+   "text": "Fall Menuمنوی پاییزSenso Sig",
+   "ring": false,
+   "inView": false,
+   "where": "dialog"
+  },
+  "focusAfterList": {
+   "tag": "button",
+   "id": "tabs-list",
+   "cls": "flex",
+   "text": "All sections",
+   "ring": true,
+   "inView": true,
+   "where": "tabs"
+  }
+ },
+ {
+  "venue": "kebab-land",
+  "lang": "en",
+  "engine": "chromium",
+  "onLoad": {
+   "tag": "body"
+  },
+  "welcome": [
+   {
+    "tag": "button",
+    "text": "English",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "button",
+    "text": "فارسی",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "button",
+    "text": "English",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "button",
+    "text": "فارسی",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   }
+  ],
+  "welcomeLeaks": 0,
+  "afterChoice": {
+   "tag": "body"
+  },
+  "menu": [
+   {
+    "tag": "button",
+    "id": "lang-toggle",
+    "cls": "rounded-full",
+    "text": "Switch language / تغییر زبان",
+    "ring": true,
+    "inView": true,
+    "where": "header"
+   },
+   {
+    "tag": "button",
+    "id": "tabs-list",
+    "cls": "flex",
+    "text": "All sections",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Appetizersپیش‌غذا",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Main Menuمنوی اصلی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Chef's Specialویژه سرآشپز",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Mixed Kebabsکباب‌های ترکیبی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Plattersسینی‌ها",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Drinksنوشیدنی‌ها",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Dessertدسر",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Summer Sipنوشیدنی تابستانی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Must Tryحتماً امتحان کنید",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Beerآبجو",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Sakeساکه",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Cocktailsکوکتل‌ها",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Vodkaودکا",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Whiskeyویسکی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Wine Bottlesبطری شراب",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Traditional Spiritsعرق‌های س",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Wineشراب",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Green Saladسالاد سبز$##.##Cr",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Yogurt with Shallot Dip (Maa",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Baba Ghanooshبابا غنوش$##.##",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Fried Eggplantبادمجان سرخ‌شد",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Kashke Bademjanکشک بادمجان$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   }
+  ],
+  "noRing": [],
+  "offscreen": 0,
+  "popupOpen": true,
+  "focusInPopup": {
+   "tag": "div",
+   "id": "sheet-content",
+   "text": "Green Saladسالاد سبز$##.##Cr",
+   "ring": false,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupTab": {
+   "tag": "button",
+   "id": "sheet-close",
+   "cls": "sheet-close",
+   "text": "Close",
+   "ring": true,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupClosed": true,
+  "focusAfterClose": {
+   "tag": "li",
+   "cls": "item",
+   "text": "Green Saladسالاد سبز$##.##Cr",
+   "ring": true,
+   "inView": true,
+   "where": "menu"
+  },
+  "focusBackOnItem": true,
+  "listOpen": true,
+  "focusInList": {
+   "tag": "ul",
+   "cls": "pb-2",
+   "text": "Appetizersپیش‌غذاMain Menuمن",
+   "ring": false,
+   "inView": false,
+   "where": "dialog"
+  },
+  "focusAfterList": {
+   "tag": "button",
+   "id": "tabs-list",
+   "cls": "flex",
+   "text": "All sections",
+   "ring": true,
+   "inView": true,
+   "where": "tabs"
+  }
+ },
+ {
+  "venue": "kebab-land",
+  "lang": "fa",
+  "engine": "chromium",
+  "onLoad": {
+   "tag": "body"
+  },
+  "welcome": [
+   {
+    "tag": "button",
+    "text": "English",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "button",
+    "text": "فارسی",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "button",
+    "text": "English",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   },
+   {
+    "tag": "button",
+    "text": "فارسی",
+    "ring": true,
+    "inView": true,
+    "where": "welcome"
+   }
+  ],
+  "welcomeLeaks": 0,
+  "afterChoice": {
+   "tag": "body"
+  },
+  "menu": [
+   {
+    "tag": "button",
+    "id": "lang-toggle",
+    "cls": "rounded-full",
+    "text": "Switch language / تغییر زبان",
+    "ring": true,
+    "inView": true,
+    "where": "header"
+   },
+   {
+    "tag": "button",
+    "id": "tabs-list",
+    "cls": "flex",
+    "text": "All sections",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Appetizersپیش‌غذا",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Main Menuمنوی اصلی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Chef's Specialویژه سرآشپز",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Mixed Kebabsکباب‌های ترکیبی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Plattersسینی‌ها",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Drinksنوشیدنی‌ها",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Dessertدسر",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Summer Sipنوشیدنی تابستانی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Must Tryحتماً امتحان کنید",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Beerآبجو",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Sakeساکه",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Cocktailsکوکتل‌ها",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Vodkaودکا",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Whiskeyویسکی",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Wine Bottlesبطری شراب",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Traditional Spiritsعرق‌های س",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "a",
+    "cls": "tab",
+    "text": "Wineشراب",
+    "ring": true,
+    "inView": true,
+    "where": "tabs"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Green Saladسالاد سبز$##.##Cr",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Yogurt with Shallot Dip (Maa",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Baba Ghanooshبابا غنوش$##.##",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Fried Eggplantبادمجان سرخ‌شد",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Kashke Bademjanکشک بادمجان$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   }
+  ],
+  "noRing": [],
+  "offscreen": 0,
+  "popupOpen": true,
+  "focusInPopup": {
+   "tag": "div",
+   "id": "sheet-content",
+   "text": "Green Saladسالاد سبز$##.##Cr",
+   "ring": false,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupTab": {
+   "tag": "button",
+   "id": "sheet-close",
+   "cls": "sheet-close",
+   "text": "Close",
+   "ring": true,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupClosed": true,
+  "focusAfterClose": {
+   "tag": "li",
+   "cls": "item",
+   "text": "Green Saladسالاد سبز$##.##Cr",
+   "ring": true,
+   "inView": true,
+   "where": "menu"
+  },
+  "focusBackOnItem": true,
+  "listOpen": true,
+  "focusInList": {
+   "tag": "ul",
+   "cls": "pb-2",
+   "text": "Appetizersپیش‌غذاMain Menuمن",
+   "ring": false,
+   "inView": false,
+   "where": "dialog"
+  },
+  "focusAfterList": {
+   "tag": "button",
+   "id": "tabs-list",
+   "cls": "flex",
+   "text": "All sections",
+   "ring": true,
+   "inView": true,
+   "where": "tabs"
+  }
+ },
+ {
+  "venue": "senso",
+  "lang": "en",
+  "engine": "webkit",
+  "onLoad": {
+   "tag": "body"
+  },
+  "welcome": [
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   }
+  ],
+  "welcomeLeaks": 0,
+  "afterChoice": {
+   "tag": "body"
+  },
+  "menu": [
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Senso Pumpkin Omeletteاملت ک",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Cheesecakeچیزکیک کدو",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Cakeکیک کدو حلوایی$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Latteلاته کدو حلوایی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Warm Pumpkin & Ice Creamکدو ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Carrot Juice with Ice creamآ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Majounمعجون$##.##Combination",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Ice cream & Faloodaبستنی و ف",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Warm Pumpkin & Ice Creamکدو ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Banana & Pistachio Milkشیر م",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pomegranate majounمعجون انار",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Turkish Coffeeقهوه ترک$#.##F",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Brewing Coffeeقهوه دمیMedium",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "EspressoاسپرسوSingleسینگل $#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Americanoآمریکانو$#.##Espres",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Latteلاته$#.##Espresso and s",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Organic Beet Latteلاته چغندر",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Cappuccinoکاپوچینو$#.##Espre",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Mochaموکا$#.##Espresso, choc",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Caramel Macchiatoکارامل ماکی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Affogatoآفوگاتو$#.##A scoop ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Hot chocolateهات چاکلت$#.##C",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Matcha Latteلاته ماچا$#.##Ma",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   }
+  ],
+  "noRing": [],
+  "offscreen": 0,
+  "popupOpen": true,
+  "focusInPopup": {
+   "tag": "div",
+   "id": "sheet-content",
+   "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+   "ring": false,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupTab": {
+   "tag": "dialog",
+   "id": "sheet",
+   "cls": "sheet",
+   "text": "Item",
+   "ring": true,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupClosed": true,
+  "focusAfterClose": {
+   "tag": "li",
+   "cls": "item",
+   "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+   "ring": true,
+   "inView": true,
+   "where": "menu"
+  },
+  "focusBackOnItem": true,
+  "listOpen": true,
+  "focusInList": {
+   "tag": "ul",
+   "cls": "pb-2",
+   "text": "Fall Menuمنوی پاییزSenso Sig",
+   "ring": false,
+   "inView": false,
+   "where": "dialog"
+  },
+  "focusAfterList": {
+   "tag": "button",
+   "id": "tabs-list",
+   "cls": "flex",
+   "text": "All sections",
+   "ring": true,
+   "inView": true,
+   "where": "tabs"
+  }
+ },
+ {
+  "venue": "senso",
+  "lang": "fa",
+  "engine": "webkit",
+  "onLoad": {
+   "tag": "body"
+  },
+  "welcome": [
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   }
+  ],
+  "welcomeLeaks": 0,
+  "afterChoice": {
+   "tag": "body"
+  },
+  "menu": [
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Senso Pumpkin Omeletteاملت ک",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Cheesecakeچیزکیک کدو",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Cakeکیک کدو حلوایی$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pumpkin Latteلاته کدو حلوایی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Warm Pumpkin & Ice Creamکدو ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Carrot Juice with Ice creamآ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Majounمعجون$##.##Combination",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Ice cream & Faloodaبستنی و ف",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Warm Pumpkin & Ice Creamکدو ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Banana & Pistachio Milkشیر م",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Pomegranate majounمعجون انار",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Turkish Coffeeقهوه ترک$#.##F",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Brewing Coffeeقهوه دمیMedium",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "EspressoاسپرسوSingleسینگل $#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Americanoآمریکانو$#.##Espres",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Latteلاته$#.##Espresso and s",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Organic Beet Latteلاته چغندر",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Cappuccinoکاپوچینو$#.##Espre",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Mochaموکا$#.##Espresso, choc",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Caramel Macchiatoکارامل ماکی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Affogatoآفوگاتو$#.##A scoop ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Hot chocolateهات چاکلت$#.##C",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Matcha Latteلاته ماچا$#.##Ma",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   }
+  ],
+  "noRing": [],
+  "offscreen": 0,
+  "popupOpen": true,
+  "focusInPopup": {
+   "tag": "div",
+   "id": "sheet-content",
+   "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+   "ring": false,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupTab": {
+   "tag": "dialog",
+   "id": "sheet",
+   "cls": "sheet",
+   "text": "Item",
+   "ring": true,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupClosed": true,
+  "focusAfterClose": {
+   "tag": "li",
+   "cls": "item",
+   "text": "Pumpkin Soupسوپ کدو حلوایی$#",
+   "ring": true,
+   "inView": true,
+   "where": "menu"
+  },
+  "focusBackOnItem": true,
+  "listOpen": true,
+  "focusInList": {
+   "tag": "ul",
+   "cls": "pb-2",
+   "text": "Fall Menuمنوی پاییزSenso Sig",
+   "ring": false,
+   "inView": false,
+   "where": "dialog"
+  },
+  "focusAfterList": {
+   "tag": "button",
+   "id": "tabs-list",
+   "cls": "flex",
+   "text": "All sections",
+   "ring": true,
+   "inView": true,
+   "where": "tabs"
+  }
+ },
+ {
+  "venue": "kebab-land",
+  "lang": "en",
+  "engine": "webkit",
+  "onLoad": {
+   "tag": "body"
+  },
+  "welcome": [
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   }
+  ],
+  "welcomeLeaks": 0,
+  "afterChoice": {
+   "tag": "body"
+  },
+  "menu": [
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Green Saladسالاد سبز$##.##Cr",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Yogurt with Shallot Dip (Maa",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Baba Ghanooshبابا غنوش$##.##",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Fried Eggplantبادمجان سرخ‌شد",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Kashke Bademjanکشک بادمجان$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Zeytoon Parvardeزیتون پرورده",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Mixed Appetizerپیش‌غذای ترکی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Mixed Appetizer Platterسینی ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Bazari Koobideh Kebabکباب کو",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Roses Koobideh Kebabکباب کوب",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Barg Kebabکباب برگ$##.##One ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Fillet Chenjeh Kebabکباب چنج",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Gilaki Sour Kebabکباب ترش گی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Chicken Leg Kebabکباب ران مر",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Chicken Breast Kebabکباب سین",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Shekari Chicken Kebabکباب مر",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Akbar Joojehاکبر جوجه$##.##G",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Darbari Chicken Kebabکباب مر",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Shishlik Kebabشیشلیک$##.##Ju",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Bakhtiari Kebabکباب بختیاری$",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Special Bonab Kebabکباب بناب",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Rainbow Fishماهی قزل‌آلا$##.",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Stone Lamb Shanksماهیچه بره ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Jojeh Fesenjooniجوجه فسنجونی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   }
+  ],
+  "noRing": [],
+  "offscreen": 0,
+  "popupOpen": true,
+  "focusInPopup": {
+   "tag": "div",
+   "id": "sheet-content",
+   "text": "Green Saladسالاد سبز$##.##Cr",
+   "ring": false,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupTab": {
+   "tag": "dialog",
+   "id": "sheet",
+   "cls": "sheet",
+   "text": "Item",
+   "ring": true,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupClosed": true,
+  "focusAfterClose": {
+   "tag": "li",
+   "cls": "item",
+   "text": "Green Saladسالاد سبز$##.##Cr",
+   "ring": true,
+   "inView": true,
+   "where": "menu"
+  },
+  "focusBackOnItem": true,
+  "listOpen": true,
+  "focusInList": {
+   "tag": "ul",
+   "cls": "pb-2",
+   "text": "Appetizersپیش‌غذاMain Menuمن",
+   "ring": false,
+   "inView": false,
+   "where": "dialog"
+  },
+  "focusAfterList": {
+   "tag": "button",
+   "id": "tabs-list",
+   "cls": "flex",
+   "text": "All sections",
+   "ring": true,
+   "inView": true,
+   "where": "tabs"
+  }
+ },
+ {
+  "venue": "kebab-land",
+  "lang": "fa",
+  "engine": "webkit",
+  "onLoad": {
+   "tag": "body"
+  },
+  "welcome": [
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   },
+   {
+    "tag": "body"
+   }
+  ],
+  "welcomeLeaks": 0,
+  "afterChoice": {
+   "tag": "body"
+  },
+  "menu": [
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Green Saladسالاد سبز$##.##Cr",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Yogurt with Shallot Dip (Maa",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Baba Ghanooshبابا غنوش$##.##",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Fried Eggplantبادمجان سرخ‌شد",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Kashke Bademjanکشک بادمجان$#",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Zeytoon Parvardeزیتون پرورده",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Mixed Appetizerپیش‌غذای ترکی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Mixed Appetizer Platterسینی ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Bazari Koobideh Kebabکباب کو",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Roses Koobideh Kebabکباب کوب",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Barg Kebabکباب برگ$##.##One ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Fillet Chenjeh Kebabکباب چنج",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Gilaki Sour Kebabکباب ترش گی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Chicken Leg Kebabکباب ران مر",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Chicken Breast Kebabکباب سین",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Shekari Chicken Kebabکباب مر",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Akbar Joojehاکبر جوجه$##.##G",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Darbari Chicken Kebabکباب مر",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Shishlik Kebabشیشلیک$##.##Ju",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Bakhtiari Kebabکباب بختیاری$",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Special Bonab Kebabکباب بناب",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Rainbow Fishماهی قزل‌آلا$##.",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Stone Lamb Shanksماهیچه بره ",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   },
+   {
+    "tag": "li",
+    "cls": "item",
+    "text": "Jojeh Fesenjooniجوجه فسنجونی",
+    "ring": true,
+    "inView": true,
+    "where": "menu"
+   }
+  ],
+  "noRing": [],
+  "offscreen": 0,
+  "popupOpen": true,
+  "focusInPopup": {
+   "tag": "div",
+   "id": "sheet-content",
+   "text": "Green Saladسالاد سبز$##.##Cr",
+   "ring": false,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupTab": {
+   "tag": "dialog",
+   "id": "sheet",
+   "cls": "sheet",
+   "text": "Item",
+   "ring": true,
+   "inView": true,
+   "where": "dialog"
+  },
+  "popupClosed": true,
+  "focusAfterClose": {
+   "tag": "li",
+   "cls": "item",
+   "text": "Green Saladسالاد سبز$##.##Cr",
+   "ring": true,
+   "inView": true,
+   "where": "menu"
+  },
+  "focusBackOnItem": true,
+  "listOpen": true,
+  "focusInList": {
+   "tag": "ul",
+   "cls": "pb-2",
+   "text": "Appetizersپیش‌غذاMain Menuمن",
+   "ring": false,
+   "inView": false,
+   "where": "dialog"
+  },
+  "focusAfterList": {
+   "tag": "button",
+   "id": "tabs-list",
+   "cls": "flex",
+   "text": "All sections",
+   "ring": true,
+   "inView": true,
+   "where": "tabs"
+  }
+ }
+]

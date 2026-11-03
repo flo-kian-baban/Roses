@@ -4,6 +4,7 @@
 //   jsonRoute() the page editor (JSON in, JSON out): { ok: true, ... } or { ok: false, error } with 400/401/403.
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { sessionFromRequest, type Session } from './auth';
+import { liveSession } from './pins';
 import type { Bi, Photo } from '@/lib/types';
 
 export type Body = Record<string, string>;
@@ -15,7 +16,7 @@ export function route(opts: { anonymous?: boolean }, fn: (ctx: Ctx) => Promise<v
     const body: Body = {};
     for (const [k, v] of Object.entries((req.body ?? {}) as Record<string, unknown>)) body[k] = Array.isArray(v) ? v.join(',') : String(v ?? '');
     const back = safeBack(body._back) || '/admin';
-    const session = await sessionFromRequest(req);
+    const session = await liveSession(await sessionFromRequest(req));
     if (!opts.anonymous && !session) { res.status(401).json({ error: 'not signed in' }); return; }
     try { await fn({ req, res, session, body, back }); }
     catch (e) { console.error('admin api error', e); redirect(res, back, { error: (e as Error).message || 'unexpected error' }); }
@@ -52,7 +53,7 @@ export function jsonRoute(fn: (ctx: JsonCtx) => Promise<Record<string, unknown> 
   return async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.setHeader('Cache-Control', 'no-store');
     if (req.method !== 'POST' && !(opts.get && req.method === 'GET')) { res.setHeader('Allow', allow); res.status(405).json({ ok: false, error: `${allow} only` }); return; }
-    const session = await sessionFromRequest(req);
+    const session = await liveSession(await sessionFromRequest(req));
     if (!session) { res.status(401).json({ ok: false, error: 'not signed in' }); return; }
     const body = (req.method === 'GET' ? { ...req.query } : req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {}) as JsonBody;
     try { const out = await fn({ req, res, session, body }); res.status(200).json({ ok: true, ...(out ?? {}) }); }

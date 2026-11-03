@@ -18,6 +18,7 @@ import type { Bi, Component, EditorItem, EditorSection, Notes, Photo as PhotoDat
 import { Icon } from '../../../_ui/icons';
 import { SEASON_NAMES, listingProblem, notesToConfirm, seasonState } from './state';
 import { uploadImage } from './upload';
+import { retryable } from './api';
 import { CellText, Group, LangTag, LooksGood, Photo, Switch, TextField, btnDanger, btnGhost, btnSecondary, cardCls } from './ui';
 import { Choices, CopyChoicesSheet, PriceOrSizes } from './Choices';
 import { GoodToKnow, notesSummary } from './GoodToKnow';
@@ -248,7 +249,7 @@ function Parts({ item, onPatch, onLooksGood }: { item: EditorItem; onPatch: (p: 
   const [rows, setRows] = useState<Component[]>(item.components);
   const key = JSON.stringify(item.components);
   useEffect(() => { setRows(JSON.parse(key)); }, [key]);
-  const save = (next: Component[]) => { setRows(next); const complete = next.filter((c) => c.label.en); if (!sameJson(complete, item.components)) void onPatch({ components: complete }).catch(() => setRows(item.components)); };
+  const save = (next: Component[]) => { setRows(next); const complete = next.filter((c) => c.label.en); if (!sameJson(complete, item.components)) void onPatch({ components: complete }).catch((e) => { if (!retryable(e)) setRows(item.components); }); }; // the rows stay for the toast's Try again (D-02)
   const set = (i: number, c: Component) => save(rows.map((r, k) => (k === i ? c : r)));
   return (
     <div>

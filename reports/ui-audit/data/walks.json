@@ -1,0 +1,9250 @@
+[
+ {
+  "id": "senso-en-se-chromium",
+  "venue": "senso",
+  "lang": "en",
+  "vp": "se",
+  "engine": "chromium",
+  "shots": [
+   "senso-en-se-chromium-01-welcome.jpg",
+   "senso-en-se-chromium-02-menu-top.jpg",
+   "senso-en-se-chromium-03-browse.jpg",
+   "senso-en-se-chromium-04-fall-menu.jpg",
+   "senso-en-se-chromium-05-popup.jpg",
+   "senso-en-se-chromium-06-popup-end.jpg",
+   "senso-en-se-chromium-07-closed.jpg",
+   "senso-en-se-chromium-08-popup-choices.jpg",
+   "senso-en-se-chromium-09-section-list.jpg",
+   "senso-en-se-chromium-10-after-jump.jpg",
+   "senso-en-se-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 57,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 166,
+      "minH": 221,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 22,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 375
+     },
+     "langToggle": {
+      "x": 302,
+      "y": 24,
+      "w": 57,
+      "h": 32,
+      "vw": 375
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 100,
+      "h": 48,
+      "vw": 375
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 30,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 166,
+      "minH": 129,
+      "sample": "Pumpkin Latteلاته کدو حلوایی$#.##"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 149,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "title": {
+     "x": 16,
+     "y": 431,
+     "w": 343,
+     "h": 29,
+     "vw": 375
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 6,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 8,
+      "under44": 0,
+      "under24": 0,
+      "minW": 375,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 147,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "contrast": {
+     "checked": 8,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 115,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-fa-se-chromium",
+  "venue": "senso",
+  "lang": "fa",
+  "vp": "se",
+  "engine": "chromium",
+  "shots": [
+   "senso-fa-se-chromium-01-welcome.jpg",
+   "senso-fa-se-chromium-02-menu-top.jpg",
+   "senso-fa-se-chromium-03-browse.jpg",
+   "senso-fa-se-chromium-04-fall-menu.jpg",
+   "senso-fa-se-chromium-05-popup.jpg",
+   "senso-fa-se-chromium-06-popup-end.jpg",
+   "senso-fa-se-chromium-07-closed.jpg",
+   "senso-fa-se-chromium-08-popup-choices.jpg",
+   "senso-fa-se-chromium-09-section-list.jpg",
+   "senso-fa-se-chromium-10-after-jump.jpg",
+   "senso-fa-se-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 166,
+      "minH": 221,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 22,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 321,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 375
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 375
+     },
+     "firstTab": {
+      "x": 228,
+      "y": 76,
+      "w": 93,
+      "h": 48,
+      "vw": 375
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 31,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 166,
+      "minH": 129,
+      "sample": "Pumpkin Latteلاته کدو حلوایی$#.##"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 327,
+     "y": 149,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "title": {
+     "x": 16,
+     "y": 431,
+     "w": 343,
+     "h": 29,
+     "vw": 375
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 8,
+      "under44": 0,
+      "under24": 0,
+      "minW": 375,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 327,
+     "y": 147,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "contrast": {
+     "checked": 8,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 102,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-en-se-chromium",
+  "venue": "kebab-land",
+  "lang": "en",
+  "vp": "se",
+  "engine": "chromium",
+  "shots": [
+   "kebab-land-en-se-chromium-01-welcome.jpg",
+   "kebab-land-en-se-chromium-02-menu-top.jpg",
+   "kebab-land-en-se-chromium-03-browse.jpg",
+   "kebab-land-en-se-chromium-05-popup.jpg",
+   "kebab-land-en-se-chromium-06-popup-end.jpg",
+   "kebab-land-en-se-chromium-07-closed.jpg",
+   "kebab-land-en-se-chromium-08-popup-choices.jpg",
+   "kebab-land-en-se-chromium-09-section-list.jpg",
+   "kebab-land-en-se-chromium-10-after-jump.jpg",
+   "kebab-land-en-se-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 57,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 3,
+      "under44": 0,
+      "under24": 0,
+      "minW": 343,
+      "minH": 125,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 28,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 375
+     },
+     "langToggle": {
+      "x": 302,
+      "y": 24,
+      "w": 57,
+      "h": 32,
+      "vw": 375
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 110,
+      "h": 48,
+      "vw": 375
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 30,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 343,
+      "minH": 106,
+      "sample": "Zeytoon Parvardeزیتون پرورده$##.##Marina"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 127,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "title": {
+     "x": 16,
+     "y": 408,
+     "w": 343,
+     "h": 29,
+     "vw": 375
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 8,
+      "under44": 0,
+      "under24": 0,
+      "minW": 375,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 147,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "contrast": {
+     "checked": 8,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-fa-se-chromium",
+  "venue": "kebab-land",
+  "lang": "fa",
+  "vp": "se",
+  "engine": "chromium",
+  "shots": [
+   "kebab-land-fa-se-chromium-01-welcome.jpg",
+   "kebab-land-fa-se-chromium-02-menu-top.jpg",
+   "kebab-land-fa-se-chromium-03-browse.jpg",
+   "kebab-land-fa-se-chromium-05-popup.jpg",
+   "kebab-land-fa-se-chromium-06-popup-end.jpg",
+   "kebab-land-fa-se-chromium-07-closed.jpg",
+   "kebab-land-fa-se-chromium-08-popup-choices.jpg",
+   "kebab-land-fa-se-chromium-09-section-list.jpg",
+   "kebab-land-fa-se-chromium-10-after-jump.jpg",
+   "kebab-land-fa-se-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 3,
+      "under44": 0,
+      "under24": 0,
+      "minW": 343,
+      "minH": 125,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 28,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 321,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 375
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 375
+     },
+     "firstTab": {
+      "x": 241,
+      "y": 76,
+      "w": 80,
+      "h": 48,
+      "vw": 375
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 30,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 343,
+      "minH": 106,
+      "sample": "Zeytoon Parvardeزیتون پرورده$##.##Marina"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 327,
+     "y": 127,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "title": {
+     "x": 16,
+     "y": 408,
+     "w": 343,
+     "h": 29,
+     "vw": 375
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 8,
+      "under44": 0,
+      "under24": 0,
+      "minW": 375,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 327,
+     "y": 147,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "contrast": {
+     "checked": 8,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 92,
+      "h": 23
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 92,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-en-i13-chromium",
+  "venue": "senso",
+  "lang": "en",
+  "vp": "i13",
+  "engine": "chromium",
+  "shots": [
+   "senso-en-i13-chromium-01-welcome.jpg",
+   "senso-en-i13-chromium-02-menu-top.jpg",
+   "senso-en-i13-chromium-03-browse.jpg",
+   "senso-en-i13-chromium-04-fall-menu.jpg",
+   "senso-en-i13-chromium-05-popup.jpg",
+   "senso-en-i13-chromium-06-popup-end.jpg",
+   "senso-en-i13-chromium-07-closed.jpg",
+   "senso-en-i13-chromium-08-popup-choices.jpg",
+   "senso-en-i13-chromium-09-section-list.jpg",
+   "senso-en-i13-chromium-10-after-jump.jpg",
+   "senso-en-i13-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 57,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 173,
+      "minH": 228,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 24,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 390
+     },
+     "langToggle": {
+      "x": 317,
+      "y": 24,
+      "w": 57,
+      "h": 32,
+      "vw": 390
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 100,
+      "h": 48,
+      "vw": 390
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 31,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 128,
+      "sample": "Carrot Juice with Ice creamآب هویج با بس"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 254,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "title": {
+     "x": 16,
+     "y": 547,
+     "w": 358,
+     "h": 29,
+     "vw": 390
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 9,
+      "under44": 0,
+      "under24": 0,
+      "minW": 390,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 176,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "contrast": {
+     "checked": 10,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 115,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-fa-i13-chromium",
+  "venue": "senso",
+  "lang": "fa",
+  "vp": "i13",
+  "engine": "chromium",
+  "shots": [
+   "senso-fa-i13-chromium-01-welcome.jpg",
+   "senso-fa-i13-chromium-02-menu-top.jpg",
+   "senso-fa-i13-chromium-03-browse.jpg",
+   "senso-fa-i13-chromium-04-fall-menu.jpg",
+   "senso-fa-i13-chromium-05-popup.jpg",
+   "senso-fa-i13-chromium-06-popup-end.jpg",
+   "senso-fa-i13-chromium-07-closed.jpg",
+   "senso-fa-i13-chromium-08-popup-choices.jpg",
+   "senso-fa-i13-chromium-09-section-list.jpg",
+   "senso-fa-i13-chromium-10-after-jump.jpg",
+   "senso-fa-i13-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 173,
+      "minH": 228,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 26,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 336,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 390
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 390
+     },
+     "firstTab": {
+      "x": 243,
+      "y": 76,
+      "w": 93,
+      "h": 48,
+      "vw": 390
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 128,
+      "sample": "Carrot Juice with Ice creamآب هویج با بس"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 342,
+     "y": 254,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "title": {
+     "x": 16,
+     "y": 547,
+     "w": 358,
+     "h": 29,
+     "vw": 390
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 10,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 9,
+      "under44": 0,
+      "under24": 0,
+      "minW": 390,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 342,
+     "y": 176,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "contrast": {
+     "checked": 10,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 102,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-en-i13-chromium",
+  "venue": "kebab-land",
+  "lang": "en",
+  "vp": "i13",
+  "engine": "chromium",
+  "shots": [
+   "kebab-land-en-i13-chromium-01-welcome.jpg",
+   "kebab-land-en-i13-chromium-02-menu-top.jpg",
+   "kebab-land-en-i13-chromium-03-browse.jpg",
+   "kebab-land-en-i13-chromium-05-popup.jpg",
+   "kebab-land-en-i13-chromium-06-popup-end.jpg",
+   "kebab-land-en-i13-chromium-07-closed.jpg",
+   "kebab-land-en-i13-chromium-08-popup-choices.jpg",
+   "kebab-land-en-i13-chromium-09-section-list.jpg",
+   "kebab-land-en-i13-chromium-10-after-jump.jpg",
+   "kebab-land-en-i13-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 57,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 125,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 31,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 390
+     },
+     "langToggle": {
+      "x": 317,
+      "y": 24,
+      "w": 57,
+      "h": 32,
+      "vw": 390
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 110,
+      "h": 48,
+      "vw": 390
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 128,
+      "sample": "Mixed Appetizer Platterسینی پیش‌غذای ترک"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 232,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "title": {
+     "x": 16,
+     "y": 524,
+     "w": 358,
+     "h": 29,
+     "vw": 390
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 9,
+      "under44": 0,
+      "under24": 0,
+      "minW": 390,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 176,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "contrast": {
+     "checked": 10,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-fa-i13-chromium",
+  "venue": "kebab-land",
+  "lang": "fa",
+  "vp": "i13",
+  "engine": "chromium",
+  "shots": [
+   "kebab-land-fa-i13-chromium-01-welcome.jpg",
+   "kebab-land-fa-i13-chromium-02-menu-top.jpg",
+   "kebab-land-fa-i13-chromium-03-browse.jpg",
+   "kebab-land-fa-i13-chromium-05-popup.jpg",
+   "kebab-land-fa-i13-chromium-06-popup-end.jpg",
+   "kebab-land-fa-i13-chromium-07-closed.jpg",
+   "kebab-land-fa-i13-chromium-08-popup-choices.jpg",
+   "kebab-land-fa-i13-chromium-09-section-list.jpg",
+   "kebab-land-fa-i13-chromium-10-after-jump.jpg",
+   "kebab-land-fa-i13-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 125,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 31,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 336,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 390
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 390
+     },
+     "firstTab": {
+      "x": 256,
+      "y": 76,
+      "w": 80,
+      "h": 48,
+      "vw": 390
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 128,
+      "sample": "Mixed Appetizer Platterسینی پیش‌غذای ترک"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 342,
+     "y": 232,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "title": {
+     "x": 16,
+     "y": 524,
+     "w": 358,
+     "h": 29,
+     "vw": 390
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 9,
+      "under44": 0,
+      "under24": 0,
+      "minW": 390,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 342,
+     "y": 176,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "contrast": {
+     "checked": 10,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 92,
+      "h": 23
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 92,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-en-max-chromium",
+  "venue": "senso",
+  "lang": "en",
+  "vp": "max",
+  "engine": "chromium",
+  "shots": [
+   "senso-en-max-chromium-01-welcome.jpg",
+   "senso-en-max-chromium-02-menu-top.jpg",
+   "senso-en-max-chromium-03-browse.jpg",
+   "senso-en-max-chromium-04-fall-menu.jpg",
+   "senso-en-max-chromium-05-popup.jpg",
+   "senso-en-max-chromium-06-popup-end.jpg",
+   "senso-en-max-chromium-07-closed.jpg",
+   "senso-en-max-chromium-08-popup-choices.jpg",
+   "senso-en-max-chromium-09-section-list.jpg",
+   "senso-en-max-chromium-10-after-jump.jpg",
+   "senso-en-max-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 57,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 198,
+      "minH": 253,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 26,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 440
+     },
+     "langToggle": {
+      "x": 367,
+      "y": 24,
+      "w": 57,
+      "h": 32,
+      "vw": 440
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 100,
+      "h": 48,
+      "vw": 440
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 7,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 128,
+      "sample": "Carrot Juice with Ice creamآب هویج با بس"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 316,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "title": {
+     "x": 16,
+     "y": 646,
+     "w": 408,
+     "h": 29,
+     "vw": 440
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 11,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 440,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 201,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "contrast": {
+     "checked": 12,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 115,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-fa-max-chromium",
+  "venue": "senso",
+  "lang": "fa",
+  "vp": "max",
+  "engine": "chromium",
+  "shots": [
+   "senso-fa-max-chromium-01-welcome.jpg",
+   "senso-fa-max-chromium-02-menu-top.jpg",
+   "senso-fa-max-chromium-03-browse.jpg",
+   "senso-fa-max-chromium-04-fall-menu.jpg",
+   "senso-fa-max-chromium-05-popup.jpg",
+   "senso-fa-max-chromium-06-popup-end.jpg",
+   "senso-fa-max-chromium-07-closed.jpg",
+   "senso-fa-max-chromium-08-popup-choices.jpg",
+   "senso-fa-max-chromium-09-section-list.jpg",
+   "senso-fa-max-chromium-10-after-jump.jpg",
+   "senso-fa-max-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 198,
+      "minH": 253,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 26,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 386,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 440
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 440
+     },
+     "firstTab": {
+      "x": 293,
+      "y": 76,
+      "w": 93,
+      "h": 48,
+      "vw": 440
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 34,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 7,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 128,
+      "sample": "Carrot Juice with Ice creamآب هویج با بس"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 392,
+     "y": 316,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "title": {
+     "x": 16,
+     "y": 646,
+     "w": 408,
+     "h": 29,
+     "vw": 440
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 11,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 440,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 392,
+     "y": 201,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "contrast": {
+     "checked": 12,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 102,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-en-max-chromium",
+  "venue": "kebab-land",
+  "lang": "en",
+  "vp": "max",
+  "engine": "chromium",
+  "shots": [
+   "kebab-land-en-max-chromium-01-welcome.jpg",
+   "kebab-land-en-max-chromium-02-menu-top.jpg",
+   "kebab-land-en-max-chromium-03-browse.jpg",
+   "kebab-land-en-max-chromium-05-popup.jpg",
+   "kebab-land-en-max-chromium-06-popup-end.jpg",
+   "kebab-land-en-max-chromium-07-closed.jpg",
+   "kebab-land-en-max-chromium-08-popup-choices.jpg",
+   "kebab-land-en-max-chromium-09-section-list.jpg",
+   "kebab-land-en-max-chromium-10-after-jump.jpg",
+   "kebab-land-en-max-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 57,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 106,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 440
+     },
+     "langToggle": {
+      "x": 367,
+      "y": 24,
+      "w": 57,
+      "h": 32,
+      "vw": 440
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 110,
+      "h": 48,
+      "vw": 440
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 36,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "main-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 129,
+      "sample": "Bazari Koobideh Kebabکباب کوبیده بازاری$"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 293,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "title": {
+     "x": 16,
+     "y": 623,
+     "w": 408,
+     "h": 29,
+     "vw": 440
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 440,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 201,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "contrast": {
+     "checked": 12,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-fa-max-chromium",
+  "venue": "kebab-land",
+  "lang": "fa",
+  "vp": "max",
+  "engine": "chromium",
+  "shots": [
+   "kebab-land-fa-max-chromium-01-welcome.jpg",
+   "kebab-land-fa-max-chromium-02-menu-top.jpg",
+   "kebab-land-fa-max-chromium-03-browse.jpg",
+   "kebab-land-fa-max-chromium-05-popup.jpg",
+   "kebab-land-fa-max-chromium-06-popup-end.jpg",
+   "kebab-land-fa-max-chromium-07-closed.jpg",
+   "kebab-land-fa-max-chromium-08-popup-choices.jpg",
+   "kebab-land-fa-max-chromium-09-section-list.jpg",
+   "kebab-land-fa-max-chromium-10-after-jump.jpg",
+   "kebab-land-fa-max-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 106,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 35,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 386,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 440
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 440
+     },
+     "firstTab": {
+      "x": 306,
+      "y": 76,
+      "w": 80,
+      "h": 48,
+      "vw": 440
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 36,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "main-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 7,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 129,
+      "sample": "Bazari Koobideh Kebabکباب کوبیده بازاری$"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 392,
+     "y": 316,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "title": {
+     "x": 16,
+     "y": 646,
+     "w": 408,
+     "h": 29,
+     "vw": 440
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 440,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 392,
+     "y": 201,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "contrast": {
+     "checked": 12,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 92,
+      "h": 23
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 92,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-en-and-chromium",
+  "venue": "senso",
+  "lang": "en",
+  "vp": "and",
+  "engine": "chromium",
+  "shots": [
+   "senso-en-and-chromium-01-welcome.jpg",
+   "senso-en-and-chromium-02-menu-top.jpg",
+   "senso-en-and-chromium-03-browse.jpg",
+   "senso-en-and-chromium-04-fall-menu.jpg",
+   "senso-en-and-chromium-05-popup.jpg",
+   "senso-en-and-chromium-06-popup-end.jpg",
+   "senso-en-and-chromium-07-closed.jpg",
+   "senso-en-and-chromium-08-popup-choices.jpg",
+   "senso-en-and-chromium-09-section-list.jpg",
+   "senso-en-and-chromium-10-after-jump.jpg",
+   "senso-en-and-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 57,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 158,
+      "minH": 213,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 26,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 360
+     },
+     "langToggle": {
+      "x": 287,
+      "y": 24,
+      "w": 57,
+      "h": 32,
+      "vw": 360
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 100,
+      "h": 48,
+      "vw": 360
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 128,
+      "sample": "Majounمعجون$##.##Combination of Traditio"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 393,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "title": {
+     "x": 16,
+     "y": 663,
+     "w": 328,
+     "h": 29,
+     "vw": 360
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 12,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 360,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 205,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "contrast": {
+     "checked": 12,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 115,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-fa-and-chromium",
+  "venue": "senso",
+  "lang": "fa",
+  "vp": "and",
+  "engine": "chromium",
+  "shots": [
+   "senso-fa-and-chromium-01-welcome.jpg",
+   "senso-fa-and-chromium-02-menu-top.jpg",
+   "senso-fa-and-chromium-03-browse.jpg",
+   "senso-fa-and-chromium-04-fall-menu.jpg",
+   "senso-fa-and-chromium-05-popup.jpg",
+   "senso-fa-and-chromium-06-popup-end.jpg",
+   "senso-fa-and-chromium-07-closed.jpg",
+   "senso-fa-and-chromium-08-popup-choices.jpg",
+   "senso-fa-and-chromium-09-section-list.jpg",
+   "senso-fa-and-chromium-10-after-jump.jpg",
+   "senso-fa-and-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 158,
+      "minH": 213,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 26,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 306,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 360
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 360
+     },
+     "firstTab": {
+      "x": 213,
+      "y": 76,
+      "w": 93,
+      "h": 48,
+      "vw": 360
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 39,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 128,
+      "sample": "Ice cream & Faloodaبستنی و فالوده$##.##P"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 312,
+     "y": 393,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "title": {
+     "x": 16,
+     "y": 663,
+     "w": 328,
+     "h": 29,
+     "vw": 360
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 13,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 360,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 312,
+     "y": 205,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "contrast": {
+     "checked": 12,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 102,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-en-and-chromium",
+  "venue": "kebab-land",
+  "lang": "en",
+  "vp": "and",
+  "engine": "chromium",
+  "shots": [
+   "kebab-land-en-and-chromium-01-welcome.jpg",
+   "kebab-land-en-and-chromium-02-menu-top.jpg",
+   "kebab-land-en-and-chromium-03-browse.jpg",
+   "kebab-land-en-and-chromium-05-popup.jpg",
+   "kebab-land-en-and-chromium-06-popup-end.jpg",
+   "kebab-land-en-and-chromium-07-closed.jpg",
+   "kebab-land-en-and-chromium-08-popup-choices.jpg",
+   "kebab-land-en-and-chromium-09-section-list.jpg",
+   "kebab-land-en-and-chromium-10-after-jump.jpg",
+   "kebab-land-en-and-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 57,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 106,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 34,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 360
+     },
+     "langToggle": {
+      "x": 287,
+      "y": 24,
+      "w": 57,
+      "h": 32,
+      "vw": 360
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 110,
+      "h": 48,
+      "vw": 360
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 36,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "main-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 7,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 129,
+      "sample": "Bazari Koobideh Kebabکباب کوبیده بازاری$"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 370,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "title": {
+     "x": 16,
+     "y": 640,
+     "w": 328,
+     "h": 29,
+     "vw": 360
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 360,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 205,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "contrast": {
+     "checked": 12,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-fa-and-chromium",
+  "venue": "kebab-land",
+  "lang": "fa",
+  "vp": "and",
+  "engine": "chromium",
+  "shots": [
+   "kebab-land-fa-and-chromium-01-welcome.jpg",
+   "kebab-land-fa-and-chromium-02-menu-top.jpg",
+   "kebab-land-fa-and-chromium-03-browse.jpg",
+   "kebab-land-fa-and-chromium-05-popup.jpg",
+   "kebab-land-fa-and-chromium-06-popup-end.jpg",
+   "kebab-land-fa-and-chromium-07-closed.jpg",
+   "kebab-land-fa-and-chromium-08-popup-choices.jpg",
+   "kebab-land-fa-and-chromium-09-section-list.jpg",
+   "kebab-land-fa-and-chromium-10-after-jump.jpg",
+   "kebab-land-fa-and-chromium-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 106,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 34,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 306,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 360
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 360
+     },
+     "firstTab": {
+      "x": 226,
+      "y": 76,
+      "w": 80,
+      "h": 48,
+      "vw": 360
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 36,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "main-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 7,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 129,
+      "sample": "Bazari Koobideh Kebabکباب کوبیده بازاری$"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 312,
+     "y": 370,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "title": {
+     "x": 16,
+     "y": 640,
+     "w": 328,
+     "h": 29,
+     "vw": 360
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 360,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 312,
+     "y": 205,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "contrast": {
+     "checked": 12,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 92,
+      "h": 23
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 92,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-en-se-webkit",
+  "venue": "senso",
+  "lang": "en",
+  "vp": "se",
+  "engine": "webkit",
+  "shots": [
+   "senso-en-se-webkit-01-welcome.jpg",
+   "senso-en-se-webkit-02-menu-top.jpg",
+   "senso-en-se-webkit-03-browse.jpg",
+   "senso-en-se-webkit-04-fall-menu.jpg",
+   "senso-en-se-webkit-05-popup.jpg",
+   "senso-en-se-webkit-06-popup-end.jpg",
+   "senso-en-se-webkit-07-closed.jpg",
+   "senso-en-se-webkit-08-popup-choices.jpg",
+   "senso-en-se-webkit-09-section-list.jpg",
+   "senso-en-se-webkit-10-after-jump.jpg",
+   "senso-en-se-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 63,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 166,
+      "minH": 221,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 22,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 375
+     },
+     "langToggle": {
+      "x": 296,
+      "y": 24,
+      "w": 63,
+      "h": 32,
+      "vw": 375
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 100,
+      "h": 48,
+      "vw": 375
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 30,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 166,
+      "minH": 129,
+      "sample": "Pumpkin Latteلاته کدو حلوایی$#.##"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 149,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "title": {
+     "x": 16,
+     "y": 431,
+     "w": 343,
+     "h": 29,
+     "vw": 375
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 13,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": []
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 9,
+      "under44": 0,
+      "under24": 0,
+      "minW": 375,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 147,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "contrast": {
+     "checked": 10,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 115,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-fa-se-webkit",
+  "venue": "senso",
+  "lang": "fa",
+  "vp": "se",
+  "engine": "webkit",
+  "shots": [
+   "senso-fa-se-webkit-01-welcome.jpg",
+   "senso-fa-se-webkit-02-menu-top.jpg",
+   "senso-fa-se-webkit-03-browse.jpg",
+   "senso-fa-se-webkit-04-fall-menu.jpg",
+   "senso-fa-se-webkit-05-popup.jpg",
+   "senso-fa-se-webkit-06-popup-end.jpg",
+   "senso-fa-se-webkit-07-closed.jpg",
+   "senso-fa-se-webkit-08-popup-choices.jpg",
+   "senso-fa-se-webkit-09-section-list.jpg",
+   "senso-fa-se-webkit-10-after-jump.jpg",
+   "senso-fa-se-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 166,
+      "minH": 221,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 22,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 321,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 375
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 375
+     },
+     "firstTab": {
+      "x": 228,
+      "y": 76,
+      "w": 93,
+      "h": 48,
+      "vw": 375
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 31,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 166,
+      "minH": 129,
+      "sample": "Pumpkin Latteلاته کدو حلوایی$#.##"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 327,
+     "y": 149,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "title": {
+     "x": 16,
+     "y": 431,
+     "w": 343,
+     "h": 29,
+     "vw": 375
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 14,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": []
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 9,
+      "under44": 0,
+      "under24": 0,
+      "minW": 375,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 327,
+     "y": 147,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "contrast": {
+     "checked": 10,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 49
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 107,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-en-se-webkit",
+  "venue": "kebab-land",
+  "lang": "en",
+  "vp": "se",
+  "engine": "webkit",
+  "shots": [
+   "kebab-land-en-se-webkit-01-welcome.jpg",
+   "kebab-land-en-se-webkit-02-menu-top.jpg",
+   "kebab-land-en-se-webkit-03-browse.jpg",
+   "kebab-land-en-se-webkit-05-popup.jpg",
+   "kebab-land-en-se-webkit-06-popup-end.jpg",
+   "kebab-land-en-se-webkit-07-closed.jpg",
+   "kebab-land-en-se-webkit-08-popup-choices.jpg",
+   "kebab-land-en-se-webkit-09-section-list.jpg",
+   "kebab-land-en-se-webkit-10-after-jump.jpg",
+   "kebab-land-en-se-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 63,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 3,
+      "under44": 0,
+      "under24": 0,
+      "minW": 343,
+      "minH": 125,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 28,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 375
+     },
+     "langToggle": {
+      "x": 296,
+      "y": 24,
+      "w": 63,
+      "h": 32,
+      "vw": 375
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 110,
+      "h": 48,
+      "vw": 375
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 30,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 343,
+      "minH": 106,
+      "sample": "Zeytoon Parvardeزیتون پرورده$##.##Marina"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 127,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "title": {
+     "x": 16,
+     "y": 408,
+     "w": 343,
+     "h": 29,
+     "vw": 375
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 9,
+      "under44": 0,
+      "under24": 0,
+      "minW": 375,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 147,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "contrast": {
+     "checked": 10,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 49
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-fa-se-webkit",
+  "venue": "kebab-land",
+  "lang": "fa",
+  "vp": "se",
+  "engine": "webkit",
+  "shots": [
+   "kebab-land-fa-se-webkit-01-welcome.jpg",
+   "kebab-land-fa-se-webkit-02-menu-top.jpg",
+   "kebab-land-fa-se-webkit-03-browse.jpg",
+   "kebab-land-fa-se-webkit-05-popup.jpg",
+   "kebab-land-fa-se-webkit-06-popup-end.jpg",
+   "kebab-land-fa-se-webkit-07-closed.jpg",
+   "kebab-land-fa-se-webkit-08-popup-choices.jpg",
+   "kebab-land-fa-se-webkit-09-section-list.jpg",
+   "kebab-land-fa-se-webkit-10-after-jump.jpg",
+   "kebab-land-fa-se-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 3,
+      "under44": 0,
+      "under24": 0,
+      "minW": 343,
+      "minH": 125,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 28,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 321,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 375
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 375
+     },
+     "firstTab": {
+      "x": 241,
+      "y": 76,
+      "w": 80,
+      "h": 48,
+      "vw": 375
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 30,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 343,
+      "minH": 106,
+      "sample": "Zeytoon Parvardeزیتون پرورده$##.##Marina"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 327,
+     "y": 127,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "title": {
+     "x": 16,
+     "y": 408,
+     "w": 343,
+     "h": 29,
+     "vw": 375
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 9,
+      "under44": 0,
+      "under24": 0,
+      "minW": 375,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 327,
+     "y": 147,
+     "w": 36,
+     "h": 36,
+     "vw": 375
+    },
+    "contrast": {
+     "checked": 10,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 93,
+      "h": 23
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 93,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 375,
+     "viewport": 375,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-en-i13-webkit",
+  "venue": "senso",
+  "lang": "en",
+  "vp": "i13",
+  "engine": "webkit",
+  "shots": [
+   "senso-en-i13-webkit-01-welcome.jpg",
+   "senso-en-i13-webkit-02-menu-top.jpg",
+   "senso-en-i13-webkit-03-browse.jpg",
+   "senso-en-i13-webkit-04-fall-menu.jpg",
+   "senso-en-i13-webkit-05-popup.jpg",
+   "senso-en-i13-webkit-06-popup-end.jpg",
+   "senso-en-i13-webkit-07-closed.jpg",
+   "senso-en-i13-webkit-08-popup-choices.jpg",
+   "senso-en-i13-webkit-09-section-list.jpg",
+   "senso-en-i13-webkit-10-after-jump.jpg",
+   "senso-en-i13-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 63,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 173,
+      "minH": 228,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 24,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 390
+     },
+     "langToggle": {
+      "x": 311,
+      "y": 24,
+      "w": 63,
+      "h": 32,
+      "vw": 390
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 100,
+      "h": 48,
+      "vw": 390
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 31,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 128,
+      "sample": "Carrot Juice with Ice creamآب هویج با بس"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 254,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "title": {
+     "x": 16,
+     "y": 547,
+     "w": 358,
+     "h": 29,
+     "vw": 390
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 15,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": []
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 390,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 176,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "contrast": {
+     "checked": 11,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 49
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 115,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-fa-i13-webkit",
+  "venue": "senso",
+  "lang": "fa",
+  "vp": "i13",
+  "engine": "webkit",
+  "shots": [
+   "senso-fa-i13-webkit-01-welcome.jpg",
+   "senso-fa-i13-webkit-02-menu-top.jpg",
+   "senso-fa-i13-webkit-03-browse.jpg",
+   "senso-fa-i13-webkit-04-fall-menu.jpg",
+   "senso-fa-i13-webkit-05-popup.jpg",
+   "senso-fa-i13-webkit-06-popup-end.jpg",
+   "senso-fa-i13-webkit-07-closed.jpg",
+   "senso-fa-i13-webkit-08-popup-choices.jpg",
+   "senso-fa-i13-webkit-09-section-list.jpg",
+   "senso-fa-i13-webkit-10-after-jump.jpg",
+   "senso-fa-i13-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 173,
+      "minH": 228,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 26,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 336,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 390
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 390
+     },
+     "firstTab": {
+      "x": 243,
+      "y": 76,
+      "w": 93,
+      "h": 48,
+      "vw": 390
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 128,
+      "sample": "Carrot Juice with Ice creamآب هویج با بس"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 342,
+     "y": 254,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "title": {
+     "x": 16,
+     "y": 547,
+     "w": 358,
+     "h": 29,
+     "vw": 390
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 15,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": []
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 390,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 342,
+     "y": 176,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "contrast": {
+     "checked": 11,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 107,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-en-i13-webkit",
+  "venue": "kebab-land",
+  "lang": "en",
+  "vp": "i13",
+  "engine": "webkit",
+  "shots": [
+   "kebab-land-en-i13-webkit-01-welcome.jpg",
+   "kebab-land-en-i13-webkit-02-menu-top.jpg",
+   "kebab-land-en-i13-webkit-03-browse.jpg",
+   "kebab-land-en-i13-webkit-05-popup.jpg",
+   "kebab-land-en-i13-webkit-06-popup-end.jpg",
+   "kebab-land-en-i13-webkit-07-closed.jpg",
+   "kebab-land-en-i13-webkit-08-popup-choices.jpg",
+   "kebab-land-en-i13-webkit-09-section-list.jpg",
+   "kebab-land-en-i13-webkit-10-after-jump.jpg",
+   "kebab-land-en-i13-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 63,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 125,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 31,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 390
+     },
+     "langToggle": {
+      "x": 311,
+      "y": 24,
+      "w": 63,
+      "h": 32,
+      "vw": 390
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 110,
+      "h": 48,
+      "vw": 390
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 128,
+      "sample": "Mixed Appetizer Platterسینی پیش‌غذای ترک"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 232,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "title": {
+     "x": 16,
+     "y": 524,
+     "w": 358,
+     "h": 29,
+     "vw": 390
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 390,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 176,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "contrast": {
+     "checked": 11,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 49
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-fa-i13-webkit",
+  "venue": "kebab-land",
+  "lang": "fa",
+  "vp": "i13",
+  "engine": "webkit",
+  "shots": [
+   "kebab-land-fa-i13-webkit-01-welcome.jpg",
+   "kebab-land-fa-i13-webkit-02-menu-top.jpg",
+   "kebab-land-fa-i13-webkit-03-browse.jpg",
+   "kebab-land-fa-i13-webkit-05-popup.jpg",
+   "kebab-land-fa-i13-webkit-06-popup-end.jpg",
+   "kebab-land-fa-i13-webkit-07-closed.jpg",
+   "kebab-land-fa-i13-webkit-08-popup-choices.jpg",
+   "kebab-land-fa-i13-webkit-09-section-list.jpg",
+   "kebab-land-fa-i13-webkit-10-after-jump.jpg",
+   "kebab-land-fa-i13-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 4,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 125,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 31,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 336,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 390
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 390
+     },
+     "firstTab": {
+      "x": 256,
+      "y": 76,
+      "w": 80,
+      "h": 48,
+      "vw": 390
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 358,
+      "minH": 128,
+      "sample": "Mixed Appetizer Platterسینی پیش‌غذای ترک"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 342,
+     "y": 232,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "title": {
+     "x": 16,
+     "y": 524,
+     "w": 358,
+     "h": 29,
+     "vw": 390
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 11,
+      "under44": 0,
+      "under24": 0,
+      "minW": 390,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 342,
+     "y": 176,
+     "w": 36,
+     "h": 36,
+     "vw": 390
+    },
+    "contrast": {
+     "checked": 11,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 93,
+      "h": 23
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 93,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 390,
+     "viewport": 390,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-en-max-webkit",
+  "venue": "senso",
+  "lang": "en",
+  "vp": "max",
+  "engine": "webkit",
+  "shots": [
+   "senso-en-max-webkit-01-welcome.jpg",
+   "senso-en-max-webkit-02-menu-top.jpg",
+   "senso-en-max-webkit-03-browse.jpg",
+   "senso-en-max-webkit-04-fall-menu.jpg",
+   "senso-en-max-webkit-05-popup.jpg",
+   "senso-en-max-webkit-06-popup-end.jpg",
+   "senso-en-max-webkit-07-closed.jpg",
+   "senso-en-max-webkit-08-popup-choices.jpg",
+   "senso-en-max-webkit-09-section-list.jpg",
+   "senso-en-max-webkit-10-after-jump.jpg",
+   "senso-en-max-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 63,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 198,
+      "minH": 253,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 26,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 440
+     },
+     "langToggle": {
+      "x": 361,
+      "y": 24,
+      "w": 63,
+      "h": 32,
+      "vw": 440
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 100,
+      "h": 48,
+      "vw": 440
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 7,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 128,
+      "sample": "Carrot Juice with Ice creamآب هویج با بس"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 316,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "title": {
+     "x": 16,
+     "y": 646,
+     "w": 408,
+     "h": 29,
+     "vw": 440
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 15,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": []
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 12,
+      "under44": 0,
+      "under24": 0,
+      "minW": 440,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 201,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "contrast": {
+     "checked": 13,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 115,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-fa-max-webkit",
+  "venue": "senso",
+  "lang": "fa",
+  "vp": "max",
+  "engine": "webkit",
+  "shots": [
+   "senso-fa-max-webkit-01-welcome.jpg",
+   "senso-fa-max-webkit-02-menu-top.jpg",
+   "senso-fa-max-webkit-03-browse.jpg",
+   "senso-fa-max-webkit-04-fall-menu.jpg",
+   "senso-fa-max-webkit-05-popup.jpg",
+   "senso-fa-max-webkit-06-popup-end.jpg",
+   "senso-fa-max-webkit-07-closed.jpg",
+   "senso-fa-max-webkit-08-popup-choices.jpg",
+   "senso-fa-max-webkit-09-section-list.jpg",
+   "senso-fa-max-webkit-10-after-jump.jpg",
+   "senso-fa-max-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 198,
+      "minH": 253,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 26,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 386,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 440
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 440
+     },
+     "firstTab": {
+      "x": 293,
+      "y": 76,
+      "w": 93,
+      "h": 48,
+      "vw": 440
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 34,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 7,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 128,
+      "sample": "Carrot Juice with Ice creamآب هویج با بس"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 392,
+     "y": 316,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "title": {
+     "x": 16,
+     "y": 646,
+     "w": 408,
+     "h": 29,
+     "vw": 440
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 15,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": []
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 12,
+      "under44": 0,
+      "under24": 0,
+      "minW": 440,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 392,
+     "y": 201,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "contrast": {
+     "checked": 13,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 107,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-en-max-webkit",
+  "venue": "kebab-land",
+  "lang": "en",
+  "vp": "max",
+  "engine": "webkit",
+  "shots": [
+   "kebab-land-en-max-webkit-01-welcome.jpg",
+   "kebab-land-en-max-webkit-02-menu-top.jpg",
+   "kebab-land-en-max-webkit-03-browse.jpg",
+   "kebab-land-en-max-webkit-05-popup.jpg",
+   "kebab-land-en-max-webkit-06-popup-end.jpg",
+   "kebab-land-en-max-webkit-07-closed.jpg",
+   "kebab-land-en-max-webkit-08-popup-choices.jpg",
+   "kebab-land-en-max-webkit-09-section-list.jpg",
+   "kebab-land-en-max-webkit-10-after-jump.jpg",
+   "kebab-land-en-max-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 63,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 106,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 440
+     },
+     "langToggle": {
+      "x": 361,
+      "y": 24,
+      "w": 63,
+      "h": 32,
+      "vw": 440
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 110,
+      "h": 48,
+      "vw": 440
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 36,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "main-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 129,
+      "sample": "Bazari Koobideh Kebabکباب کوبیده بازاری$"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 293,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "title": {
+     "x": 16,
+     "y": 623,
+     "w": 408,
+     "h": 29,
+     "vw": 440
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 12,
+      "under44": 0,
+      "under24": 0,
+      "minW": 440,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 201,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "contrast": {
+     "checked": 13,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 49
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-fa-max-webkit",
+  "venue": "kebab-land",
+  "lang": "fa",
+  "vp": "max",
+  "engine": "webkit",
+  "shots": [
+   "kebab-land-fa-max-webkit-01-welcome.jpg",
+   "kebab-land-fa-max-webkit-02-menu-top.jpg",
+   "kebab-land-fa-max-webkit-03-browse.jpg",
+   "kebab-land-fa-max-webkit-05-popup.jpg",
+   "kebab-land-fa-max-webkit-06-popup-end.jpg",
+   "kebab-land-fa-max-webkit-07-closed.jpg",
+   "kebab-land-fa-max-webkit-08-popup-choices.jpg",
+   "kebab-land-fa-max-webkit-09-section-list.jpg",
+   "kebab-land-fa-max-webkit-10-after-jump.jpg",
+   "kebab-land-fa-max-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 106,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 35,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 386,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 440
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 440
+     },
+     "firstTab": {
+      "x": 306,
+      "y": 76,
+      "w": 80,
+      "h": 48,
+      "vw": 440
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 36,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "main-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 7,
+      "under44": 0,
+      "under24": 0,
+      "minW": 408,
+      "minH": 129,
+      "sample": "Bazari Koobideh Kebabکباب کوبیده بازاری$"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 392,
+     "y": 316,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "title": {
+     "x": 16,
+     "y": 646,
+     "w": 408,
+     "h": 29,
+     "vw": 440
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 12,
+      "under44": 0,
+      "under24": 0,
+      "minW": 440,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 392,
+     "y": 201,
+     "w": 36,
+     "h": 36,
+     "vw": 440
+    },
+    "contrast": {
+     "checked": 13,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 93,
+      "h": 23
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 93,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 440,
+     "viewport": 440,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-en-and-webkit",
+  "venue": "senso",
+  "lang": "en",
+  "vp": "and",
+  "engine": "webkit",
+  "shots": [
+   "senso-en-and-webkit-01-welcome.jpg",
+   "senso-en-and-webkit-02-menu-top.jpg",
+   "senso-en-and-webkit-03-browse.jpg",
+   "senso-en-and-webkit-04-fall-menu.jpg",
+   "senso-en-and-webkit-05-popup.jpg",
+   "senso-en-and-webkit-06-popup-end.jpg",
+   "senso-en-and-webkit-07-closed.jpg",
+   "senso-en-and-webkit-08-popup-choices.jpg",
+   "senso-en-and-webkit-09-section-list.jpg",
+   "senso-en-and-webkit-10-after-jump.jpg",
+   "senso-en-and-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 63,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 158,
+      "minH": 213,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 26,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 360
+     },
+     "langToggle": {
+      "x": 281,
+      "y": 24,
+      "w": 63,
+      "h": 32,
+      "vw": 360
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 100,
+      "h": 48,
+      "vw": 360
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 33,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 65,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 128,
+      "sample": "Majounمعجون$##.##Combination of Traditio"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 393,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "title": {
+     "x": 16,
+     "y": 663,
+     "w": 328,
+     "h": 29,
+     "vw": 360
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 15,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": []
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 12,
+      "under44": 0,
+      "under24": 0,
+      "minW": 360,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 205,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "contrast": {
+     "checked": 13,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 115,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "senso-fa-and-webkit",
+  "venue": "senso",
+  "lang": "fa",
+  "vp": "and",
+  "engine": "webkit",
+  "shots": [
+   "senso-fa-and-webkit-01-welcome.jpg",
+   "senso-fa-and-webkit-02-menu-top.jpg",
+   "senso-fa-and-webkit-03-browse.jpg",
+   "senso-fa-and-webkit-04-fall-menu.jpg",
+   "senso-fa-and-webkit-05-popup.jpg",
+   "senso-fa-and-webkit-06-popup-end.jpg",
+   "senso-fa-and-webkit-07-closed.jpg",
+   "senso-fa-and-webkit-08-popup-choices.jpg",
+   "senso-fa-and-webkit-09-section-list.jpg",
+   "senso-fa-and-webkit-10-after-jump.jpg",
+   "senso-fa-and-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 158,
+      "minH": 213,
+      "sample": "Pumpkin Soupسوپ کدو حلوایی$#.##"
+     }
+    ],
+    "contrast": {
+     "checked": 26,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 306,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 360
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 360
+     },
+     "firstTab": {
+      "x": 213,
+      "y": 76,
+      "w": 93,
+      "h": 48,
+      "vw": 360
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 39,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "senso-signature",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 16,
+      "under44": 0,
+      "under24": 0,
+      "minW": 53,
+      "minH": 48,
+      "sample": "Fall Menuمنوی پاییز"
+     },
+     {
+      "desc": "li.item",
+      "n": 6,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 128,
+      "sample": "Ice cream & Faloodaبستنی و فالوده$##.##P"
+     }
+    ]
+   },
+   "fallMenu": {
+    "title": "Fall Menuمنوی پاییز",
+    "items": 6,
+    "activeTab": {
+     "tab": "fall-menu",
+     "visible": true
+    }
+   },
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 312,
+     "y": 393,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "title": {
+     "x": 16,
+     "y": 663,
+     "w": 328,
+     "h": 29,
+     "vw": 360
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 15,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": []
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 12,
+      "under44": 0,
+      "under24": 0,
+      "minW": 360,
+      "minH": 50,
+      "sample": "Fall Menuمنوی پاییز"
+     }
+    ],
+    "close": {
+     "x": 312,
+     "y": 205,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "contrast": {
+     "checked": 13,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#fresh-juice",
+    "of": 16,
+    "activeTab": {
+     "tab": "fresh-juice",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "(###) ###-####",
+      "sameDigits": true,
+      "w": 107,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 5,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-en-and-webkit",
+  "venue": "kebab-land",
+  "lang": "en",
+  "vp": "and",
+  "engine": "webkit",
+  "shots": [
+   "kebab-land-en-and-webkit-01-welcome.jpg",
+   "kebab-land-en-and-webkit-02-menu-top.jpg",
+   "kebab-land-en-and-webkit-03-browse.jpg",
+   "kebab-land-en-and-webkit-05-popup.jpg",
+   "kebab-land-en-and-webkit-06-popup-end.jpg",
+   "kebab-land-en-and-webkit-07-closed.jpg",
+   "kebab-land-en-and-webkit-08-popup-choices.jpg",
+   "kebab-land-en-and-webkit-09-section-list.jpg",
+   "kebab-land-en-and-webkit-10-after-jump.jpg",
+   "kebab-land-en-and-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "ltr",
+     "lang": "en"
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 63,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 106,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 34,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 0,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 360
+     },
+     "langToggle": {
+      "x": 281,
+      "y": 24,
+      "w": 63,
+      "h": 32,
+      "vw": 360
+     },
+     "firstTab": {
+      "x": 54,
+      "y": 76,
+      "w": 110,
+      "h": 48,
+      "vw": 360
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 36,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "main-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 61,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 7,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 129,
+      "sample": "Bazari Koobideh Kebabکباب کوبیده بازاری$"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 12,
+     "y": 370,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "title": {
+     "x": 16,
+     "y": 640,
+     "w": 328,
+     "h": 29,
+     "vw": 360
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 12,
+      "under44": 0,
+      "under24": 0,
+      "minW": 360,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 12,
+     "y": 205,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "contrast": {
+     "checked": 13,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 49
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 101,
+      "h": 18
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ },
+ {
+  "id": "kebab-land-fa-and-webkit",
+  "venue": "kebab-land",
+  "lang": "fa",
+  "vp": "and",
+  "engine": "webkit",
+  "shots": [
+   "kebab-land-fa-and-webkit-01-welcome.jpg",
+   "kebab-land-fa-and-webkit-02-menu-top.jpg",
+   "kebab-land-fa-and-webkit-03-browse.jpg",
+   "kebab-land-fa-and-webkit-05-popup.jpg",
+   "kebab-land-fa-and-webkit-06-popup-end.jpg",
+   "kebab-land-fa-and-webkit-07-closed.jpg",
+   "kebab-land-fa-and-webkit-08-popup-choices.jpg",
+   "kebab-land-fa-and-webkit-09-section-list.jpg",
+   "kebab-land-fa-and-webkit-10-after-jump.jpg",
+   "kebab-land-fa-and-webkit-11-footer.jpg"
+  ],
+  "checks": {
+   "welcome": {
+    "targets": [
+     {
+      "desc": "button",
+      "n": 2,
+      "under44": 0,
+      "under24": 0,
+      "minW": 144,
+      "minH": 48,
+      "sample": "English"
+     }
+    ],
+    "contrast": {
+     "checked": 4,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "welcomeGone": true,
+   "top": {
+    "html": {
+     "dir": "rtl",
+     "lang": "fa"
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "targets": [
+     {
+      "desc": "#lang-toggle",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 74,
+      "minH": 32,
+      "sample": "Switch language / تغییر زبان"
+     },
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 5,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 106,
+      "sample": "Green Saladسالاد سبز$##.##Crisp lettuce,"
+     }
+    ],
+    "contrast": {
+     "checked": 34,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "appetizers",
+     "visible": true
+    },
+    "rtl": {
+     "listButton": {
+      "x": 306,
+      "y": 76,
+      "w": 54,
+      "h": 47,
+      "vw": 360
+     },
+     "langToggle": {
+      "x": 16,
+      "y": 24,
+      "w": 74,
+      "h": 32,
+      "vw": 360
+     },
+     "firstTab": {
+      "x": 226,
+      "y": 76,
+      "w": 80,
+      "h": 48,
+      "vw": 360
+     }
+    }
+   },
+   "browse": {
+    "contrast": {
+     "checked": 36,
+     "skipped": 0,
+     "fails": []
+    },
+    "activeTab": {
+     "tab": "main-menu",
+     "visible": true
+    },
+    "targets": [
+     {
+      "desc": "#tabs-list",
+      "n": 1,
+      "under44": 0,
+      "under24": 0,
+      "minW": 54,
+      "minH": 47,
+      "sample": "All sections"
+     },
+     {
+      "desc": "a.tab",
+      "n": 17,
+      "under44": 0,
+      "under24": 0,
+      "minW": 52,
+      "minH": 48,
+      "sample": "Appetizersپیش‌غذا"
+     },
+     {
+      "desc": "li.item",
+      "n": 7,
+      "under44": 0,
+      "under24": 0,
+      "minW": 328,
+      "minH": 129,
+      "sample": "Bazari Koobideh Kebabکباب کوبیده بازاری$"
+     }
+    ]
+   },
+   "fallMenu": null,
+   "popup": {
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ],
+    "contrast": {
+     "checked": 3,
+     "skipped": 0,
+     "fails": []
+    },
+    "close": {
+     "x": 312,
+     "y": 370,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "title": {
+     "x": 16,
+     "y": 640,
+     "w": 328,
+     "h": 29,
+     "vw": 360
+    }
+   },
+   "closed": {
+    "sheetOpen": false
+   },
+   "choices": {
+    "contrast": {
+     "checked": 7,
+     "skipped": 0,
+     "fails": []
+    },
+    "targets": [
+     {
+      "desc": "#sheet-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     }
+    ]
+   },
+   "escapeClosed": true,
+   "list": {
+    "targets": [
+     {
+      "desc": "#list-close",
+      "n": 1,
+      "under44": 1,
+      "under24": 0,
+      "minW": 36,
+      "minH": 36,
+      "sample": "Close"
+     },
+     {
+      "desc": "a.block",
+      "n": 12,
+      "under44": 0,
+      "under24": 0,
+      "minW": 360,
+      "minH": 50,
+      "sample": "Appetizersپیش‌غذا"
+     }
+    ],
+    "close": {
+     "x": 312,
+     "y": 205,
+     "w": 36,
+     "h": 36,
+     "vw": 360
+    },
+    "contrast": {
+     "checked": 13,
+     "skipped": 0,
+     "fails": []
+    }
+   },
+   "jump": {
+    "href": "#drinks",
+    "of": 17,
+    "activeTab": {
+     "tab": "drinks",
+     "visible": true
+    },
+    "headingTop": 48
+   },
+   "footer": {
+    "tel": [
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 93,
+      "h": 23
+     },
+     {
+      "hrefFormat": "tel:##########",
+      "textFormat": "### ### ####",
+      "sameDigits": true,
+      "w": 93,
+      "h": 23
+     }
+    ],
+    "contrast": {
+     "checked": 9,
+     "skipped": 0,
+     "fails": []
+    },
+    "overflow": {
+     "docWidth": 360,
+     "viewport": 360,
+     "over": 0,
+     "clipped": 0
+    },
+    "bottomGap": 0
+   }
+  },
+  "errors": []
+ }
+]

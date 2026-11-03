@@ -9,7 +9,7 @@ import { call, type Resp } from './api';
 import { uploadImage } from './upload';
 import { Badge, Switch, TextField, btnDanger, btnSecondary } from './ui';
 
-export function DetailsTab({ venue, version, onSaved }: { venue: EditorVenue; version: number; onSaved: (r: Resp, text?: string) => void }) {
+export function DetailsTab({ venue, version, onSaved, onFail }: { venue: EditorVenue; version: number; onSaved: (r: Resp, text?: string) => void; onFail: (e: unknown, again?: () => Promise<unknown>) => void }) {
   const [v, setV] = useState<EditorVenue>(venue);
   const [err, setErr] = useState<string | null>(null);
   const [confirmRemove, setConfirmRemove] = useState<number | null>(null);
@@ -23,7 +23,7 @@ export function DetailsTab({ venue, version, onSaved }: { venue: EditorVenue; ve
   }, [venue.id, version]);
   const save = async (patch: Record<string, unknown>, text = 'Saved') => {
     try { setErr(null); const r = await call('/api/admin/venue', { action: 'update', id: v.id, patch }); if (r.venue) setV(r.venue as EditorVenue); onSaved(r, text); }
-    catch (e) { setErr((e as Error).message); throw e; }
+    catch (e) { setErr((e as Error).message); onFail(e, () => save(patch, text)); throw e; }
   };
   const locPatch = (i: number, l: Partial<Location> & { confirmed?: boolean }) => save({ locations: v.locations.map((x, k) => (k === i ? { ...x, ...l } : x)) });
   const addLocation = () => save({ locations: [...v.locations, { label: { en: v.locations.length ? 'New location' : v.name.en, fa: null }, address: null, phone: null, hours: { en: null, fa: null } }] }, 'Location added');
@@ -33,10 +33,10 @@ export function DetailsTab({ venue, version, onSaved }: { venue: EditorVenue; ve
     <div className="mx-auto w-full max-w-3xl space-y-4 px-3 pb-32 pt-4 sm:px-5" data-details-tab>
       {err && <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900">{err}</p>}
       <Group title="Name">
-        <TextField label="Name" value={v.name.en} required onCommit={(x) => save({ name: { ...v.name, en: x } })} />
-        <TextField label="Name (فارسی)" value={v.name.fa} dir="rtl" lang="fa" onCommit={(x) => save({ name: { ...v.name, fa: x } })} />
-        <TextField label="Tagline" value={v.tagline.en} placeholder="Optional, under the name in the page description" onCommit={(x) => save({ tagline: { ...v.tagline, en: x } })} />
-        <TextField label="Tagline (فارسی)" value={v.tagline.fa} dir="rtl" lang="fa" onCommit={(x) => save({ tagline: { ...v.tagline, fa: x } })} />
+        <TextField label="Name" value={v.name.en} required onCommit={(x) => save({ name: { en: x } })} />
+        <TextField label="Name (فارسی)" value={v.name.fa} dir="rtl" lang="fa" onCommit={(x) => save({ name: { fa: x } })} />
+        <TextField label="Tagline" value={v.tagline.en} placeholder="Optional, under the name in the page description" onCommit={(x) => save({ tagline: { en: x } })} />
+        <TextField label="Tagline (فارسی)" value={v.tagline.fa} dir="rtl" lang="fa" onCommit={(x) => save({ tagline: { fa: x } })} />
         <p className="text-xs text-ink-muted">Customers&rsquo; page: <a href={`/${v.id}`} target="_blank" rel="noreferrer" className="font-medium text-ink underline-offset-4 hover:underline">/{v.id}</a> (the address does not change when the name does).</p>
       </Group>
       <Group title="Logo">

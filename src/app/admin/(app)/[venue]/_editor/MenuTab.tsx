@@ -120,8 +120,8 @@ export function MenuTab(p: MenuTabProps) {
               <button type="button" onClick={() => p.onAdd(s.id)} className="ml-1 flex h-11 min-w-11 items-center gap-1 rounded-full px-2.5 text-[14px] font-semibold text-accent-strong hover:bg-accent-soft" aria-label={`Add item to ${s.name.en}`}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} /><span className="hidden sm:inline">Add item</span><span className="sm:hidden">Add</span></button>
               {!s.seasonal && <Menu label={`Section menu: ${s.name.en}`} items={[
                 { text: 'Rename', onClick: () => p.onRename(s.id) },
-                { text: 'Move up', disabled: regular.indexOf(s.id) <= 0, onClick: () => { void p.onMoveSection(s.id, 'up'); } },
-                { text: 'Move down', disabled: regular.indexOf(s.id) === regular.length - 1, onClick: () => { void p.onMoveSection(s.id, 'down'); } },
+                { text: 'Move up', disabled: regular.indexOf(s.id) <= 0, onClick: () => { void p.onMoveSection(s.id, 'up').catch(() => undefined); } },
+                { text: 'Move down', disabled: regular.indexOf(s.id) === regular.length - 1, onClick: () => { void p.onMoveSection(s.id, 'down').catch(() => undefined); } },
                 { text: 'Delete section', danger: true, onClick: () => p.onDeleteSection(s.id) },
               ]} />}
               <span className="ml-1 flex items-center"><Switch checked={s.listed} label={s.listed ? `${s.name.en}: shown. Tap to hide` : `${s.name.en}: hidden. Tap to show`} onChange={(v) => p.onToggleSection(s.id, v)} /></span>

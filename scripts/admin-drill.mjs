@@ -74,6 +74,15 @@ if (process.env.DRILL_ADMIN_PIN) {
 async function makePin(name, role, venues) { const r = await post('/api/admin/pin', { _action: 'create', name, role, venue_ids: venues.join(','), _back: '/admin/team' }, adminCookie); const pin = r.text.match(/class="pin">(\d{6})</)?.[1]; const id = (await db.query('select id from pins where name = $1 order by created_at desc limit 1', [name])).rows[0]?.id; check('pin-create', !!pin && !!id, `PIN created for "${name}" (${role}, ${venues.join('+')}): shown once on the response page (6 digits: ${!!pin}), hash stored: ${!!id}`); return { pin, id }; }
 const staff = await makePin('Drill staff', 'staff', ['senso']);
 const owner = await makePin('Drill owner', 'owner', ['senso', 'kebab-land']);
+// pre-go-live audit (2026-11-02, S1-01): an owner manages the PINs of their own venues only (before, a Senso owner could mint an owner PIN for Kebab Land)
+{ const so = await makePin('Drill owner senso', 'owner', ['senso']);
+  const l = await post('/api/admin/login', { mode: 'pin', venue: 'senso', pin: so.pin }); const oc = (l.setCookie || '').split(';')[0];
+  const mint = await post('/api/admin/pin', { _action: 'create', name: 'Drill escalation', role: 'owner', venue_ids: 'kebab-land', _back: '/admin/team' }, oc);
+  const made = (await db.query(`select count(*)::int as n from pins where name = 'Drill escalation'`)).rows[0].n;
+  const rev = await post('/api/admin/pin', { _action: 'revoke', id: owner.id, _back: '/admin/team' }, oc);
+  const still = (await db.query('select revoked_at from pins where id = $1', [owner.id])).rows[0]?.revoked_at === null;
+  check('owner-pin-scope', oc.startsWith('roses_session=') && mint.status === 403 && made === 0 && rev.status === 403 && still, `the Senso owner creates an owner PIN for Kebab Land → ${mint.status}, PINs made: ${made}; revokes a PIN that also covers Kebab Land → ${rev.status}, still active: ${still}`);
+  await post('/api/admin/pin', { _action: 'revoke', id: so.id, _back: '/admin/team' }, adminCookie); }
 { const r = await db.query(`select count(*)::int as n from pins where pin_hash not like '$scrypt$%'`); check('d-hash', r.rows[0].n === 0, `pins with a hash not starting with $scrypt$: ${r.rows[0].n}; plain PIN column: none exists (schema has pin_hash only)`); }
 { const page = await adminCtx.newPage(); await page.goto(`${base}/admin/team`); await snap(page, 'team'); await page.close(); }
 
@@ -172,6 +181,12 @@ await opage.click('[role=dialog] [data-halal="yes"]');
 const wn = await waitDb('select notes from items where id=$1', [item.id], (r) => r?.notes?.halal === true);
 await snap(opage, 'owner-notes-saved');
 check('h-owner', wn.ok && wn.row.notes.allergens.includes('tree nuts'), `owner saved notes in the panel with the chips (Tree nuts, then Halal; each tap on its own): ${JSON.stringify(wn.row?.notes)}`);
+// pre-go-live audit (2026-11-02, S1-02): Undo takes back one's own change only (before, staff could undo the owner's notes record and clear them)
+{ const rev = (await db.query(`select id from revisions where table_name = 'items' and row_id = $1 and by->>'id' = $2 order by id desc limit 1`, [item.id, owner.id])).rows[0]?.id;
+  const before = (await db.query('select notes from items where id=$1', [item.id])).rows[0].notes;
+  const u = await api('/api/admin/undo', { venue: 'senso', revisions: [Number(rev)] }, staffCookie);
+  const after = (await db.query('select notes from items where id=$1', [item.id])).rows[0].notes;
+  check('undo-own-only', !!rev && u.status === 403 && JSON.stringify(after) === JSON.stringify(before), `staff Undo of the owner's notes record ${rev} → ${u.status} "${u.json?.error}"; the notes unchanged: ${JSON.stringify(after) === JSON.stringify(before)}`); }
 { const adminCtx2 = await browser.newContext(DEVICE); const ap = await loginPage(adminCtx2, 'admin', { email, password }); const ac = await cookieOf(adminCtx2); const r = await api('/api/admin/item', { action: 'notes', id: item.id, notes: { allergens: '', halal: null } }, ac); const n2 = (await db.query('select notes from items where id=$1', [item.id])).rows[0].notes; check('h-admin', r.status === 200 && n2.allergens.length === 0 && n2.halal === null, `admin cleared the notes again: ${JSON.stringify(n2)}`); await ap.close(); await adminCtx2.close(); }
 
 // venue details API: staff gets 403; the owner reads and edits (Details tab), Undo puts it back
@@ -250,6 +265,9 @@ const ownerCookie = await cookieOf(ownerCtx);
   for (const p of [staff, owner]) await post('/api/admin/pin', { _action: 'revoke', id: p.id, _back: '/admin/team' }, ac);
   const r = await post('/api/admin/login', { mode: 'pin', venue: 'senso', pin: staff.pin });
   check('b-revoked', !r.setCookie && /wrong PIN/.test(errorOf(r.location) || ''), `revoked staff PIN → ${r.status}, error="${errorOf(r.location)}", cookie set: ${!!r.setCookie}`);
+  // pre-go-live audit (2026-11-02, S1-03): the revoked PIN's session from before ends too (before, its cookie kept editing for up to 12 hours)
+  const old = await api('/api/admin/item', { action: 'update', id: item.id, patch: {} }, staffCookie);
+  check('revoked-session', old.status === 401, `the revoked staff PIN's earlier session (its cookie) → POST /api/admin/item ${old.status} "${old.json?.error}"`);
   await ap.close(); await actx.close(); }
 await db.query(`delete from login_failures where key like 'senso:%'`);
 await browser.close(); await db.end();

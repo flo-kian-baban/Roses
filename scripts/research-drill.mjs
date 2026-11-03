@@ -194,8 +194,8 @@ if (cookie?.startsWith('roses_session=')) {
     await page.getByRole('status').getByRole('button', { name: 'Undo' }).tap();
     await page.getByRole('status').filter({ hasText: 'Undone' }).waitFor({ timeout: 8000 });
     const afterU = (await db.query('select drafts from items where id = $1', [id])).rows[0]?.drafts ?? [];
-    check('confirm-ui', n === want + hiddenToConfirm && rows >= 1 && /Based on:/.test(boxText || '') && bb && bb.width >= 44 && bb.height >= 44 && !afterC.some((f) => f === 'allergens' || f === 'dietary') && afterU.includes('allergens'),
-      `iPhone 13: the bar's chip "${chipText}" (expected ${want + hiddenToConfirm}: ${want} shown + ${hiddenToConfirm} hidden items with notes to confirm), ${rows} rows after tapping it; "${itemName}" opened with its draft box (${/Based on:/.test(boxText || '') ? 'with its basis' : 'NO basis'}), Confirm ${bb ? `${Math.round(bb.width)} × ${Math.round(bb.height)}` : 'not found'} px; after Confirm drafts ${JSON.stringify(afterC)}, after Undo ${JSON.stringify(afterU)}`);
+    check('confirm-ui', n === want && rows >= 1 && /Based on:/.test(boxText || '') && bb && bb.width >= 44 && bb.height >= 44 && !afterC.some((f) => f === 'allergens' || f === 'dietary') && afterU.includes('allergens'),
+      `iPhone 13: the bar's chip "${chipText}" (expected ${want}: the shown items with notes to confirm; the ${hiddenToConfirm} hidden ones sit behind the Hidden items chip since 2026-11-03), ${rows} rows after tapping it; "${itemName}" opened with its draft box (${/Based on:/.test(boxText || '') ? 'with its basis' : 'NO basis'}), Confirm ${bb ? `${Math.round(bb.width)} × ${Math.round(bb.height)}` : 'not found'} px; after Confirm drafts ${JSON.stringify(afterC)}, after Undo ${JSON.stringify(afterU)}`);
     measure(`confirm an item's researched allergens from the Menu tab on the iPhone 13 viewport: ${taps} taps (the Needs-attention chip, the item, Confirm), ${ms} ms to "Confirmed · Undo"`);
   } catch (e) { check('confirm-ui', false, `error: ${e.message}`); await page.screenshot({ path: path.join(out, 'confirm-ui-error.jpg'), type: 'jpeg', quality: 60 }).catch(() => {}); }
   await browser.close();

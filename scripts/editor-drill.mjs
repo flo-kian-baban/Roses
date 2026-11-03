@@ -156,7 +156,10 @@ await signin(l, VENUE);
 const previewReady = (id, text) => l.evaluate(([id, text]) => { const f = document.querySelector('iframe[data-preview-frame]'); const d = f && f.contentDocument; if (!d || d.readyState !== 'complete' || d.location.pathname !== '/senso') return false; if (!id) return true; const el = d.querySelector(`[data-id="${id}"]`); return !!el && (el.textContent || '').includes(text); }, [id, text]);
 await l.waitForFunction(() => { const f = document.querySelector('iframe[data-preview-frame]'); const d = f && f.contentDocument; return !!d && d.readyState === 'complete' && d.location.pathname === '/senso'; });
 await snap(l, 'editor-laptop');
-{ // preview shows a saved change within 1 s
+{ // preview shows a saved change within 1 s. The save waits for the preview's first load to finish its network: while its linked photos are
+  // still coming from the ordering service's storage, the reload after a save waits for them too (0.4–1.4 s, the same before and after the
+  // fix batch A1, measured 2026-11-03), which timed that host and not the save
+  await l.waitForLoadState('networkidle').catch(() => {});
   await l.click(`[data-item="${itemId}"] [data-price]`); await l.keyboard.type('6.75');
   const tEnter = Date.now(); await l.keyboard.press('Enter');
   let shownAt = null; while (Date.now() - tEnter < 6000) { if (await previewReady(itemId, '$6.75')) { shownAt = Date.now() - tEnter; break; } await sleep(20); }
@@ -381,7 +384,7 @@ const listedIds = async () => new Set((await db.query('select id from items wher
   const ws = await waitDb('select variants, price from items where id=$1', [itemId], (r) => r?.variants?.length === 2);
   const vs = JSON.stringify((ws.row?.variants ?? []).map((v) => [v.label.en, Number(v.price)]));
   await snap(p, 'inline-sizes');
-  check('t-inline-sizes', taps === 1 && f1 === 'Size 1' && pre === '4.5' && f2 === 'Size 2' && ws.ok && vs === JSON.stringify([['Small', 4], ['Large', 6]]) && ws.row.price == null, `+ Size: ${taps} tap, the cursor in "${f1}", Size 1's price "${pre}" (the item's); Small, Tab, 4, Enter → the cursor in "${f2}"; Large, Tab, 6, Enter → saved ${vs}, the one price cleared (${ws.row?.price ?? 'null'})`);
+  check('t-inline-sizes', taps === 1 && f1 === 'Size 1' && pre === '4.50' && f2 === 'Size 2' && ws.ok && vs === JSON.stringify([['Small', 4], ['Large', 6]]) && ws.row.price == null, `+ Size: ${taps} tap, the cursor in "${f1}", Size 1's price "${pre}" (the item's); Small, Tab, 4, Enter → the cursor in "${f2}"; Large, Tab, 6, Enter → saved ${vs}, the one price cleared (${ws.row?.price ?? 'null'})`);
   measure(`two sizes from the item editor: ${taps} tap (+ Size) + Small, Tab, 4, Enter, Large, Tab, 6, Enter; saved in the database within ${ws.ms} ms of the last Enter`);
   // a choice group, then Copy to other items, then one Undo
   taps = 0;
@@ -743,6 +746,52 @@ const errorToast = async (p) => { const t = p.locator('[data-toast-error]'); con
   await c.close();
   await api('/api/admin/item', { action: 'update', id: itemId, patch: { name: { en: NAME, fa: null } } }, ck);
   check('t-long-word', pageW.scroll <= pageW.view && !!sheetW && sheetW.scroll <= sheetW.client + 1, `an item named with one ${WORD.length}-character word: the page ${pageW.scroll} px wide on a ${pageW.view} px phone; its popup ${sheetW?.scroll} px in ${sheetW?.client} px`);
+  await ph.close();
+}
+// ---- pre-go-live audit, Part B (the PM's fix batch A2, 2026-11-03): one test per fix in the admin
+{ const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE); const ck = await cookieOf(ph);
+  // #5: the bar counts the shown items only; the hidden ones behind one "Hidden items" chip that lists them
+  const rows = (await db.query(`select listed, price, variants, fa_draft, photo, drafts from items where venue_id = $1`, [VENUE])).rows;
+  const shown = rows.filter((r) => r.listed), hidden = rows.length - shown.length;
+  const chips = await p.$$eval('[aria-label="Needs attention"] button', (els) => els.map((e) => e.textContent.trim()));
+  const num = (re) => Number((chips.find((c) => re.test(c)) || '').match(/\d+/)?.[0] ?? 0);
+  const drafts = shown.filter((r) => r.fa_draft.length > 0).length, photos = shown.filter((r) => !r.photo).length;
+  await p.locator('[aria-label="Needs attention"] button', { hasText: 'Hidden items' }).click();
+  const listedRows = await p.$$eval('li[data-item]', (els) => els.map((e) => e.getAttribute('data-item')));
+  const allHidden = listedRows.length > 0 && (await db.query('select bool_and(not listed) as h from items where id = any($1)', [listedRows])).rows[0].h;
+  check('t-attention-shown', num(/^Hidden items/) === hidden && num(/Persian draft/) === drafts && num(/without a photo/) === photos && !chips.some((c) => /a price/.test(c)) && allHidden, `the bar's chips ${JSON.stringify(chips)}; the database: ${hidden} hidden, ${drafts} shown with Persian drafts, ${photos} shown without a photo; "Hidden items" lists ${listedRows.length} row(s), all hidden: ${allHidden}`);
+  // #11: prices in the editor's fields with two decimals
+  await api('/api/admin/item', { action: 'update', id: itemId, patch: { variants: [], price: 6.5, name: { en: NAME, fa: null } } }, ck);
+  await openEditor(p); const pf = await p.inputValue('.item-panel [data-price-row] input[aria-label="Price"]').catch(() => null);
+  check('t-two-decimals', pf === '6.50', `a price of 6.5 in the item editor's field reads "${pf}"`);
+  // #12: the frosted bars hold back what scrolls under them
+  const alpha = await p.evaluate(() => { const m = getComputedStyle(document.querySelector('header.glass')).backgroundColor.match(/rgba?\(([^)]+)\)/); const v = m ? m[1].split(',').map(Number) : []; return v.length === 4 ? v[3] : 1; });
+  check('t-opaque-bars', alpha >= 0.9, `the top bar's background opacity ${alpha}`);
+  await ph.close();
+}
+{ // #6: on a 360 px phone a section's name wraps (no "Senso …"), the search field's placeholder fits
+  const ph = await browser.newContext({ ...devices['Galaxy S9+'], viewport: { width: 360, height: 780 }, defaultBrowserType: 'chromium' }); const p = await ph.newPage();
+  await signin(p, VENUE);
+  const names = await p.$$eval('[data-section-name] > span:first-child', (els) => els.map((e) => ({ text: e.textContent, cut: e.scrollWidth > e.clientWidth + 1 || e.scrollHeight > e.clientHeight + 1 })));
+  const ph1 = await p.getAttribute('input[aria-label="Search items"]', 'placeholder');
+  const fits = await p.evaluate(() => { const i = document.querySelector('input[aria-label="Search items"]'); const c = document.createElement('canvas').getContext('2d'); c.font = getComputedStyle(i).font; const st = getComputedStyle(i); return c.measureText(i.placeholder).width <= i.clientWidth - parseFloat(st.paddingLeft) - parseFloat(st.paddingRight); });
+  check('t-narrow-names', names.length > 0 && names.every((n) => !n.cut) && ph1 === 'Search' && fits, `360 px wide: ${names.length} section names, cut short: ${names.filter((n) => n.cut).map((n) => n.text).join(', ') || 'none'}; the search placeholder "${ph1}" fits: ${fits}`);
+  await ph.close();
+}
+{ // #13: a price saved on the row at the bottom of the screen: the row is moved clear of the "Saved · Undo" toast
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); await signin(p, VENUE);
+  const row = p.locator(`#sec-${sec.id} li[data-item]`).last(); await row.scrollIntoViewIfNeeded();
+  await p.evaluate((sel) => { const r = document.querySelector(sel).getBoundingClientRect(); window.scrollBy(0, r.bottom - innerHeight + 4); }, `#sec-${sec.id} li[data-item]:last-of-type`); await sleep(300);
+  const id = await row.getAttribute('data-item'); const before = (await db.query('select price from items where id=$1', [id])).rows[0].price;
+  const cell = row.locator('[data-price]');
+  if (await cell.count()) {
+    await cell.click(); await p.keyboard.press('ControlOrMeta+A'); await p.keyboard.type(String((Number(before ?? 0) + 0.25).toFixed(2))); await p.keyboard.press('Enter');
+    await p.locator('[role=status]:has-text("Saved")').waitFor({ timeout: 5000 }).catch(() => {}); await sleep(800);
+    const geo = await p.evaluate((rid) => { const r = document.querySelector(`li[data-item="${rid}"]`).getBoundingClientRect(), t = document.querySelector('.toast')?.getBoundingClientRect(); return { rowBottom: Math.round(r.bottom), toastTop: t ? Math.round(t.top) : null }; }, id);
+    check('t-toast-clear', geo.toastTop !== null && geo.rowBottom <= geo.toastTop, `a price saved on the row at the bottom of the screen: the row ends at ${geo.rowBottom} px, the toast starts at ${geo.toastTop} px`);
+    await api('/api/admin/item', { action: 'update', id, patch: { price: before == null ? null : Number(before) } }, await cookieOf(ph));
+  } else check('t-toast-clear', false, 'the last row of the section has sizes, no price in place');
   await ph.close();
 }
 await laptop.close();

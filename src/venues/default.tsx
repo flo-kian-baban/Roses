@@ -46,8 +46,8 @@ export function DefaultPage({ venue, sections, style }: { venue: Venue; sections
             {venue.locations.map((l, n) => (
               <div key={n} className={n > 0 ? 'mt-4' : ''}>
                 <Bi as="p" text={l.label} className="font-semibold text-(--c-footer-label)" />
-                {l.address && <p className="text-(--c-footer-address)">{l.address}</p>}
-                {l.phone && <p><a href={`tel:${l.phone.replace(/[^\d+]/g, '')}`} className="font-medium text-(--c-footer-phone) underline-offset-4 hover:underline">{l.phone}</a></p>}
+                {l.address && <p className="text-(--c-footer-address)"><bdi dir="ltr">{l.address}</bdi></p>}
+                {l.phone && <p><a href={`tel:${l.phone.replace(/[^\d+]/g, '')}`} className="tap-pad font-medium text-(--c-footer-phone) underline-offset-4 hover:underline"><bdi dir="ltr">{l.phone}</bdi></a></p>}
                 <Bi as="p" text={l.hours} className="text-(--c-footer-hours)" />
               </div>
             ))}

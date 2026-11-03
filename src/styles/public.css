@@ -18,6 +18,15 @@ h1, h2 { font-family: var(--font-heading); font-weight: 700; }
 /* A very long unbroken word (a name typed without spaces) wraps instead of widening the page past the phone's width (pre-go-live audit
    D-17: a 300-character word made the page 769 px wide on a 390 px phone). The menu, its two sheets and the footer only. */
 main, footer, dialog { overflow-wrap: anywhere; }
+/* Pre-go-live audit, Part B (the PM's fix batch A2, 2026-11-03). #8: a control smaller than 44 × 44 px gets an invisible pad to that size
+   (the admin's technique), so its look does not change: the language button and the footer's phone links; the popup's and the section
+   list's ✕ already had one, .sheet-close::after, made square here (it was round, so the corners of the 44 × 44 square did not answer). #10: an item given focus back as its popup closes shows no ring after a touch or a click
+   (html[data-pointer], set by the menu kit's script), only after the keyboard. #14: the menu's first heading takes the focus after the
+   language choice, without a ring. */
+.tap-pad { position: relative; }
+.tap-pad::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
+html[data-pointer] li.item:focus-visible { outline: none; }
+main h2[tabindex="-1"]:focus { outline: none; }
 html[data-lang="fa"] h1, html[data-lang="fa"] h2 { font-family: var(--font-persian); }
 
 /* Language switching: both languages are in the HTML; CSS shows one. */
@@ -184,7 +193,7 @@ dialog.sheet.has-photo #sheet-content { position: relative; margin-top: -8px; }
 /* Close button (Kian, 2026-10-08, later: the 44 px circle was too big): a 36 px circle with an 18 px glyph, 12 px in from the
    popup's top and start edges; a transparent 4 px ring around it keeps the tap target at 44 px. */
 .sheet-close { position: absolute; top: 12px; left: 12px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 9999px; background: var(--c-sheet-close-bg); color: var(--c-sheet-close-icon); }
-.sheet-close::after { content: ""; position: absolute; inset: -4px; border-radius: inherit; }
+.sheet-close::after { content: ""; position: absolute; inset: -4px; } /* a square 44 × 44 pad (it was a 44 px circle, whose corners did not answer: Part B #8) */
 [dir="rtl"] .sheet-close { left: auto; right: 12px; }
 /* Item popup layout (Kian, 2026-10-08, after the Uber Eats reference): the title block (the name 24 px bold, the price line
    17 px with "Serves" in grey, the description 15 px reading text), then one group per kind (Sizes, each option group,

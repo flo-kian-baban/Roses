@@ -54,6 +54,9 @@ export function parsePrice(v: unknown): number | null | 'bad' {
   return Math.round(Number(t.replace(/^\$/, '')) * 100) / 100;
 }
 
+// A price as the editor's fields show it: two decimals, "6.50" rather than "6.5" (pre-go-live audit, Part B #11).
+export const priceInput = (n: number | string | null | undefined): string => (n == null || n === '' ? '' : Number(n).toFixed(2));
+
 // A phone number (S2-15): digits, spaces, (), +, - and dots, with 7 to 15 digits (a number with no digits gave a dead tap-to-call link);
 // Persian digits read as Western.
 export function phoneOf(s: string): string | 'bad' {

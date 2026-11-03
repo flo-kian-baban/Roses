@@ -117,3 +117,4 @@ Runs made from 2026-11-03 on are added below as they are committed.
 | 2026-11-02T23-48-53Z | fast | PASS (36 of 38 checks passed, 2 KNOWN MISS (listed in `reports/checks/known-misses) | e33bb69 | here | the last passing run of its working day |
 | 2026-11-03T04-15-59Z | fast | FAIL (38 of 40 checks passed, 1 KNOWN MISS) | 1c5ccad | here | the public stylesheet changed on purpose (A1: the long-word rule, two unused fonts removed); the welcome-behaviour fixture still held the old one |
 | 2026-11-03T04-40-00Z | fast | PASS (39 of 40 checks passed, 1 KNOWN MISS) | 7581c50 | here | the A1 batch's merge gate |
+| 2026-11-03T05-32-06Z | fast | PASS (39 of 40 checks passed, 1 KNOWN MISS) | 0622acb | here | the A2 batch's merge gate |

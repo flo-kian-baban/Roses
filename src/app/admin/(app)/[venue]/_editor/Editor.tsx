@@ -137,6 +137,19 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     window.addEventListener('beforeunload', leave); window.addEventListener('pagehide', hide); document.addEventListener('visibilitychange', vis);
     return () => { window.removeEventListener('beforeunload', leave); window.removeEventListener('pagehide', hide); document.removeEventListener('visibilitychange', vis); };
   }, []);
+  // The Menu tab keeps the row just saved clear of the toast (pre-go-live audit, Part B #13: "Saved · Undo" sat over the bottom row's price
+  // and switch for 10 s; the item editor already keeps a strip free for it): the page scrolls the row up above the toast when it is under it.
+  useEffect(() => {
+    if (!toast || tab !== 'menu' || !focus?.id) return;
+    const id = focus.id;
+    const raf = requestAnimationFrame(() => {
+      const row = document.querySelector(`li[data-item="${id}"]`), t = document.querySelector('.toast');
+      if (!row || !t) return;
+      const below = row.getBoundingClientRect().bottom - (t.getBoundingClientRect().top - 8);
+      if (below > 0) window.scrollBy({ top: below, behavior: 'smooth' });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [toast?.key]);
   // a failure that Try again can fix stays until then or until it is closed (pre-go-live audit D-01); other messages go by themselves
   useEffect(() => { if (!toast || toast.retry) return; const t = setTimeout(() => setToast(null), toast.error ? 8000 : 10000); return () => clearTimeout(t); }, [toast]);
   useEffect(() => { if (!highlight) return; const t = setTimeout(() => setHighlight(null), 2500); return () => clearTimeout(t); }, [highlight]);

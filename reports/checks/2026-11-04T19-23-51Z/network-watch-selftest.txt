@@ -1,0 +1,11 @@
+$ node scripts/network-watch-selftest.mjs
+PASS fails in an outage, re-run passes: PASS, 2 attempts, 2 network waits printed
+PASS re-run passes during another outage: does not count: FAIL
+PASS fails without an outage: fails, no re-run: FAIL, 1 attempt
+PASS fails in an outage, re-run fails: fails: FAIL
+PASS known miss in an outage: no re-run: KNOWN MISS
+PASS passes during an outage: passes, no re-run: PASS
+PASS outage in the next reading after the step: re-run: PASS, 2 attempts
+PASS the window: 30 s before the start counts, 45 s does not: 45 s before: 0, 25 s before: 1
+PASS the network wait: two waits printed, then on: 2 waits; "network: waiting before the build: b.example ENOTFOUND, c.example TimeoutError not answering; reading again in 0.01 s"
+NETWORK WATCH SELFTEST PASS (9/9)

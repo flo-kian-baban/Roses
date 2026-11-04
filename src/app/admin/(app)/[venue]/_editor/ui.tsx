@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '../../../_ui/icons';
 import { retryable } from './api';
-import { parsePrice, priceInput } from '@/lib/rules';
 
 export const btn = 'inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-4 text-[15px] font-semibold whitespace-nowrap transition active:scale-[.97] disabled:cursor-not-allowed disabled:opacity-50';
 export const btnPrimary = `${btn} bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.28),0_8px_20px_-8px_rgba(238,106,58,.7)]`;
@@ -27,7 +26,7 @@ export function Switch({ checked, onChange, label, disabled }: { checked: boolea
 // that stays in the field, marked "Not saved", until it is saved (pre-go-live audit D-02: before, the field went back to the saved text and
 // what was typed was lost). The caller sets `.current` to the unsaved text, and back to null once a save goes through.
 // cleared: called when the text that did not go through is saved after all (the toast's Try again), so its "Not saved" goes too.
-function useUnsaved(saved: string, setDraft: (v: string) => void, cleared?: () => void) {
+export function useUnsaved(saved: string, setDraft: (v: string) => void, cleared?: () => void) {
   const unsaved = useRef<string | null>(null);
   useEffect(() => { if (unsaved.current !== null && saved !== unsaved.current) return; if (unsaved.current !== null) cleared?.(); unsaved.current = null; setDraft(saved); }, [saved]);
   return unsaved;
@@ -58,28 +57,6 @@ export function TextField({ value, onCommit, label, placeholder, dir, lang, mult
         ? <textarea {...common} className={`${fieldCls} min-h-24`} />
         : <input {...common} type="text" inputMode={inputMode} className={`${fieldCls} ${compact ? 'py-2' : ''}`} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLInputElement).blur(); } }} />}
       {(err || hint) && <span className={`mt-1 block text-xs ${err ? 'text-red-600' : 'text-ink-muted'}`}>{err || hint}</span>}
-    </label>
-  );
-}
-
-// A price that saves itself. Empty means "no price".
-// inline: the label to the left of the field on one row (the item editor's price, 2026-10-13).
-export function MoneyField({ value, onCommit, label = 'Price', hint, autoFocus, compact, inline, className = '' }: { value: number | null | undefined; onCommit: (v: number | null) => void | Promise<void>; label?: string; hint?: string; autoFocus?: boolean; compact?: boolean; inline?: boolean; className?: string }) {
-  const [draft, setDraft] = useState(priceInput(value));
-  const [err, setErr] = useState<string | null>(null);
-  const unsaved = useUnsaved(priceInput(value), setDraft, () => setErr(null));
-  const commit = async () => {
-    const n = parsePrice(draft); // the server's own reading of a price (pre-go-live audit S2-07): "1,50" is 1.50, "1e3" is not a price
-    if (n === 'bad') { setErr('Not a price (for example 12.50)'); return; }
-    if (n === (value ?? null)) { setErr(null); return; }
-    try { setErr(null); await onCommit(n); unsaved.current = null; } catch (e) { const keep = retryable(e); setErr(keep ? `Not saved. ${(e as Error).message}` : (e as Error).message); if (keep) { unsaved.current = priceInput(n); setDraft(draft); } else setDraft(priceInput(value)); }
-  };
-  return (
-    <label className={`${inline ? 'flex flex-wrap items-center gap-x-3' : 'block'} ${className}`}>
-      {!compact && <span className={inline ? 'text-[15px] font-medium' : 'mb-1 block text-sm font-medium'}>{label}</span>}
-      <span className={`relative block ${inline ? 'w-32' : ''}`}><span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-neutral-500">$</span>
-        <input type="text" inputMode="decimal" value={draft} placeholder="0.00" aria-label={label} autoFocus={autoFocus} className={`${inline ? fieldCls.replace('py-2.5', 'py-[9px]') : fieldCls} pl-8 tabular-nums ${compact ? 'py-2' : ''}`} onChange={(e) => setDraft(e.target.value)} onBlur={() => { void commit(); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLInputElement).blur(); } }} /></span>
-      {(err || hint) && <span className={`mt-1 block text-xs ${inline ? 'basis-full' : ''} ${err ? 'text-red-600' : 'text-ink-muted'}`}>{err || hint}</span>}
     </label>
   );
 }
@@ -146,68 +123,4 @@ export function Photo({ url, className = '' }: { url?: string | null; className?
     : <span className={`flex items-center justify-center bg-fill text-neutral-300 ${className}`}><Icon name="image" className="h-5 w-5" /></span>;
 }
 
-// ---- The item editor's cards (Kian, 2026-10-13, the editor rebuild): fields grouped in one bordered card, rows split by hairlines,
-// every row at least 44 px tall; the fields inside are borderless and the card shows the focus ring.
-export const cardCls = 'overflow-hidden rounded-xl border border-[#d2d2d7] bg-white divide-y divide-line focus-within:border-accent focus-within:ring-[3px] focus-within:ring-accent/20';
-export const cellCls = 'block w-full min-w-0 bg-transparent px-3 py-2.5 text-base text-ink placeholder:text-neutral-400 focus:outline-none';
-
-// A field inside a card that saves itself (as TextField: on leaving it, or Enter on one line; re-synced when the saved value changes, e.g.
-// Undo). `lines`: a text box that shows its first line while it is not being edited (so the card stays one row tall), grows to its text
-// while it is, and marks a longer text with a fade and "…".
-export function CellText({ value, onCommit, label, placeholder, dir, lang, required, lines, className = '', inputRef, onFocusChange, maxLength }: {
-  value: string | null | undefined; onCommit: (v: string | null) => void | Promise<void>; label: string; placeholder?: string; dir?: 'rtl' | 'ltr'; lang?: string;
-  required?: boolean; lines?: boolean; className?: string; inputRef?: (el: HTMLInputElement | HTMLTextAreaElement | null) => void; onFocusChange?: (focused: boolean) => void; maxLength?: number;
-}) {
-  const [draft, setDraft] = useState(value ?? '');
-  const [err, setErr] = useState<string | null>(null);
-  const unsaved = useUnsaved(value ?? '', setDraft, () => setErr(null));
-  const [focused, setFocused] = useState(false);
-  const [more, setMore] = useState(false); // a longer text than the one line shown
-  const ta = useRef<HTMLTextAreaElement | null>(null);
-  useEffect(() => { // the text box: its text's height while edited, its first line otherwise (unwrapped, so no part of a second line shows)
-    const el = ta.current; if (!el) return;
-    el.style.height = '44px';
-    if (focused) el.style.height = `${Math.max(44, el.scrollHeight)}px`;
-    setMore(!focused && el.scrollWidth > el.clientWidth + 1);
-  }, [draft, focused]);
-  useEffect(() => { onFocusChange?.(focused); }, [focused]);
-  const commit = async () => {
-    const v = draft.trim();
-    if (v === (value ?? '')) return;
-    if (required && !v) { setErr('Required'); setDraft(value ?? ''); return; }
-    // a save that did not go through keeps what was typed, marked 'Not saved', when trying again can help (pre-go-live audit D-02)
-    try { setErr(null); await onCommit(v === '' ? null : v); unsaved.current = null; } catch (e) { const keep = retryable(e); setErr(keep ? `Not saved. ${(e as Error).message}` : (e as Error).message); if (keep) { unsaved.current = v; setDraft(draft); } else setDraft(value ?? ''); }
-  };
-  const common = { value: draft, placeholder, dir, lang, maxLength, 'aria-label': label, onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setDraft(e.target.value), onFocus: () => setFocused(true), onBlur: () => { setFocused(false); void commit(); } };
-  return (
-    <span className={`relative block min-w-0 flex-1 ${className}`}>
-      {lines
-        ? <textarea {...common} ref={(el) => { ta.current = el; inputRef?.(el); }} rows={1} className={`${cellCls} resize-none overflow-hidden leading-6`} style={{ height: 44, whiteSpace: focused ? 'pre-wrap' : 'nowrap' }} />
-        : <input {...common} ref={inputRef} type="text" className={cellCls} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLInputElement).blur(); } }} />}
-      {lines && more && <span aria-hidden="true" className={`pointer-events-none absolute top-0 flex h-11 items-center from-white from-50% to-transparent text-ink-muted ${dir === 'rtl' ? 'left-0 bg-gradient-to-r pl-2 pr-6' : 'right-0 bg-gradient-to-l pl-6 pr-2'}`}>…</span>}
-      {err && <span role="alert" className="block px-3 pb-2 text-xs text-red-600">{err}</span>}
-    </span>
-  );
-}
-
-// The language tag of a row (EN / FA); a field drafted at import or by research says so ("FA · Draft"), an empty Persian field shows amber.
-export function LangTag({ lang, draft, missing }: { lang: 'EN' | 'FA'; draft?: boolean; missing?: boolean }) {
-  return <span aria-hidden="true" className={`ml-3 mt-3 shrink-0 self-start rounded-md px-1.5 text-[11px] font-semibold leading-5 ${draft ? 'bg-sky-100 text-sky-800' : missing ? 'bg-amber-100 text-amber-900' : 'bg-fill text-ink-muted'}`}>{lang}{draft ? ' · Draft' : ''}</span>;
-}
-// "Looks good" (Kian, 2026-10-13): one tap clears that field's draft flag and nothing else; Undo puts it back.
-export function LooksGood({ onClick, label }: { onClick: () => void; label: string }) {
-  return <button type="button" onClick={onClick} aria-label={`Looks good: ${label}`} className="tap my-1.5 mr-1.5 inline-flex min-h-8 shrink-0 items-center gap-1 self-start rounded-full bg-sky-100 px-2.5 text-[13px] font-semibold text-sky-900 hover:bg-sky-200"><Icon name="check" className="h-3.5 w-3.5" strokeWidth={2.6} />Looks good</button>;
-}
-
-// A named group that opens with one tap; closed, it says in one line what it holds.
-export function Group({ id, title, summary, open, onToggle, children }: { id: string; title: string; summary: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
-  return (
-    <section className="mt-3" data-group-section={id}>
-      <button type="button" data-group={id} aria-expanded={open} onClick={onToggle} className="flex min-h-12 w-full items-center gap-3 rounded-xl bg-fill px-4 py-1.5 text-left">
-        <span className="min-w-0 flex-1"><span className="block text-[15px] font-semibold leading-5">{title}</span><span className="block truncate text-[13px] leading-[18px] text-ink-muted">{summary}</span></span>
-        <Icon name="down" className={`h-5 w-5 text-ink-muted transition ${open ? 'rotate-180' : ''}`} />
-      </button>
-      {open && <div className="pt-3">{children}</div>}
-    </section>
-  );
-}
+// The item editor's own pieces (cards, cells, tags, headings, chips) are in kit.tsx (the PM's clean-up, 2026-11-04).

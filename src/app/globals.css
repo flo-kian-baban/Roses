@@ -10,6 +10,12 @@
   --color-accent-bright: #ff7f4f;
   --color-accent-strong: #d8562a;
   --color-accent-soft: #fff1ea;
+  /* The item editor's clean-up (the PM, 2026-11-04): the admin's colours are defined here, in one place. accent-ink is the accent as text,
+     and as the ground of a filled button with white text: 5.4:1 on white, 4.9:1 on accent-soft (accent-strong, #d8562a, is 4.0:1). */
+  --color-accent-ink: #b5461f;
+  --color-ok: #34c759;      /* the switch when on: the only green */
+  --color-track: #e9e9eb;   /* the switch when off */
+  --color-danger: #d70015;  /* Delete, and a save that did not go through (5.4:1 on white) */
   --color-canvas: #ffffff;
   --color-fill: #f5f5f7;
   --color-ink: #1d1d1f;
@@ -17,6 +23,7 @@
   --color-line: #e5e5ea;
   --shadow-card: 0 1px 2px rgba(0, 0, 0, .03), 0 18px 40px -28px rgba(0, 0, 0, .18);
   --shadow-pop: 0 1px 3px rgba(0, 0, 0, .06), 0 24px 48px -16px rgba(0, 0, 0, .22);
+  --shadow-panel: -12px 0 32px -24px rgba(0, 0, 0, .3); /* the item editor over the page, on a laptop narrower than 1366 px */
 }
 .admin { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; letter-spacing: -0.005em; }
 .admin h1, .admin h2, .admin h3 { font-family: inherit; font-weight: 600; letter-spacing: -0.02em; }
@@ -29,9 +36,9 @@
 /* .94: the rows scrolling under a frosted bar no longer show through enough to sit over its text (pre-go-live audit, Part B #12; was .78) */
 .glass { background: rgba(255, 255, 255, .94); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); }
 /* Listed switch: a native checkbox drawn as an iOS-style toggle, so forms and drills work unchanged. */
-.admin .switch { appearance: none; -webkit-appearance: none; flex: none; width: 51px; height: 31px; margin: 0; border-radius: 9999px; background: #e9e9eb; position: relative; cursor: pointer; transition: background .2s ease; }
+.admin .switch { appearance: none; -webkit-appearance: none; flex: none; width: 51px; height: 31px; margin: 0; border-radius: 9999px; background: var(--color-track); position: relative; cursor: pointer; transition: background .2s ease; }
 .admin .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 9999px; background: #fff; box-shadow: 0 3px 8px rgba(0, 0, 0, .15), 0 1px 1px rgba(0, 0, 0, .16); transition: transform .2s cubic-bezier(.2, .8, .2, 1); }
-.admin .switch:checked { background: #34c759; }
+.admin .switch:checked { background: var(--color-ok); }
 /* Tap areas (the PM, 2026-10-09): every interactive element of the admin meets the finger over at least 44 × 44 CSS px on a phone. Where the
    visual stays smaller (the switch, the chips of the preview bar, the tabs) an invisible pad centred on it makes up the difference; the
    bottom sheet's handle has its own, reaching above the sheet (BottomSheet.tsx). A pad never reaches into a neighbouring control. */
@@ -80,6 +87,9 @@
 .admin .toast { animation: toast-in .2s ease-out; }
 @keyframes toast-in { from { opacity: 0; margin-bottom: -8px; } to { opacity: 1; margin-bottom: 0; } }
 @media (prefers-reduced-motion: reduce) { .admin .toast { animation: none; } }
+
+/* The item editor (the PM's clean-up, 2026-11-04): a keyboard's focus ring on its buttons and rows, in the accent, inside their edges. */
+.admin .item-panel :is(button, a, label):focus-visible { outline: 2px solid var(--color-accent-ink); outline-offset: -2px; border-radius: 12px; }
 
 /* While a sheet is open the "Saved · Undo" toast moves to the top of the screen, so it never covers the sheet's own button at the
    bottom (found by the re-measure of 2026-10-13: it sat on "Copy to N items" right after a choice was saved). */

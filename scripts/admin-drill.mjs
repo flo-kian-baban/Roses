@@ -181,6 +181,7 @@ await opage.fill('input[aria-label="Search items"]', 'Turkish Coffee');
 await openItem(opage, item.id);
 // the owner's chips (Kian via the PM, 2026-10-13: one tap each; in the "Allergens & diet" group since the editor rebuild of the same day)
 { const g = opage.locator('[role=dialog] [data-group="allergens"][aria-expanded="false"]'); if (await g.count()) await g.click(); }
+{ const all = opage.locator('[role=dialog] [data-all-allergens]'); if (await all.count()) await all.click(); } // while a research suggestion waits, the full list is one tap away (the item editor's clean-up, 2026-11-04)
 const nutChip = opage.locator('[role=dialog] [data-allergen="tree nuts"]');
 if ((await nutChip.getAttribute('aria-pressed')) === 'true') { await nutChip.click(); await waitDb('select notes from items where id=$1', [item.id], (r) => !r?.notes?.allergens?.includes('tree nuts')); } // the drill's own precondition
 await nutChip.click();

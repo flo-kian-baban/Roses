@@ -7,9 +7,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { chromium, devices } from '/Users/kianbaban/Roses/node_modules/playwright/index.mjs';
 import pg from '/Users/kianbaban/Roses/node_modules/pg/lib/index.js';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
 
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
-const SP = args.sp, OUT = path.join(path.resolve(args.out || '.'), 'shots'); fs.mkdirSync(OUT, { recursive: true });
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('reports/admin-audit/editor-stills.mjs', { options: { sp: 'path', out: 'path' }, db: true, servers: (a) => [`http://127.0.0.1:${fs.readFileSync(path.join(a.sp, 'port'), 'utf8').trim()}`] });
+const SP = args.sp, OUT = path.join(path.resolve(args.out), 'shots'); fs.mkdirSync(OUT, { recursive: true });
 const base = `http://127.0.0.1:${fs.readFileSync(path.join(SP, 'port'), 'utf8').trim()}`;
 const cred = Object.fromEntries(fs.readFileSync(path.join(SP, 'admin.env'), 'utf8').trim().split('\n').map((l) => { const i = l.indexOf('='); return [l.slice(0, i), l.slice(i + 1)]; }));
 const db = new pg.Client({ connectionString: process.env.DATABASE_URL }); await db.connect();

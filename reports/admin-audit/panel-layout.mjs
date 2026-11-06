@@ -8,7 +8,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium, devices } from '/Users/kianbaban/Roses/node_modules/playwright/index.mjs';
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('reports/admin-audit/panel-layout.mjs', { options: { sp: 'path' }, servers: (a) => [`http://127.0.0.1:${fs.readFileSync(path.join(a.sp, 'port'), 'utf8').trim()}`] });
 const SP = args.sp;
 const base = `http://127.0.0.1:${fs.readFileSync(path.join(SP, 'port'), 'utf8').trim()}`;
 const cred = Object.fromEntries(fs.readFileSync(path.join(SP, 'admin.env'), 'utf8').trim().split('\n').map((l) => [l.slice(0, l.indexOf('=')), l.slice(l.indexOf('=') + 1)]));

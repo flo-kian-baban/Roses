@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Evidence for a venue page on a running local server (default http://localhost:3000):
+// Evidence for a venue page on a running scratch server (scripts/scratch-target.mjs; no default):
 // the first HTML response carries the welcome screen and its head decision script (Kian, 2026-10-09, replacing the logo intro); on
 // a first visit the welcome screen is up at first paint with the greeting in both languages and no language pre-highlighted, a tap
 // on English opens the menu within 300 ms and stores only the language (on a page with a transition into the menu, Senso since
@@ -10,15 +10,16 @@
 // JavaScript off there is no overlay and the menu shows directly; category tabs follow taps and the scroll, top of the page after
 // a reload (Kian, 2026-10-08); full-page iPhone screenshots in English and Persian; DOM summary. Raw outputs go to reports/<dir>/.
 // The finer welcome checks (clock and date boundaries, the scene, the kill switch, budgets, recordings) are in scripts/welcome-drill.mjs.
-//   node scripts/check-page.mjs senso [--base http://localhost:3000] [--out reports/checkpoint-a]
+//   node scripts/check-page.mjs senso --base http://127.0.0.1:<scratch server port> --out <folder> [--jpeg]
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium, devices } from 'playwright';
+import { scratchTarget } from './scratch-target.mjs';
 
-const [venue, ...rest] = process.argv.slice(2);
-const args = Object.fromEntries(rest.filter((a) => a !== '--jpeg').map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
-const base = args.base || 'http://localhost:3000';
-const out = path.resolve(args.out || 'reports/checkpoint-a');
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args, pos: [venue] } = await scratchTarget('scripts/check-page.mjs', { options: { base: 'server', out: 'path', jpeg: 'flag' }, positional: [['venue', 'value']] });
+const base = args.base;
+const out = path.resolve(args.out);
 const jpeg = process.argv.includes('--jpeg'); // smaller full-page screenshots for routine runs (the check suite)
 const shotOpts = (file) => jpeg ? { path: file.replace(/\.png$/, '.jpg'), fullPage: true, type: 'jpeg', quality: 70 } : { path: file, fullPage: true };
 await fs.mkdir(out, { recursive: true });

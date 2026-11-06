@@ -2,7 +2,10 @@
 //   node reports/tabs-follow-scroll/tabs-measure.mjs <base> <venue> <before|after> [chromium|webkit] [en|fa]   (from the repo root; TABS_OUT overrides the output folder)
 import fs from 'node:fs/promises';
 import * as pw from 'playwright';
-const [base = 'http://127.0.0.1:3000', venue = 'senso', label = 'before', browserName = 'chromium', lang = 'en'] = process.argv.slice(2);
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { pos } = await scratchTarget('reports/tabs-follow-scroll/tabs-measure.mjs', { positional: [['base', 'server'], ['venue', 'value'], ['label', ['before', 'after']], ['browser', ['chromium', 'webkit'], 'optional'], ['lang', ['en', 'fa'], 'optional']] });
+const [base, venue, label, browserName = 'chromium', lang = 'en'] = pos;
 const { devices } = pw;
 const OUT = process.env.TABS_OUT || 'reports/tabs-follow-scroll';
 const DEVICE = { ...devices['iPhone 13'], defaultBrowserType: browserName };

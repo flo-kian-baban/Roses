@@ -11,8 +11,11 @@
 //   DATABASE_URL=… node reports/save-order/saves-within-2s.mjs [--since 2026-10-07T00:00:00Z] [--json out.json]
 import fs from 'node:fs';
 import pg from '/Users/kianbaban/Roses/node_modules/pg/lib/index.js';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
 
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+// It reads the change records only: run it on a scratch copy of the working database (the same records), never on the working one.
+const { args } = await scratchTarget('reports/save-order/saves-within-2s.mjs', { options: { since: 'value', json: 'path' }, optional: ['since', 'json'], db: true });
 const SINCE = args.since || '2026-10-07T00:00:00Z';
 const db = new pg.Client({ connectionString: process.env.DATABASE_URL, application_name: 'roses-readonly:saves-within-2s' });
 await db.connect();

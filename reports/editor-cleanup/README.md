@@ -14,7 +14,7 @@ Kian approved the screenshots on 2026-11-06 (no changes); the batch was merged i
 Made by `shots.mjs` (this folder):
 
 ```
-DATABASE_URL=<scratch copy> DRILL_ADMIN_PIN=<throwaway admin> node reports/editor-cleanup/shots.mjs --base http://127.0.0.1:<port> --label before|after
+DATABASE_URL=<scratch copy> DRILL_ADMIN_PIN=<throwaway admin> node reports/editor-cleanup/shots.mjs --base http://127.0.0.1:<scratch server port> --label before|after --out reports/editor-cleanup/shots
 ```
 
 ## Overflow at 440, 390 and 360 px (the brief's acceptance)

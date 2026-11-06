@@ -7,10 +7,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium, devices } from '/Users/kianbaban/Roses/node_modules/playwright/index.mjs';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
 
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
-const base = args.base, out = path.resolve(args.out || 'reports/section-grid'); const pin = process.env.DRILL_ADMIN_PIN;
-if (!pin || !base) { console.error('need --base and DRILL_ADMIN_PIN'); process.exit(2); }
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('reports/section-grid/capture.mjs', { options: { base: 'server', out: 'path' }, env: ['DRILL_ADMIN_PIN'] });
+const base = args.base, out = path.resolve(args.out); const pin = process.env.DRILL_ADMIN_PIN;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const login = await fetch(`${base}/api/admin/login`, { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ mode: 'pin', venue: 'senso', pin }).toString() });
 const cookie = (login.headers.get('set-cookie') || '').split(';')[0];

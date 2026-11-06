@@ -4,6 +4,9 @@
 // (clock running for every animation?), how many frames until every clock runs, and where the particles are drawn at that sample.
 import { chromium, devices } from '/Users/kianbaban/Roses/node_modules/playwright/index.mjs';
 import fs from 'node:fs';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+await scratchTarget('reports/spring-first-frame/inline-ab.mjs', { env: ['PORT', 'OUT'], servers: () => [`http://127.0.0.1:${process.env.PORT}`] });
 const base = `http://127.0.0.1:${process.env.PORT}`, N = Number(process.env.N || 20), out = process.env.OUT;
 const DEVICE = { ...devices['iPhone 13'], defaultBrowserType: 'chromium' };
 const html = await (await fetch(`${base}/senso`)).text();

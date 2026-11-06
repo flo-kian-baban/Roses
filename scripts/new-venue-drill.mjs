@@ -7,12 +7,15 @@
 //   node scripts/new-venue-drill.mjs --remove <id> --out <dir>
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { connectDb, loadEnv } from './load-env.mjs';
+import { connectDb } from './load-env.mjs';
+import { scratchTarget } from './scratch-target.mjs';
 
-loadEnv();
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
-const base = args.base || 'http://127.0.0.1:3100';
-const out = path.resolve(args.out || 'reports/checks/new-venue');
+// The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+// --remove <venue> works on the database only (no server); every other run needs --base and the admin's email and password.
+const { args } = await scratchTarget('scripts/new-venue-drill.mjs', { options: { base: 'server', out: 'path', remove: 'value' }, optional: ['base', 'remove'], db: true,
+  check: (a) => [...(a.base || a.remove ? [] : ['missing --base (or --remove <venue id>)']), ...(a.remove || (process.env.DRILL_ADMIN_EMAIL && process.env.DRILL_ADMIN_PASSWORD) ? [] : ['DRILL_ADMIN_EMAIL / DRILL_ADMIN_PASSWORD are not set'])] });
+const base = args.base;
+const out = path.resolve(args.out);
 await fs.mkdir(out, { recursive: true });
 const lines = [];
 const log = (s) => { const l = `${new Date().toISOString()} ${s}`; lines.push(l); console.log(l); };

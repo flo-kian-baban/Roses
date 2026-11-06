@@ -2,9 +2,11 @@
 // (the first item with research-written text in each section, in the page's order, until ten), with English, Persian, the allergen draft
 // and its basis. node reports/menu-research/samples.mjs > reports/menu-research/samples.md
 import pg from 'pg';
-import { loadEnv } from '../../scripts/load-env.mjs';
 import { currentRows } from '../../tools/import/research-review-lib.mjs';
-loadEnv();
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+// It reads the menu only: run it on a scratch copy of the working database (the same menu), never on the working one.
+await scratchTarget('reports/menu-research/samples.mjs', { db: true });
 const c = new pg.Client({ connectionString: process.env.DATABASE_URL, application_name: 'roses-research-samples' }); await c.connect();
 const cell = (s) => String(s ?? '').replace(/\|/g, '\\|').replace(/\s*\n\s*/g, ' ');
 const out = [`# Ten sample items per venue (database ${(await c.query('select current_database() as d')).rows[0].d}, ${new Date().toISOString()})`, ''];

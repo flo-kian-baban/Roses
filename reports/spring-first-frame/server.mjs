@@ -1,6 +1,10 @@
 // Start a probe server on a copy of a build at a forged instant and regenerate /senso for it. Prints the port.
 import { spawn, execFileSync } from 'node:child_process';
 import fs from 'node:fs'; import path from 'node:path'; import net from 'node:net';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+// It starts its own server, so the database and uploads it uses come from this environment and must be scratch copies.
+await scratchTarget('reports/spring-first-frame/server.mjs', { db: true, uploads: true, env: ['CWD', 'DIST', 'COPY', 'NOW', 'WANT', 'LOG'] });
 const cwd = process.env.CWD, dist = process.env.DIST, copy = process.env.COPY, now = process.env.NOW;
 if (fs.existsSync(path.join(cwd, copy))) fs.rmSync(path.join(cwd, copy), { recursive: true, force: true });
 execFileSync('cp', ['-Rc', path.join(cwd, dist), path.join(cwd, copy)]);

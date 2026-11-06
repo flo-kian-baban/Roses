@@ -5,18 +5,20 @@
 // reordered, the Add item, Add section, Rename and Delete section sheets; the item editor; the Style tab, a colour open, the Welcome
 // group open; Details; Team; Add venue) is measured by scripts/layout-rules.mjs: nothing past the screen's edges, cut by its box, cut
 // short or scrolling sideways; the text sizes 13, 16 and 17 px and the page title's (28 px); one corner radius (12 px) on what the admin
-// draws. One check per screen width. Needs the production server at --base and DRILL_ADMIN_PIN (an admin PIN valid on any venue).
+// draws. One check per screen width. On the two phones also: every row that scrolls sideways (the preview bar in the Style tab's sheet)
+// keeps the chip at the screen's edge visibly cut, at least CUT_MIN px shown and hidden (the PM, 2026-11-06). Needs a scratch server at
+// --base and DRILL_ADMIN_PIN (an admin PIN valid on any venue).
 //   DRILL_ADMIN_PIN=… node scripts/layout-drill.mjs --base http://127.0.0.1:<port> --out reports/checks/<stamp>/layout
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium, devices } from 'playwright';
-import { connectDb, loadEnv } from './load-env.mjs';
-import { MEASURE, RADIUS, SIZES, adminScreens } from './layout-rules.mjs';
+import { connectDb } from './load-env.mjs';
+import { scratchTarget } from './scratch-target.mjs';
+import { CUT_MIN, MEASURE, RADIUS, SIZES, adminScreens } from './layout-rules.mjs';
 
-loadEnv();
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
-const base = args.base || 'http://localhost:3000', out = path.resolve(args.out || 'reports/layout'), pin = process.env.DRILL_ADMIN_PIN;
-if (!pin) { console.error('DRILL_ADMIN_PIN missing'); process.exit(2); }
+// The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('scripts/layout-drill.mjs', { options: { base: 'server', out: 'path' }, db: true, env: ['DRILL_ADMIN_PIN'] });
+const base = args.base, out = path.resolve(args.out), pin = process.env.DRILL_ADMIN_PIN;
 await fs.mkdir(out, { recursive: true });
 const transcript = [], results = [];
 const t0 = Date.now();
@@ -51,6 +53,11 @@ for (const v of VIEWS) {
     await page.keyboard.press('Escape').catch(() => {}); await page.keyboard.press('Escape').catch(() => {});
   }
   await outCtx.close(); await inCtx.close();
+  if (v.id !== 'laptop') {
+    const cuts = rows.flatMap((r) => (r.sideways || []).map((c) => ({ key: r.key, ...c })));
+    const thin = cuts.filter((c) => Math.min(c.shown, c.hidden) < CUT_MIN);
+    check(`sideways-cut-${v.id}`, cuts.length > 0 && thin.length === 0, `${v.title}: ${cuts.length ? `${cuts.length} sideways row(s) measured (${cuts.map((c) => `${c.key}: ${c.chip ? `"${c.chip}" ${c.shown} px shown, ${c.hidden} px hidden` : 'no chip under the edge'}`).join('; ')})${thin.length ? `; ${thin.length} not visibly cut (under ${CUT_MIN} px)` : `, the chip at the edge visibly cut in each (at least ${CUT_MIN} px shown and hidden)`}` : 'no row scrolling sideways was found on the Style screens'}`);
+  }
   const bad = rows.filter((r) => r.error || r.found.length || r.otherSizes.length || r.otherRadii.length);
   check(`layout-${v.id}`, bad.length === 0, `${v.title}: ${rows.length} screens measured; ${bad.length ? `${bad.length} breaking the rules: ${bad.map((r) => `${r.key} (${r.error ?? [...r.found.slice(0, 2), ...r.otherSizes.map((x) => `text ${x}`), ...r.otherRadii.map((x) => `radius ${x}`)].join('; ')})`).join(' | ')}` : `every one with nothing cut, past the edges or scrolling sideways, text in ${SIZES.join(', ')} only and the one radius ${RADIUS}`}`);
   all.push({ view: v.id, rows });

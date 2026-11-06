@@ -8,9 +8,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium, devices } from 'playwright';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
 
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
-const venues = (args.venues || 'senso,kebab-land').split(','), out = path.resolve(args.out || 'reports/persian-tap'); fs.mkdirSync(out, { recursive: true });
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('reports/persian-tap/scroll-follow.mjs', { options: { before: 'server', after: 'server', out: 'path', venues: 'list' }, optional: ['venues'] });
+const venues = (args.venues || 'senso,kebab-land').split(','), out = path.resolve(args.out); fs.mkdirSync(out, { recursive: true });
 const DEVICE = { ...devices['iPhone 13'], defaultBrowserType: 'chromium' };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const browser = await chromium.launch();

@@ -18,9 +18,11 @@ export const EXT_TYPES: Record<string, string> = { jpg: 'image/jpeg', png: 'imag
 export const KEY_RE = /^[a-z0-9-]+\/(photo|logo)-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp|svg)$/;
 export const newKey = (venue: string, kind: 'photo' | 'logo', ext: keyof typeof EXT_TYPES) => `${venue}/${kind}-${randomUUID()}.${ext}`;
 export const urlOf = (key: string) => `/uploads/${key}`;
+// The folder the local driver reads and writes (also named by the scratch-server probe, src/pages/api/scratch.ts).
+export const uploadDir = () => path.resolve(/*turbopackIgnore: true*/ process.env.UPLOAD_DIR || 'uploads'); // the files live outside the build on purpose
 
 function localDisk(): Storage {
-  const dir = path.resolve(/*turbopackIgnore: true*/ process.env.UPLOAD_DIR || 'uploads'); // the files live outside the build on purpose
+  const dir = uploadDir();
   return {
     async put(key, body) {
       if (!KEY_RE.test(key)) throw new Error('bad storage key');

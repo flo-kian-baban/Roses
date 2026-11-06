@@ -18,13 +18,14 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium, devices } from 'playwright';
-import { connectDb, loadEnv } from './load-env.mjs';
+import { connectDb } from './load-env.mjs';
+import { scratchTarget } from './scratch-target.mjs';
 
-loadEnv();
+// The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('scripts/preview-drill.mjs', { options: { base: 'server', out: 'path', jpeg: 'flag' }, db: true, env: ['DRILL_ADMIN_PIN'] });
 const jpeg = process.argv.includes('--jpeg');
-const args = Object.fromEntries(process.argv.slice(2).filter((a) => a !== '--jpeg').map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
-const base = args.base || 'http://localhost:3000', VENUE = 'senso';
-const out = path.resolve(args.out || 'reports/checkpoint-b/preview');
+const base = args.base, VENUE = 'senso';
+const out = path.resolve(args.out);
 await fs.mkdir(out, { recursive: true });
 const pin = process.env.DRILL_ADMIN_PIN;
 if (!pin) { console.error('DRILL_ADMIN_PIN missing'); process.exit(2); }

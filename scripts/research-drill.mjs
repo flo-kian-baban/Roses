@@ -18,14 +18,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { chromium, devices } from 'playwright';
-import { connectDb, loadEnv } from './load-env.mjs';
+import { connectDb } from './load-env.mjs';
+import { scratchTarget } from './scratch-target.mjs';
 import { LEXICON, named, reflected, CLAIM_WORDS, SUPERLATIVES, wordsIn } from '../tools/import/research-lexicon.mjs';
 import { currentRows, toCsv, parseCsv } from '../tools/import/research-review-lib.mjs';
 
-loadEnv();
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
-const base = args.base || 'http://localhost:3000';
-const out = path.resolve(args.out || 'reports/research'); fs.mkdirSync(out, { recursive: true });
+// The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('scripts/research-drill.mjs', { options: { base: 'server', out: 'path', venues: 'list' }, optional: ['venues'], db: true, env: ['DRILL_ADMIN_PIN'] });
+const base = args.base;
+const out = path.resolve(args.out); fs.mkdirSync(out, { recursive: true });
 const venues = ['senso', 'kebab-land'], pageVenues = (args.venues || venues.join(',')).split(',').filter(Boolean);
 const pin = process.env.DRILL_ADMIN_PIN;
 const results = [], measures = [], transcript = [];

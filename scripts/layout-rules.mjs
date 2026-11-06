@@ -6,10 +6,13 @@
 // Left out, as not the admin's own interface: the customers' page in the preview (the iframe) and the iPhone frame around it. Form
 // controls keep their own drawing (the iOS switch's pill, the check box and the radio dot: .switch, .check) and a person's initials
 // their circle ([data-avatar]). A row of chips made to scroll sideways on a phone (the
-// preview bar in the Style tab's sheet) says so with data-scrolls-sideways and is not counted as cut.
+// preview bar in the Style tab's sheet) says so with data-scrolls-sideways and is not counted as cut; sideways: for each such row that
+// scrolls, the chip its right edge cuts with the row at its start, and how much of it shows and is hidden (the PM, 2026-11-06: it stays
+// visibly cut, so staff can tell the row scrolls; CUT_MIN px each at least).
 export const TITLE = '28px'; // the one page-title size
 export const SIZES = ['13px', '16px', '17px', TITLE];
 export const RADIUS = '12px';
+export const CUT_MIN = 12;
 export const MEASURE = () => {
   const found = [], sizes = new Set(), radii = new Set();
   const outside = (el) => !!el.closest('.iphone, iframe');
@@ -31,7 +34,14 @@ export const MEASURE = () => {
     const drawn = (st.backgroundColor !== 'rgba(0, 0, 0, 0)' && st.backgroundColor !== 'transparent') || parseFloat(st.borderTopWidth) > 0 || st.backgroundImage !== 'none';
     if (drawn && !el.matches('.switch, .check, [data-avatar]') && parseFloat(st.borderTopLeftRadius) > 0) radii.add(st.borderTopLeftRadius);
   }
-  return { found, sizes: [...sizes].sort(), radii: [...radii].sort() };
+  const sideways = [...document.querySelectorAll('[data-scrolls-sideways]')].filter((row) => !outside(row) && row.getBoundingClientRect().width > 0 && row.scrollWidth > row.clientWidth + 1).map((row) => {
+    const at = row.scrollLeft; row.scrollLeft = 0;
+    const edge = row.getBoundingClientRect().right; let cut = { chip: null, shown: 0, hidden: 0 };
+    for (const b of row.querySelectorAll('button')) { const r = b.getBoundingClientRect(); if (r.left < edge && r.right > edge) { cut = { chip: (b.textContent || b.getAttribute('aria-label') || '').trim().slice(0, 20), shown: Math.round((edge - r.left) * 10) / 10, hidden: Math.round((r.right - edge) * 10) / 10 }; break; } }
+    row.scrollLeft = at;
+    return cut;
+  });
+  return { found, sizes: [...sizes].sort(), radii: [...radii].sort(), sideways };
 };
 
 // Every admin screen, as [key, title, signed in?, setup(page), whole page too?], shared by scripts/layout-drill.mjs and

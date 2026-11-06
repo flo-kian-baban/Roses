@@ -1,8 +1,8 @@
 # Admin-wide clean-up (the PM, 2026-11-06)
 
-Branch `admin-cleanup`, not merged: Kian rules on the screenshots first.
+Kian approved the screenshots on 2026-11-06 (no changes); the batch was merged into `main` after the PM's four items before the merge (CLAUDE.md, "Admin clean-up: ruling and merge"), and the screenshots below were deleted then, as ruled.
 
-## Screenshots (on disk only, gitignored, deleted after Kian's ruling)
+## Screenshots (on disk only, gitignored; deleted on 2026-11-06 after Kian's ruling)
 
 `reports/admin-cleanup/shots/` in the `../roses-admin-cleanup` worktree; `index.html` there puts each before beside its after.
 
@@ -13,7 +13,7 @@ Branch `admin-cleanup`, not merged: Kian rules on the screenshots first.
 Made by `shots.mjs` (this folder), with the screens and the rules of `scripts/layout-rules.mjs`:
 
 ```
-DATABASE_URL=<scratch copy> DRILL_ADMIN_PIN=<throwaway admin> node reports/admin-cleanup/shots.mjs --base http://127.0.0.1:<port> --label before|after
+DATABASE_URL=<scratch copy> DRILL_ADMIN_PIN=<throwaway admin> node reports/admin-cleanup/shots.mjs --base http://127.0.0.1:<scratch server port> --label before|after --out reports/admin-cleanup/shots
 ```
 
 ## Layout at 1440, 390 and 360 px

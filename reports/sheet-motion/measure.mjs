@@ -11,9 +11,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium, devices } from '/Users/kianbaban/Roses/node_modules/playwright/index.mjs';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
 
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
-const base = args.base, out = path.resolve(args.out || 'reports/sheet-motion'); if (!base) { console.error('need --base'); process.exit(2); }
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('reports/sheet-motion/measure.mjs', { options: { base: 'server', out: 'path' } });
+const base = args.base, out = path.resolve(args.out);
 await fs.mkdir(out, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const browser = await chromium.launch();

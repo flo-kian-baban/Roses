@@ -2,16 +2,17 @@
 // Edit-to-public timing (Kian's condition on the public-page architecture): change a price in place in the page editor
 // on a phone viewport and poll the public page until the new price shows; the log has a timestamp per poll. Then Undo
 // from the "Saved · Undo" toast, and poll until the old price is back.
-//   DRILL_ADMIN_PIN=… node scripts/revalidation-drill.mjs --base http://localhost:3000 --venue senso --item "Turkish Coffee" --out reports/checkpoint-b
+//   DATABASE_URL=<scratch copy> DRILL_ADMIN_PIN=… node scripts/revalidation-drill.mjs --base http://127.0.0.1:<scratch server port> --venue senso --item "Turkish Coffee" --out <folder>
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium, devices } from 'playwright';
-import { connectDb, loadEnv } from './load-env.mjs';
+import { connectDb } from './load-env.mjs';
+import { scratchTarget } from './scratch-target.mjs';
 
-loadEnv();
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
-const base = args.base || 'http://localhost:3000', venue = args.venue || 'senso', itemName = args.item || 'Turkish Coffee';
-const out = path.resolve(args.out || 'reports/checkpoint-b');
+// The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('scripts/revalidation-drill.mjs', { options: { base: 'server', out: 'path', venue: 'value', item: 'value' }, optional: ['venue', 'item'], db: true, env: ['DRILL_ADMIN_PIN'] });
+const base = args.base, venue = args.venue || 'senso', itemName = args.item || 'Turkish Coffee';
+const out = path.resolve(args.out);
 const pin = process.env.DRILL_ADMIN_PIN;
 if (!pin) { console.error('DRILL_ADMIN_PIN missing'); process.exit(2); }
 const lines = []; const t0 = Date.now();

@@ -10,10 +10,12 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium } from '/Users/kianbaban/Roses/node_modules/playwright/index.mjs';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
 
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
-const base = args.base, label = args.label || 'run', out = path.resolve(args.out || 'reports/style-no-jump');
-const pin = process.env.DRILL_ADMIN_PIN; if (!pin || !base) { console.error('need --base and DRILL_ADMIN_PIN'); process.exit(2); }
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('reports/style-no-jump/measure.mjs', { options: { base: 'server', out: 'path', label: 'value' }, optional: ['label'], env: ['DRILL_ADMIN_PIN'] });
+const base = args.base, label = args.label || 'run', out = path.resolve(args.out);
+const pin = process.env.DRILL_ADMIN_PIN;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const l = await ctx.newPage();

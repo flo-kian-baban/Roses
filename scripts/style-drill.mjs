@@ -327,13 +327,20 @@ await snap(l, 'style-laptop');
 }
 { // the preview and the controls point at each other
   await l.reload(); await l.waitForSelector('[data-style-group="rows"]'); await frameReady();
+  // The page's position before the tap is the drill's to set (2026-11-06): after a reload the browser puts the page back where it was, at a
+  // moment of its own, which had made this check pass or fail by chance. So the drill waits until the page has stopped moving, then puts
+  // it at its bottom, where the Footer group is off screen and must be scrolled to (as for a person who has scrolled down the controls),
+  // and judges the tap once the controls' smooth scroll has ended (still for 15 frames, at most 3 s), not at the instant the group opens.
+  const settle = () => l.evaluate(() => new Promise((done) => { const t0 = performance.now(); let last = scrollY, still = 0; const tick = () => { if (scrollY === last) still++; else { still = 0; last = scrollY; } if (still >= 15 || performance.now() - t0 > 3000) done(Math.round(scrollY)); else requestAnimationFrame(tick); }; requestAnimationFrame(tick); }));
+  await settle(); await l.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight)); const y0 = await settle();
   const t1 = Date.now();
   await frameEval((d) => { d.querySelector('main footer p').click(); });
   await l.waitForSelector('[data-style-group="footer"][data-open]'); const dt = Date.now() - t1;
   const footerOutlined = await frameEval((d) => d.querySelector('main footer')?.classList.contains('roses-region'));
-  const inView = await l.evaluate(() => { const r = document.querySelector('[data-style-group="footer"]').getBoundingClientRect(); return r.top >= 0 && r.top < window.innerHeight; });
+  const y1 = await settle(); const dtScroll = Date.now() - t1;
+  const top = await l.evaluate(() => Math.round(document.querySelector('[data-style-group="footer"]').getBoundingClientRect().top)), inView = await l.evaluate((t) => t >= 0 && t < window.innerHeight, top);
   await snap(l, 'region-tapped');
-  check('region-tap', footerOutlined && inView, `tapped the footer in the preview → the Footer group opened ${dt} ms later (1 tap), scrolled into view: ${inView}; the footer is outlined in the preview: ${footerOutlined}`);
+  check('region-tap', footerOutlined && inView, `the controls at their bottom (scrolled ${y0} px, the Footer group off screen), then the footer tapped in the preview → the Footer group opened ${dt} ms later (1 tap) and the controls scrolled to it (${y0} → ${y1} px, still ${dtScroll} ms after the tap): the group's top at ${top} px, in view: ${inView}; the footer is outlined in the preview: ${footerOutlined}`);
   measure(`tap a region in the preview: 1 tap; its group open after ${dt} ms`);
   { // every group switches the preview to the screen where it is visible and outlines its region (Kian, 2026-10-09)
     const EXPECT = { page: 'menu', header: 'menu', tabs: 'menu', headings: 'menu', rows: 'menu', sheet: 'sheet', footer: 'menu', welcome: 'welcome' };

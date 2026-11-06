@@ -591,9 +591,9 @@ const listedIds = async () => new Set((await db.query('select id from items wher
 }
 { // the empty research draft (the PM, 2026-11-06): research suggested no allergen; the card is open, says so in those words, nothing in it
   // reads as allergen-free, and Confirm confirms it (the drafted-milk item of t-allergens-open stays as it is)
+  await db.query(`update items set drafts = array['allergens'], notes = jsonb_build_object('text', jsonb_build_object('en', null, 'fa', null), 'halal', null, 'dietary', '[]'::jsonb, 'allergens', '[]'::jsonb) where id = $1`, [itemId]); // before the page loads the menu
   const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
   await signin(p, VENUE);
-  await db.query(`update items set drafts = array['allergens'], notes = jsonb_build_object('text', jsonb_build_object('en', null, 'fa', null), 'halal', null, 'dietary', '[]'::jsonb, 'allergens', '[]'::jsonb) where id = $1`, [itemId]);
   await p.fill('input[aria-label="Search items"]', NAME); await p.locator(`#sec-${sec.id} [data-item="${itemId}"] button[aria-label^="Edit"]`).click(); await p.waitForSelector(`.item-panel[aria-label="Edit ${NAME}"]`);
   const open = await p.getAttribute('.item-panel [data-group="allergens"]', 'aria-expanded');
   const said = (await p.textContent('.item-panel [data-no-suggestion]').catch(() => ''))?.trim();

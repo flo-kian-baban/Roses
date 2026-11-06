@@ -15,7 +15,8 @@
 //   the item editor's clean-up (the PM, 2026-11-04): the editor's back button ([data-back]), Visibility first, Duplicate item and Delete
 //   item in view under More, reorder from the Menu list (Reorder items in the section's menu), the live save status in the top bar
 //   (t-save-status), nothing cut off or scrolling sideways at 360 px and in the laptop column, three text sizes and one corner radius
-//   (t-calm-layout).
+//   (t-calm-layout); after the ruling (2026-11-06): serves, combo parts and the note in their places (t-details-in-place) and the empty
+//   research draft (t-allergens-empty).
 // Needs the production server at --base and DRILL_ADMIN_PIN (an admin PIN valid on any venue).
 //   DRILL_ADMIN_PIN=… node scripts/editor-drill.mjs --base http://127.0.0.1:3100 --out reports/checks/<stamp>/editor --dist .next-check --jpeg
 import fs from 'node:fs/promises';
@@ -552,19 +553,58 @@ const listedIds = async () => new Set((await db.query('select id from items wher
       }
       return { width: Math.round(pr.width), found, sizes: [...sizes].sort(), radii: [...radii].sort() };
     };
+    // serves, a combo part and a note for customers, so they show in their places (the PM, 2026-11-06) and are measured with the rest
+    const nrow = (await db.query('select notes from items where id=$1', [itemId])).rows[0].notes;
+    await api('/api/admin/item', { action: 'update', id: itemId, patch: { serves: '2', components: [{ item_id: null, label: { en: 'Drill part', fa: 'بخش دریل' }, qty: 1 }] } }, ck);
+    await api('/api/admin/item', { action: 'notes', id: itemId, notes: { ...nrow, text: { en: 'Drill note for customers', fa: 'یادداشت دریل' } } }, ck);
     const seen = [];
     for (const v of [{ id: '360 px phone', ctx: { viewport: { width: 360, height: 780 }, isMobile: true, hasTouch: true } }, { id: 'laptop column', ctx: { viewport: { width: 1440, height: 900 } } }]) {
       const c = await browser.newContext(v.ctx); const q = await c.newPage(); await signin(q, VENUE);
       await q.fill('input[aria-label="Search items"]', NAME); await q.locator(`#sec-${sec.id} [data-item="${itemId}"] button[aria-label^="Edit"]`).click(); await q.waitForSelector(`.item-panel[aria-label="Edit ${NAME}"]`);
-      for (const sel of ['.item-panel [data-group="allergens"][aria-expanded="false"]', '.item-panel [data-all-allergens]', '.item-panel [data-group="other"][aria-expanded="false"]']) { const b = q.locator(sel).first(); if (await b.count()) { await b.scrollIntoViewIfNeeded(); await b.click(); await sleep(250); } }
+      for (const sel of ['.item-panel [data-group="allergens"][aria-expanded="false"]', '.item-panel [data-all-allergens]']) { const b = q.locator(sel).first(); if (await b.count()) { await b.scrollIntoViewIfNeeded(); await b.click(); await sleep(250); } }
       await sleep(400); const m = await q.evaluate(CALM); seen.push({ view: v.id, ...m });
       await snap(q, `calm-${v.id.replace(/\W+/g, '-')}`); await c.close();
     }
     const ok = seen.every((x) => x.found.length === 0 && x.sizes.length <= 3 && x.radii.length === 1);
     check('t-calm-layout', ok, seen.map((x) => `${x.view} (the editor ${x.width} px wide): ${x.found.length ? `${x.found.length} problem(s): ${x.found.slice(0, 6).join('; ')}` : 'nothing past its edges, cut short or scrolling sideways'}; text sizes ${x.sizes.join(', ')}; corner radii ${x.radii.join(', ')}`).join(' | '));
   }
+  { // serves, combo parts and the note for customers in their places when the item has them, More holding actions only (the PM, 2026-11-06):
+    // serves and combo parts in the Price card, the note under the description in the Item card; without them, More offers "Add serves, note
+    // or combo parts", and choosing one puts it in its place with the cursor in it
+    await openIt();
+    const placed = await p.evaluate(() => { const q = (s) => !!document.querySelector(s); const more = document.querySelector('.item-panel [data-more]'); return { serves: q('.item-panel [data-price-choices] [data-detail="serves"]'), parts: q('.item-panel [data-price-choices] [data-detail="parts"]'), note: q('.item-panel [data-item-card] [data-detail="note"]'), moreButtons: more ? [...more.querySelectorAll('button')].map((b) => b.textContent.trim()) : null, moreFields: more ? more.querySelectorAll('[data-detail], input, textarea').length : null }; });
+    const nrow = (await db.query('select notes from items where id=$1', [itemId])).rows[0].notes;
+    await api('/api/admin/item', { action: 'update', id: itemId, patch: { serves: null, components: [] } }, ck);
+    await api('/api/admin/item', { action: 'notes', id: itemId, notes: { ...nrow, text: { en: null, fa: null } } }, ck);
+    await openIt();
+    const none = await p.evaluate(() => ({ details: document.querySelectorAll('.item-panel [data-detail]').length, entry: document.querySelector('.item-panel [data-more] [data-add-details]')?.textContent.trim() ?? null }));
+    taps = 0; const entry = p.locator('.item-panel [data-add-details]'); await entry.scrollIntoViewIfNeeded(); taps++; await entry.click();
+    taps++; await p.click('.item-panel [data-add-detail="serves"]');
+    await p.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Serves', null, { timeout: 3000 }).catch(() => {});
+    const focus = await p.evaluate(() => { const a = document.activeElement; return { label: a?.getAttribute('aria-label'), inPrice: !!a?.closest('[data-price-choices]') }; });
+    check('t-details-in-place', placed.serves && placed.parts && placed.note && JSON.stringify(placed.moreButtons) === JSON.stringify(['Duplicate item', 'Delete item']) && placed.moreFields === 0 && none.details === 0 && none.entry === 'Add serves, note or combo parts' && taps === 2 && focus.label === 'Serves' && focus.inPrice,
+      `an item with serves, a combo part and a note: serves in the Price card ${placed.serves}, the combo parts there ${placed.parts}, the note in the Item card ${placed.note}; More holds ${JSON.stringify(placed.moreButtons)} and ${placed.moreFields} field(s); the same item without them: ${none.details} of them shown, More offers "${none.entry}"; ${taps} taps (the entry, Serves) → the cursor in "${focus.label}" in the Price card (${focus.inPrice})`);
+  }
   await api('/api/admin/item', { action: 'update', id: itemId, patch: { name: { en: NAME, fa: null }, description: { en: null, fa: null }, price: 4.5, variants: [], add_ons: [], section_ids: [sec.id], seasons: [], listed: true } }, ck);
   await db.query(`update items set drafts = '{}', fa_draft = '{}' where id = $1`, [itemId]);
+  await ph.close();
+}
+{ // the empty research draft (the PM, 2026-11-06): research suggested no allergen; the card is open, says so in those words, nothing in it
+  // reads as allergen-free, and Confirm confirms it (the drafted-milk item of t-allergens-open stays as it is)
+  const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+  await signin(p, VENUE);
+  await db.query(`update items set drafts = array['allergens'], notes = jsonb_build_object('text', jsonb_build_object('en', null, 'fa', null), 'halal', null, 'dietary', '[]'::jsonb, 'allergens', '[]'::jsonb) where id = $1`, [itemId]);
+  await p.fill('input[aria-label="Search items"]', NAME); await p.locator(`#sec-${sec.id} [data-item="${itemId}"] button[aria-label^="Edit"]`).click(); await p.waitForSelector(`.item-panel[aria-label="Edit ${NAME}"]`);
+  const open = await p.getAttribute('.item-panel [data-group="allergens"]', 'aria-expanded');
+  const said = (await p.textContent('.item-panel [data-no-suggestion]').catch(() => ''))?.trim();
+  const text = ((await p.textContent('.item-panel [data-group-section="allergens"]').catch(() => '')) || '').replace(/\s+/g, ' ').trim();
+  const freeWords = text.match(/allergen[- ]free|free (of|from) allergens|no common allergens?|contains no|none set|no allergens(?! suggested)/i);
+  const tConfirm = Date.now();
+  await p.getByRole('button', { name: 'Confirm the allergens and dietary notes' }).click();
+  const w = await waitDb('select drafts, notes from items where id=$1', [itemId], (r) => !!r && !r.drafts.includes('allergens'));
+  const toast = await p.locator('[role=status]').textContent({ timeout: 3000 }).catch(() => '');
+  check('t-allergens-empty', open === 'true' && said === 'No allergens suggested from the ingredients' && !freeWords && w.ok && JSON.stringify(w.row?.notes?.allergens) === '[]' && /Confirmed/.test(toast || ''), `research suggested no allergen: the card ${open === 'true' ? 'open' : `NOT open (${open})`} on opening; it says "${said}"; words in it that would read as allergen-free: ${freeWords ? `"${freeWords[0]}"` : 'none'} (its text: "${text.slice(0, 160)}"); Confirm (1 tap) → the draft flag gone from the database ${w.ok ? `after ${Date.now() - tConfirm} ms` : 'NOT within 5 s'}, the allergens still ${JSON.stringify(w.row?.notes?.allergens)}; toast "${(toast || '').trim()}"`);
+  await db.query(`update items set drafts = '{}' where id = $1`, [itemId]);
   await ph.close();
 }
 { // one item's saves in the order they were made (fix after check:full 2026-10-13T14-44-02Z, where "Oat +$1" ended as +$0): a choice typed

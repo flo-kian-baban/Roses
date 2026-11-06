@@ -18,8 +18,8 @@ const ALLERGENS = words.allergens, DIET = words.dietary;
 const norm = (w: string) => w.trim().toLowerCase();
 const cap = (w: string) => (w ? w[0].toUpperCase() + w.slice(1) : w);
 
-// How many suggestions wait for Confirm: each drafted allergen and diet word, and a drafted allergen list with none in it ("no common
-// allergens", itself a suggestion). Pumpkin Soup, drafted "milk": 1.
+// How many suggestions wait for Confirm: each drafted allergen and diet word, and a drafted allergen list with none in it (research
+// suggested no allergen, itself something to confirm). Pumpkin Soup, drafted "milk": 1.
 export function notesCount(n: Notes, drafts: string[]): number {
   const a = drafts.includes('allergens') ? Math.max(1, n.allergens.length) : 0;
   const d = drafts.includes('dietary') ? n.dietary.length : 0;
@@ -84,7 +84,8 @@ export function GoodToKnow({ item, onNotes, onConfirm }: { item: EditorItem; onN
         {/* what research suggested; the full list one tap away */}
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Suggested">
           {n.allergens.map((w) => allergenChip(w, true, faOf(ALLERGENS, w)))}
-          {draftA && !n.allergens.length && <span className="inline-flex min-h-11 items-center text-base text-ink">No common allergens</span>}
+          {/* research suggested none: said as exactly that, never as "allergen-free" (the PM, 2026-11-06) */}
+          {draftA && !n.allergens.length && <span className="inline-flex min-h-11 items-center text-base text-ink" data-no-suggestion="">No allergens suggested from the ingredients</span>}
           {n.dietary.map((w) => dietChip(w, true, faOf(DIET, w)))}
         </div>
         <button type="button" className={`${textBtn} mt-1`} onClick={() => setAll(true)} data-all-allergens="">All allergens and diet<Icon name="down" className="h-4 w-4 -rotate-90" /></button>

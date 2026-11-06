@@ -294,7 +294,15 @@ function applyRegion(d: Document, region: Region | null, scroll: boolean) {
   els.forEach((el) => el.classList.add('roses-region'));
   const w = d.defaultView; if (!scroll || !w || region === 'page' || region === 'welcome' || region === 'sheet' || !els.length) return;
   const visible = els.some((el) => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < w.innerHeight; });
-  if (!visible) (els[0] as HTMLElement).scrollIntoView({ block: region === 'footer' ? 'end' : 'start', behavior: 'auto' });
+  // Scrolls the frame's own window only, as scrollIntoView would align it (its scroll margins included). scrollIntoView itself, called in this
+  // same-origin frame, also scrolls the admin page around the frame and so cancelled the controls' smooth scroll to the group the tap had
+  // just opened: when it ran after that scroll had started, the group stayed off screen (the Style drill's region-tap, failing on and off
+  // since the preview became tappable; measured 2026-11-06: 0 of 5 in view as built, 5 of 5 with the frame's own scroll).
+  if (!visible) {
+    const el = els[0] as HTMLElement, r = el.getBoundingClientRect(), cs = w.getComputedStyle(el);
+    const top = region === 'footer' ? w.scrollY + r.bottom + (parseFloat(cs.scrollMarginBottom) || 0) - w.innerHeight : w.scrollY + r.top - (parseFloat(cs.scrollMarginTop) || 0);
+    w.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
+  }
 }
 // Play the page's transition (Style tab → Welcome → Transition, 2026-10-10), timed as a customer's visit (Kian, 2026-10-10: the preview
 // showed the transitions with a jump; they must play exactly as on the public page). The welcome screen is put up through the page's

@@ -52,7 +52,8 @@ const sizeProblem = (r: SizeRow): string | null => (priceOf(r.price) === 'bad' ?
 
 // The Price card (the PM's clean-up, 2026-11-04): the price as a row ("Price … $7.99"), or the sizes as rows, then "+ Add size" and
 // "+ Add choices" as plain accent text (onAddChoices starts a choice group below, in the Choices card).
-export function PriceOrSizes({ item, onPatch, hint, onLooksGood, onAddChoices, choicesFull }: { item: EditorItem; onPatch: Patch; hint?: string; onLooksGood: (field: string) => void; onAddChoices: () => void; choicesFull: boolean }) {
+// details: serves and combo parts, when the item has them (ItemPanel.tsx; the PM, 2026-11-06), under the price and the sizes.
+export function PriceOrSizes({ item, onPatch, hint, onLooksGood, onAddChoices, choicesFull, details }: { item: EditorItem; onPatch: Patch; hint?: string; onLooksGood: (field: string) => void; onAddChoices: () => void; choicesFull: boolean; details?: React.ReactNode }) {
   const [rows, setRows] = useState<SizeRow[]>(() => sizeRows(item.variants));
   const [held, setHeld] = useState(false); // a row's problem shown (the save waits for it)
   const f = useFocus();
@@ -111,6 +112,7 @@ export function PriceOrSizes({ item, onPatch, hint, onLooksGood, onAddChoices, c
             </div>))}
           </div>
         )}
+        {details}
         <div className="flex flex-wrap items-center justify-between gap-x-4 px-3">
           <button type="button" className={textBtn} onClick={add} disabled={rows.length >= COUNTS.sizes}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} />{rows.length >= COUNTS.sizes ? `At most ${COUNTS.sizes} sizes` : 'Add size'}</button>
           <button type="button" className={textBtn} onClick={onAddChoices} disabled={choicesFull}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} />{choicesFull ? `At most ${COUNTS.groups} choice groups` : 'Add choices'}</button>

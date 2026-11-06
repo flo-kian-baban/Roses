@@ -163,8 +163,9 @@ for (const vp of VIEWPORTS) {
   await p.keyboard.press('Escape'); await sleep(200);
   await screen(vp, p, 'menu: item editor', async () => { const b = itemRow.locator('button[aria-label^="Edit"]'); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('.item-panel'); });
   await screen(vp, p, 'menu: item editor, both groups open', async () => {
-    for (const t of ['allergens', 'other']) { const b = p.locator(`.item-panel [data-group="${t}"][aria-expanded="false"]`).first(); if (await b.count()) { await b.scrollIntoViewIfNeeded(); await b.click(); await sleep(200); } }
+    for (const t of ['allergens']) { const b = p.locator(`.item-panel [data-group="${t}"][aria-expanded="false"]`).first(); if (await b.count()) { await b.scrollIntoViewIfNeeded(); await b.click(); await sleep(200); } }
     { const a = p.locator('.item-panel [data-all-allergens]').first(); if (await a.count()) { await a.scrollIntoViewIfNeeded(); await a.click(); await sleep(200); } } // the full allergen list, one tap away while a suggestion waits (2026-11-04)
+    for (let k = 0; k < 3; k++) { const a = p.locator('.item-panel [data-add-details]').first(); if (!(await a.count())) break; await a.scrollIntoViewIfNeeded(); await a.click(); await sleep(150); const m = p.locator('.item-panel [data-add-detail]').first(); if (await m.count()) await m.click(); await sleep(200); } // serves, note and combo parts put in their places (2026-11-06)
   });
   const done = async () => { if (await p.locator('.item-panel').count()) { await p.locator('.item-panel [data-back]').first().click(); await p.waitForSelector('.item-panel', { state: 'detached', timeout: 5000 }); } };
   await done();
@@ -182,7 +183,7 @@ for (const vp of VIEWPORTS) {
   const openItem = async (id) => {
     await done();
     const b = p.locator(`[data-item="${id}"] button[aria-label^="Edit"]`).first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('.item-panel');
-    for (const t of ['allergens', 'other']) { const x = p.locator(`.item-panel [data-group="${t}"][aria-expanded="false"]`).first(); if (await x.count()) { await x.scrollIntoViewIfNeeded(); await x.click(); await sleep(200); } }
+    for (const t of ['allergens']) { const x = p.locator(`.item-panel [data-group="${t}"][aria-expanded="false"]`).first(); if (await x.count()) { await x.scrollIntoViewIfNeeded(); await x.click(); await sleep(200); } }
     { const a = p.locator('.item-panel [data-all-allergens]').first(); if (await a.count()) { await a.scrollIntoViewIfNeeded(); await a.click(); await sleep(200); } }
   };
   await screen(vp, p, 'menu: item editor, an item with add-ons', async () => { await openItem(ITEMS.addOns); await p.waitForSelector('.item-panel button[aria-label^="Remove add-on"]'); });

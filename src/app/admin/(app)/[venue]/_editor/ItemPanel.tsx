@@ -8,12 +8,14 @@
 //     season, set here only: All year or any of the four seasons (picking one clears All year, none picked is All year), a one-line caption
 //     only when the seasons limit the item (Kian, 2026-10-12: a season chosen hides the item everywhere outside it);
 //   Item: the photo (tapped for Change / Remove; without one, an Add photo square), the name and the description in English and Persian,
-//     each in full;
-//   Price (the price or the sizes, + Add size, + Add choices) and one card per choice group (Choices.tsx);
+//     each in full, and under them the note for customers when the item has one (owner and admin);
+//   Price (the price or the sizes; serves and combo parts when the item has them; + Add size, + Add choices) and one card per choice
+//     group (Choices.tsx);
 //   Appears in: the sections, Edit opening the section picker (SectionPicker.tsx);
 //   Allergens & diet: owner and admin (staff see one line; the route answers them 403); one card, open while research drafts wait for
 //     Confirm, closed otherwise (GoodToKnow.tsx; an item opened from the "Allergens to confirm" filter opens on it);
-//   More: combo parts, serves and the note for customers behind one row; Duplicate item; Delete item (confirmed).
+//   More: actions only (the PM's ruling of 2026-11-06): "Add serves, note or combo parts" while the item lacks any of them (it puts the
+//     empty field in its place, the cursor in it), Duplicate item, Delete item (confirmed).
 // The item's place within a section is set in the Menu list (Reorder items in the section's menu; a laptop also drags). A field drafted at
 // import or by research shows "Draft" and "Looks good" on a line under it; Looks good clears that field's flag only. Every field saves
 // itself on change; while "Saved · Undo" shows, the scroll area ends above it, so it never covers a control.
@@ -43,7 +45,7 @@ export type ItemPanelProps = {
 export function ItemPanel({ item, venueId, sections, items, canNotes, column, season, notesFirst, selectName, toast, save, onPatch, onNotes, onConfirm, onCopy, onDelete, onLooksGood, onDuplicate, onClose }: ItemPanelProps) {
   const toConfirm = canNotes && notesToConfirm(item), onNotesFirst = !!notesFirst && toConfirm;
   const [allergensOpen, setAllergensOpen] = useState(toConfirm); // open while drafts wait for Confirm (the PM, 2026-10-13); it stays as the person leaves it
-  const [otherOpen, setOtherOpen] = useState(false);
+  const [revealed, setRevealed] = useState<Record<Detail, boolean>>({ serves: false, note: false, parts: false }); // an empty detail put in its place by "Add …"
   const [copying, setCopying] = useState<string | null>(null); // the choice group being copied to other items
   const [reason, setReason] = useState<string | null>(null);
   const [busy, setBusy] = useState(false); // Duplicate on its way
@@ -61,8 +63,13 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
   const faDraft = (f: string) => item.fa_draft.includes(f);
   const seasonalId = sections.find((s) => s.seasonal)?.id ?? null;
   const toggle = (open: boolean, set: (v: boolean) => void, id: string) => { set(!open); if (!open) requestAnimationFrame(() => { const s = scroller.current, g = s?.querySelector(`[data-group-section="${id}"]`); if (s && g && g.getBoundingClientRect().top > s.getBoundingClientRect().top + s.clientHeight * 0.45) g.scrollIntoView({ block: 'start', behavior: 'smooth' }); }); };
-  const parts = item.components.length, note = !!(item.notes.text?.en || item.notes.text?.fa);
-  const otherBits = [parts ? `${parts} part${parts === 1 ? '' : 's'}` : null, item.serves ? `Serves ${item.serves}` : null, canNotes && note ? 'Note' : null].filter(Boolean).join(' · ');
+  // serves, combo parts and the note for customers show in place when the item has them (or one was just added); More offers the others
+  const has: Record<Detail, boolean> = { serves: !!item.serves || revealed.serves, parts: item.components.length > 0 || revealed.parts, note: canNotes && (!!(item.notes.text?.en || item.notes.text?.fa) || revealed.note) };
+  const missing = DETAILS.filter((d) => (d !== 'note' || canNotes) && !has[d]);
+  const reveal = (d: Detail) => {
+    setRevealed((r) => ({ ...r, [d]: true }));
+    requestAnimationFrame(() => requestAnimationFrame(() => { (scroller.current?.querySelector(`[aria-label="${DETAIL_FIELD[d]}"]`) as HTMLElement | null)?.focus(); })); // the cursor in it, scrolled into view
+  };
   const duplicate = async () => { setBusy(true); try { await onDuplicate(); } catch { setBusy(false); } };
   const waiting = canNotes ? notesCount(item.notes, item.drafts) : 0;
 
@@ -90,7 +97,7 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
 
         {/* the item: photo, name, description */}
         <Heading>Item</Heading>
-        <div className={cardCls}>
+        <div className={cardCls} data-item-card="">
           <div className="flex">
             <PhotoButton venueId={venueId} photo={item.photo} alt={{ en: item.name.en, fa: item.name.fa }} onChange={(p) => patch({ photo: p })} />
             <div className="min-w-0 flex-1 divide-y divide-line">
@@ -100,10 +107,15 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
           </div>
           <FieldRow lang="EN" draft={item.drafts.includes('description')} looksGood={() => looksGood('description.en')} what="the English description"><CellText lines maxLength={LIMITS.description} label="Description" value={item.description.en} placeholder="Description" onCommit={(v) => patch({ description: { ...item.description, en: v } })} /></FieldRow>
           <FieldRow lang="FA" draft={faDraft('description')} looksGood={() => looksGood('description.fa')} what="the Persian description"><CellText lines maxLength={LIMITS.description} label="Description (فارسی)" value={item.description.fa} dir="rtl" lang="fa" placeholder="توضیح فارسی" onCommit={(v) => patch({ description: { ...item.description, fa: v } })} /></FieldRow>
+          {has.note && <NoteFields notes={item.notes} onNotes={onNotes} />}
         </div>
 
         {/* price & choices */}
-        <PriceOrSizes item={item} onPatch={patch} hint={problem && !item.listed && !item.variants.length ? 'Add a price to show this item.' : undefined} onLooksGood={looksGood} onAddChoices={() => addChoices.current()} choicesFull={groupCount(item.add_ons) >= COUNTS.groups} />
+        <PriceOrSizes item={item} onPatch={patch} hint={problem && !item.listed && !item.variants.length ? 'Add a price to show this item.' : undefined} onLooksGood={looksGood} onAddChoices={() => addChoices.current()} choicesFull={groupCount(item.add_ons) >= COUNTS.groups}
+          details={<>
+            {has.serves && <label className="flex min-h-11 items-center gap-3 pl-3" data-detail="serves"><span className="text-base">Serves</span><CellText label="Serves" maxLength={LIMITS.label} value={item.serves} placeholder="2 or 3-4 (platters)" align="right" onCommit={(v) => patch({ serves: v })} /></label>}
+            {has.parts && <Parts item={item} start={revealed.parts} onPatch={patch} onLooksGood={looksGood} />}
+          </>} />
         <Choices item={item} onPatch={patch} onCopy={setCopying} onLooksGood={looksGood} addRef={addChoices} />
 
         {/* where it appears */}
@@ -126,26 +138,10 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
             </section>
           : <><Heading>Allergens &amp; diet</Heading><div className={cardCls}><p className="px-3 py-2.5 text-base text-ink-muted">These are set by the owner or an admin.</p></div></>}
 
-        {/* more: the rarely used details, Duplicate, Delete */}
+        {/* more: actions only */}
         <Heading>More</Heading>
-        <div className={cardCls}>
-          <section data-group-section="other">
-            <button type="button" data-group="other" aria-expanded={otherOpen} onClick={() => toggle(otherOpen, setOtherOpen, 'other')} className="flex min-h-11 w-full items-center gap-3 px-3 text-left">
-              <span className="min-w-0 flex-1 text-base">{canNotes ? 'Combo parts, serves, note' : 'Combo parts, serves'}</span>
-              {otherBits && <span className="text-[13px] text-ink-muted">{otherBits}</span>}
-              <Icon name="down" className={`h-4 w-4 shrink-0 text-ink-muted transition ${otherOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {otherOpen && (
-              <div className="divide-y divide-line border-t border-line">
-                <Parts item={item} onPatch={patch} onLooksGood={looksGood} />
-                <label className="flex min-h-11 items-center gap-3 pl-3">
-                  <span className="text-base">Serves</span>
-                  <CellText label="Serves" maxLength={LIMITS.label} value={item.serves} placeholder="2 or 3-4 (platters)" align="right" onCommit={(v) => patch({ serves: v })} />
-                </label>
-                {canNotes && <NoteFields notes={item.notes} onNotes={onNotes} />}
-              </div>
-            )}
-          </section>
+        <div className={cardCls} data-more="">
+          {missing.length > 0 && <AddDetails missing={missing} onAdd={reveal} />}
           <button type="button" onClick={() => { void duplicate(); }} disabled={busy} className="flex min-h-11 w-full items-center px-3 text-left text-base text-accent-ink disabled:opacity-50">{busy ? 'Duplicating…' : 'Duplicate item'}</button>
           <button type="button" onClick={onDelete} className="flex min-h-11 w-full items-center px-3 text-left text-base text-danger">Delete item</button>
         </div>
@@ -153,6 +149,41 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
       </div>
       {toast && <div aria-hidden="true" data-toast-zone="" className="shrink-0 border-t border-line bg-fill" style={{ height: 'calc(max(1.25rem, env(safe-area-inset-bottom)) + 64px)' }} />}
       {copying !== null && <CopyChoicesSheet item={item} group={copying} sections={sections} items={items} onCopy={(ids) => onCopy(copying, ids)} onClose={() => setCopying(null)} />}
+    </div>
+  );
+}
+
+// Serves, the note for customers and combo parts (the PM, 2026-11-06): shown in their place when the item has them; "Add …" in More puts an
+// empty one there, the cursor in it. With one left to add, the entry adds it at once; with more, it asks which.
+type Detail = 'serves' | 'note' | 'parts';
+const DETAILS: Detail[] = ['serves', 'note', 'parts'];
+const DETAIL_WORD: Record<Detail, string> = { serves: 'serves', note: 'note', parts: 'combo parts' };
+const DETAIL_ONE: Record<Detail, string> = { serves: 'Add serves', note: 'Add a note for customers', parts: 'Add combo parts' };
+const DETAIL_MENU: Record<Detail, string> = { serves: 'Serves', note: 'Note for customers', parts: 'Combo parts' };
+const DETAIL_FIELD: Record<Detail, string> = { serves: 'Serves', note: 'Note for customers', parts: 'Part 1' }; // the field that gets the cursor
+function AddDetails({ missing, onAdd }: { missing: Detail[]; onAdd: (d: Detail) => void }) {
+  const [menu, setMenu] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!menu) return;
+    const close = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setMenu(false); };
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setMenu(false); } };
+    document.addEventListener('mousedown', close); window.addEventListener('keydown', key, true);
+    return () => { document.removeEventListener('mousedown', close); window.removeEventListener('keydown', key, true); };
+  }, [menu]);
+  const words = missing.map((d) => DETAIL_WORD[d]);
+  const label = missing.length === 1 ? DETAIL_ONE[missing[0]] : `Add ${words.slice(0, -1).join(', ')} or ${words[words.length - 1]}`; // "Add serves, note or combo parts"
+  return (
+    <div ref={ref} className="relative">
+      <button type="button" data-add-details="" aria-haspopup={missing.length > 1 ? 'menu' : undefined} aria-expanded={missing.length > 1 ? menu : undefined}
+        onClick={() => { if (missing.length === 1) onAdd(missing[0]); else setMenu((m) => !m); }} className="flex min-h-11 w-full items-center gap-1.5 px-3 text-left text-base text-accent-ink">
+        <Icon name="plus" className="h-4 w-4" strokeWidth={2.4} />{label}
+      </button>
+      {menu && (
+        <div role="menu" className="absolute left-3 top-full z-40 w-56 rounded-xl bg-canvas p-1 shadow-pop">
+          {missing.map((d) => <button key={d} type="button" role="menuitem" data-add-detail={d} onClick={() => { setMenu(false); onAdd(d); }} className="flex min-h-11 w-full items-center rounded-xl px-3 text-left text-base text-accent-ink">{DETAIL_MENU[d]}</button>)}
+        </div>
+      )}
     </div>
   );
 }
@@ -252,27 +283,32 @@ function PhotoButton({ venueId, photo, alt, onChange }: { venueId: string; photo
   );
 }
 
-// The note for customers (owner and admin, with the allergen notes; under More since the clean-up): saved with the notes.
+// The note for customers (owner and admin, with the allergen notes): in the Item card under the description when the item has one (the PM,
+// 2026-11-06); saved with the notes.
 function NoteFields({ notes, onNotes }: { notes: Notes; onNotes: (n: Notes) => Promise<void> }) {
   const save = (text: Bi) => onNotes({ ...notes, text }).catch(() => undefined); // a failed save: the toast and the top bar say so
   const t = notes.text ?? { en: null, fa: null };
   return (
-    <div className="divide-y divide-line">
+    <div data-detail="note">
       <p className="px-3 pt-2.5 text-[13px] text-ink-muted">Note for customers</p>
-      <FieldRow lang="EN"><CellText lines label="Note for customers" maxLength={LIMITS.note} value={t.en} placeholder="Optional" onCommit={(v) => save({ ...t, en: v })} /></FieldRow>
-      <FieldRow lang="FA"><CellText lines label="Note for customers (فارسی)" maxLength={LIMITS.note} value={t.fa} dir="rtl" lang="fa" placeholder="اختیاری" onCommit={(v) => save({ ...t, fa: v })} /></FieldRow>
+      <div className="divide-y divide-line">
+        <FieldRow lang="EN"><CellText lines label="Note for customers" maxLength={LIMITS.note} value={t.en} placeholder="Optional" onCommit={(v) => save({ ...t, en: v })} /></FieldRow>
+        <FieldRow lang="FA"><CellText lines label="Note for customers (فارسی)" maxLength={LIMITS.note} value={t.fa} dir="rtl" lang="fa" placeholder="اختیاری" onCommit={(v) => save({ ...t, fa: v })} /></FieldRow>
+      </div>
     </div>
   );
 }
 
-function Parts({ item, onPatch, onLooksGood }: { item: EditorItem; onPatch: (p: Record<string, unknown>) => Promise<void>; onLooksGood: (field: string) => void }) {
-  const [rows, setRows] = useState<Component[]>(item.components);
-  const key = JSON.stringify(item.components);
-  useEffect(() => { setRows(JSON.parse(key)); }, [key]);
+// Combo parts, in the Price card when the item has them (the PM, 2026-11-06). start: just added from More, so a first row is ready to type in.
+const BLANK_PART: Component = { item_id: null, label: { en: null, fa: null }, qty: 1 };
+function Parts({ item, start, onPatch, onLooksGood }: { item: EditorItem; start?: boolean; onPatch: (p: Record<string, unknown>) => Promise<void>; onLooksGood: (field: string) => void }) {
+  const [rows, setRows] = useState<Component[]>(() => (item.components.length || !start ? item.components : [BLANK_PART]));
+  const key = JSON.stringify(item.components), seen = useRef(key);
+  useEffect(() => { if (seen.current === key) return; seen.current = key; setRows(JSON.parse(key)); }, [key]);
   const save = (next: Component[]) => { setRows(next); const complete = next.filter((c) => c.label.en); if (!sameJson(complete, item.components)) void onPatch({ components: complete }).catch((e) => { if (!retryable(e)) setRows(item.components); }); }; // the rows stay for Retry (D-02)
   const set = (i: number, c: Component) => save(rows.map((r, k) => (k === i ? c : r)));
   return (
-    <div>
+    <div data-detail="parts">
       <div className="px-3 pt-2.5">
         <p className="text-base font-semibold">Combo parts</p>
         <p className="text-[13px] text-ink-muted">For platters and mixed dishes: what the dish is made of.</p>
@@ -289,7 +325,7 @@ function Parts({ item, onPatch, onLooksGood }: { item: EditorItem; onPatch: (p: 
         ))}
       </div>
       <div className="px-3">
-        <button type="button" className={textBtn} disabled={rows.length >= COUNTS.parts} onClick={() => setRows([...rows, { item_id: null, label: { en: null, fa: null }, qty: 1 }])}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} />{rows.length >= COUNTS.parts ? `At most ${COUNTS.parts} parts` : 'Add a part'}</button>
+        <button type="button" className={textBtn} disabled={rows.length >= COUNTS.parts} onClick={() => setRows([...rows, BLANK_PART])}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} />{rows.length >= COUNTS.parts ? `At most ${COUNTS.parts} parts` : 'Add a part'}</button>
       </div>
     </div>
   );

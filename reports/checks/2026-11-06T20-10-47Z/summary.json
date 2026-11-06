@@ -1,0 +1,1493 @@
+{
+  "stamp": "2026-11-06T20-10-47Z",
+  "commit": "85fa553",
+  "suite": "fast",
+  "pass": true,
+  "uploads": {
+    "from": "/Users/kianbaban/Roses/uploads",
+    "copied": 66,
+    "keys": 57,
+    "missing": []
+  },
+  "preflight": {
+    "at": "2026-11-06T20:42:02.684Z",
+    "load1": 7.7451171875,
+    "load5": 9.48193359375,
+    "load15": 9.36572265625,
+    "cpus": 10,
+    "free": 3057991680,
+    "available": 9673687040,
+    "total": 34359738368,
+    "dockerTotal": 8217448448,
+    "container": "roses-db",
+    "dbLimit": 0,
+    "top": [
+      {
+        "pid": 425,
+        "cpu": 42.4,
+        "name": "WindowServer",
+        "command": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer",
+        "ports": []
+      },
+      {
+        "pid": 77824,
+        "cpu": 41.2,
+        "name": "CGPDFService",
+        "command": "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/XPCServices/CGPDFService.xpc/Contents/MacOS/CGPDFService",
+        "ports": []
+      },
+      {
+        "pid": 36242,
+        "cpu": 36,
+        "name": "routined",
+        "command": "/usr/libexec/routined",
+        "ports": []
+      },
+      {
+        "pid": 97865,
+        "cpu": 35.7,
+        "name": "com.apple.Virtualization.VirtualMachine",
+        "command": "/System/Library/Frameworks/Virtualization.framework/Versions/A/XPCServices/com.apple.Virtualization.VirtualMachine.xpc/Contents/MacOS/com.apple.Virtualization.VirtualMachine",
+        "ports": []
+      },
+      {
+        "pid": 61400,
+        "cpu": 12.6,
+        "name": "Drift",
+        "command": "/System/Library/ExtensionKit/Extensions/Drift.appex/Contents/MacOS/Drift",
+        "ports": []
+      }
+    ],
+    "over": [],
+    "forced": false,
+    "offenders": [],
+    "waited": [
+      {
+        "at": "2026-11-06T20:11:18.721Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 79.1,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:11:49.649Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 66.2,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:12:20.508Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 60.2,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:12:51.094Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 99.5,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:13:22.052Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 90.2,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:13:52.660Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 101.6,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:14:23.481Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 63.2,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:14:54.007Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 59,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:15:24.905Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 61.2,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:15:55.473Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 54.7,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          },
+          {
+            "name": "launchd",
+            "pid": 1,
+            "cpu": 52.1,
+            "ports": [],
+            "command": "/sbin/launchd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:16:26.293Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 96,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:16:57.178Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 89.1,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:17:27.651Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 88.3,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:17:58.159Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 96.3,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          },
+          {
+            "name": "ReportCrash",
+            "pid": 17819,
+            "cpu": 53.4,
+            "ports": [],
+            "command": "/System/Library/CoreServices/ReportCrash"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:18:28.738Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 83.9,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:18:59.302Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 106.7,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:19:29.877Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 103.6,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:20:00.602Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 76.7,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:20:31.080Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 96.3,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:21:01.507Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 91.6,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:21:32.015Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 105.7,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:22:02.878Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 67.5,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          },
+          {
+            "name": "duetexpertd",
+            "pid": 71304,
+            "cpu": 55.4,
+            "ports": [],
+            "command": "/usr/libexec/duetexpertd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:22:33.521Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 77.9,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:23:03.959Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 88.8,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:23:34.471Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 79.4,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:24:05.028Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 105.4,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:24:35.955Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 74.3,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:25:06.845Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 57.4,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:25:37.662Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 105.1,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:26:08.250Z",
+        "on": [
+          {
+            "name": "coreaudiod",
+            "pid": 435,
+            "cpu": 60.8,
+            "ports": [],
+            "command": "/usr/sbin/coreaudiod"
+          },
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 54.4,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:26:39.170Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 75.2,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          },
+          {
+            "name": "Google Chrome Helper (Aperitif Renderer)",
+            "pid": 94868,
+            "cpu": 53.1,
+            "ports": [],
+            "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.85/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:27:40.486Z",
+        "on": [
+          {
+            "name": "CGPDFService",
+            "pid": 44583,
+            "cpu": 56.8,
+            "ports": [],
+            "command": "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/XPCServices/CGPDFService.xpc/Contents/MacOS/CGPDFService"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:28:11.012Z",
+        "on": [
+          {
+            "name": "CGPDFService",
+            "pid": 46756,
+            "cpu": 61.7,
+            "ports": [],
+            "command": "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/XPCServices/CGPDFService.xpc/Contents/MacOS/CGPDFService"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:28:41.900Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 86.8,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:29:12.769Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 80.3,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:29:43.279Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 92.9,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:30:45.017Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 103.9,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:31:15.461Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 95.7,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:31:46.057Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 105.6,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:32:16.912Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 96.9,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:32:47.618Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 82.7,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:33:18.141Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 94.8,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:33:48.974Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 88.2,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:34:19.413Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 94.5,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:35:20.923Z",
+        "on": [
+          {
+            "name": "CGPDFService",
+            "pid": 61365,
+            "cpu": 52.4,
+            "ports": [],
+            "command": "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/XPCServices/CGPDFService.xpc/Contents/MacOS/CGPDFService"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:35:51.826Z",
+        "on": [
+          {
+            "name": "Code Helper (Renderer)",
+            "pid": 17442,
+            "cpu": 168.2,
+            "ports": [],
+            "command": "/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Renderer).app/Contents/MacOS/Code Helper (Renderer)"
+          },
+          {
+            "name": "ANECompilerService",
+            "pid": 91666,
+            "cpu": 81.7,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/AppleNeuralEngine.framework/XPCServices/ANECompilerService.xpc/Contents/MacOS/ANECompilerService"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:36:22.745Z",
+        "on": [
+          {
+            "name": "ANECompilerService",
+            "pid": 91666,
+            "cpu": 85.5,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/AppleNeuralEngine.framework/XPCServices/ANECompilerService.xpc/Contents/MacOS/ANECompilerService"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:36:54.016Z",
+        "on": [
+          {
+            "name": "Cursor Helper (Renderer)",
+            "pid": 32560,
+            "cpu": 254.3,
+            "ports": [],
+            "command": "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app/Contents/MacOS/Cursor Helper (Renderer)"
+          },
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 61.9,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:37:24.990Z",
+        "on": [
+          {
+            "name": "Google Chrome Helper (Aperitif Renderer)",
+            "pid": 7350,
+            "cpu": 142.9,
+            "ports": [],
+            "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.85/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:38:26.796Z",
+        "on": [
+          {
+            "name": "contactsd",
+            "pid": 72518,
+            "cpu": 53.4,
+            "ports": [],
+            "command": "/System/Library/Frameworks/Contacts.framework/Support/contactsd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:38:57.394Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 93.9,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          },
+          {
+            "name": "duetexpertd",
+            "pid": 71304,
+            "cpu": 71.6,
+            "ports": [],
+            "command": "/usr/libexec/duetexpertd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:39:59.358Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 85.5,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:40:30.464Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 107.6,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          }
+        ]
+      },
+      {
+        "at": "2026-11-06T20:41:01.521Z",
+        "on": [
+          {
+            "name": "mediaanalysisd",
+            "pid": 6794,
+            "cpu": 105.4,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd"
+          },
+          {
+            "name": "WindowServer",
+            "pid": 425,
+            "cpu": 50.1,
+            "ports": [],
+            "command": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer"
+          }
+        ]
+      }
+    ],
+    "waitedMs": 1875319
+  },
+  "loadWatch": {
+    "readings": 41,
+    "foreignOver": 35,
+    "netNotAnswered": 0,
+    "probes": [
+      "mealsymedia.s3.amazonaws.com",
+      "roseskebablands.com",
+      "sensocafe.ca"
+    ],
+    "networkWaitMs": 529,
+    "networkWaited": [],
+    "rerunForNetwork": []
+  },
+  "underExternalLoad": [],
+  "ports": {
+    "server": 61104,
+    "proxyServer": 61105,
+    "seasonServer": 61106,
+    "transitionServer": 61107,
+    "perfServer": 61108
+  },
+  "perfFixture": {
+    "ok": true,
+    "id": "2026-10-12",
+    "dir": "/Users/kianbaban/Roses/perf-fixture/2026-10-12",
+    "problems": [],
+    "database": "roses_check_20261106t201047z_perf",
+    "dump": {
+      "file": "db.dump",
+      "bytes": 77824,
+      "sha256": "ff10ccfa16c52c013928606d20324966123ee3f9430de1ff2cbae13d43e6fa2b",
+      "dataLeftOut": [
+        "admins",
+        "pins",
+        "login_failures",
+        "revisions",
+        "admin_alerts"
+      ]
+    },
+    "uploads": {
+      "files": 38,
+      "bytes": 5993438,
+      "sha256": "c5e8b84f41afc75b30ed8b77dfa16560618600bf19888497debe756506643ef9"
+    }
+  },
+  "contentCost": {
+    "live": {
+      "photos": 117,
+      "uploaded": 57,
+      "uploadedBytes": 11541607,
+      "linked": 60,
+      "lcpMs": [
+        9986,
+        9985,
+        9985
+      ],
+      "imagesLoaded": [
+        26,
+        26,
+        26
+      ],
+      "imageKB": [
+        6715,
+        6715,
+        6715
+      ],
+      "exit": 0
+    },
+    "fixture": {
+      "id": "2026-10-12",
+      "photos": 115,
+      "uploaded": 33,
+      "uploadedBytes": 5452840,
+      "linked": 82,
+      "lcpMs": [
+        6759,
+        8568,
+        6608
+      ],
+      "imagesLoaded": [
+        27,
+        27,
+        27
+      ],
+      "imageKB": [
+        6515,
+        6515,
+        6515
+      ]
+    },
+    "afterTap": "senso (first section as a List): menu visible 844 ms / 828 ms / 829 ms (median 829 ms), first-row photo(s) 2126 ms (outlier: over 2× the median) / 711 ms / 712 ms (median 712 ms), the 4 photos in view 13109 ms (outlier: over 2× the median) / 3977 ms / 3979 ms (median 3979 ms), all 6 13109 ms / 12844 ms / 12878 ms (median 12878 ms) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view) — MISS; senso (its first section, the Seasonal section, as a Grid): menu visible 830 ms / 845 ms / 846 ms (median 845 ms), first-row photo(s) 3146 ms / 3093 ms / 3094 ms (median 3094 ms), the 4 photos in view 4211 ms / 4210 ms / 4211 ms (median 4211 ms), all 6 10511 ms / 10392 ms / 10394 ms (median 10394 ms) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view) — MISS; kebab-land (as it is): menu visible 213 ms / 213 ms / 214 ms (median 213 ms), first-row photo(s) 213 ms / 346 ms / 163 ms (median 213 ms), the 1 photos in view 213 ms / 346 ms / 214 ms (median 214 ms), all 2 945 ms / 995 ms / 996 ms (median 995 ms) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view)"
+  },
+  "knownMisses": [
+    {
+      "id": "after-tap-photos-senso",
+      "title": "after-tap photos, Senso",
+      "step": "after-tap",
+      "baseline": {
+        "run": "2026-10-13T00-14-07Z",
+        "fixture": "2026-10-12",
+        "unit": "ms",
+        "tolerance": 1,
+        "checks": {
+          "after-tap-senso-list-photos": {
+            "over": 2,
+            "of": 3,
+            "worst": 7293,
+            "median": 3513,
+            "unit": "ms"
+          },
+          "after-tap-senso-grid-photos": {
+            "over": 0,
+            "of": 3,
+            "worst": 1878,
+            "median": 1876,
+            "unit": "ms"
+          }
+        },
+        "set": "Re-baselined once on the performance fixture 2026-10-12 (the PM's suite fix of 2026-10-12: \"the ratchet applies there\"), from run 2026-10-13T00-14-07Z, the first run on the fixture, 3 repeats judged on the median: List 7293 (outlier) / 1928 / 3513 ms, median 3513; Grid 1876 / 1861 / 1878 ms, median 1876, passing. Tolerance 100 % on the median (up to 7026 ms for the List, below the live-data baseline it replaces, 8043 ms worst of 2), a decision taken by the build agent for the PM to confirm: one run on the fixture gives three List samples from 1928 to 7293 ms, so a 10 % tolerance would fail on noise; to be tightened to the observed spread after more runs on the fixture. The live-data baseline it replaces: run 2026-10-12T03-57-29Z, List 2 of 2 over, worst 8043; Grid 2 of 2, worst 4845 (the worse of two repeats)."
+      },
+      "status": "KNOWN MISS",
+      "checks": [
+        {
+          "id": "after-tap-senso-list-photos",
+          "ok": false,
+          "text": "MISSES the 2500 ms target on the median of 3: senso (first section as a List), the 4 photo(s) in view loaded 7327 ms (outlier: over 2× the median) / 3409 ms / 3493 ms (median 3493 ms) after the tap; the first row's 1 eager photo(s) 1845 ms / 428 ms / 961 ms (median 961 ms), all 6 first-section photos 10493 ms (outlier: over 2× the median) / 5226 ms / 4844 ms (median 5226 ms); served as a list with 6 photos (1 eager)",
+          "metric": {
+            "over": 3,
+            "of": 3,
+            "worst": 7327,
+            "median": 3493,
+            "judged": "median",
+            "unit": "ms"
+          },
+          "baseline": {
+            "over": 2,
+            "of": 3,
+            "worst": 7293,
+            "median": 3513,
+            "unit": "ms"
+          }
+        },
+        {
+          "id": "after-tap-senso-grid-photos",
+          "ok": true,
+          "text": "within the 2500 ms target on the median of 3: senso (its first section, Senso Signature, as a Grid), the 4 photo(s) in view loaded 1879 ms / 1879 ms / 1894 ms (median 1879 ms) after the tap; the first row's 2 eager photo(s) 1545 ms / 1545 ms / 1544 ms (median 1545 ms), all 6 first-section photos 10511 ms / 10662 ms / 10426 ms (median 10511 ms); served as a grid with 6 photos (2 eager)",
+          "metric": {
+            "over": 0,
+            "of": 3,
+            "worst": 1894,
+            "median": 1879,
+            "judged": "median",
+            "unit": "ms"
+          },
+          "baseline": {
+            "over": 0,
+            "of": 3,
+            "worst": 1878,
+            "median": 1876,
+            "unit": "ms"
+          }
+        }
+      ]
+    },
+    {
+      "id": "lcp-senso-uploads",
+      "title": "Senso LCP with uploaded photos",
+      "step": "lighthouse-senso",
+      "baseline": {
+        "run": "2026-10-12T17-36-33Z",
+        "fixture": "2026-10-12",
+        "unit": "ms",
+        "tolerance": 0.1,
+        "checks": {
+          "lighthouse-senso-lcp": {
+            "over": 3,
+            "of": 3,
+            "worst": 8565,
+            "unit": "ms",
+            "median": 8563
+          }
+        },
+        "set": "2026-10-12, the PM: re-baselined once on the performance fixture 2026-10-12, from run 2026-10-12T17-36-33Z (the fast suite on 1d84bed, the first run on the fixture): LCP 8563 / 8565 / 8563 ms, worst 8565 ms, tolerance 10 % (up to 9422 ms). The live-data baseline it replaces: run 2026-10-12T07-54-45Z, 3 of 3 over, worst 7213 ms (22 uploaded photos). It changes again only when Kian decides to refresh the fixture. Median added 2026-10-12 (the PM's suite fix: judged on the median of 3): 8563 ms, the median of the same run's 8563 / 8565 / 8563 ms (reports/checks/2026-10-12T17-36-33Z/perf/senso/lighthouse-summary.json); tolerance 10 %: up to 9419 ms."
+      },
+      "status": "KNOWN MISS",
+      "checks": [
+        {
+          "id": "lighthouse-senso-lcp",
+          "ok": false,
+          "text": "LCP 6759 / 8568 / 6608 ms, median 6759 ms (target ≤ 2500 on the median of 3)",
+          "metric": {
+            "over": 3,
+            "of": 3,
+            "worst": 8568,
+            "median": 6759,
+            "judged": "median",
+            "unit": "ms"
+          },
+          "baseline": {
+            "over": 3,
+            "of": 3,
+            "worst": 8565,
+            "unit": "ms",
+            "median": 8563
+          }
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "id": "migrations",
+      "name": "migrations on the scratch copy (roses_check_20261106t201047z)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 75,
+      "evidence": [
+        "migrate.log"
+      ],
+      "note": "0 migration(s) applied, 8 already present"
+    },
+    {
+      "id": "build",
+      "name": "production build (.next-check)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 4766,
+      "evidence": [
+        "build.log"
+      ],
+      "note": "next build ok"
+    },
+    {
+      "id": "dependency-advisories",
+      "name": "production dependencies without the advisories found at the pre-go-live audit: next installed ≥ 16.4.1 and pinned to that exact release in package.json (GHSA-2464-fhr4-w9xw, GHSA-673q-mjm6-r5xr, GHSA-p3m5-59mp-jv5r); zod not a production dependency",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 1,
+      "evidence": [],
+      "note": "installed next 16.4.3; package.json \"16.4.3\"; zod a production dependency: false"
+    },
+    {
+      "id": "dependency-pins",
+      "name": "dependencies pinned: package.json engines \"node\": \"22.x\" and the suite running on Node 22; every dependency and devDependency an exact version equal to the installed one; chrome-launcher declared",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 2,
+      "evidence": [],
+      "note": "engines {\"node\":\"22.x\"}; the suite on Node v22.23.4; not exact: none; not as installed: none; chrome-launcher 1.2.2"
+    },
+    {
+      "id": "typecheck",
+      "name": "typecheck: tsc --noEmit over src with unused locals and parameters (0 errors)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 2372,
+      "evidence": [
+        "typecheck.log",
+        "tsconfig.typecheck.json"
+      ],
+      "note": "0 errors"
+    },
+    {
+      "id": "perf-fixture",
+      "name": "performance fixture 2026-10-12: verified against its committed pointer, restored into roses_check_20261106t201047z_perf, migrations, its uploads copied, its own production build (.next-perf) from it",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 4497,
+      "evidence": [
+        "perf/migrate.log",
+        "perf/build.log"
+      ],
+      "note": "performance fixture 2026-10-12 (/Users/kianbaban/Roses/perf-fixture/2026-10-12): every file as committed in scripts/fixtures/perf-fixture.json (dump 77824 B, sha256 ff10ccfa16c5…, frozen 2026-10-12T17:25:54.678Z at 006_seasonal.sql; uploads 38 files, 5993438 B, sha256 c5e8b84f41af…; Senso 33 uploaded photos), restored into roses_check_20261106t201047z_perf; 2 migration(s) applied, 6 already present; 385 items, 33 on uploaded photos; 38 upload files copied; build ok"
+    },
+    {
+      "id": "colour-literals",
+      "name": "colour literals in the public templates, the menu kit and the public stylesheet (Kian, 2026-10-08: 0 outside src/venues/tokens.ts)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 47,
+      "evidence": [
+        "colour-literals.txt",
+        "colour-literals.json"
+      ],
+      "note": "0 colour literal(s) in 18 public files; 150 hex values live in the token defaults file"
+    },
+    {
+      "id": "editor-colour-literals",
+      "name": "colour literals in the item editor (the PM, 2026-11-04: the admin's colours are defined in one place, src/app/globals.css; 0 in the editor's own files)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 41,
+      "evidence": [
+        "editor-colour-literals.txt",
+        "editor-colour-literals.json"
+      ],
+      "note": "0 colour literal(s) in the item editor's 5 files"
+    },
+    {
+      "id": "network-selftest",
+      "name": "the network rules, self-test (the PM, 2026-10-13: wait for the photo hosts; a failure during an outage marked \"invalid: network\" and run once more, counting only on a clean second attempt), on simulated readings",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 262,
+      "evidence": [
+        "network-watch-selftest.txt"
+      ],
+      "note": "NETWORK WATCH SELFTEST PASS (9/9)"
+    },
+    {
+      "id": "servers",
+      "name": "servers on 61104 and 61105 (TRUST_PROXY=1), ports picked free at start, each port's listener the process the suite spawned",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 694,
+      "evidence": [
+        "server-61104.log",
+        "server-61105.log",
+        "ports.json"
+      ],
+      "note": "both answer 200 on /senso; port 61104: listener pid 79946, spawned pid 79946; port 61105: listener pid 79947, spawned pid 79947: the suite's own processes"
+    },
+    {
+      "id": "temp-venue",
+      "name": "temporary venue on the default template (created through the admin API: logo upload, tagline, location, 2 sections, 4 items)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 440,
+      "evidence": [
+        "new-venue/new-venue.json",
+        "new-venue/new-venue-drill.txt"
+      ],
+      "note": "/drill-default-venue: 2 sections, 4 shown items, logo uploads/drill-default-venue/logo-aaf557af-df45-4e98-84ae-bd1c6fa4c964.png, GET → 200"
+    },
+    {
+      "id": "page-senso",
+      "name": "public page checks: senso (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms (with a transition into the menu: usable ≤ 300 ms and gone ≤ 900 ms), reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 88619,
+      "evidence": [
+        "senso/senso-checks.json",
+        "senso/senso-en.jpg",
+        "senso/senso-fa.jpg",
+        "senso/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 16; welcome screen up at the first sample (51 ms, greeting \"afternoon\" in both languages, fall scene with 20 particles, nothing pre-highlighted: true; logo at 715 ms, greeting at 957 / 1108 ms, buttons at 1345 ms), tap English → transition T6-fall: menu usable after 5 ms, overlay gone after 805 ms (stored [\"roses-lang\"]); shows again on reload with [\"fa\"] pre-highlighted (stored keys [\"roses-lang\"]); reduced motion: shown still with 0 animations running, page visible at once true, off in 147 ms (the 150 ms fade, an opacity between 0 and 1 seen: true); JavaScript off: overlay display none, menu visible true; images 127/127; tabs: 19/19 taps end on their tab at the bar with 0 other tabs lit on the way, 0/668 scroll steps off, last tab at the bottom true, direct link true; after a reload: 0 px from the top, hash \"\" (was 84 px, \"\")"
+    },
+    {
+      "id": "page-kebab-land",
+      "name": "public page checks: kebab-land (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms (with a transition into the menu: usable ≤ 300 ms and gone ≤ 900 ms), reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 68339,
+      "evidence": [
+        "kebab-land/kebab-land-checks.json",
+        "kebab-land/kebab-land-en.jpg",
+        "kebab-land/kebab-land-fa.jpg",
+        "kebab-land/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 17; welcome screen up at the first sample (78 ms, greeting \"afternoon\" in both languages, fall scene with 18 particles, nothing pre-highlighted: true; logo at 694 ms, greeting at 938 / 1085 ms, buttons at 1341 ms), tap English → menu visible in 225 ms (stored [\"roses-lang\"]); shows again on reload with [\"fa\"] pre-highlighted (stored keys [\"roses-lang\"]); reduced motion: shown still with 0 animations running, page visible at once true, off in 3 ms; JavaScript off: overlay display none, menu visible true; images 47/47; tabs: 20/20 taps end on their tab at the bar with 0 other tabs lit on the way, 0/468 scroll steps off, last tab at the bottom true, direct link true; after a reload: 0 px from the top, hash \"\" (was 84 px, \"\")"
+    },
+    {
+      "id": "page-temp-venue",
+      "name": "public page checks: drill-default-venue (temporary venue, default template) (welcome screen on the first visit and on a reload with the last language pre-highlighted, tap ≤ 300 ms (with a transition into the menu: usable ≤ 300 ms and gone ≤ 900 ms), reduced motion still, JavaScript off, Persian toggle, images, category tabs, top after a reload)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 12966,
+      "evidence": [
+        "drill-default-venue/drill-default-venue-checks.json",
+        "drill-default-venue/drill-default-venue-en.jpg",
+        "drill-default-venue/drill-default-venue-fa.jpg",
+        "drill-default-venue/check-page.log"
+      ],
+      "note": "toggle dir=rtl, Persian headings 2; welcome screen up at the first sample (65 ms, greeting \"afternoon\" in both languages, fall scene with 18 particles, nothing pre-highlighted: true; logo at 65 ms, greeting at 904 / 1034 ms, buttons at 1278 ms), tap English → menu visible in 210 ms (stored [\"roses-lang\"]); shows again on reload with [\"fa\"] pre-highlighted (stored keys [\"roses-lang\"]); reduced motion: shown still with 0 animations running, page visible at once true, off in 2 ms; JavaScript off: overlay display none, menu visible true; images 3/3; tabs: 5/5 taps end on their tab at the bar with 0 other tabs lit on the way, 0/12 scroll steps off, last tab at the bottom true, direct link true; after a reload: 0 px from the top, hash \"\" (was 103 px, \"\")"
+    },
+    {
+      "id": "brand-words",
+      "name": "brand words in the built pages and the temporary venue's page",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 49,
+      "evidence": [
+        "brand-words.txt"
+      ],
+      "note": "no \"Mealsy\" or \"Flo\" in visible text or metadata (3 pages)"
+    },
+    {
+      "id": "no-runtime-js",
+      "name": "no runtime JavaScript: drill-default-venue (temporary venue, default template)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 0,
+      "evidence": [
+        "drill-default-venue/no-runtime-js.json"
+      ],
+      "note": "4 inline script tags (head decision, welcome screen, language toggle, menu), 0 external, 0 JavaScript chunk references, 0 script preloads; default template: true"
+    },
+    {
+      "id": "photo-links-senso",
+      "name": "photo links: senso",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 2103,
+      "evidence": [
+        "senso/photo-links.md",
+        "senso/photo-links.json"
+      ],
+      "note": "133 URLs, 0 not 200/206"
+    },
+    {
+      "id": "photo-links-kebab-land",
+      "name": "photo links: kebab-land",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 2832,
+      "evidence": [
+        "kebab-land/photo-links.md",
+        "kebab-land/photo-links.json"
+      ],
+      "note": "46 URLs, 0 not 200/206"
+    },
+    {
+      "id": "welcome",
+      "name": "welcome screen drill (greeting boundaries with a mocked clock, the page's season scene ≤ 20 particles on transform and opacity, reduced motion still, tap → menu ≤ 300 ms (on a page with a transition into the menu: usable ≤ 300 ms, gone ≤ 900 ms, the 150 ms fade under reduced motion) with the language persisted and pre-highlighted, section anchor, keyboard and labels, JavaScript off, kill switch, default contrast, inline code ≤ 15 KB gzipped on senso with the picked artwork and ≤ 10 KB on kebab-land)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 57641,
+      "evidence": [
+        "welcome/welcome-drill.txt",
+        "welcome/welcome-drill.json",
+        "welcome/*.jpg"
+      ],
+      "note": "WELCOME DRILL PASS (27/27); senso: tap a language → menu usable in 4 ms, transition T6-fall over in 812 ms; senso: tap فارسی → Persian menu usable in 8 ms, transition T6-fall over in 812 ms; kebab-land: tap a language → menu visible in 211 ms; kebab-land: tap فارسی → Persian menu visible in 199 ms; kill switch: off → the menu shows directly after 7 ms; on → the welcome screen back after 7 ms; senso: inline code for the welcome screen (fall scene): 8.8 KB gzipped (25.5 KB raw); its stylesheet block 4.0 KB gzipped; kebab-land: inline code for the welcome screen (fall scene): 2.3 KB gzipped (7.8 KB raw); its stylesheet block 4.0 KB gzipped"
+    },
+    {
+      "id": "season",
+      "name": "season drill (current season only: render tests at the Toronto boundary instants Aug 31 / Sep 1, Nov 30 / Dec 1, Feb 28 / Mar 1, May 31 / Jun 1 on a copy of the build with a fixed server clock, two renders an hour apart with the cached page aged 3601 s and a control within the hour, revalidate 3600 in the manifest; senso's picked artwork in every season (spring since 2026-10-11: five blossoms and the rosebud, its own engine): 20 particles at most 2 near present and mid-flight on the first sample, smoothness on the iPhone 13 viewport with CPU 4× (median ≥ 50 fps, no long task > 50 ms), two loads differ, reduced-motion still, inline size per season, recordings; kebab-land and the default template: the served scene of every season and its symbols byte for byte as in the fixture from the previous commit, the motion rules verbatim; one still per season per venue; the guard: a server started with ROSES_NOW alone renders the real current season, with the suite's flag ROSES_CHECK_SUITE=1 the forged one; seasonal items (Kian, 2026-10-12): Kebab Land with no seasonal item byte for byte the same with its empty Seasonal section and with none, items tagged per season on every venue checked at each boundary instant (the Seasonal section first with the season's title in both languages, exactly its items, the out-of-season items absent from the whole page), the title and item in Persian after a tap on فارسی)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 108134,
+      "evidence": [
+        "season/season-drill.txt",
+        "season/season-drill.json",
+        "season/season-server.log",
+        "season/*.jpg",
+        "season/senso-fall.webm, senso-winter.webm and senso-summer.webm (on disk only)"
+      ],
+      "note": "SEASON DRILL PASS (39/39); regeneration interval: 3600 s configured (revalidate; the same in getStaticProps of every public page); an hour later the next request serves the previous render and the fresh season lands after 130 / 116 / 129 / 130 ms; senso fall: inline welcome code with the picked artwork 8.8 KB gzipped (25.5 KB raw), symbols F1, F2, F4, F8, F9; senso fall: cold, local only (the first load after the server's start, before the warm-up; information, not a check): the first frame that shows the card 48 ms after navigation, 20 particles, 60 animations, the earliest 0 ms into its cycle (mid-flight: false; 60 clock(s) not started, every one running 2 frame(s) later); senso fall: warm-up before the measured load: the page loaded once in the browser and its 57 uploaded photo(s) fetched once; senso fall smoothness (CPU 4×): median 60 fps, longest task 0 ms; senso winter: inline welcome code with the picked artwork 4.1 KB gzipped (11.1 KB raw), symbols W1, W3, W5, W7, W10; senso winter: cold, local only (the first load after the server's start, before the warm-up; information, not a check): the first frame that shows the card 37 ms after navigation, 20 particles, 55 animations, the earliest 0 ms into its cycle (mid-flight: false; 55 clock(s) not started, every one running 1 frame(s) later); senso winter: warm-up before the measured load: the page loaded once in the browser and its 51 uploaded photo(s) fetched once; senso winter smoothness (CPU 4×): median 60 fps, longest task 0 ms; senso spring: inline welcome code with the picked artwork 11.0 KB gzipped (31.2 KB raw), symbols S1, S2, S3, S4, S5, S9; senso spring: cold, local only (the first load after the server's start, before the warm-up; information, not a check): the first frame that shows the card 67 ms after navigation, 20 particles, 78 animations, the earliest 0 ms into its cycle (mid-flight: false; 78 clock(s) not started, every one running 3 frame(s) later); senso spring: warm-up before the measured load: the page loaded once in the browser and its 51 uploaded photo(s) fetched once; senso spring smoothness (CPU 4×): median 60 fps, longest task 0 ms; senso summer: inline welcome code with the picked artwork 8.9 KB gzipped (24.0 KB raw), symbols Udisc, Urays, Uflames, Uspark, Umote, D1, D2, D3, Udg; senso summer: cold, local only (the first load after the server's start, before the warm-up; information, not a check): the first frame that shows the card 61 ms after navigation, 20 particles, 32 animations, the earliest 0 ms into its cycle (mid-flight: false; 32 clock(s) not started, every one running 2 frame(s) later); senso summer: warm-up before the measured load: the page loaded once in the browser and its 51 uploaded photo(s) fetched once; senso summer smoothness (CPU 4×): median 60 fps, longest task 0 ms; ROSES_NOW guard: a server started with ROSES_NOW alone (set to winter) rendered fall on 3 venues, the real season in Toronto (fall); with the suite's flag the same instant rendered winter"
+    },
+    {
+      "id": "transition",
+      "name": "transition drill, fast: the browser checks on the 4 versions chosen now, the served HTML and size of all 40 (Senso, every season (fall and winter since 2026-10-10, spring and summer since 2026-10-11), every concept T1–T10, 40 versions, chosen through the Style route per season on a copy of the build with its own server and a fixed clock: only the chosen transition in the served HTML and ≤ 3 KB gzipped; smoothness on the iPhone 13 viewport with CPU 4× from the tap to the overlay gone, median ≥ 50 fps and no long task > 50 ms, every animation on transform or opacity and none cut; total ≤ 900 ms; the menu scrollable and tappable within 300 ms of the tap, with a real touch scroll and a real tap during the transition; the language applied at the first frame; the 150 ms fade under reduced motion; the Persian tap with no long task > 50 ms (an ordinary check since 2026-10-12; a listed known miss before); every version in WebKit, functionally (it plays, ≤ 900 ms, the menu scrollable and tappable within 300 ms during it, the 150 ms fade, no console or page error), every time measured 3 times and judged on the median, all three printed, outliers over 2× the median flagged and counted, fps for information, compared with Chromium; day one: the pages of all four seasons byte for byte the same with the single choice of 2026-10-10 and with it saved per season; four different choices, one per season, each shipped alone at the Toronto season boundary instants (Feb 28 / Mar 1, May 31 / Jun 1, Aug 31 / Sep 1, Nov 30 / Dec 1); recordings of all 40; the admin preview choosing and playing per season on a laptop and a phone, the bar's season carrying that season's choice; Kebab Land's welcome behaviour and the default template's scripts byte for byte as the previous commit served them)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 201827,
+      "evidence": [
+        "transition/transition-drill.txt",
+        "transition/transition-drill.json",
+        "transition/transition-server.log",
+        "transition/*.jpg",
+        "transition/transition-T1-fall.webm … transition-T10-summer.webm, all 40 (on disk only)"
+      ],
+      "note": "TRANSITION DRILL PASS (138/138); T6-fall: 839 ms at CPU 4× (815 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 79 ms, item tap at 24 ms; reduced motion 164 ms; 2033 B gzipped; WebKit (median of 3; runs): gone after 878 ms (878/878/879), 51/51/51 animations, 59/59/59 fps (information), scroll at 96 ms (94/97/96), item tap at 49 ms (49/50/45), reduced motion 198 ms (208/194/198), 0 errors, as Chromium; T4-winter: 825 ms at CPU 4× (798 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 81 ms, item tap at 22 ms; reduced motion 155 ms; 1731 B gzipped; WebKit (median of 3; runs): gone after 846 ms (862/846/793), 22/22/22 animations, 59/59/59 fps (information), scroll at 96 ms (96/96/94), item tap at 44 ms (44/43/44), reduced motion 187 ms (182/187/190), 0 errors, as Chromium; T3-spring: 740 ms at CPU 4× (714 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 98 ms, item tap at 24 ms; reduced motion 169 ms; 1767 B gzipped; WebKit (median of 3; runs): gone after 780 ms (811/743/780), 70/70/70 animations, 59/59/59 fps (information), scroll at 143 ms (143/144/128), item tap at 51 ms (45/51/55), reduced motion 193 ms (190/193/196), 0 errors, as Chromium; T6-summer: 793 ms at CPU 4× (783 ms unthrottled), median 60 fps, longest task 0 ms; Persian tap 60 fps, longest task 0 ms; scroll at 83 ms, item tap at 23 ms; reduced motion 160 ms; 1925 B gzipped; WebKit (median of 3; runs): gone after 800 ms (782/846/800), 33/33/33 animations, 59/59/59 fps (information), scroll at 96 ms (97/96/78), item tap at 38 ms (38/37/38), reduced motion 186 ms (186/191/184), 0 errors, as Chromium; WebKit (3 runs per time, the median): 4 versions, 4 passing every functional check; 0 behaving differently from Chromium; 0 outlier run(s); Persian tap, Senso (CPU 4×): 0 of 4 taps with a long task over 50 ms, the longest 0 ms"
+    },
+    {
+      "id": "perf-server",
+      "name": "the performance fixture's server on 61108 (picked free at start, its listener the process the suite spawned), the temporary venue created in it through the admin API, warmed",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 1153,
+      "evidence": [
+        "perf/server-61108.log",
+        "perf/new-venue-drill.log"
+      ],
+      "note": "listener pid 99614 = spawned pid 99614; temporary venue /drill-default-venue in roses_check_20261106t201047z_perf; warmed: /senso and its 33 uploaded photo(s), /kebab-land and its 0 uploaded photo(s), /drill-default-venue and its 1 uploaded photo(s)"
+    },
+    {
+      "id": "lighthouse-senso",
+      "name": "Lighthouse mobile ×3 on the performance fixture 2026-10-12: senso (LCP ≤ 2.5 s on the median of 3, TBT ≤ 50 ms on every run)",
+      "pass": false,
+      "outcome": "KNOWN MISS",
+      "ms": 42779,
+      "evidence": [
+        "perf/senso/lighthouse-summary.json",
+        "perf/senso/lighthouse.log"
+      ],
+      "note": "on the fixture 2026-10-12: LCP 6759 / 8568 / 6608 ms (median 6759), TBT 0 / 0 / 0 ms, performance 77 / 75 / 77 (targets LCP ≤ 2500 on the median of 3, TBT ≤ 50 on every run; local estimates); LCP element /brand/senso-logo.png: the welcome screen's logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)",
+      "unlisted": []
+    },
+    {
+      "id": "lighthouse-kebab-land",
+      "name": "Lighthouse mobile ×3 on the performance fixture 2026-10-12: kebab-land (LCP ≤ 2.5 s on the median of 3, TBT ≤ 50 ms on every run)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 31411,
+      "evidence": [
+        "perf/kebab-land/lighthouse-summary.json",
+        "perf/kebab-land/lighthouse.log"
+      ],
+      "note": "on the fixture 2026-10-12: LCP 1204 / 1203 / 1207 ms (median 1204), TBT 0 / 0 / 0 ms, performance 100 / 100 / 100 (targets LCP ≤ 2500 on the median of 3, TBT ≤ 50 on every run; local estimates); LCP element /brand/kebab-land-logo.png: the welcome screen's logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)"
+    },
+    {
+      "id": "lighthouse-temp-venue",
+      "name": "Lighthouse mobile ×3 on the performance fixture 2026-10-12: drill-default-venue (temporary venue, default template) (LCP ≤ 2.5 s on the median of 3, TBT ≤ 50 ms on every run)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 23704,
+      "evidence": [
+        "perf/drill-default-venue/lighthouse-summary.json",
+        "perf/drill-default-venue/lighthouse.log"
+      ],
+      "note": "on the fixture 2026-10-12: LCP 1055 / 1056 / 1055 ms (median 1055), TBT 0 / 0 / 0 ms, performance 100 / 100 / 100 (targets LCP ≤ 2500 on the median of 3, TBT ≤ 50 on every run; local estimates); LCP element /uploads/drill-default-venue/logo-5a50cfdd-eb84-4148-b382-319fccaeb9a6.png: the welcome screen's logo, so this LCP measures the welcome screen, not the menu (the menu after the tap has its own step above)"
+    },
+    {
+      "id": "after-tap",
+      "name": "menu after the language tap under throttled mobile conditions (Slow 4G as DevTools applies it, CPU 4×) on the performance fixture 2026-10-12: the first section visible and, as a separate check, its photos in view loaded within 2.5 s of the tap, 3 repeats judged on the median, on senso with its first section as a List and as a Grid and on kebab-land; the eager rule (the first row only); first-section photo bytes",
+      "pass": false,
+      "outcome": "KNOWN MISS",
+      "ms": 81541,
+      "evidence": [
+        "after-tap/after-tap.txt",
+        "after-tap/after-tap.json"
+      ],
+      "note": "on the fixture 2026-10-12: AFTER-TAP DRILL FAIL (8/9); senso (first section as a List): menu visible 861 ms / 843 ms / 845 ms (median 845 ms), first-row photo(s) 1845 ms / 428 ms / 961 ms (median 961 ms), the 4 photos in view 7327 ms (outlier: over 2× the median) / 3409 ms / 3493 ms (median 3493 ms), all 6 10493 ms (outlier: over 2× the median) / 5226 ms / 4844 ms (median 5226 ms) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view) — MISS; senso (its first section, Senso Signature, as a Grid): menu visible 829 ms / 830 ms / 845 ms (median 830 ms), first-row photo(s) 1545 ms / 1545 ms / 1544 ms (median 1545 ms), the 4 photos in view 1879 ms / 1879 ms / 1894 ms (median 1879 ms), all 6 10511 ms / 10662 ms / 10426 ms (median 10511 ms) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view); kebab-land (as it is): menu visible 230 ms / 225 ms / 229 ms (median 229 ms), first-row photo(s) 295 ms / 208 ms / 262 ms (median 262 ms), the 1 photos in view 295 ms / 225 ms / 262 ms (median 262 ms), all 2 1011 ms / 975 ms / 1078 ms (median 1011 ms) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view); photo bytes: senso 6 photos 122 KB–223 KB (1004 KB), kebab-land 2 photos 72 KB–146 KB (218 KB)",
+      "unlisted": []
+    },
+    {
+      "id": "content-cost-senso",
+      "name": "Lighthouse mobile ×3 on the live data copy: senso, content cost (information, never fails the run: the photos on the page and the uploaded photos' bytes, the images each run loaded, LCP per run; the fixture's numbers beside them)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 38095,
+      "evidence": [
+        "senso/live/lighthouse-summary.json",
+        "senso/live/lighthouse.log"
+      ],
+      "note": "content cost, information only: live data copy: Senso's page names 117 photos, 57 uploaded (11.01 MB on disk) and 60 linked; LCP 9986 / 9985 / 9985 ms; images loaded per run 26 / 26 / 26 (6715 KB / 6715 KB / 6715 KB) · fixture 2026-10-12: Senso's page names 115 photos, 33 uploaded (5.20 MB on disk) and 82 linked; LCP 6759 / 8568 / 6608 ms; images loaded per run 27 / 27 / 27 (6515 KB / 6515 KB / 6515 KB)"
+    },
+    {
+      "id": "content-cost-after-tap",
+      "name": "menu after the language tap on the live data copy: content cost (information, never fails the run: the after-tap drill's numbers on the working data as it is today, 3 repeats each)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 99064,
+      "evidence": [
+        "after-tap/live/after-tap.txt",
+        "after-tap/live/after-tap.json"
+      ],
+      "note": "content cost, information only (exit 1): senso (first section as a List): menu visible 844 ms / 828 ms / 829 ms (median 829 ms), first-row photo(s) 2126 ms (outlier: over 2× the median) / 711 ms / 712 ms (median 712 ms), the 4 photos in view 13109 ms (outlier: over 2× the median) / 3977 ms / 3979 ms (median 3979 ms), all 6 13109 ms / 12844 ms / 12878 ms (median 12878 ms) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view) — MISS; senso (its first section, the Seasonal section, as a Grid): menu visible 830 ms / 845 ms / 846 ms (median 845 ms), first-row photo(s) 3146 ms / 3093 ms / 3094 ms (median 3094 ms), the 4 photos in view 4211 ms / 4210 ms / 4211 ms (median 4211 ms), all 6 10511 ms / 10392 ms / 10394 ms (median 10394 ms) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view) — MISS; kebab-land (as it is): menu visible 213 ms / 213 ms / 214 ms (median 213 ms), first-row photo(s) 213 ms / 346 ms / 163 ms (median 213 ms), the 1 photos in view 213 ms / 346 ms / 214 ms (median 214 ms), all 2 945 ms / 995 ms / 996 ms (median 995 ms) after the tap (target ≤ 2500 ms on the median of 3 for the menu and the photos in view)"
+    },
+    {
+      "id": "admin",
+      "name": "admin drill (sign-ins, cookie, Team PINs, listing rule in the UI, API and database, sections, notes permissions, Style route and section layout 403 for staff, Style and Details for the owner with Undo, + Add venue, revoked PIN)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 18258,
+      "evidence": [
+        "admin/admin-drill.txt",
+        "admin/admin-drill.json",
+        "admin/*.jpg"
+      ],
+      "note": "ADMIN DRILL PASS (67/67); Details: change the tagline: 2 taps (Details tab, field) + typing + Enter; on the public page in 323 ms; Style: change the footer phone-link colour: 3 taps (group, token, swatch); on the public page in 315 ms; + Add venue: 3 taps + the name; Details tab open 100 ms after Create; the new page answers 200 (2 ms)"
+    },
+    {
+      "id": "lockout",
+      "name": "lockout: 5 per venue + address, 50 per hour per venue with alert and unlock, revoked PIN",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 7369,
+      "evidence": [
+        "lockout-drill.txt"
+      ],
+      "note": "LOCKOUT DRILL PASS"
+    },
+    {
+      "id": "revalidation",
+      "name": "revalidation: a price changed in the editor reaches the public page within 10 s, then Undo",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 1953,
+      "evidence": [
+        "revalidation-log.txt"
+      ],
+      "note": "88 ms after Enter; Undo back on the page 964 ms after the tap"
+    },
+    {
+      "id": "research",
+      "name": "menu research drill (every shown item with an English and a Persian description; every one with an allergen draft and its basis, or the owner's own note; every ingredient a description names in its key ingredients and its allergen in the draft; 0 health-claim words and 0 superlatives in the new descriptions, English ≤ 25 words; no allergen or dietary note still to confirm in the public HTML; the general allergy notice in English and Persian on 3 venues' pages; Confirm through the route shows \"Contains: …\" in both languages and Undo takes it off; on the iPhone 13 viewport the Needs-attention chip, the draft box with its basis, Confirm at 44 × 44 and Undo; the review sheets one row per shown item, read back unchanged = 0 changes)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 3793,
+      "evidence": [
+        "research/research-drill.txt",
+        "research/research-drill.json",
+        "research/research-review-senso.csv",
+        "research/research-review-kebab-land.csv"
+      ],
+      "note": "RESEARCH DRILL PASS (16/16); senso: 140 shown items; descriptions English 45 existing + 94 new, Persian 46 existing + 93 new; 1 for the owner to write; kebab-land: 102 shown items; descriptions English 61 existing + 36 new, Persian 61 existing + 36 new; 5 for the owner to write; confirm an item's researched allergens from the Menu tab on the iPhone 13 viewport: 3 taps (the Needs-attention chip, the item, Confirm), 613 ms to \"Confirmed · Undo\""
+    },
+    {
+      "id": "editor",
+      "name": "page editor drill (task targets with tap counts, preview ≤ 1 s, reorder on the public page, Undo on the public page, change record, no preview script, the preview never shows the welcome screen after a save, drag-and-drop of items and sections, tap-to-edit in the preview, photo upload, section delete with move or delete and Undo, items in no section in the Needs-attention bar; a seasonal item added from the Seasonal section on the iPhone 13 viewport (tap count, target ≤ 2 taps + name + price; tagged with today's season, first on the public page under its title))",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 76525,
+      "evidence": [
+        "editor/editor-drill.txt",
+        "editor/editor-drill.json",
+        "editor/*.jpg"
+      ],
+      "note": "EDITOR DRILL PASS (56/56); add an item: 1 tap + name + price + confirm (Enter); on the public page in 16 ms; sheet confirmed at +532 ms; add a seasonal item from the Seasonal section: 1 tap + name + price + confirm (Enter); on the public page under “Fall Menu” in 7 ms; change a price: 1 tap + typing + confirm (Enter); saved in 56 ms; hide an item: 1 tap; off the public page in 7 ms; photo upload: 2 taps + choose a photo; uploaded, saved and shown in the editor 89 ms after choosing (9818 bytes stored); on the public page in 6 ms; preview shows a saved change after 139 ms; move an item up one place from the Menu list (laptop): 3 taps (the section's menu, Reorder items, Move up); Done ends it; Undo of a price change back on the public page after 6 ms; tap-to-edit: 1 tap on the item in the preview; editor open after 59 ms; drag an item (laptop): one drag; database and public page in the new order after 8 ms; drag a section (laptop): one drag; database and public page in the new order after 7 ms; delete a section, items moved: 3 taps (menu, Delete section, confirm with the default choice); on the public page in 6 ms; two sizes from the item editor: 1 tap (+ Add size) + Small, Tab, 4, Enter, Large, Tab, 6, Enter; saved in the database within 104 ms of the last Enter; Looks good on a drafted field: 1 tap; the flag gone from the database in 57 ms; duplicate an item from its editor: 1 tap (Duplicate item); one Undo removes the copy (1 ms)"
+    },
+    {
+      "id": "preview",
+      "name": "preview control bar drill (the bar in the Style tab only, at its top and in view while it scrolls on the laptop, in the bottom sheet on a phone, none on the Menu tab or in its preview; from the Menu tab on the iPhone 13 viewport: the welcome screen in another season, in the evening, in Persian in ≤ 4 taps with the customers' page byte-identical; every switch of the bar within 300 ms on the phone and the laptop, Replay; the frame kept across tabs with the Style tab's screen back on return; the section list and the item popup open again after a save in the Style tab; a language tap on the previewed welcome screen; the customers' HTML without preview markup; the season switch shows each season's Seasonal section in the preview, the customers' page byte for byte unchanged)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 13337,
+      "evidence": [
+        "preview/preview-drill.txt",
+        "preview/preview-drill.json",
+        "preview/*.jpg"
+      ],
+      "note": "PREVIEW DRILL PASS (11/11); preview the welcome screen in winter, in the evening, in Persian from the Menu tab: 4 taps (Style, season, time of day, language); the scene shown 83 ms after the season tap; preview bar on the phone: every switch within 88 ms (screens, languages, seasons fetched from the admin API, times of day, Replay); preview bar on the laptop: every switch within 80 ms; switching tabs keeps the preview frame (no reload); the Style tab's screen comes back with it; after a save in the Style tab the preview is back on its screen (section list; item popup); the preview's season switch shows that season's Seasonal section within 75 ms"
+    },
+    {
+      "id": "style",
+      "name": "Style tab drill (day-one defaults = the pre-token look, task target with tap count, the phone's bottom sheet with ≥ 45 % of the viewport left to the preview while a colour is edited and Compare held on touch, preview ≤ 1 s, Undo, linked colours, Reset group, readability guard in the UI and on the route with the known pairs, one-tap fix, every group switching the preview to its screen with its region outlined, preview ↔ controls with the controls as the master through a save, the Welcome group with the bar's season switch and a saved colour, Compare toggled on the laptop from the bar at the top of the Style tab, a colour's own reset through the guard, section layout List/Grid on the public page and in the preview with Undo, position and screen kept through a colour save, Discard this session's changes restoring the opening snapshot with Undo, the snapshot kept for the whole visit (across tab switches; a reload, leaving the venue or a Discard start it again), the phone layout on the iPhone SE at Safari's visible height (≥ 45 % preview, controls at full size), Reset all with confirmation, Persian view)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 46118,
+      "evidence": [
+        "style/style-drill.txt",
+        "style/style-drill.json",
+        "style/day-one-senso.json",
+        "style/day-one-kebab-land.json",
+        "style/guard-route.json",
+        "style/*.jpg"
+      ],
+      "note": "STYLE DRILL PASS (31/31); change the category bar background: 3 taps (Style tab, group, swatch) + 0 extra; on the public page in 7 ms; Style tab on a phone: with a colour open the preview keeps 45 % of the viewport (299 of 664 px; target ≥ 45 %); Compare held → the default colours, released → the saved ones; change the category bar background with the custom picker: 3 taps + choosing; saved in 52 ms; Style tab on a small phone (iPhone SE, 375 × 548, Safari's visible height): with a colour open the preview keeps 45.1 % of the viewport (247 of 548 px; target ≥ 45 %; 45 % at 553 px); the controls get 97 px of the sheet (161 px on the iPhone 13) at their full size, the open colour's 94 px of swatches in view: true; preview shows a saved colour after 112 ms; a colour back to its default: 2 taps (the colour, Back to …), through the readability guard (a refusal shown under the colour); on the public page in 7 / 6 ms; readability guard: refusal shown with the ratio and a one-tap fix; the fix saved in 56 ms; tap a region in the preview: 1 tap; its group open after 9 ms; opening a Style group switches the preview to its screen within 929 ms (all 8 groups); welcome colour: on the overlay in the preview after 132 ms; after a colour save the preview keeps its position (scrollY 19820 → 19820) and its screen (the popup open again); switch a section to the grid layout: 1 tap (Layout group); on the public page in 10 ms; in the preview after 225 ms; Discard this session's changes: 2 taps (Discard, confirm); the opening snapshot back on the public page in 7 ms; Undo → the discarded state back in 6 ms; Discard this session's changes: the snapshot kept through 5 tab switches (the button counted 1 then 2); a reload, leaving the venue and a Discard each start it again (0 / 0 / 0)"
+    },
+    {
+      "id": "touch",
+      "name": "touch targets in the admin on a phone (the iPhone 13 and the iPhone SE at Safari's visible height): every visible interactive element of the sign-in screens, the Menu tab and what opens from it, the item editor with sizes, add-ons and combo parts, the Style tab's bottom sheet, the Details tab, Team and + Add venue, its tap area measured as its box joined with its labels and pads and verified unobstructed by hit tests; none under 44 × 44 CSS px except inline text links; the list printed",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 144793,
+      "evidence": [
+        "touch/touch-drill.txt",
+        "touch/touch-drill.json",
+        "touch/*.jpg"
+      ],
+      "note": "TOUCH DRILL PASS (4/4); touch targets, iPhone 13 (390 × 664): 2189 measured, 0 under 44 × 44, smallest tap area 44 px wide, 44 px tall; 5 inline links exempt; touch targets, iPhone SE (375 × 548, Safari's visible height): 2189 measured, 0 under 44 × 44, smallest tap area 44 px wide, 44 px tall; 5 inline links exempt"
+    },
+    {
+      "id": "backup",
+      "name": "backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 4051,
+      "evidence": [
+        "backup-drill.txt"
+      ],
+      "note": "12 table comparisons equal, 0 different; item recovered: true"
+    },
+    {
+      "id": "uploads-clean",
+      "name": "uploads:clean on the run's uploads (keeps the temporary venue's logo, removes the editor drill's orphan photo, prints each file)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 94,
+      "evidence": [
+        "uploads-clean.txt"
+      ],
+      "note": "169 files before, 58 after; kept 58 referenced (the venue logo: true), removed 111 (898689 bytes: drill-quota-mw5ggex0/photo-01d5b504-3fbf-4e4e-a5eb-e54aeb7e36cd.png, drill-quota-mw5ggex0/photo-10a74b47-f325-49a1-965d-30d5e0553600.png, drill-quota-mw5ggex0/photo-12f14c5b-9485-4afd-b623-9c5ce97aa71b.png, drill-quota-mw5ggex0/photo-14a9db95-e93c-4332-8b47-8db60e01fb48.png, drill-quota-mw5ggex0/photo-17c09edc-cebe-4cd5-9aeb-76afb8443b87.png, drill-quota-mw5ggex0/photo-1d4a773b-5ed0-4eeb-a266-cb9b0da98a0f.png, drill-quota-mw5ggex0/photo-1d8a1113-5b28-41d5-a69c-8f17c8e328a8.png, drill-quota-mw5ggex0/photo-1de8ba30-95dc-4c96-8c88-d3498d742374.png, drill-quota-mw5ggex0/photo-1e309a7d-6ac0-449d-a0b3-a87b1c206bd6.png, drill-quota-mw5ggex0/photo-2001a5d7-6cc1-40d0-a4c9-c57262198d4a.png, drill-quota-mw5ggex0/photo-2348bff2-ba29-46f4-907d-040325fc6fc9.png, drill-quota-mw5ggex0/photo-260b7aa3-fccf-4e47-8f33-5ef43d78e33c.png, drill-quota-mw5ggex0/photo-27f6042d-54d5-44cb-a317-bd651883669f.png, drill-quota-mw5ggex0/photo-2b80fdd9-7ade-4bd6-941d-d4d605133636.png, drill-quota-mw5ggex0/photo-2cc1951a-add8-49f7-be34-7196fbe91f8b.png, drill-quota-mw5ggex0/photo-2d415d95-dc9a-4210-8bde-f3958a165d70.png, drill-quota-mw5ggex0/photo-2f2d8a8e-586a-4226-a06c-c87348a217bf.png, drill-quota-mw5ggex0/photo-2fc9641c-e994-4ce5-9900-ef50f5156908.png, drill-quota-mw5ggex0/photo-3024bc89-337c-4cc2-8ffd-9be340f4405f.png, drill-quota-mw5ggex0/photo-324ee3cb-3400-48a9-a1dd-7cd86f5edabb.png, drill-quota-mw5ggex0/photo-344b7431-4343-4065-9f89-3235708cd356.png, drill-quota-mw5ggex0/photo-35ba8ced-ea73-4031-83e3-54c90ac0e94d.png, drill-quota-mw5ggex0/photo-37000f3a-94ef-4aff-a374-986abece1a44.png, drill-quota-mw5ggex0/photo-3903199e-b016-4a0d-81a6-34d368d1d1a1.png, drill-quota-mw5ggex0/photo-39102cc4-9f79-44e4-a054-e1a2f0ee6f60.png, drill-quota-mw5ggex0/photo-3b1ac573-d7b5-465d-8daf-674eae11bb94.png, drill-quota-mw5ggex0/photo-3ec92c02-0ce7-4004-8dd4-c03c165f23b6.png, drill-quota-mw5ggex0/photo-42dadbdf-60ee-4288-9d4e-5a1d5edc9cac.png, drill-quota-mw5ggex0/photo-4570283f-4739-4113-a1a0-4f3e879045f7.png, drill-quota-mw5ggex0/photo-458ce802-037f-492f-ae8a-7402ba4bdfcc.png, drill-quota-mw5ggex0/photo-47c2e680-0f41-4dee-9ebb-ce5c7ef0482f.png, drill-quota-mw5ggex0/photo-48cde124-5579-4cff-ac3c-e7fa20289dcc.png, drill-quota-mw5ggex0/photo-4a35bba8-0cbc-4bfd-ab1a-0547ac78ab13.png, drill-quota-mw5ggex0/photo-4bc59940-3247-4023-8ef1-266f16778157.png, drill-quota-mw5ggex0/photo-4cd56fd1-1cc6-4f43-bc03-4713c5584713.png, drill-quota-mw5ggex0/photo-5284a2c9-e477-4856-aa65-447c8af1fd37.png, drill-quota-mw5ggex0/photo-53e0494c-c97a-496c-8f1f-bcca79aeba32.png, drill-quota-mw5ggex0/photo-54b1ac70-f07c-4b35-b535-d36744ca4c02.png, drill-quota-mw5ggex0/photo-5600fb72-4207-454b-9839-929560757070.png, drill-quota-mw5ggex0/photo-560e080d-2240-4970-950c-67a869e8405e.png, drill-quota-mw5ggex0/photo-56673eb5-4e1a-4cf0-8170-2ee72d280cfb.png, drill-quota-mw5ggex0/photo-59ee992e-c6af-4b79-80ed-b72da3168712.png, drill-quota-mw5ggex0/photo-5da6e741-f967-4c06-8da0-dcd9c766b2c3.png, drill-quota-mw5ggex0/photo-5e17dfdf-8a3a-4954-929a-1123398c2ccf.png, drill-quota-mw5ggex0/photo-5f036d29-0a27-43c4-89fe-d18d7dee4e36.png, drill-quota-mw5ggex0/photo-66e759dc-97e0-4a0c-a370-f89363b2ac68.png, drill-quota-mw5ggex0/photo-6c651e61-ba5f-40b8-bab4-9c55cc3d7b0c.png, drill-quota-mw5ggex0/photo-6cc162d6-12be-4103-806c-c783ff9e4d19.png, drill-quota-mw5ggex0/photo-6e1ec802-314e-407b-b2e3-266b4db655ed.png, drill-quota-mw5ggex0/photo-73bd8d86-71a8-4294-80a0-104314006f0a.png, drill-quota-mw5ggex0/photo-7761688d-560a-47af-afb4-20af69fd296b.png, drill-quota-mw5ggex0/photo-78cb98d2-9448-4369-89b5-e9146911ad40.png, drill-quota-mw5ggex0/photo-7ac3ec21-e123-4743-b074-9edcc7191581.png, drill-quota-mw5ggex0/photo-7bf424be-8d3f-4a42-a25f-4ab010af114c.png, drill-quota-mw5ggex0/photo-7d822f47-2925-4015-a1f7-7311ae0b33fe.png, drill-quota-mw5ggex0/photo-7da24b27-b2d8-46ce-9472-bcfec839f759.png, drill-quota-mw5ggex0/photo-8fba899f-4a9d-459c-b3cf-ff4ca319b22a.png, drill-quota-mw5ggex0/photo-917e3867-5ff4-479a-9524-bb6bf741fa47.png, drill-quota-mw5ggex0/photo-97abe4ed-5e53-4597-97a1-762e562ac2fa.png, drill-quota-mw5ggex0/photo-99178bc9-74a6-4bac-bac7-5f77ca53298a.png, drill-quota-mw5ggex0/photo-9adee592-981f-4674-bf3a-c49c26a0a070.png, drill-quota-mw5ggex0/photo-9bca1674-dfdc-4020-9342-f071c2f96dcf.png, drill-quota-mw5ggex0/photo-9f05a439-1d14-4401-9edd-de7e35ff11d2.png, drill-quota-mw5ggex0/photo-a270f541-9fcf-4de7-a6eb-d499ab8c3938.png, drill-quota-mw5ggex0/photo-a283d93d-e374-4a5f-a64f-92c9365e5525.png, drill-quota-mw5ggex0/photo-a3056dab-6232-421e-966a-6205d8c40d6b.png, drill-quota-mw5ggex0/photo-a65de5fa-537a-45b5-87a8-c374fa6a7939.png, drill-quota-mw5ggex0/photo-a67b3e52-28f0-48de-bcef-34e24b091a0e.png, drill-quota-mw5ggex0/photo-af8db2f4-4b42-4c4a-b4f5-5e9802201a00.png, drill-quota-mw5ggex0/photo-afaf4b97-32d7-442f-843b-10a0280dfcc8.png, drill-quota-mw5ggex0/photo-b624914f-611b-4fc9-a1ca-a485d00276a8.png, drill-quota-mw5ggex0/photo-b6cf465e-02ac-490b-96bd-78ebeb44e25a.png, drill-quota-mw5ggex0/photo-ba9337fb-9406-42d6-80b9-b1bcd33378b0.png, drill-quota-mw5ggex0/photo-c608650e-c178-4c42-98b3-8aa64e0315f0.png, drill-quota-mw5ggex0/photo-c77f3a3e-30f6-47c5-a310-b50b64186ab6.png, drill-quota-mw5ggex0/photo-c851d36d-0b9e-4b43-8759-dcbccdfe9336.png, drill-quota-mw5ggex0/photo-c8dcb5ec-ee75-44ae-9257-5c5b8756ff79.png, drill-quota-mw5ggex0/photo-ca5fcba5-1a40-432e-b83d-933897272cb2.png, drill-quota-mw5ggex0/photo-cfd4e53d-a6c6-463e-b8a4-f9af6fe421a0.png, drill-quota-mw5ggex0/photo-d0454d2b-bc1b-415f-ac09-ea2052c6a251.png, drill-quota-mw5ggex0/photo-d3605b69-2e8a-422f-af5c-b195f597d7e7.png, drill-quota-mw5ggex0/photo-d56e0a20-9bb0-436c-9342-43c40d153d27.png, drill-quota-mw5ggex0/photo-d5e5adbb-d8fc-460f-be39-49a522ab4589.png, drill-quota-mw5ggex0/photo-d795efa7-0991-4465-82b6-aa971c8a5ff1.png, drill-quota-mw5ggex0/photo-d94c056d-e1bd-4153-b2bb-b08ea7bbefb5.png, drill-quota-mw5ggex0/photo-d9942002-088d-46b7-b549-3d2aaec45b6c.png, drill-quota-mw5ggex0/photo-da7bd52d-81af-40c7-9038-ac09a8bfbde9.png, drill-quota-mw5ggex0/photo-db2da3ab-f778-43bf-8c42-41ac19135c7f.png, drill-quota-mw5ggex0/photo-dbf53f78-f320-4a2a-8d25-8fe1a81cd501.png, drill-quota-mw5ggex0/photo-df402224-259b-4e98-b220-1f4b73312b41.png, drill-quota-mw5ggex0/photo-df56ae08-8dcc-4b8b-a2d3-cdfc105267d0.png, drill-quota-mw5ggex0/photo-e3f85f26-6139-49d5-ad73-9bb2b108b82c.png, drill-quota-mw5ggex0/photo-e7794f9a-11dd-4ddb-8ff5-63e642c98742.png, drill-quota-mw5ggex0/photo-ed7dbbd6-0ce6-4770-a90e-1b2c48290d08.png, drill-quota-mw5ggex0/photo-ee809448-a5a8-45f8-89ed-7ba1575fb3d2.png, drill-quota-mw5ggex0/photo-ef4f9f64-004d-431a-9f5d-b95c3808c881.png, drill-quota-mw5ggex0/photo-f0e15d1e-3e87-4bf0-b4fa-7669b26afb3a.png, drill-quota-mw5ggex0/photo-f1e9148d-36a1-4709-8cff-c65f075d0e49.png, drill-quota-mw5ggex0/photo-f34ea365-5a0c-4b61-9fc1-0c56d59e57d3.png, drill-quota-mw5ggex0/photo-fd804a06-75f2-491c-902c-0295f19b11fa.png, senso/photo-075fd96f-da3c-44db-9ae8-f5add6d64d47.jpg, senso/photo-1f043781-f7dd-4780-883d-72a629bec1d8.jpg, senso/photo-4775cb17-c9a5-4f52-8329-8750c25ea860.jpg, senso/photo-47f6a745-bfd7-410d-a2fc-49b2d85c562f.jpg, senso/photo-587a430c-3091-4e3b-ba59-c51205155521.jpg, senso/photo-6e5e0a3d-895d-4ddf-a34d-025478f35d26.jpg, senso/photo-71e9d82b-9446-4e76-ba5d-792f747a8f50.jpg, senso/photo-882e5cd5-ea54-4e1f-aadf-6907e92733cf.jpg, senso/photo-8c285edb-c403-4540-a34e-c67d6010fe5a.png, senso/photo-972db4bd-1125-417e-88ad-171ab9d0b15a.jpg, senso/photo-fee1b3b9-2030-4f76-bdd5-e782c00aec99.jpg); the scratch copy references 58 key(s)"
+    },
+    {
+      "id": "temp-venue-removed",
+      "name": "temporary venue removed from the scratch copy (drill-default-venue)",
+      "pass": true,
+      "outcome": "PASS",
+      "ms": 76,
+      "evidence": [
+        "new-venue/new-venue-drill.txt"
+      ],
+      "note": "rows left 0; its page still answers 200 from the cache until the next save or build (the scratch copy is dropped anyway)"
+    },
+    {
+      "id": "isolation-a",
+      "outcome": "PASS",
+      "name": "isolation (a): every server and drill process connected to the scratch database roses_check_20261106t201047z (the performance fixture's to its own, roses_check_20261106t201047z_perf) (own log line per process + pg_stat_activity sampled every 400 ms)",
+      "pass": true,
+      "ms": 0,
+      "evidence": [
+        "isolation.json",
+        "server-61104.log",
+        "server-61105.log",
+        "*/…-drill.log"
+      ],
+      "note": "28 processes, every one on the scratch copy by its own log; pg_stat_activity: 24 distinct connections seen over 14992 samples (servers and drills included), none on roses"
+    },
+    {
+      "id": "isolation-b",
+      "outcome": "PASS",
+      "name": "isolation (b): the working database roses holds no row written by a suite account (admins, PINs, revisions, drill items/sections/venues, lockout-drill failure rows)",
+      "pass": true,
+      "ms": 0,
+      "evidence": [
+        "working-db-suite-rows.json"
+      ],
+      "note": "admins 0, pins 0, revisionsBySuiteAccounts 0, drillItemsOrSections 0, lockoutDrillFailureRows 0"
+    }
+  ]
+}

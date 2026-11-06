@@ -24,7 +24,7 @@ export async function prepareImage(file: File, kind: 'photo' | 'logo'): Promise<
   canvas.width = Math.max(1, Math.round(img.naturalWidth * scale)); canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
   const ctx = canvas.getContext('2d'); if (!ctx) throw new Error('This device cannot resize the image');
   const type = kind === 'logo' && file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-  if (type === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+  if (type === 'image/jpeg') { ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-canvas').trim(); ctx.fillRect(0, 0, canvas.width, canvas.height); } // a JPEG has no transparency: the admin's white (globals.css)
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
   const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, type, 0.85));
   if (!blob) throw new Error('This image could not be read. Try a JPEG or PNG.');

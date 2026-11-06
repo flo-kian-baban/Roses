@@ -28,17 +28,18 @@ import type { Brand, EditorSection, SectionLayout, StyleValues } from '@/lib/typ
 import { TX_KEYS, type StyleOption } from '@/venues/styles';
 import { LEVELS, TRANSITIONS, TRANSITION_BY_ID, type TransitionId } from '@/lib/transitions';
 import { SEASONS, type Season } from '@/lib/welcome';
-import { GROUPS, baseName, cssVar, isLight, normHex, resolveColors, unreadable, type GroupId, type Resolved, type TokenDef } from '@/venues/tokens';
+import { ARTWORK, GROUPS, baseName, cssVar, isLight, normHex, resolveColors, unreadable, type GroupId, type Resolved, type TokenDef } from '@/venues/tokens';
 import { Icon } from '../../../_ui/icons';
 import { ApiFail, call, type Resp } from './api';
 import type { Region } from './Preview';
-import { ConfirmSheet, Switch, btnSecondary, fieldCls } from './ui';
+import { ConfirmSheet, Switch, fieldCls } from './ui';
+import { card, chipCls, textBtn } from '../../../_ui/look';
 
 type Data = { template: { id: string; name: string }; groups: typeof GROUPS; tokens: TokenDef[]; palette: { label: string; value: string }[]; layout: StyleOption[]; values: StyleValues; style: StyleValues; brand: Brand | null };
 type Fail = { key: string; error: string; suggestion: { key: string; value: string } | null; refused?: string };
 export type StyleSnapshot = { style: StyleValues; layouts: Record<string, SectionLayout> };
 export type Picked = { region: Region; n: number } | null;
-const btnSmall = `${btnSecondary} min-h-11 px-3 text-sm`;
+const btnSmall = textBtn; // an action as plain accent text (the admin's look, 2026-11-06)
 const TX_VALUES = Object.values(TX_KEYS); // the four per-season transition options (shown in the Welcome group, not under Layout)
 const sameJson = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 // How many things differ between two style records: each colour that differs (set, changed or removed) and each other key (the
@@ -157,30 +158,30 @@ export function StyleTab({ venueId, version, onSaved, onFail, onApply, onLive, o
     } catch (e) { setErr((e as Error).message); onFail(e, discard); throw e; } // the confirmation shows it and its button works again
   };
 
-  if (err && !data) return <p role="alert" className="mx-auto mt-6 max-w-3xl rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900">{err}</p>;
-  if (!data || !venue) return <p className="mx-auto mt-10 max-w-3xl px-5 text-center text-sm text-ink-muted" aria-busy="true">Loading the style options…</p>;
+  if (err && !data) return <p role="alert" className={`${card} mx-auto mt-6 max-w-3xl px-4 py-3 text-base text-danger`}>{err}</p>;
+  if (!data || !venue) return <p className="mx-auto mt-10 max-w-3xl px-5 text-center text-base text-ink-muted" aria-busy="true">Loading the style options…</p>;
   const customKeys = Object.keys(((data.style as Record<string, unknown>).colors as Record<string, string> | undefined) ?? {});
   const anyCustom = customKeys.length > 0 || 'accent' in data.style || 'tile' in data.style;
   const groups = data.groups.filter((g) => tokensOfGroup(g.id).length > 0);
   return (
     <div className="mx-auto w-full max-w-3xl px-3 pb-32 pt-4 sm:px-5" data-style-tab>
-      <p className="px-1 text-sm text-ink-muted">Colours by part of the page, top to bottom. Tap a part in the preview, or open a group. Each change saves itself and shows in the preview.</p>
-      {err && <p role="alert" className="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-[15px] text-red-900">{err}</p>}
-      {warnings.length > 0 && <p role="status" className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[14px] text-amber-900" data-style-warnings>Hard to read: {warnings.map((w) => `${label(w.key)} on the ${baseName(w.on)} (${w.ratio.toFixed(1)}:1, needs ${w.threshold}:1)`).join('; ')}.</p>}
-      <div className="mt-3 flex flex-wrap items-center gap-2 px-1">
+      <p className="px-3 text-[13px] text-ink-muted">Colours by part of the page, top to bottom. Tap a part in the preview, or open a group. Each change saves itself and shows in the preview.</p>
+      {err && <p role="alert" className={`${card} mt-3 px-4 py-3 text-base text-danger`}>{err}</p>}
+      {warnings.length > 0 && <p role="status" className={`${card} mt-3 px-4 py-3 text-base text-ink`} data-style-warnings>Hard to read: {warnings.map((w) => `${label(w.key)} on the ${baseName(w.on)} (${w.ratio.toFixed(1)}:1, needs ${w.threshold}:1)`).join('; ')}.</p>}
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 px-3">
         <button type="button" className={btnSmall} disabled={sessionChanges === 0} onClick={() => setConfirmDiscard(true)} data-style-discard data-changes={sessionChanges}><Icon name="restore" className="h-4 w-4" />Discard this session&rsquo;s changes</button>
-        <span className="text-xs text-ink-muted">{sessionChanges === 0 ? 'Nothing changed since you first opened the Style tab.' : `Back to how it was when you first opened the Style tab (${sessionChanges} change${sessionChanges === 1 ? '' : 's'}).`}</span>
+        <span className="text-[13px] text-ink-muted">{sessionChanges === 0 ? 'Nothing changed since you first opened the Style tab.' : `Back to how it was when you first opened the Style tab (${sessionChanges} change${sessionChanges === 1 ? '' : 's'}).`}</span>
       </div>
       <div className="mt-3 space-y-3">
         {groups.map((g) => {
           const isOpen = openGroup === g.id; const toks = tokensOfGroup(g.id);
           const groupCustom = toks.some((t) => resolved[t.key]?.state === 'custom');
           return (
-            <section key={g.id} ref={(el) => { groupRefs.current[g.id] = el; }} data-style-group={g.id} data-open={isOpen ? '1' : undefined} className={`rounded-2xl border bg-white shadow-card lg:scroll-mt-60 ${isOpen ? 'border-accent/40' : 'border-line'}`} onFocusCapture={() => { if (isOpen) onRegion(g.id); }}>
+            <section key={g.id} ref={(el) => { groupRefs.current[g.id] = el; }} data-style-group={g.id} data-open={isOpen ? '1' : undefined} className={`rounded-xl bg-canvas lg:scroll-mt-60 ${isOpen ? 'ring-2 ring-accent-ink/30' : ''}`} onFocusCapture={() => { if (isOpen) onRegion(g.id); }}>
               <button type="button" aria-expanded={isOpen} aria-label={`${g.label}: ${isOpen ? 'close' : 'open'}`} onClick={() => open(isOpen ? null : g.id)} className="flex min-h-14 w-full items-center gap-3 px-4 py-2.5 text-left">
                 <span className="min-w-0 flex-1">
                   <span className="block text-[17px] font-semibold">{g.label}</span>
-                  {isOpen ? <span className="block text-xs text-ink-muted">{g.hint}</span> : <span className="mt-1 flex flex-wrap items-center gap-1" aria-label={`${g.label} colours`} data-style-summary>{toks.map((t) => <span key={t.key} className="h-4 w-4 rounded-full border border-black/10" style={{ background: resolved[t.key]?.value }} title={`${t.label}: ${resolved[t.key]?.value}`} />)}</span>}
+                  {isOpen ? <span className="block text-[13px] text-ink-muted">{g.hint}</span> : <span className="mt-1 flex flex-wrap items-center gap-1" aria-label={`${g.label} colours`} data-style-summary>{toks.map((t) => <span key={t.key} className="h-4 w-4 rounded-xl border border-line" style={{ background: resolved[t.key]?.value }} title={`${t.label}: ${resolved[t.key]?.value}`} />)}</span>}
                 </span>
                 <Icon name={isOpen ? 'up' : 'down'} className="h-5 w-5 shrink-0 text-ink-muted" />
               </button>
@@ -197,22 +198,22 @@ export function StyleTab({ venueId, version, onSaved, onFail, onApply, onLive, o
             </section>
           );
         })}
-        <section data-style-group="layout" className="rounded-2xl border border-line bg-white shadow-card">
-          <div className="px-4 pt-3"><h2 className="text-[17px] font-semibold">Layout</h2><p className="text-xs text-ink-muted">What the {data.template.name} template can switch.</p></div>
+        <section data-style-group="layout" className="rounded-xl bg-canvas">
+          <div className="px-4 pt-3"><h2 className="text-[17px] font-semibold">Layout</h2><p className="text-[13px] text-ink-muted">What the {data.template.name} template can switch.</p></div>
           <div className="mt-1 divide-y divide-line">
             {data.layout.filter((o) => o.key !== 'welcome' && !TX_VALUES.includes(o.key)).map((o) => (
               <div key={o.key} className="px-4 py-3" data-style-option={o.key}>
                 {o.type === 'switch' ? (
                   <label className="flex items-center justify-between gap-4">
-                    <span><span className="block font-medium">{o.label}</span>{o.hint && <span className="mt-0.5 block text-xs text-ink-muted">{o.hint}</span>}</span>
+                    <span><span className="block font-medium">{o.label}</span>{o.hint && <span className="mt-0.5 block text-[13px] text-ink-muted">{o.hint}</span>}</span>
                     <Switch checked={data.values[o.key] === true} label={`${o.label}: ${data.values[o.key] === true ? 'on' : 'off'}`} onChange={(v) => setLayout(o.key, v)} />
                   </label>
                 ) : (
                   <div>
                     <span className="block font-medium">{o.label}</span>
-                    {o.hint && <p className="mt-0.5 text-xs text-ink-muted">{o.hint}</p>}
+                    {o.hint && <p className="mt-0.5 text-[13px] text-ink-muted">{o.hint}</p>}
                     <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label={o.label}>
-                      {o.choices.map((c) => <button key={c.value} type="button" role="radio" aria-checked={data.values[o.key] === c.value} onClick={() => setLayout(o.key, c.value)} className={`min-h-11 rounded-full border px-4 text-[15px] font-medium transition active:scale-[.97] ${data.values[o.key] === c.value ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:bg-fill'}`}>{c.label}</button>)}
+                      {o.choices.map((c) => <button key={c.value} type="button" role="radio" aria-checked={data.values[o.key] === c.value} onClick={() => setLayout(o.key, c.value)} className={chipCls(data.values[o.key] === c.value)}>{c.label}</button>)}
                     </div>
                   </div>
                 )}
@@ -220,18 +221,18 @@ export function StyleTab({ venueId, version, onSaved, onFail, onApply, onLive, o
             ))}
             <div className="px-4 py-3" data-style-option="sectionLayout">
               <span className="block font-medium">Section layout</span>
-              <p className="mt-0.5 text-xs text-ink-muted">List: full-width rows with a small photo. Grid: two columns with bigger photos, good for juices, desserts and drinks. Tapping an item opens the same popup in both.</p>
-              {sections.length === 0 ? <p className="mt-2 text-sm text-ink-muted">No sections yet.</p> : (
+              <p className="mt-0.5 text-[13px] text-ink-muted">List: full-width rows with a small photo. Grid: two columns with bigger photos, good for juices, desserts and drinks. Tapping an item opens the same popup in both.</p>
+              {sections.length === 0 ? <p className="mt-2 text-[13px] text-ink-muted">No sections yet.</p> : (
                 <ul className="mt-2 divide-y divide-line">
                   {sections.map((s) => {
                     const grid = s.layout === 'grid'; const busy = layoutBusy === s.id;
                     return (
                       <li key={s.id} className="flex items-center justify-between gap-3 py-2" data-section-layout={s.id} data-layout={grid ? 'grid' : 'list'}>
-                        <span className="min-w-0 flex-1"><span className={`block truncate text-[15px] ${s.listed ? '' : 'text-ink-muted'}`}>{s.name.en}</span><span className="block text-xs text-ink-muted">{s.item_ids.length} item{s.item_ids.length === 1 ? '' : 's'}{s.listed ? '' : ' · hidden'}</span></span>
-                        <span className="flex shrink-0 rounded-full bg-fill p-0.5" role="radiogroup" aria-label={`${s.name.en}: layout`}>
+                        <span className="min-w-0 flex-1"><span className={`block text-base [overflow-wrap:anywhere] ${s.listed ? '' : 'text-ink-muted'}`}>{s.name.en}</span><span className="block text-[13px] text-ink-muted">{s.item_ids.length} item{s.item_ids.length === 1 ? '' : 's'}{s.listed ? '' : ' · hidden'}</span></span>
+                        <span className="flex shrink-0 rounded-xl bg-fill p-0.5" role="radiogroup" aria-label={`${s.name.en}: layout`}>
                           {(['list', 'grid'] as const).map((v) => {
                             const on = (v === 'grid') === grid;
-                            return <button key={v} type="button" role="radio" aria-checked={on} disabled={busy} onClick={() => { if (!on) void setSectionLayout(s.id, v); }} className={`flex h-11 items-center gap-1.5 rounded-full px-3 text-[14px] font-semibold transition ${on ? 'bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,.12)]' : 'text-ink-muted hover:text-ink'}`}><Icon name={v} className="h-4 w-4" />{v === 'grid' ? 'Grid' : 'List'}</button>;
+                            return <button key={v} type="button" role="radio" aria-checked={on} disabled={busy} onClick={() => { if (!on) void setSectionLayout(s.id, v); }} className={`flex h-11 items-center gap-1.5 rounded-xl px-3 text-base font-semibold transition ${on ? 'bg-accent-soft text-accent-ink' : 'text-ink-muted hover:text-ink'}`}><Icon name={v} className="h-4 w-4" />{v === 'grid' ? 'Grid' : 'List'}</button>;
                           })}
                         </span>
                       </li>
@@ -243,9 +244,9 @@ export function StyleTab({ venueId, version, onSaved, onFail, onApply, onLive, o
           </div>
         </section>
       </div>
-      <div className="mt-4 px-1">
-        <button type="button" className={btnSecondary} disabled={!anyCustom} onClick={() => setConfirmReset(true)} data-style-reset-all><Icon name="restore" className="h-4 w-4" />Reset all colours</button>
-        <p className="mt-2 text-xs text-ink-muted">Back to the venue&rsquo;s own look: the recorded brand colours (logo, website) stay on file and are the swatches in every group.</p>
+      <div className="mt-4 px-3">
+        <button type="button" className={btnSmall} disabled={!anyCustom} onClick={() => setConfirmReset(true)} data-style-reset-all><Icon name="restore" className="h-4 w-4" />Reset all colours</button>
+        <p className="mt-2 text-[13px] text-ink-muted">Back to the venue&rsquo;s own look: the recorded brand colours (logo, website) stay on file and are the swatches in every group.</p>
       </div>
       {confirmReset && <ConfirmSheet title="Reset all colours?" body={<>Every colour goes back to the venue&rsquo;s default look. You can undo for 10 seconds.</>} label="Reset all colours" onConfirm={() => reset()} onClose={() => setConfirmReset(false)} />}
       {confirmDiscard && <ConfirmSheet title="Discard this session's changes?" body={<>Every colour, switch and section layout goes back to how it was when you first opened the Style tab ({sessionChanges} change{sessionChanges === 1 ? '' : 's'}). You can undo for 10 seconds.</>} label="Discard changes" onConfirm={discard} onClose={() => setConfirmDiscard(false)} />}
@@ -255,7 +256,7 @@ export function StyleTab({ venueId, version, onSaved, onFail, onApply, onLive, o
 
 // One token: its swatch, label and origin; opened, the venue's palette, the native picker, the hex field and "Back to auto".
 function TokenRow({ token: t, res, base, baseLabel, open, palette, fail, onOpen, onLive, onSet }: { token: TokenDef; res: Resolved[string] | undefined; base: Resolved[string] | null; baseLabel: string | null; open: boolean; palette: { label: string; value: string }[]; fail: Fail | null; onOpen: () => void; onLive: (v: string) => void; onSet: (v: string | null, text?: string) => Promise<void> }) {
-  const value = res?.value ?? '#ffffff';
+  const value = res?.value ?? ARTWORK.white; // a venue colour (the token defaults file's white), only while a token has none resolved
   const [hex, setHex] = useState(value);
   const [hexErr, setHexErr] = useState<string | null>(null);
   useEffect(() => { setHex(value); setHexErr(null); }, [value]);
@@ -264,32 +265,34 @@ function TokenRow({ token: t, res, base, baseLabel, open, palette, fail, onOpen,
   const state = res?.state ?? 'auto';
   const backLabel = t.on ? 'Back to auto' : 'Back to venue default';
   return (
-    <div data-style-token={t.key} data-state={state} className={`rounded-2xl ${open ? 'bg-fill/70' : ''}`}>
-      <button type="button" aria-expanded={open} aria-label={`${t.label}: ${value}, ${res?.why ?? ''}`} onClick={onOpen} className="flex min-h-12 w-full items-center gap-3 px-3 py-2 text-left">
-        <span className="h-7 w-7 shrink-0 rounded-full border border-black/10 shadow-[inset_0_0_0_1px_rgba(255,255,255,.4)]" style={{ background: value }} aria-hidden="true" data-style-swatch />
-        <span className="min-w-0 flex-1"><span className="block text-[15px] font-medium">{t.label}</span><span className="block truncate text-xs text-ink-muted" data-style-why>{res?.why}{t.note ? ` · ${t.note}` : ''}</span></span>
-        <span className="font-mono text-[12px] uppercase text-ink-muted" data-style-value>{value}</span>
+    <div data-style-token={t.key} data-state={state} className={`rounded-xl ${open ? 'bg-fill' : ''}`}>
+      {/* the row: its swatch, name and value on one line (the same height on every phone); where its colour comes from on a line of its own under it, in full */}
+      <button type="button" aria-expanded={open} aria-label={`${t.label}: ${value}, ${res?.why ?? ''}`} onClick={onOpen} className="flex min-h-11 w-full items-center gap-3 px-3 pt-2 text-left">
+        <span className="h-7 w-7 shrink-0 rounded-xl border border-line" style={{ background: value }} aria-hidden="true" data-style-swatch />
+        <span className="min-w-0 flex-1 text-base font-medium">{t.label}</span>
+        <span className="font-mono text-[13px] uppercase text-ink-muted" data-style-value>{value}</span>
       </button>
+      <p className="pb-2 pl-[52px] pr-3 text-[13px] text-ink-muted [overflow-wrap:anywhere]" data-style-why>{res?.why}{t.note ? ` · ${t.note}` : ''}</p>
       {open && (
         <div className="px-3 pb-3">
           <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label={`${t.label}: venue colours`} data-style-swatches>
-            {t.on && <button type="button" aria-pressed={state === 'auto'} onClick={() => { void onSet(null, 'Back to auto'); }} className={`flex h-11 items-center gap-1.5 rounded-full border px-3 text-[14px] font-medium ${state === 'auto' ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:bg-fill'}`}><Icon name="sparkle" className="h-4 w-4" />Auto</button>}
+            {t.on && <button type="button" aria-pressed={state === 'auto'} onClick={() => { void onSet(null, 'Back to auto'); }} className={chipCls(state === 'auto', true)}><Icon name="sparkle" className="h-4 w-4" />Auto</button>}
             {palette.map((p) => {
               const on = value === p.value;
-              return <button key={p.value} type="button" onClick={() => { void onSet(p.value); }} aria-label={`${t.label}: ${p.label} ${p.value}`} aria-pressed={on} title={p.label} className={`relative h-11 w-11 rounded-full border border-black/10 transition active:scale-95 ${on ? 'ring-[3px] ring-accent/40 ring-offset-2' : ''}`} style={{ background: p.value, color: isLight(p.value) ? '#000' : '#fff' }}>{on && <Icon name="check" className="absolute inset-0 m-auto h-5 w-5" strokeWidth={2.6} />}</button>;
+              return <button key={p.value} type="button" onClick={() => { void onSet(p.value); }} aria-label={`${t.label}: ${p.label} ${p.value}`} aria-pressed={on} title={p.label} className={`relative h-11 w-11 rounded-xl border border-line transition active:scale-95 ${on ? 'ring-2 ring-accent-ink ring-offset-2' : ''}`} style={{ background: p.value, color: isLight(p.value) ? 'var(--color-ink)' : 'var(--color-canvas)' }}>{on && <Icon name="check" className="absolute inset-0 m-auto h-5 w-5" strokeWidth={2.6} />}</button>;
             })}
-            <label className="flex h-11 cursor-pointer items-center gap-2 rounded-full border border-line bg-white px-3 text-[14px] font-medium hover:bg-fill">
-              <input type="color" value={value} aria-label={`${t.label}: custom colour`} onInput={(e) => onLive((e.target as HTMLInputElement).value)} onChange={(e) => { void onSet(e.target.value); }} className="h-6 w-6 cursor-pointer appearance-none rounded-full border-0 bg-transparent p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0" />
+            <label className={`${chipCls(false, true)} cursor-pointer`}>
+              <input type="color" value={value} aria-label={`${t.label}: custom colour`} onInput={(e) => onLive((e.target as HTMLInputElement).value)} onChange={(e) => { void onSet(e.target.value); }} className="h-6 w-6 cursor-pointer appearance-none rounded-xl border-0 bg-transparent p-0 [&::-webkit-color-swatch]:rounded-xl [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0" />
               Custom
             </label>
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <input type="text" inputMode="text" value={hex} aria-label={`${t.label}: hex`} spellCheck={false} onChange={(e) => setHex(e.target.value)} onBlur={() => { void commitHex(); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void commitHex(); } }} className={`${fieldCls} min-h-11 w-32 py-2 font-mono text-[14px] uppercase`} />
+            <input type="text" inputMode="text" value={hex} aria-label={`${t.label}: hex`} spellCheck={false} onChange={(e) => setHex(e.target.value)} onBlur={() => { void commitHex(); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void commitHex(); } }} className={`${fieldCls} min-h-11 w-32 py-2 font-mono uppercase`} />
             {state === 'custom' && <button type="button" className={btnSmall} onClick={() => { void onSet(null, backLabel); }}><Icon name="undo" className="h-4 w-4" />{backLabel}</button>}
-            {base && baseLabel && <span className="text-xs text-ink-muted">Sits on the {baseLabel} ({base.value}).</span>}
+            {base && baseLabel && <span className="text-[13px] text-ink-muted">Sits on the {baseLabel} ({base.value}).</span>}
           </div>
-          {hexErr && <p role="alert" className="mt-1 text-xs text-red-600">{hexErr}</p>}
-          {fail && <p role="alert" className="mt-2 flex flex-wrap items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-[14px] text-red-900" data-style-refused>{fail.error}{fail.suggestion && <button type="button" className={`${btnSmall} border-red-300`} onMouseDown={(e) => e.preventDefault()} onClick={() => { void onSet(fail.suggestion!.value); }} data-style-suggestion={fail.suggestion.value}><span className="h-4 w-4 rounded-full border border-black/10" style={{ background: fail.suggestion.value }} />Use {fail.suggestion.value}</button>}</p>}
+          {hexErr && <p role="alert" className="mt-1 text-[13px] text-danger">{hexErr}</p>}
+          {fail && <p role="alert" className="mt-2 flex flex-wrap items-center gap-x-2 text-[13px] text-danger" data-style-refused>{fail.error}{fail.suggestion && <button type="button" className={btnSmall} onMouseDown={(e) => e.preventDefault()} onClick={() => { void onSet(fail.suggestion!.value); }} data-style-suggestion={fail.suggestion.value}><span className="h-4 w-4 rounded-xl border border-line" style={{ background: fail.suggestion.value }} />Use {fail.suggestion.value}</button>}</p>}
         </div>
       )}
     </div>
@@ -312,25 +315,25 @@ function WelcomeControls({ option: o, on, onSwitch, transitions: txs, values, se
   return (
     <div className="mb-1 border-b border-line px-3">
       <label className="flex min-h-12 items-center justify-between gap-4 py-2.5" data-style-option="welcome">
-        <span><span className="block text-[15px] font-medium">{o.label}</span>{o.hint && <span className="mt-0.5 block text-xs text-ink-muted">{o.hint}</span>}<span className="mt-0.5 block text-xs text-ink-muted">Season and time of day for the preview: in the preview bar at the top of these controls.</span></span>
+        <span><span className="block text-base font-medium">{o.label}</span>{o.hint && <span className="mt-0.5 block text-[13px] text-ink-muted">{o.hint}</span>}<span className="mt-0.5 block text-[13px] text-ink-muted">Season and time of day for the preview: in the preview bar at the top of these controls.</span></span>
         <Switch checked={on} label={`${o.label}: ${on ? 'on' : 'off'}`} onChange={(v) => onSwitch(v)} />
       </label>
       {txs.length > 0 && (
         <div className="border-t border-line py-3" data-style-option="transitions">
-          <span className="block text-[15px] font-medium">Transition</span>
-          <span className="mt-0.5 block text-xs text-ink-muted">{on ? 'From the welcome screen into the menu, after a language is tapped; the menu can be scrolled and tapped from the first moment. One for each season: customers get the one of the current season.' : 'The welcome screen is off: the menu opens directly, with no transition.'}</span>
+          <span className="block text-base font-medium">Transition</span>
+          <span className="mt-0.5 block text-[13px] text-ink-muted">{on ? 'From the welcome screen into the menu, after a language is tapped; the menu can be scrolled and tapped from the first moment. One for each season: customers get the one of the current season.' : 'The welcome screen is off: the menu opens directly, with no transition.'}</span>
           <div className="mt-2 space-y-2">
             {TX_ORDER.map((sid) => {
               const s = SEASONS.find((x) => x.id === sid)!, opt = txs.find((x) => x.key === TX_KEYS[sid]), chosen = String(values[TX_KEYS[sid]] ?? ''), t = TRANSITION_BY_ID[chosen as TransitionId];
               if (!opt) return null;
               return (
-                <div key={sid} className={`rounded-2xl border px-3 py-2.5 ${season === sid ? 'border-ink' : 'border-line'}`} data-transition-season={sid} data-chosen={chosen}>
+                <div key={sid} className={`rounded-xl bg-fill px-3 py-2.5 ${season === sid ? 'ring-2 ring-accent-ink/40' : ''}`} data-transition-season={sid} data-chosen={chosen}>
                   <div className="flex items-end gap-2">
                     <label className="min-w-0 flex-1">
                       <span className="block text-[13px] font-semibold">{s.label} <span className="font-normal text-ink-muted">· {s.months}{season === sid ? ' · in the preview' : ''}</span></span>
                       <select value={chosen} disabled={!on || busy !== null} data-transition-select={sid} aria-label={`${s.label} transition`}
                         onChange={async (e) => { const id = e.target.value; setBusy(sid); try { await onChoose(sid, id); } finally { setBusy(null); } }}
-                        className={`mt-1 min-h-11 w-full rounded-xl border border-line bg-white px-3 text-[15px] ${busy === sid ? 'opacity-70' : ''}`}>
+                        className={`mt-1 min-h-11 w-full rounded-xl bg-canvas px-3 text-base ${busy === sid ? 'opacity-70' : ''}`}>
                         {TRANSITIONS.map((x) => <option key={x.id} value={x.id}>{x.id} {x.name} · {LEVELS[x.level]} · {(x[sid].ms / 1000).toFixed(2)} s</option>)}
                       </select>
                     </label>

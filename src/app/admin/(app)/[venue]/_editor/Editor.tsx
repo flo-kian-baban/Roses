@@ -353,7 +353,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   };
 
   const openItem = open ? menu.items[open.id] : null;
-  const tabLink = (t: Tab, label: string) => <a href={TAB_HREF(venue.id, t)} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); go(t); }} aria-current={tab === t ? 'page' : undefined} className={`tap flex h-9 items-center rounded-full px-3.5 text-[15px] font-semibold ${tab === t ? 'bg-ink text-white' : 'text-ink-muted hover:bg-fill hover:text-ink'}`}>{label}</a>;
+  const tabLink = (t: Tab, label: string) => <a href={TAB_HREF(venue.id, t)} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); go(t); }} aria-current={tab === t ? 'page' : undefined} className={`tap flex h-9 items-center rounded-xl px-3.5 text-base font-semibold ${tab === t ? 'bg-accent-soft text-accent-ink' : 'text-ink-muted hover:bg-fill hover:text-ink'}`}>{label}</a>;
   const previewProps = { venueId: venue.id, reloadKey, focus, view, onNow: setNow, onPick, styleMode: tab === 'style', region: tab === 'style' ? region : NO_REGION, onPlayed: played };
   const phoneStyle = !desktop && tab === 'style' && me.canManage; // the Style tab on a phone: the preview on top, the controls in a bottom sheet
   const bar = (phone: boolean) => <PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone={phone} />;
@@ -369,7 +369,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
           {me.canManage && tabLink('style', 'Style')}
           {me.canManage && tabLink('details', 'Details')}
           <span className="flex-1" />
-          {!phoneStyle && <button type="button" onClick={() => setPreviewOpen(true)} className="flex h-11 items-center gap-1.5 rounded-full border border-line bg-white px-3 text-[14px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,.04)] lg:hidden"><Icon name="smartphone" className="h-4 w-4" />Preview</button>}
+          {!phoneStyle && <button type="button" onClick={() => setPreviewOpen(true)} className="flex h-11 items-center gap-1.5 rounded-xl px-3 text-base font-semibold text-accent-ink hover:bg-fill lg:hidden"><Icon name="smartphone" className="h-4 w-4" />Preview</button>}
         </div>
         {tab === 'menu' && <MenuTab menu={menu} season={today} canNotes={me.canNotes} filter={filter} setFilter={setFilter} query={query} setQuery={setQuery} highlightId={highlight}
               onOpen={(id, section) => setOpen({ id, section })} onAdd={(sid) => setAdding(sid)} onAddSection={() => setAddingSection(true)}
@@ -389,7 +389,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
       </aside>
       {phoneStyle && (
         // Under the admin's top bar, with its own tab row (whatever sits above the editor in the page, an Alerts card for one, stays behind it): the tab row, the preview, the sheet.
-        <div className="fixed inset-x-0 bottom-0 top-14 z-30 flex flex-col bg-white" data-style-phone>
+        <div className="fixed inset-x-0 bottom-0 top-14 z-30 flex flex-col bg-canvas" data-style-phone>
           <div className="glass flex h-11 shrink-0 items-center gap-1 px-3 shadow-[inset_0_-1px_0_var(--color-line)]">{tabLink('menu', 'Menu')}{tabLink('style', 'Style')}{tabLink('details', 'Details')}</div>
           <div className="relative min-h-0 flex-1"><div className="absolute inset-0"><Preview ref={previewB} {...previewProps} frame={false} /></div></div>
           <BottomSheet detent={detent} onDetent={setDetent} max={editing ? 'half' : 'full'} top={PHONE_TOP} label="Style controls" header={bar(true)}>
@@ -399,7 +399,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
       )}
 
       {openItem && !wide && <>
-        <button type="button" aria-label="Close the item" onClick={() => setOpen(null)} className="fixed inset-0 z-40 hidden bg-black/10 lg:block" />
+        <button type="button" aria-label="Close the item" onClick={() => setOpen(null)} className="fixed inset-0 z-40 hidden bg-scrim-light lg:block" />
         {panel}
       </>}
       {previewOpen && !phoneStyle && <div className="fixed inset-0 z-[60] lg:hidden"><Preview ref={previewB} {...previewProps} frame={false} onClose={() => setPreviewOpen(false)} /></div>}
@@ -409,11 +409,11 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
       {deleting && menu.sections.some((s) => s.id === deleting) && <DeleteSectionSheet section={menu.sections.find((s) => s.id === deleting)!} others={menu.sections.filter((s) => s.id !== deleting && !s.seasonal)} items={menu.items} onClose={() => setDeleting(null)} onDelete={(mode) => sectionDeleteWith(deleting, mode)} />}
       {confirm && <ConfirmSheet title={confirm.title} body={confirm.body} label={confirm.label} onConfirm={confirm.action} onClose={() => setConfirm(null)} />}
       {toast && (
-        <div className={`toast fixed bottom-5 left-1/2 z-[80] flex w-max max-w-[calc(100vw-24px)] -translate-x-1/2 items-center gap-1 py-1.5 pl-4 pr-1.5 text-[15px] font-medium text-white shadow-pop ${toast.retry ? 'rounded-3xl' : 'rounded-full'} ${toast.error ? 'bg-red-600' : 'bg-ink'}`} role={toast.error ? 'alert' : 'status'} data-toast-error={toast.error ? '' : undefined} style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}>
+        <div className={`toast fixed bottom-5 left-1/2 z-[80] flex w-max max-w-[calc(100vw-24px)] -translate-x-1/2 items-center gap-1 rounded-xl py-1.5 pl-4 pr-1.5 text-base font-medium text-canvas shadow-pop ${toast.error ? 'bg-danger' : 'bg-ink'}`} role={toast.error ? 'alert' : 'status'} data-toast-error={toast.error ? '' : undefined} style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}>
           <span>{toast.text}</span>
-          {toast.retry && <><button type="button" onClick={() => { const again = toast.retry!; setToast(null); void again().catch(() => undefined); }} className="flex h-11 shrink-0 items-center gap-1 rounded-full px-3 font-semibold hover:bg-white/15" data-try-again>Try again</button><button type="button" onClick={() => setToast(null)} aria-label="Close" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-white/15"><Icon name="close" className="h-4 w-4" /></button></>}
+          {toast.retry && <><button type="button" onClick={() => { const again = toast.retry!; setToast(null); void again().catch(() => undefined); }} className="flex h-11 shrink-0 items-center gap-1 rounded-xl px-3 font-semibold hover:bg-canvas/15" data-try-again>Try again</button><button type="button" onClick={() => setToast(null)} aria-label="Close" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl hover:bg-canvas/15"><Icon name="close" className="h-4 w-4" /></button></>}
           {/* a tap within 600 ms of the toast appearing is the end of the tap that made it (a second tap on "+ Add item"), not an Undo (D-09) */}
-          {toast.revisions.length > 0 && <><span className="text-white/50">·</span><button type="button" data-undo disabled={!armed} onClick={() => { if (!armed) return; void undo(); }} className="flex h-11 items-center gap-1 rounded-full px-3 font-semibold hover:bg-white/15"><Icon name="undo" className="h-4 w-4" />Undo</button></>}
+          {toast.revisions.length > 0 && <><span className="text-canvas/50">·</span><button type="button" data-undo disabled={!armed} onClick={() => { if (!armed) return; void undo(); }} className="flex h-11 items-center gap-1 rounded-xl px-3 font-semibold hover:bg-canvas/15"><Icon name="undo" className="h-4 w-4" />Undo</button></>}
         </div>
       )}
     </div>
@@ -437,11 +437,11 @@ function AddItemSheet({ venueId, sectionName, seasonNote, onClose, onAdd }: { ve
   return (
     <Sheet title={`Add item to ${sectionName}`} onClose={onClose}>
       <form onSubmit={submit} className="space-y-4">
-        <label className="block"><span className="mb-1 block text-sm font-medium">Name</span><input className={fieldCls} name="name" value={name} onChange={(e) => setName(e.target.value)} autoFocus required maxLength={LIMITS.name} aria-label="Name" /></label>
-        <label className="block"><span className="mb-1 block text-sm font-medium">Price</span><span className="relative block"><span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-neutral-500">$</span><input className={`${fieldCls} pl-8 tabular-nums`} name="price" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0.00" aria-label="Price" /></span><span className="mt-1 block text-xs text-ink-muted">With a price the item is shown to customers at once; without one it stays hidden.</span></label>
-        <div><span className="mb-1 block text-sm font-medium">Photo <span className="font-normal text-ink-muted">(optional)</span></span><PhotoField venueId={venueId} photo={photo} alt={{ en: name, fa: null }} onChange={async (p) => setPhoto(p)} /></div>
-        {seasonNote && <p className="text-xs text-ink-muted">Tagged {seasonNote}: customers see it as a {seasonNote.toLowerCase()} special. Change its seasons in the item.</p>}
-        {err && <p role="alert" className="text-sm text-red-600">{err}</p>}
+        <label className="block"><span className="mb-1 block text-[13px] text-ink-muted">Name</span><input className={fieldCls} name="name" value={name} onChange={(e) => setName(e.target.value)} autoFocus required maxLength={LIMITS.name} aria-label="Name" /></label>
+        <label className="block"><span className="mb-1 block text-[13px] text-ink-muted">Price</span><span className="relative block"><span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-ink-muted">$</span><input className={`${fieldCls} pl-7 tabular-nums`} name="price" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0.00" aria-label="Price" /></span><span className="mt-1 block text-[13px] text-ink-muted">With a price the item is shown to customers at once; without one it stays hidden.</span></label>
+        <div><span className="mb-1 block text-[13px] text-ink-muted">Photo (optional)</span><PhotoField venueId={venueId} photo={photo} alt={{ en: name, fa: null }} onChange={async (p) => setPhoto(p)} /></div>
+        {seasonNote && <p className="text-[13px] text-ink-muted">Tagged {seasonNote}: customers see it as a {seasonNote.toLowerCase()} special. Change its seasons in the item.</p>}
+        {err && <p role="alert" className="text-[13px] text-danger">{err}</p>}
         <button type="submit" className={`${btnPrimary} w-full`} disabled={busy}>Add item</button>
       </form>
     </Sheet>
@@ -454,9 +454,9 @@ function AddSectionSheet({ onClose, onAdd }: { onClose: () => void; onAdd: (name
   return (
     <Sheet title="Add section" onClose={onClose}>
       <form onSubmit={async (e) => { e.preventDefault(); if (!name.trim()) { setErr('The name is required'); return; } setBusy(true); setErr(null); try { await onAdd(name.trim(), key); } catch (x) { setErr((x as Error).message); setBusy(false); } }} className="space-y-4">
-        <label className="block"><span className="mb-1 block text-sm font-medium">Name</span><input className={fieldCls} value={name} onChange={(e) => setName(e.target.value)} autoFocus required maxLength={LIMITS.section} aria-label="Section name" placeholder="For example Desserts" /></label>
-        <p className="text-xs text-ink-muted">It goes last; move it with the section menu. Customers see it once it has a shown item.</p>
-        {err && <p role="alert" className="text-sm text-red-600">{err}</p>}
+        <label className="block"><span className="mb-1 block text-[13px] text-ink-muted">Name</span><input className={fieldCls} value={name} onChange={(e) => setName(e.target.value)} autoFocus required maxLength={LIMITS.section} aria-label="Section name" placeholder="For example Desserts" /></label>
+        <p className="text-[13px] text-ink-muted">It goes last; move it with the section menu. Customers see it once it has a shown item.</p>
+        {err && <p role="alert" className="text-[13px] text-danger">{err}</p>}
         <button type="submit" className={`${btnPrimary} w-full`} disabled={busy}>Add section</button>
       </form>
     </Sheet>
@@ -471,7 +471,7 @@ function RenameSheet({ section: s, onClose, onPatch }: { section: Menu['sections
         <TextField label="Name (فارسی)" value={s.name.fa} dir="rtl" lang="fa" maxLength={LIMITS.section} onCommit={(v) => onPatch({ name: { ...s.name, fa: v } })} />
         <TextField label="Note under the heading" value={s.note?.en} placeholder="Optional" maxLength={LIMITS.note} onCommit={(v) => onPatch({ note: { ...(s.note ?? { en: null, fa: null }), en: v } })} />
         <TextField label="Note (فارسی)" value={s.note?.fa} dir="rtl" lang="fa" maxLength={LIMITS.note} onCommit={(v) => onPatch({ note: { ...(s.note ?? { en: null, fa: null }), fa: v } })} />
-        <p className="text-xs text-ink-muted">Each field saves when you leave it.</p>
+        <p className="text-[13px] text-ink-muted">Each field saves when you leave it.</p>
         <button type="button" className={`${btnSecondary} w-full`} onClick={onClose}>Done</button>
       </div>
     </Sheet>
@@ -487,24 +487,27 @@ function DeleteSectionSheet({ section: s, others, items, onClose, onDelete }: { 
   const [busy, setBusy] = useState(false); const [err, setErr] = useState<string | null>(null);
   return (
     <Sheet title="Delete this section?" onClose={onClose}>
-      <p className="text-[15px] text-ink-muted">“{s.name.en}” will be removed. It has {n} item{n === 1 ? '' : 's'}. What happens to {n === 1 ? 'it' : 'them'}?</p>
-      <div className="mt-4 grid gap-2" role="radiogroup" aria-label="Items of the section">
-        <label className={`flex min-h-12 items-center gap-3 rounded-2xl border px-3 py-2 ${mode === 'move' ? 'border-accent bg-accent-soft' : 'border-line'} ${others.length ? '' : 'opacity-50'}`}>
+      <p className="text-base text-ink-muted">“{s.name.en}” will be removed. It has {n} item{n === 1 ? '' : 's'}. What happens to {n === 1 ? 'it' : 'them'}?</p>
+      <div className="mt-4 divide-y divide-line overflow-hidden rounded-xl bg-fill" role="radiogroup" aria-label="Items of the section">
+        <label className={`flex min-h-11 items-center gap-3 px-3 py-2 ${mode === 'move' ? 'bg-accent-soft' : ''} ${others.length ? '' : 'opacity-50'}`}>
           <input type="radio" className="check" name="section-items" value="move" checked={mode === 'move'} disabled={!others.length} onChange={() => setMode('move')} />
-          <span className="flex min-w-0 flex-1 flex-wrap items-center gap-2 text-[15px]"><span className="font-medium">Move {n === 1 ? 'it' : 'them'} to</span>
-            <select value={target} onChange={(e) => { setTarget(e.target.value); setMode('move'); }} disabled={!others.length} aria-label="Section to move the items to" className="h-11 min-w-0 max-w-full appearance-none rounded-full bg-white px-3 pr-8 text-[15px] font-medium shadow-[0_1px_2px_rgba(0,0,0,.08)] focus:outline-none focus:ring-[3px] focus:ring-accent/25" style={{ backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%236e6e73%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27><path d=%27m6 9 6 6 6-6%27/></svg>")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center', backgroundSize: '14px' }}>
-              {others.map((o) => <option key={o.id} value={o.id}>{o.name.en}</option>)}
-            </select>
+          <span className="flex min-w-0 flex-1 flex-wrap items-center gap-2 text-base"><span className="font-semibold">Move {n === 1 ? 'it' : 'them'} to</span>
+            <span className="relative min-w-0 max-w-full">
+              <select value={target} onChange={(e) => { setTarget(e.target.value); setMode('move'); }} disabled={!others.length} aria-label="Section to move the items to" className="h-11 w-full min-w-0 appearance-none rounded-xl bg-canvas pl-3 pr-8 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-accent-ink/40">
+                {others.map((o) => <option key={o.id} value={o.id}>{o.name.en}</option>)}
+              </select>
+              <Icon name="down" className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" />
+            </span>
           </span>
         </label>
-        <label className={`flex min-h-12 items-center gap-3 rounded-2xl border px-3 py-2 ${mode === 'delete' ? 'border-red-300 bg-red-50' : 'border-line'}`}>
+        <label className={`flex min-h-11 items-center gap-3 px-3 py-2 ${mode === 'delete' ? 'bg-accent-soft' : ''}`}>
           <input type="radio" className="check" name="section-items" value="delete" checked={mode === 'delete'} onChange={() => setMode('delete')} />
-          <span className="text-[15px]"><span className="font-medium">Delete the item{n === 1 ? '' : 's'} too</span>{elsewhere > 0 && <span className="block text-xs text-ink-muted">{elsewhere} of them {elsewhere === 1 ? 'is' : 'are'} also in another section and stay{elsewhere === 1 ? 's' : ''} there.</span>}</span>
+          <span className="text-base"><span className="font-semibold">Delete the item{n === 1 ? '' : 's'} too</span>{elsewhere > 0 && <span className="block text-[13px] text-ink-muted">{elsewhere} of them {elsewhere === 1 ? 'is' : 'are'} also in another section and stay{elsewhere === 1 ? 's' : ''} there.</span>}</span>
         </label>
       </div>
-      {!others.length && <p className="mt-2 text-xs text-ink-muted">There is no other section to move the items to.</p>}
-      <p className="mt-3 text-xs text-ink-muted">You can undo for 10 seconds.</p>
-      {err && <p role="alert" className="mt-3 text-sm text-red-600">{err}</p>}
+      {!others.length && <p className="mt-2 text-[13px] text-ink-muted">There is no other section to move the items to.</p>}
+      <p className="mt-3 text-[13px] text-ink-muted">You can undo for 10 seconds.</p>
+      {err && <p role="alert" className="mt-3 text-[13px] text-danger">{err}</p>}
       <div className="mt-5 flex gap-2">
         <button type="button" className={`${btnDanger} flex-1`} disabled={busy || (mode === 'move' && !target)} onClick={async () => { setBusy(true); setErr(null); try { await onDelete(mode === 'move' ? { items: 'move', target } : { items: 'delete' }); } catch (e) { setErr((e as Error).message); setBusy(false); } }}>Delete section</button>
         <button type="button" className={`${btnSecondary} flex-1`} onClick={onClose}>Cancel</button>

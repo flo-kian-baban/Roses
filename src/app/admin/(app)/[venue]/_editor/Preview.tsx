@@ -144,17 +144,17 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
 
   const iframes = ([0, 1] as const).map((slot) => (
     <iframe key={slot} ref={frames[slot]} title={slot === active ? "Preview of the customers' page" : 'Loading preview'} onLoad={onLoad(slot)} aria-hidden={active !== slot}
-      className={`absolute inset-0 h-full w-full border-0 bg-white transition-opacity duration-200 ${active === slot ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+      className={`absolute inset-0 h-full w-full border-0 bg-canvas transition-opacity duration-200 ${active === slot ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
       data-preview-frame={active === slot ? venueId : undefined} data-preview-slot={slot} />
   ));
-  const status = <span className="text-[13px] font-medium text-ink-muted" aria-live="polite" data-preview-status>{onPick ? (styleMode ? 'Tap a part of the page to colour it' : 'Tap anything to edit it') : 'Customers see'}{loading && <span className="text-neutral-400"> · updating…</span>}</span>;
+  const status = <span className="text-[13px] font-medium text-ink-muted" aria-live="polite" data-preview-status>{onPick ? (styleMode ? 'Tap a part of the page to colour it' : 'Tap anything to edit it') : 'Customers see'}{loading && <span className="text-ink-muted/60"> · updating…</span>}</span>;
 
   if (!frame) {
     return (
-      <div className="flex h-full flex-col bg-white">
+      <div className="flex h-full flex-col bg-canvas">
         {onClose && (
           <div className="glass flex h-11 shrink-0 items-center gap-2 px-2 shadow-[inset_0_-1px_0_var(--color-line)]">
-            <button type="button" onClick={onClose} className="flex h-11 items-center gap-1 rounded-full px-2.5 text-[15px] font-semibold"><Icon name="back" className="h-5 w-5" />Edit</button>
+            <button type="button" onClick={onClose} className="flex h-11 items-center gap-1 rounded-xl px-2.5 text-base font-semibold text-accent-ink"><Icon name="back" className="h-5 w-5" strokeWidth={2.2} />Edit</button>
             <span className="flex-1 text-center">{status}</span>
           </div>
         )}
@@ -234,11 +234,14 @@ function replayWelcome(d: Document) {
 function previewStyle(d: Document) {
   if (d.getElementById('roses-preview-style')) return;
   const st = d.createElement('style'); st.id = 'roses-preview-style';
-  st.textContent = '#welcome{display:none!important}html{scrollbar-width:none}html::-webkit-scrollbar{display:none}.roses-preview-focus{box-shadow:inset 0 0 0 2px #ee6a3a;border-radius:12px;animation:roses-pf 2.6s ease-out forwards}@keyframes roses-pf{75%{box-shadow:inset 0 0 0 2px #ee6a3a}100%{box-shadow:inset 0 0 0 2px transparent}}'
-    + '.roses-pick:not(.roses-style) li.item:hover,.roses-pick:not(.roses-style) main section h2:hover,.roses-pick:not(.roses-style) main>header:hover{outline:2px dashed rgba(238,106,58,.55);outline-offset:3px;border-radius:10px;cursor:pointer}'
+  // the admin's accent, read from the admin page's tokens (src/app/globals.css; the admin-wide clean-up, 2026-11-06: no colour of its own here)
+  const tok = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const accent = tok('--color-accent-ink'), pick = tok('--admin-pick');
+  st.textContent = `#welcome{display:none!important}html{scrollbar-width:none}html::-webkit-scrollbar{display:none}.roses-preview-focus{box-shadow:inset 0 0 0 2px ${accent};border-radius:12px;animation:roses-pf 2.6s ease-out forwards}@keyframes roses-pf{75%{box-shadow:inset 0 0 0 2px ${accent}}100%{box-shadow:inset 0 0 0 2px transparent}}`
+    + `.roses-pick:not(.roses-style) li.item:hover,.roses-pick:not(.roses-style) main section h2:hover,.roses-pick:not(.roses-style) main>header:hover{outline:2px dashed ${pick};outline-offset:3px;border-radius:12px;cursor:pointer}`
     + '.roses-style main>header,.roses-style #tabs,.roses-style main section h2,.roses-style main section ul,.roses-style main footer,.roses-style dialog,.roses-style #welcome{cursor:pointer}'
-    + '.roses-region{outline:3px solid #ee6a3a!important;outline-offset:-3px;border-radius:10px;transition:outline-color .2s}dialog.roses-region{outline-offset:-3px}'
-    + 'html.roses-region-page body{box-shadow:inset 0 0 0 3px #ee6a3a;min-height:100dvh}'
+    + `.roses-region{outline:3px solid ${accent}!important;outline-offset:-3px;border-radius:12px;transition:outline-color .2s}dialog.roses-region{outline-offset:-3px}`
+    + `html.roses-region-page body{box-shadow:inset 0 0 0 3px ${accent};min-height:100dvh}`
     + 'html.roses-show-welcome #welcome{display:grid!important;place-items:center!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}' // place-items as the page's own rule for data-welcome="show" sets it (the frame is "off"): without it the card stretches and the buttons grow tall
     + 'html.roses-play[data-welcome="show"] #welcome,html.roses-play[data-welcome="done"] #welcome{display:grid!important;place-items:center!important}html.roses-play-still .welcome-card *{animation:none!important}' // Play: the page's own states run the transition (still: the card settled, without its entrance)
     + 'html.roses-play .roses-region{outline:none!important}html.roses-play.roses-region-page body{box-shadow:none!important}'; // and nothing of the preview's own on the page while it plays (the open group's outline would snap away with the overlay)

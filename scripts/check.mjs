@@ -359,6 +359,12 @@ try {
     const j = fs.existsSync(path.join(out, 'colour-literals.json')) ? JSON.parse(fs.readFileSync(path.join(out, 'colour-literals.json'), 'utf8')) : null;
     return { pass: r.status === 0 && j?.count === 0, evidence: ['colour-literals.txt', 'colour-literals.json'], note: j ? `${j.count} colour literal(s) in ${j.files.length} public files; ${j.tokensFileHexLiterals} hex values live in the token defaults file` : `exit ${r.status}` };
   }, 'colour-literals');
+  await step('colour literals in the item editor (the PM, 2026-11-04: the admin\'s colours are defined in one place, src/app/globals.css; 0 in the editor\'s own files)', async () => {
+    const files = ['kit.tsx', 'ItemPanel.tsx', 'Choices.tsx', 'GoodToKnow.tsx', 'SectionPicker.tsx'].map((f) => `src/app/admin/(app)/[venue]/_editor/${f}`);
+    const r = await run('node', ['scripts/check-colour-literals.mjs', '--json', path.join(out, 'editor-colour-literals.json'), ...files], { logFile: 'editor-colour-literals.txt' });
+    const j = fs.existsSync(path.join(out, 'editor-colour-literals.json')) ? JSON.parse(fs.readFileSync(path.join(out, 'editor-colour-literals.json'), 'utf8')) : null;
+    return { pass: r.status === 0 && j?.count === 0, evidence: ['editor-colour-literals.txt', 'editor-colour-literals.json'], note: j ? `${j.count} colour literal(s) in the item editor's ${j.files.length} files` : `exit ${r.status}` };
+  }, 'editor-colour-literals');
 
   await step('the network rules, self-test (the PM, 2026-10-13: wait for the photo hosts; a failure during an outage marked "invalid: network" and run once more, counting only on a clean second attempt), on simulated readings', async () => {
     const r = await run('node', ['scripts/network-watch-selftest.mjs'], { logFile: 'network-watch-selftest.txt' });

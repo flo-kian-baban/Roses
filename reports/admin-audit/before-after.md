@@ -1,4 +1,5 @@
 # Admin audit: before and after the build (Kian via the PM, 2026-10-13)
+> The tap-count scripts that produced these numbers (`audit-drill.mjs`, `audit-drill-after.mjs`, `audit-drill-editor.mjs`) were deleted on 2026-11-06 (the PM): they measured the editor as it was then. They stay in git history (last in commit 37107d9).
 
 Same method, same counting helpers, same data: both runs on a scratch copy of the working database taken on 2026-10-13 at 02:29 UTC (after the research and the placeholder withdrawal), reset to that copy before each run, on the iPhone 13 viewport (Playwright Chromium, 390 × 664, touch). **Before**: `audit-drill.mjs` (the audit's own drill, its task-6 check widened to "Contains: milk", the popup's wording since the research batch) on a build of main 09078a9 → `before-2/`. **After**: `audit-drill-after.mjs` (the same helpers; only the task paths follow the new screens) on a build of 03d4838 → `after/`. Cells: taps (fields · keys · scrolls, px scrolled) · app wait · done. Taps include focusing a field; Tab and Enter are keys; the first audit run (2026-10-13 00:08 UTC, `audit-run.txt`) gave the same "before" taps.
 

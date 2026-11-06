@@ -1,4 +1,5 @@
 # Admin audit: the item editor's tasks on the iPhone 13 viewport
+> The tap-count scripts that produced these numbers (`audit-drill.mjs`, `audit-drill-after.mjs`, `audit-drill-editor.mjs`) were deleted on 2026-11-06 (the PM): they measured the editor as it was then. They stay in git history (last in commit 37107d9).
 
 Report only. Nothing in the product was built or changed, and no real data was changed. Measured on 2026-10-13 at about 00:08 UTC (2026-10-12, 20:08 Toronto). The proposals are in `proposals.md`.
 

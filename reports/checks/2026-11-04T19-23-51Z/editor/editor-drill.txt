@@ -1,0 +1,158 @@
+Editor drill PASS (54/54 checks)
+
+Measurements:
+- add an item: 1 tap + name + price + confirm (Enter); on the public page in 16 ms; sheet confirmed at +526 ms
+- add a seasonal item from the Seasonal section: 1 tap + name + price + confirm (Enter); on the public page under “Fall Menu” in 7 ms
+- change a price: 1 tap + typing + confirm (Enter); saved in 54 ms
+- hide an item: 1 tap; off the public page in 6 ms
+- photo upload: 2 taps + choose a photo; uploaded, saved and shown in the editor 89 ms after choosing (9818 bytes stored); on the public page in 6 ms
+- preview shows a saved change after 145 ms
+- move an item up one place from the Menu list (laptop): 3 taps (the section's menu, Reorder items, Move up); Done ends it
+- Undo of a price change back on the public page after 6 ms
+- tap-to-edit: 1 tap on the item in the preview; editor open after 72 ms
+- drag an item (laptop): one drag; database and public page in the new order after 6 ms
+- drag a section (laptop): one drag; database and public page in the new order after 7 ms
+- delete a section, items moved: 3 taps (menu, Delete section, confirm with the default choice); on the public page in 6 ms
+- two sizes from the item editor: 1 tap (+ Add size) + Small, Tab, 4, Enter, Large, Tab, 6, Enter; saved in the database within 105 ms of the last Enter
+- Looks good on a drafted field: 1 tap; the flag gone from the database in 54 ms
+- duplicate an item from its editor: 1 tap (Duplicate item); one Undo removes the copy (2 ms)
+
+PASS t-add: add an item: 1 tap (+ Add item) + name + price + Enter → the editor opened on it (true; its description and price on the first screen: true); created shown at $4.50, last in "Senso Signature" (position 13 of 13); on the public page 16 ms after Enter
+PASS t-seasonal-add: add a seasonal item on the iPhone 13 viewport: 1 tap (+ Add item on the Seasonal section) + name + price + Enter (target ≤ 2 taps + name + price) → in the Seasonal section only (1 placement), shown true, tagged ["fall"] (today in Toronto: fall); on the public page first, under “Fall Menu”, 7 ms after Enter
+PASS t-price: change a price: 1 tap (the price) + typing + Enter → $5.25 in the database 54 ms after Enter; row shows $5.25
+PASS t-hide: hide an item: 1 tap (the switch) → hidden in the database 63 ms later, off the public page after 6 ms
+PASS t-show: show it again: 1 tap → shown, back on the public page after 9 ms
+PASS upload: photo upload: 2 taps (Edit, Add photo) + choose → stored as /uploads/senso/photo-c5121d2c-cca9-4b4a-aa1f-9b1053b03eba.jpg (271 × 143 px, key kept: true) 89 ms after choosing; GET it → 200 image/jpeg, 9818 bytes; on the public page after 6 ms
+PASS switch-reason: switch on "Aash-e-Reshteh" (no price) refused with "The item needs a price before it can be shown"; still hidden in the database: true
+PASS preview-1s: preview shows the new price 145 ms after Enter (target ≤ 1000); the row is in the frame's view (top 387 px of 902) and outlined: true
+PASS preview-no-welcome: the fresh frame after a save carries the welcome screen (true) switched off by the admin (data-welcome off, display none); no page animation running in the frame (0; running: roses-pf on li), first row opacity 1, the menu reachable (inert false); welcome keys in the admin's storage: 0
+PASS reorder: "Drill editor item" moved up one place in "Senso Signature" from the Menu list (the section's menu, Reorder items, Move up): admin order = database order (14 items), public page shows the same order for the 7 shown items (7 ms); the item is now 13 of 14
+PASS undo-price: price $7 on the public page after 213 ms; Undo → $6.75 back on the public page 1171 ms after the tap (6 ms of polling); database 6.75
+PASS undo-delete: deleted (row gone: true, off the public page after 7 ms); Undo → back in "Senso Signature" at position 12, shown, $6.75, on the public page after 7 ms, row back in the editor: true
+PASS tap-to-edit: tapped "Drill editor item" in the preview → its editor opened 72 ms later (1 tap); the customers' own item sheet stayed closed: true
+PASS tap-to-edit-section: tapped the "Senso Signature" heading in the preview → Rename section sheet with "Senso Signature"
+PASS sheet-on-top: laptop 1440 × 900 (the editor as a column: true): the section picker's sheet, opened from the item editor, is rendered outside the editor (true), its title on top of everything (true), its dim over the top bar too (true)
+PASS drag-item: dragged the first item of "Senso Signature" below its third: database in the expected order 54 ms after the drop (true); admin order = expected: true; = database: true (14 items; the dragged item is now 3); the public page shows its 7 shown items in the same order after 6 ms (true)
+PASS drag-section: dragged the second section above the first: database in the expected order 56 ms after the drop (true); admin order = expected: true; = database: true (15 sections); the public page shows its 15 shown sections in the same order after 7 ms (true)
+PASS section-delete-move: delete "Drill section" with the default choice (Move items to "Senso Signature"): 3 taps (menu, Delete section, confirm); default choice was "move"; section gone: true; both items now in "Senso Signature" at positions 14, 15 in their old order, on the public page there after 6 ms (380 ms after the tap)
+PASS section-delete-move-undo: Undo → "Drill section" back with its 2 items in order; the placements added to "Senso Signature" removed again (0 left), off that section on the public page after 6 ms
+PASS section-delete-items: delete "Drill section" with "Delete the items too": section gone true, items left 0, off the public page after 6 ms
+PASS section-delete-items-undo: Undo → section and both items back (shown, $3 and $4), in order in the editor (true) and on the public page after 6 ms
+PASS orphans-bar: after the item lost its section: no "In no section" pile in the list (true); the Needs-attention bar shows "1 in no section" (database: 1); tapping it lists the item (true)
+PASS record: revisions for the item: create, update, unlist, list, update, update, update, restore, delete, restore, update, update (every row carries before/after as its action needs: true); the section's reorder row holds the order before (14 ids) and after; the admin page shows no History or Restore (none found), /admin/senso/history → 404
+PASS no-preview-script: senso: 5 inline script tags (head decision, artwork engine, welcome screen, language toggle, menu; wanted 5), 0 external, "preview" 0×, preview markers 0×; kebab-land: 4 inline script tags (head decision, welcome screen, language toggle, menu; wanted 4), 0 external, "preview" 0×, preview markers 0×
+PASS t-inline-sizes: + Add size: 1 tap, the cursor in "Size 1", Size 1's price "4.50" (the item's); Small, Tab, 4, Enter → the cursor in "Size 2"; Large, Tab, 6, Enter → saved [["Small",4],["Large",6]], the one price cleared (null)
+PASS t-copy-choices: + Add choices put the cursor in "Choice group 1"; "Drill milk" with Oat +$1 saved (true); Copy to other items: the sheet lists the venue's items by section with 15 "Select all in …"; ticked "Drill copy target", Copy → toast "Copied to 1 item·Undo", the group on it (true); Undo → gone from it again (true), still on the drill item (true); 4 taps in all (+ Add choices, Copy to…, the tick, Copy)
+PASS t-section-picker: Section → "Hot Beverage": 2 taps; the item only in "Hot Beverage" (true), last there (position 18 of 18); on the public page in 7 ms (true)
+PASS t-allergens-open: Allergens & diet on opening the item: without drafts closed; with an allergen draft waiting for Confirm open, its 1 chips on the page with no tap
+PASS t-status-hide: Visibility reads "Shown on menu", the season's line "Hidden outside fall." (the item is tagged fall only), the switch in view on opening (true); 1 tap on its switch → hidden in the database (true, 57 ms), the row now "Hidden from menu"
+PASS t-section-chips: Appears in names every section the item is in, with no tap: ["Senso Signature","Fall Menu"] (wanted ["Senso Signature","Fall Menu"]; the Seasonal section as customers see it now); on the first screen of this item (two sizes, two choice groups above them): false
+PASS t-toast-clear: while "Saved · Undo" shows: the editor's scroll area ends at 580 px, the toast starts at 588 px (the strip kept free: true); controls of the editor under the toast: none
+PASS t-looks-good: database before: drafts ["description","allergens"], fa_draft ["name","description"]; Looks good on the English description (1 tap) → drafts ["allergens"], fa_draft ["name","description"], the texts unchanged (true); on the Persian description → fa_draft ["name"], drafts ["allergens"]; both buttons gone (true); Undo → fa_draft ["name","description"], drafts ["allergens"]
+PASS t-duplicate: 1 tap (Duplicate item, under More) → the editor on "Drill editor item (copy)" / "آیتم دریل (کپی)" (true), its name selected (Name, all selected true); hidden (true), off the public page (true); the same description, price, variants, add_ons, components, serves, photo, notes, drafts, seasons: all equal; in the same 2 sections right after the original (true; next in the editor's list true); toast "Duplicated·Undo"; Undo → the copy gone from the database (true), its editor closed (true), the original unchanged (true)
+PASS t-calm-layout: 360 px phone (the editor 360 px wide): nothing past its edges, cut short or scrolling sideways; text sizes 13px, 16px, 17px; corner radii 12px | laptop column (the editor 440 px wide): nothing past its edges, cut short or scrolling sideways; text sizes 13px, 16px, 17px; corner radii 12px
+PASS t-save-order: a choice typed fast (Oat, Tab, 1, Enter), its first save held back 800 ms: the saves left in the order made (prices [0,1]; the second 871 ms after the first, so it waited for its answer); the database ends on [["Oat",1]] (928 ms) and still does 1.5 s later; the price on screen "1"
+PASS t-fail-visible: the section's switch with no connection → "Not saved. No connection. Check the Wi-Fi and try again. Try again" (in view: true); still shown in the database: true; Try again with the connection back → hidden in the database after 54 ms
+PASS t-fail-keeps-text: a description typed with no connection: still in the field true, "Not saved. No connection. Check the Wi-Fi and try again. Try again"; the database kept "Drill description before"; Try again with the connection back → saved after 57 ms
+PASS t-stale-refused: the Persian name changed elsewhere after this editor opened, then the English name edited here → "Someone else changed this item since you opened it. The latest version is now on screen; make your change again if it is still needed."; the database keeps {"en":"Drill editor item","fa":"نام دریل"}; the editor now shows the Persian "نام دریل"
+PASS t-section-ids: sections "Welcome" and "Sheet" on the public page: ids ["s-welcome","s-sheet"]; one #welcome (1) and one #sheet (1); an item of "Sheet" opens its popup: true
+PASS t-create-once: "+ Add item" whose answer was lost (the server made it) → the sheet said "No connection. Check the Wi-Fi and try again."; Add tapped again → the editor opened on it: true; items named "Drill once in the editor": 1
+PASS t-save-timeout: a save with no answer → after 15494 ms: "Not saved. No answer from the server after 15 seconds. Check the connection and try again. Try again"; the database kept "Drill before the timeout"; Try again → saved after 1 ms; closing the page during a slow save asked first: beforeunload
+PASS t-hidden-saves: a description typed and the page reloaded without leaving the field → in the database after 2 ms
+PASS t-size-needs-price: a saved size's price cleared → the row says "A size needs a price"; the sizes kept: [["Small",3],["Large",5]]
+PASS t-row-bad-price: "1,50" in a size's price → saved as 1.5; "abc" → the row says "Not a price (for example 12.50)", the sizes stay [["Small",1.5],["Large",5]]
+PASS t-typed-kept: a size's price typed with no connection: the row still shows "7" marked Not saved (true); Try again → saved yes, mark gone true; the price in place typed with no connection shows "$9" marked (true); Try again → saved yes, mark gone true
+PASS t-undo-guard: Undo tapped the moment its toast appeared (the button not yet active: true) → undo requests 0; tapped again 800 ms later → 1, the price back to $9: true
+PASS t-not-published: a save whose page regeneration failed → "Saved, but the customers' page did not update. Try again · Undo"; Try again → "Customers' page updated": true
+PASS t-save-status: the top bar on opening: saved; a save held 800 ms on its way → "Saving…" (saving), then saved; with no connection → "Not saved · Retry"; Retry in the bar with the connection back → saved in the database (57 ms), the bar saved, the red toast gone (true); a save whose customers' page did not regenerate → "Page not updated · Retry"; Retry → "Customers' page updated" (true), the bar saved
+PASS t-long-word: an item named with one 100-character word: the page 390 px wide on a 390 px phone; its popup 390 px in 390 px
+PASS t-attention-shown: the bar's chips ["98 Persian drafts","1 missing Persian","23 without a photo","Allergens to confirm (138)","Hidden items (143)"]; the database: 143 hidden, 98 shown with Persian drafts, 23 shown without a photo; "Hidden items" lists 143 row(s), all hidden: true
+PASS t-two-decimals: a price of 6.5 in the item editor's field reads "6.50"
+PASS t-opaque-bars: the top bar's background opacity 0.94
+PASS t-narrow-names: 360 px wide: 16 section names, cut short: none; the search placeholder "Search" fits: true
+PASS t-toast-clear: a price saved on the row at the bottom of the screen: the row ends at 587 px, the toast starts at 588 px
+
+Transcript:
+2026-11-04T19:41:28.895Z [db] connected to database "roses_check_20261104t192351z" as application "roses-check:editor-drill"
+2026-11-04T19:41:29.627Z [shot] 01-editor-phone.jpg
+2026-11-04T19:41:30.209Z [shot] 02-item-added.jpg
+2026-11-04T19:41:30.209Z [t-add] PASS: add an item: 1 tap (+ Add item) + name + price + Enter → the editor opened on it (true; its description and price on the first screen: true); created shown at $4.50, last in "Senso Signature" (position 13 of 13); on the public page 16 ms after Enter
+2026-11-04T19:41:30.758Z [shot] 03-seasonal-item-added.jpg
+2026-11-04T19:41:30.758Z [t-seasonal-add] PASS: add a seasonal item on the iPhone 13 viewport: 1 tap (+ Add item on the Seasonal section) + name + price + Enter (target ≤ 2 taps + name + price) → in the Seasonal section only (1 placement), shown true, tagged ["fall"] (today in Toronto: fall); on the public page first, under “Fall Menu”, 7 ms after Enter
+2026-11-04T19:41:30.796Z [seasonal] the drill's seasonal item deleted (200), gone from the public page after 6 ms
+2026-11-04T19:41:30.911Z [t-price] PASS: change a price: 1 tap (the price) + typing + Enter → $5.25 in the database 54 ms after Enter; row shows $5.25
+2026-11-04T19:41:31.136Z [shot] 04-item-hidden.jpg
+2026-11-04T19:41:31.137Z [t-hide] PASS: hide an item: 1 tap (the switch) → hidden in the database 63 ms later, off the public page after 6 ms
+2026-11-04T19:41:31.283Z [t-show] PASS: show it again: 1 tap → shown, back on the public page after 9 ms
+2026-11-04T19:41:31.611Z [shot] 05-photo-uploaded.jpg
+2026-11-04T19:41:31.611Z [upload] PASS: photo upload: 2 taps (Edit, Add photo) + choose → stored as /uploads/senso/photo-c5121d2c-cca9-4b4a-aa1f-9b1053b03eba.jpg (271 × 143 px, key kept: true) 89 ms after choosing; GET it → 200 image/jpeg, 9818 bytes; on the public page after 6 ms
+2026-11-04T19:41:31.870Z [shot] 06-switch-refused.jpg
+2026-11-04T19:41:31.870Z [switch-reason] PASS: switch on "Aash-e-Reshteh" (no price) refused with "The item needs a price before it can be shown"; still hidden in the database: true
+2026-11-04T19:41:32.507Z [shot] 07-editor-laptop.jpg
+2026-11-04T19:41:33.479Z [shot] 08-preview-updated.jpg
+2026-11-04T19:41:33.479Z [preview-1s] PASS: preview shows the new price 145 ms after Enter (target ≤ 1000); the row is in the frame's view (top 387 px of 902) and outlined: true
+2026-11-04T19:41:33.484Z [preview-no-welcome] PASS: the fresh frame after a save carries the welcome screen (true) switched off by the admin (data-welcome off, display none); no page animation running in the frame (0; running: roses-pf on li), first row opacity 1, the menu reachable (inert false); welcome keys in the admin's storage: 0
+2026-11-04T19:41:33.900Z [shot] 09-reordered.jpg
+2026-11-04T19:41:33.900Z [reorder] PASS: "Drill editor item" moved up one place in "Senso Signature" from the Menu list (the section's menu, Reorder items, Move up): admin order = database order (14 items), public page shows the same order for the 7 shown items (7 ms); the item is now 13 of 14
+2026-11-04T19:41:35.682Z [shot] 10-undo-price.jpg
+2026-11-04T19:41:35.682Z [undo-price] PASS: price $7 on the public page after 213 ms; Undo → $6.75 back on the public page 1171 ms after the tap (6 ms of polling); database 6.75
+2026-11-04T19:41:37.759Z [shot] 11-undo-delete.jpg
+2026-11-04T19:41:37.759Z [undo-delete] PASS: deleted (row gone: true, off the public page after 7 ms); Undo → back in "Senso Signature" at position 12, shown, $6.75, on the public page after 7 ms, row back in the editor: true
+2026-11-04T19:41:37.894Z [shot] 12-tap-to-edit.jpg
+2026-11-04T19:41:37.894Z [tap-to-edit] PASS: tapped "Drill editor item" in the preview → its editor opened 72 ms later (1 tap); the customers' own item sheet stayed closed: true
+2026-11-04T19:41:38.210Z [tap-to-edit-section] PASS: tapped the "Senso Signature" heading in the preview → Rename section sheet with "Senso Signature"
+2026-11-04T19:41:38.979Z [shot] 13-sheet-from-editor.jpg
+2026-11-04T19:41:38.979Z [sheet-on-top] PASS: laptop 1440 × 900 (the editor as a column: true): the section picker's sheet, opened from the item editor, is rendered outside the editor (true), its title on top of everything (true), its dim over the top bar too (true)
+2026-11-04T19:41:39.676Z [shot] 14-drag-item.jpg
+2026-11-04T19:41:39.676Z [drag-item] PASS: dragged the first item of "Senso Signature" below its third: database in the expected order 54 ms after the drop (true); admin order = expected: true; = database: true (14 items; the dragged item is now 3); the public page shows its 7 shown items in the same order after 6 ms (true)
+2026-11-04T19:41:40.842Z [shot] 15-drag-section.jpg
+2026-11-04T19:41:40.842Z [drag-section] PASS: dragged the second section above the first: database in the expected order 56 ms after the drop (true); admin order = expected: true; = database: true (15 sections); the public page shows its 15 shown sections in the same order after 7 ms (true)
+2026-11-04T19:41:41.749Z [shot] 16-delete-section-sheet.jpg
+2026-11-04T19:41:42.129Z [section-delete-move] PASS: delete "Drill section" with the default choice (Move items to "Senso Signature"): 3 taps (menu, Delete section, confirm); default choice was "move"; section gone: true; both items now in "Senso Signature" at positions 14, 15 in their old order, on the public page there after 6 ms (380 ms after the tap)
+2026-11-04T19:41:43.200Z [section-delete-move-undo] PASS: Undo → "Drill section" back with its 2 items in order; the placements added to "Senso Signature" removed again (0 left), off that section on the public page after 6 ms
+2026-11-04T19:41:43.865Z [section-delete-items] PASS: delete "Drill section" with "Delete the items too": section gone true, items left 0, off the public page after 6 ms
+2026-11-04T19:41:44.984Z [shot] 17-delete-section-items-undone.jpg
+2026-11-04T19:41:44.984Z [section-delete-items-undo] PASS: Undo → section and both items back (shown, $3 and $4), in order in the editor (true) and on the public page after 6 ms
+2026-11-04T19:41:45.343Z [shot] 18-no-section-filter.jpg
+2026-11-04T19:41:45.343Z [orphans-bar] PASS: after the item lost its section: no "In no section" pile in the list (true); the Needs-attention bar shows "1 in no section" (database: 1); tapping it lists the item (true)
+2026-11-04T19:41:45.616Z [record] PASS: revisions for the item: create, update, unlist, list, update, update, update, restore, delete, restore, update, update (every row carries before/after as its action needs: true); the section's reorder row holds the order before (14 ids) and after; the admin page shows no History or Restore (none found), /admin/senso/history → 404
+2026-11-04T19:41:45.620Z [no-preview-script] PASS: senso: 5 inline script tags (head decision, artwork engine, welcome screen, language toggle, menu; wanted 5), 0 external, "preview" 0×, preview markers 0×; kebab-land: 4 inline script tags (head decision, welcome screen, language toggle, menu; wanted 4), 0 external, "preview" 0×, preview markers 0×
+2026-11-04T19:41:47.051Z [shot] 19-inline-sizes.jpg
+2026-11-04T19:41:47.051Z [t-inline-sizes] PASS: + Add size: 1 tap, the cursor in "Size 1", Size 1's price "4.50" (the item's); Small, Tab, 4, Enter → the cursor in "Size 2"; Large, Tab, 6, Enter → saved [["Small",4],["Large",6]], the one price cleared (null)
+2026-11-04T19:41:47.901Z [shot] 20-copied.jpg
+2026-11-04T19:41:48.835Z [t-copy-choices] PASS: + Add choices put the cursor in "Choice group 1"; "Drill milk" with Oat +$1 saved (true); Copy to other items: the sheet lists the venue's items by section with 15 "Select all in …"; ticked "Drill copy target", Copy → toast "Copied to 1 item·Undo", the group on it (true); Undo → gone from it again (true), still on the drill item (true); 4 taps in all (+ Add choices, Copy to…, the tick, Copy)
+2026-11-04T19:41:49.457Z [shot] 21-moved.jpg
+2026-11-04T19:41:49.457Z [t-section-picker] PASS: Section → "Hot Beverage": 2 taps; the item only in "Hot Beverage" (true), last there (position 18 of 18); on the public page in 7 ms (true)
+2026-11-04T19:41:50.538Z [rebuild] the drill item set up as a full one (200), research drafts description + allergens, Persian drafts name + description
+2026-11-04T19:41:51.030Z [t-allergens-open] PASS: Allergens & diet on opening the item: without drafts closed; with an allergen draft waiting for Confirm open, its 1 chips on the page with no tap
+2026-11-04T19:41:51.176Z [shot] 22-editor-rebuilt.jpg
+2026-11-04T19:41:51.268Z [t-status-hide] PASS: Visibility reads "Shown on menu", the season's line "Hidden outside fall." (the item is tagged fall only), the switch in view on opening (true); 1 tap on its switch → hidden in the database (true, 57 ms), the row now "Hidden from menu"
+2026-11-04T19:41:51.362Z [t-section-chips] PASS: Appears in names every section the item is in, with no tap: ["Senso Signature","Fall Menu"] (wanted ["Senso Signature","Fall Menu"]; the Seasonal section as customers see it now); on the first screen of this item (two sizes, two choice groups above them): false
+2026-11-04T19:41:51.720Z [t-toast-clear] PASS: while "Saved · Undo" shows: the editor's scroll area ends at 580 px, the toast starts at 588 px (the strip kept free: true); controls of the editor under the toast: none
+2026-11-04T19:41:52.748Z [t-looks-good] PASS: database before: drafts ["description","allergens"], fa_draft ["name","description"]; Looks good on the English description (1 tap) → drafts ["allergens"], fa_draft ["name","description"], the texts unchanged (true); on the Persian description → fa_draft ["name"], drafts ["allergens"]; both buttons gone (true); Undo → fa_draft ["name","description"], drafts ["allergens"]
+2026-11-04T19:41:53.067Z [shot] 23-duplicated.jpg
+2026-11-04T19:41:54.006Z [t-duplicate] PASS: 1 tap (Duplicate item, under More) → the editor on "Drill editor item (copy)" / "آیتم دریل (کپی)" (true), its name selected (Name, all selected true); hidden (true), off the public page (true); the same description, price, variants, add_ons, components, serves, photo, notes, drafts, seasons: all equal; in the same 2 sections right after the original (true; next in the editor's list true); toast "Duplicated·Undo"; Undo → the copy gone from the database (true), its editor closed (true), the original unchanged (true)
+2026-11-04T19:41:55.826Z [shot] 24-calm-360-px-phone.jpg
+2026-11-04T19:41:57.754Z [shot] 25-calm-laptop-column.jpg
+2026-11-04T19:41:57.757Z [t-calm-layout] PASS: 360 px phone (the editor 360 px wide): nothing past its edges, cut short or scrolling sideways; text sizes 13px, 16px, 17px; corner radii 12px | laptop column (the editor 440 px wide): nothing past its edges, cut short or scrolling sideways; text sizes 13px, 16px, 17px; corner radii 12px
+2026-11-04T19:42:01.298Z [t-save-order] PASS: a choice typed fast (Oat, Tab, 1, Enter), its first save held back 800 ms: the saves left in the order made (prices [0,1]; the second 871 ms after the first, so it waited for its answer); the database ends on [["Oat",1]] (928 ms) and still does 1.5 s later; the price on screen "1"
+2026-11-04T19:42:02.219Z [t-fail-visible] PASS: the section's switch with no connection → "Not saved. No connection. Check the Wi-Fi and try again. Try again" (in view: true); still shown in the database: true; Try again with the connection back → hidden in the database after 54 ms
+2026-11-04T19:42:03.827Z [t-fail-keeps-text] PASS: a description typed with no connection: still in the field true, "Not saved. No connection. Check the Wi-Fi and try again. Try again"; the database kept "Drill description before"; Try again with the connection back → saved after 57 ms
+2026-11-04T19:42:04.996Z [t-stale-refused] PASS: the Persian name changed elsewhere after this editor opened, then the English name edited here → "Someone else changed this item since you opened it. The latest version is now on screen; make your change again if it is still needed."; the database keeps {"en":"Drill editor item","fa":"نام دریل"}; the editor now shows the Persian "نام دریل"
+2026-11-04T19:42:07.158Z [t-section-ids] PASS: sections "Welcome" and "Sheet" on the public page: ids ["s-welcome","s-sheet"]; one #welcome (1) and one #sheet (1); an item of "Sheet" opens its popup: true
+2026-11-04T19:42:08.074Z [t-create-once] PASS: "+ Add item" whose answer was lost (the server made it) → the sheet said "No connection. Check the Wi-Fi and try again."; Add tapped again → the editor opened on it: true; items named "Drill once in the editor": 1
+2026-11-04T19:42:26.717Z [t-save-timeout] PASS: a save with no answer → after 15494 ms: "Not saved. No answer from the server after 15 seconds. Check the connection and try again. Try again"; the database kept "Drill before the timeout"; Try again → saved after 1 ms; closing the page during a slow save asked first: beforeunload
+2026-11-04T19:42:27.929Z [t-hidden-saves] PASS: a description typed and the page reloaded without leaving the field → in the database after 2 ms
+2026-11-04T19:42:29.487Z [t-size-needs-price] PASS: a saved size's price cleared → the row says "A size needs a price"; the sizes kept: [["Small",3],["Large",5]]
+2026-11-04T19:42:30.078Z [t-row-bad-price] PASS: "1,50" in a size's price → saved as 1.5; "abc" → the row says "Not a price (for example 12.50)", the sizes stay [["Small",1.5],["Large",5]]
+2026-11-04T19:42:32.681Z [t-typed-kept] PASS: a size's price typed with no connection: the row still shows "7" marked Not saved (true); Try again → saved yes, mark gone true; the price in place typed with no connection shows "$9" marked (true); Try again → saved yes, mark gone true
+2026-11-04T19:42:34.187Z [t-undo-guard] PASS: Undo tapped the moment its toast appeared (the button not yet active: true) → undo requests 0; tapped again 800 ms later → 1, the price back to $9: true
+2026-11-04T19:42:35.037Z [t-not-published] PASS: a save whose page regeneration failed → "Saved, but the customers' page did not update. Try again · Undo"; Try again → "Customers' page updated": true
+2026-11-04T19:42:37.566Z [t-save-status] PASS: the top bar on opening: saved; a save held 800 ms on its way → "Saving…" (saving), then saved; with no connection → "Not saved · Retry"; Retry in the bar with the connection back → saved in the database (57 ms), the bar saved, the red toast gone (true); a save whose customers' page did not regenerate → "Page not updated · Retry"; Retry → "Customers' page updated" (true), the bar saved
+2026-11-04T19:42:40.104Z [t-long-word] PASS: an item named with one 100-character word: the page 390 px wide on a 390 px phone; its popup 390 px in 390 px
+2026-11-04T19:42:40.594Z [t-attention-shown] PASS: the bar's chips ["98 Persian drafts","1 missing Persian","23 without a photo","Allergens to confirm (138)","Hidden items (143)"]; the database: 143 hidden, 98 shown with Persian drafts, 23 shown without a photo; "Hidden items" lists 143 row(s), all hidden: true
+2026-11-04T19:42:40.823Z [t-two-decimals] PASS: a price of 6.5 in the item editor's field reads "6.50"
+2026-11-04T19:42:40.823Z [t-opaque-bars] PASS: the top bar's background opacity 0.94
+2026-11-04T19:42:41.274Z [t-narrow-names] PASS: 360 px wide: 16 section names, cut short: none; the search placeholder "Search" fits: true
+2026-11-04T19:42:42.989Z [t-toast-clear] PASS: a price saved on the row at the bottom of the screen: the row ends at 587 px, the toast starts at 588 px
+2026-11-04T19:42:43.093Z [cleanup] drill item deleted again (stays in the change record)

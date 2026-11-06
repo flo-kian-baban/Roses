@@ -7,6 +7,7 @@
 // Editing tasks, Undo and the change record are in scripts/editor-drill.mjs. Screenshots and a timestamped transcript
 // go to --out. Needs the production server at --base and DRILL_ADMIN_EMAIL / DRILL_ADMIN_PASSWORD (+ DRILL_ADMIN_PIN).
 import fs from 'node:fs/promises';
+import { existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import zlib from 'node:zlib';
@@ -181,6 +182,7 @@ await opage.fill('input[aria-label="Search items"]', 'Turkish Coffee');
 await openItem(opage, item.id);
 // the owner's chips (Kian via the PM, 2026-10-13: one tap each; in the "Allergens & diet" group since the editor rebuild of the same day)
 { const g = opage.locator('[role=dialog] [data-group="allergens"][aria-expanded="false"]'); if (await g.count()) await g.click(); }
+{ const all = opage.locator('[role=dialog] [data-all-allergens]'); if (await all.count()) await all.click(); } // while a research suggestion waits, the full list is one tap away (the item editor's clean-up, 2026-11-04)
 const nutChip = opage.locator('[role=dialog] [data-allergen="tree nuts"]');
 if ((await nutChip.getAttribute('aria-pressed')) === 'true') { await nutChip.click(); await waitDb('select notes from items where id=$1', [item.id], (r) => !r?.notes?.allergens?.includes('tree nuts')); } // the drill's own precondition
 await nutChip.click();
@@ -424,10 +426,16 @@ await restoreTarget();
   const dd = await ap.$$eval('header details a[href^="/admin/"]', (els) => els.map((e) => e.getAttribute('href')));
   check('add-venue', taps === 3 && row?.template === 'default' && secs === 1 && seasonalSecs === 1 && pub.status === 200 && html.includes('Drill venue') && html.includes('--c-page-bg:') && dd.includes(`/admin/${id}`), `+ Add venue: ${taps} taps (venue menu, Add venue, Create) + the name → /admin/${id} (Details tab) ${landed} ms after Create; venues row template=${row?.template}, ${secs} starting section and ${seasonalSecs} Seasonal section; GET /${id} → ${pub.status} in ${pubMs} ms (default template, name on the page: ${html.includes('Drill venue')}); in the venue dropdown: ${dd.includes(`/admin/${id}`)}`);
   measure(`+ Add venue: ${taps} taps + the name; Details tab open ${landed} ms after Create; the new page answers ${pub.status} (${pubMs} ms)`);
-  // S2-09: the upload quota, on this new venue (100 files an hour per venue)
-  { const ok = []; for (let i = 0; i < 100; i++) ok.push((await upload(id, 'photo', pngOf(1 + (i % 3), 1), 'image/png', ac)).status);
-    const over = await upload(id, 'photo', pngOf(2, 2), 'image/png', ac);
-    check('upload-quota', ok.every((x) => x === 200) && over.status === 429, `100 photos uploaded to "${id}" → all 200: ${ok.every((x) => x === 200)}; the 101st within the hour → ${over.status} "${over.json?.error}"`); }
+  // S2-09: the upload quota (100 files an hour per venue), on a venue of its own made for it, whose uploads folder cannot exist yet, so the
+  // count starts from nothing (the PM, 2026-11-06: on 2026-11-04 the check ran on "drill-venue", whose folder in the run's copy of the
+  // working uploads already held 100 files a hand run had left there, and failed). UPLOAD_DIR is the server's (the suite gives it to drills).
+  { const want = `drill-quota-${Date.now().toString(36)}`;
+    const made = await api('/api/admin/venue', { action: 'create', name: { en: 'Drill quota', fa: null }, id: want }, ac); const qid = made.json?.venue;
+    const dir = process.env.UPLOAD_DIR && qid ? path.join(path.resolve(process.env.UPLOAD_DIR), qid) : null;
+    const before = dir ? (existsSync(dir) ? readdirSync(dir).length : 0) : null;
+    const ok = []; for (let i = 0; i < 100; i++) ok.push((await upload(qid, 'photo', pngOf(1 + (i % 3), 1), 'image/png', ac)).status);
+    const over = await upload(qid, 'photo', pngOf(2, 2), 'image/png', ac);
+    check('upload-quota', made.status === 200 && qid === want && before === 0 && ok.every((x) => x === 200) && over.status === 429, `a venue made for the check, "${qid}" (${made.status}); its uploads folder at the start: ${before === null ? 'not known (UPLOAD_DIR not given)' : before === 0 ? 'empty' : `${before} file(s)`}; 100 photos uploaded to it → all 200: ${ok.every((x) => x === 200)}; the 101st within the hour → ${over.status} "${over.json?.error}"`); } // the venue stays in the scratch copy, which the suite drops at its end, like "+ Add venue"'s
   await ap.close(); await actx.close(); }
 
 // revoke drill PINs; revoked staff PIN refused

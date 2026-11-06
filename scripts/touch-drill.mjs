@@ -149,8 +149,11 @@ for (const vp of VIEWPORTS) {
   await closeAll(p);
   await screen(vp, p, 'menu: account menu open', async () => { await p.evaluate(() => scrollTo(0, 0)); await p.click('summary[aria-label="Account"]'); await p.waitForSelector('details[open] form[action="/api/admin/logout"]'); });
   await closeAll(p);
-  await screen(vp, p, 'menu: section menu open', async () => { const b = p.locator('button[aria-label^="Section menu:"]').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=menu]'); });
+  await screen(vp, p, 'menu: section menu open', async () => { const b = p.locator('section:not([data-seasonal]) button[aria-label^="Section menu:"]').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=menu]'); }); // a section of the venue's own (the Seasonal one's menu has Reorder items only)
   await closeAll(p);
+  // reordering a section's items from the Menu list (the item editor's clean-up, the PM, 2026-11-04: Move up and Move down left the editor)
+  await screen(vp, p, 'menu: reorder items', async () => { const b = p.locator('section:not([data-seasonal]) button[aria-label^="Section menu:"]').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.click('[role=menu] button:has-text("Reorder items")'); await p.waitForSelector('[data-reorder] [data-reorder-row]'); });
+  { const d = p.locator('[data-reorder-done]').first(); if (await d.count()) await d.click(); }
   await screen(vp, p, 'menu: add item sheet', async () => { const b = p.locator('button:has-text("Add item")').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=dialog]'); });
   await closeAll(p); await p.waitForSelector('[role=dialog]', { state: 'detached', timeout: 3000 }).catch(() => {});
   // the first item row; an item placed in two sections (e.g. Senso's Fall Menu items, since 2026-10-12, in the Seasonal section and their own)
@@ -160,9 +163,11 @@ for (const vp of VIEWPORTS) {
   await p.keyboard.press('Escape'); await sleep(200);
   await screen(vp, p, 'menu: item editor', async () => { const b = itemRow.locator('button[aria-label^="Edit"]'); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('.item-panel'); });
   await screen(vp, p, 'menu: item editor, both groups open', async () => {
-    for (const t of ['allergens', 'other']) { const b = p.locator(`.item-panel [data-group="${t}"][aria-expanded="false"]`).first(); if (await b.count()) { await b.scrollIntoViewIfNeeded(); await b.click(); await sleep(200); } }
+    for (const t of ['allergens']) { const b = p.locator(`.item-panel [data-group="${t}"][aria-expanded="false"]`).first(); if (await b.count()) { await b.scrollIntoViewIfNeeded(); await b.click(); await sleep(200); } }
+    { const a = p.locator('.item-panel [data-all-allergens]').first(); if (await a.count()) { await a.scrollIntoViewIfNeeded(); await a.click(); await sleep(200); } } // the full allergen list, one tap away while a suggestion waits (2026-11-04)
+    for (let k = 0; k < 3; k++) { const a = p.locator('.item-panel [data-add-details]').first(); if (!(await a.count())) break; await a.scrollIntoViewIfNeeded(); await a.click(); await sleep(150); const m = p.locator('.item-panel [data-add-detail]').first(); if (await m.count()) await m.click(); await sleep(200); } // serves, note and combo parts put in their places (2026-11-06)
   });
-  const done = async () => { if (await p.locator('.item-panel').count()) { await p.locator('.item-panel button:has-text("Done")').first().click(); await p.waitForSelector('.item-panel', { state: 'detached', timeout: 5000 }); } };
+  const done = async () => { if (await p.locator('.item-panel').count()) { await p.locator('.item-panel [data-back]').first().click(); await p.waitForSelector('.item-panel', { state: 'detached', timeout: 5000 }); } };
   await done();
   // the toast on this page load (everything else on it is measured already, so the toast is measured within its 10 s); Undo must put the price back
   let was = null;
@@ -178,7 +183,8 @@ for (const vp of VIEWPORTS) {
   const openItem = async (id) => {
     await done();
     const b = p.locator(`[data-item="${id}"] button[aria-label^="Edit"]`).first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('.item-panel');
-    for (const t of ['allergens', 'other']) { const x = p.locator(`.item-panel [data-group="${t}"][aria-expanded="false"]`).first(); if (await x.count()) { await x.scrollIntoViewIfNeeded(); await x.click(); await sleep(200); } }
+    for (const t of ['allergens']) { const x = p.locator(`.item-panel [data-group="${t}"][aria-expanded="false"]`).first(); if (await x.count()) { await x.scrollIntoViewIfNeeded(); await x.click(); await sleep(200); } }
+    { const a = p.locator('.item-panel [data-all-allergens]').first(); if (await a.count()) { await a.scrollIntoViewIfNeeded(); await a.click(); await sleep(200); } }
   };
   await screen(vp, p, 'menu: item editor, an item with add-ons', async () => { await openItem(ITEMS.addOns); await p.waitForSelector('.item-panel button[aria-label^="Remove add-on"]'); });
   // the sheets of the build after the admin audit (Kian via the PM, 2026-10-13): copy choices to other items, the section picker with "Also show in"
@@ -190,7 +196,7 @@ for (const vp of VIEWPORTS) {
   await screen(vp, p, 'kebab-land menu', async () => { await p.goto(`${base}/admin/kebab-land`); await p.waitForSelector('[data-item]'); });
   await screen(vp, p, 'kebab-land: item editor, an item with sizes', async () => { await openItem(ITEMS.sizes); await p.waitForSelector('.item-panel button[aria-label^="Remove size"]'); });
   await screen(vp, p, 'kebab-land: item editor, an item with combo parts', async () => { await openItem(ITEMS.parts); await p.waitForSelector('.item-panel button[aria-label^="Remove part"]'); });
-  await screen(vp, p, 'kebab-land: delete confirmation', async () => { const b = p.locator('.item-panel button:has-text("Delete this item")').first(); /* under Other (2026-10-13), whose closed summary also says "delete" */ await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=dialog][aria-label="Delete this item?"]'); });
+  await screen(vp, p, 'kebab-land: delete confirmation', async () => { const b = p.locator('.item-panel button:has-text("Delete item")').first(); /* in More, in view without a tap since 2026-11-04 */ await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[role=dialog][aria-label="Delete this item?"]'); });
   await p.goto(`${base}/admin/senso`); await p.waitForSelector('[data-item]'); await markSeen(p); // nothing was deleted: the confirmation is left by the page load
   // the Style tab (the phone layout: preview on top, controls in the bottom sheet)
   await screen(vp, p, 'style', async () => { await p.click('a[href="/admin/senso?tab=style"]'); await p.waitForSelector('[data-style-sheet]'); await p.waitForSelector('[data-style-group="tabs"]'); });

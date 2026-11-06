@@ -7,6 +7,9 @@
 // Seasonal items (Kian, 2026-10-12): the venue's Seasonal section sits at the top with its switch and "+ Add item" (adding there tags the
 // item with today's season); it cannot be renamed, moved or deleted. Items hidden by their seasons today show "Out of season" (or "No
 // season" in the Seasonal section) and count in the Needs-attention bar.
+// Reorder items (the PM's clean-up of the item editor, 2026-11-04, which took Move up / Move down out of the editor): every section's menu,
+// the Seasonal section's included, has "Reorder items"; the section's rows then show Move up and Move down (44 × 44 each) in place of the
+// price and the switch, and Done ends it. A laptop also drags the rows, as before.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { EditorItem, SeasonId } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
@@ -32,6 +35,8 @@ export function MenuTab(p: MenuTabProps) {
   const [fine, setFine] = useState(false);
   const drag = useRef<Drag | null>(null);
   const [over, setOver] = useState<Over>(null);
+  const [reordering, setReordering] = useState<string | null>(null); // the section whose items are being put in order
+  const [moving, setMoving] = useState(false); // one move at a time, so a quick second tap moves from where the first left it
   useEffect(() => { setFine(window.matchMedia('(pointer: fine)').matches); }, []);
   const ctx = useMemo(() => seasonsCtx(menu, p.season), [menu, p.season]);
   const counts = useMemo(() => { const c = attention(menu, ctx); if (!p.canNotes) c.allergens = 0; return c; }, [menu, ctx, p.canNotes]); // allergens to confirm: owners and admins only (they confirm)
@@ -48,6 +53,12 @@ export function MenuTab(p: MenuTabProps) {
   }, [menu, filter, q, ctx]);
   const shown = groups.sections.reduce((n, g) => n + g.ids.length, 0) + groups.orphans.length;
   const toggle = (id: string) => setCollapsed((c) => { const n = new Set(c); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const reorder = (id: string) => { setFilter('all'); setQuery(''); setCollapsed((c) => { const n = new Set(c); n.delete(id); return n; }); setReordering(id); };
+  const moveBy = async (sectionId: string, id: string, by: number) => {
+    const ids = menu.sections.find((x) => x.id === sectionId)?.item_ids ?? []; const i = ids.indexOf(id);
+    if (moving || i < 0 || i + by < 0 || i + by >= ids.length) return;
+    setMoving(true); try { await p.onMoveItem(sectionId, id, i + by); } catch { /* the toast says why */ } finally { setMoving(false); }
+  };
   const jump = (id: string) => { setCollapsed((c) => { const n = new Set(c); n.delete(id); return n; }); requestAnimationFrame(() => document.getElementById(`sec-${id}`)?.scrollIntoView({ block: 'start', behavior: 'smooth' })); };
 
   // Drag and drop (laptop): items within one section, sections among themselves.
@@ -106,7 +117,7 @@ export function MenuTab(p: MenuTabProps) {
       </div>
 
       {groups.sections.map(({ s, ids }) => (
-        <section key={s.id} id={`sec-${s.id}`} className={`relative mt-3 scroll-mt-40 rounded-2xl border border-line bg-white shadow-card ${dropCls(s.id)}`}
+        <section key={s.id} id={`sec-${s.id}`} data-seasonal={s.seasonal ? '' : undefined} data-reorder={reordering === s.id ? s.id : undefined} className={`relative mt-3 scroll-mt-40 rounded-2xl border border-line bg-white shadow-card ${dropCls(s.id)}`}
           onDragOver={dnd.overRow('section', s.id)} onDrop={dnd.drop('section', s.id)}>
           <header className={`flex items-center gap-1 py-1.5 pl-1 pr-2 ${s.listed ? '' : 'opacity-70'}`} draggable={fine && !s.seasonal} onDragStart={dnd.start({ kind: 'section', id: s.id })} onDragEnd={dnd.end}>
             <button type="button" onClick={() => toggle(s.id)} aria-expanded={!collapsed.has(s.id)} aria-label={collapsed.has(s.id) ? `Expand ${s.name.en}` : `Collapse ${s.name.en}`} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-fill"><Icon name="down" className={`h-5 w-5 transition ${collapsed.has(s.id) ? '-rotate-90' : ''}`} /></button>
@@ -120,22 +131,27 @@ export function MenuTab(p: MenuTabProps) {
               {s.listed && s.item_ids.length > 0 && !s.item_ids.some((id) => menu.items[id]?.listed) && <Badge tone="amber">No item shown</Badge>}
               {s.fa_draft.length > 0 && <Badge tone="blue">Persian draft</Badge>}
             </button>
-            <span className="flex shrink-0 items-center gap-0.5">
+            {reordering === s.id
+              ? <button type="button" data-reorder-done="" onClick={() => setReordering(null)} className="ml-1 flex h-11 min-w-11 shrink-0 items-center rounded-full px-3 text-[15px] font-semibold text-accent-strong hover:bg-accent-soft">Done</button>
+              : <span className="flex shrink-0 items-center gap-0.5">
               <button type="button" onClick={() => p.onAdd(s.id)} className="ml-1 flex h-11 min-w-11 items-center gap-1 rounded-full px-2.5 text-[14px] font-semibold text-accent-strong hover:bg-accent-soft" aria-label={`Add item to ${s.name.en}`}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} /><span className="hidden sm:inline">Add item</span><span className="sm:hidden">Add</span></button>
-              {!s.seasonal && <Menu label={`Section menu: ${s.name.en}`} items={[
+              <Menu label={`Section menu: ${s.name.en}`} items={s.seasonal ? [{ text: 'Reorder items', disabled: s.item_ids.length < 2, onClick: () => reorder(s.id) }] : [
                 { text: 'Rename', onClick: () => p.onRename(s.id) },
+                { text: 'Reorder items', disabled: s.item_ids.length < 2, onClick: () => reorder(s.id) },
                 { text: 'Move up', disabled: regular.indexOf(s.id) <= 0, onClick: () => { void p.onMoveSection(s.id, 'up').catch(() => undefined); } },
                 { text: 'Move down', disabled: regular.indexOf(s.id) === regular.length - 1, onClick: () => { void p.onMoveSection(s.id, 'down').catch(() => undefined); } },
                 { text: 'Delete section', danger: true, onClick: () => p.onDeleteSection(s.id) },
-              ]} />}
+              ]} />
               <span className="ml-1 flex items-center"><Switch checked={s.listed} label={s.listed ? `${s.name.en}: shown. Tap to hide` : `${s.name.en}: hidden. Tap to show`} onChange={(v) => p.onToggleSection(s.id, v)} /></span>
-            </span>
+            </span>}
           </header>
-          {s.seasonal && !collapsed.has(s.id) && <p className="border-t border-line px-4 py-2 text-[13px] text-ink-muted">Customers see it first, as “{SEASON_NAMES[p.season]} Menu”, with the items here tagged {SEASON_NAMES[p.season]}. An item added here is tagged {SEASON_NAMES[p.season]}; change its seasons in the item.</p>}
+          {reordering === s.id && <p className="border-t border-line px-4 py-2 text-[13px] text-ink-muted">Move items with the arrows. Customers see the new order at once.</p>}
+          {s.seasonal && !collapsed.has(s.id) && reordering !== s.id && <p className="border-t border-line px-4 py-2 text-[13px] text-ink-muted">Customers see it first, as “{SEASON_NAMES[p.season]} Menu”, with the items here tagged {SEASON_NAMES[p.season]}. An item added here is tagged {SEASON_NAMES[p.season]}; change its seasons in the item.</p>}
           {!collapsed.has(s.id) && (
             ids.length === 0
               ? <p className="border-t border-line px-4 py-4 text-sm text-ink-muted">{narrowing ? 'No matching item here.' : <>No items yet. <button type="button" onClick={() => p.onAdd(s.id)} className="inline-flex min-h-11 items-center font-medium text-accent-strong underline-offset-4 hover:underline">Add the first item</button></>}</p>
               : <ul className="border-t border-line px-1 pb-1">{ids.map((id) => <Row key={id} item={menu.items[id]} ctx={ctx} sectionId={s.id} fine={fine} dropCls={dropCls(id)} highlighted={p.highlightId === id} onOpen={p.onOpen} onToggle={p.onToggleItem} onPrice={p.onPrice}
+                  reorder={reordering === s.id ? { first: s.item_ids.indexOf(id) <= 0, last: s.item_ids.indexOf(id) >= s.item_ids.length - 1, busy: moving, up: () => { void moveBy(s.id, id, -1); }, down: () => { void moveBy(s.id, id, 1); } } : undefined}
                   dragProps={{ draggable: fine, onDragStart: dnd.start({ kind: 'item', id, section: s.id }), onDragOver: dnd.overRow('item', id, s.id), onDrop: dnd.drop('item', id, s.id), onDragEnd: dnd.end }} />)}</ul>
           )}
         </section>
@@ -154,7 +170,8 @@ export function MenuTab(p: MenuTabProps) {
   );
 }
 
-function Row({ item, ctx, sectionId, fine, dropCls, highlighted, onOpen, onToggle, onPrice, dragProps }: { item: EditorItem; ctx: Seasons; sectionId: string | null; fine: boolean; dropCls: string; highlighted: boolean; onOpen: MenuTabProps['onOpen']; onToggle: MenuTabProps['onToggleItem']; onPrice: MenuTabProps['onPrice']; dragProps: React.HTMLAttributes<HTMLLIElement> & { draggable?: boolean } }) {
+type Reorder = { first: boolean; last: boolean; busy: boolean; up: () => void; down: () => void };
+function Row({ item, ctx, sectionId, fine, dropCls, highlighted, onOpen, onToggle, onPrice, reorder, dragProps }: { item: EditorItem; ctx: Seasons; sectionId: string | null; fine: boolean; dropCls: string; highlighted: boolean; onOpen: MenuTabProps['onOpen']; onToggle: MenuTabProps['onToggleItem']; onPrice: MenuTabProps['onPrice']; reorder?: Reorder; dragProps: React.HTMLAttributes<HTMLLIElement> & { draggable?: boolean } }) {
   const [reason, setReason] = useState<string | null>(null);
   useEffect(() => { if (!reason) return; const t = setTimeout(() => setReason(null), 5000); return () => clearTimeout(t); }, [reason]);
   const n = needs(item, ctx);
@@ -172,11 +189,19 @@ function Row({ item, ctx, sectionId, fine, dropCls, highlighted, onOpen, onToggl
           )}
         </span>
       </button>
+      {reorder ? (
+        // reordering the section: Move up and Move down in place of the price and the switch
+        <span className="flex shrink-0 items-center" data-reorder-row="">
+          <button type="button" aria-label={`Move ${item.name.en ?? 'item'} up`} disabled={reorder.first || reorder.busy} onClick={reorder.up} className="flex h-11 w-11 items-center justify-center rounded-full text-accent-strong hover:bg-accent-soft disabled:text-neutral-300 disabled:hover:bg-transparent"><Icon name="up" className="h-5 w-5" strokeWidth={2.2} /></button>
+          <button type="button" aria-label={`Move ${item.name.en ?? 'item'} down`} disabled={reorder.last || reorder.busy} onClick={reorder.down} className="flex h-11 w-11 items-center justify-center rounded-full text-accent-strong hover:bg-accent-soft disabled:text-neutral-300 disabled:hover:bg-transparent"><Icon name="down" className="h-5 w-5" strokeWidth={2.2} /></button>
+        </span>
+      ) : (<>
       <PriceCell item={item} onPrice={(v) => onPrice(item.id, v)} onOpen={() => onOpen(item.id, sectionId)} />
       {/* Controls column: the Shown switch; a "Sold out today" switch is meant to go under it later. */}
       <span className="flex w-[52px] shrink-0 flex-col items-center justify-center gap-1 self-stretch">
         <Switch checked={item.listed} label={item.listed ? `${item.name.en}: shown. Tap to hide` : `${item.name.en}: hidden. Tap to show`} onChange={async (v) => { setReason(null); try { await onToggle(item.id, v); } catch (e) { setReason((e as Error).message); } }} />
       </span>
+      </>)}
       {reason && <p role="alert" className="basis-full px-1 pb-1 text-[13px] text-red-600">{reason}</p>}
     </li>
   );

@@ -20,7 +20,8 @@ import { ApiFail, call, newKey, retryable, slowSavePending, type Resp } from './
 import { LIMITS } from '@/lib/rules';
 import { SEASON_NAMES, reduce, type Filter, type Menu } from './state';
 import { MenuTab } from './MenuTab';
-import { ItemPanel, PhotoField } from './ItemPanel';
+import { ItemPanel, type SaveStatus } from './ItemPanel';
+import { PhotoField } from './PhotoField';
 import { NO_REGION, Preview, type Focus, type Pick, type PreviewHandle, type Region, type RegionState } from './Preview';
 import { PreviewBar } from './PreviewBar';
 import { BottomSheet, type Detent } from './BottomSheet';
@@ -38,6 +39,8 @@ type Toast = { text: string; revisions: number[]; key: number; error?: boolean; 
 type Confirm = { title: string; body: React.ReactNode; label: string; action: () => Promise<void> };
 export type DeleteMode = { items: 'move'; target: string } | { items: 'delete' };
 
+type ItemSaves = { busy: number; failed: { key: number; again: () => Promise<void> }[]; refused: number };
+const NO_SAVES: ItemSaves = { busy: 0, failed: [], refused: 0 };
 const UNDO_ARM_MS = 600; // Undo answers taps from 600 ms after its toast appears (pre-go-live audit D-09)
 // Whether an item read back from the server holds a patch (D-05): every field the patch sets, as the server stores it.
 const norm = (v: unknown): string => JSON.stringify(v ?? null, (_k, x) => (typeof x === 'string' && x.trim() === '' ? null : x));
@@ -65,6 +68,13 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const [deleting, setDeleting] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<Confirm | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
+  // The item editor's live save status (the PM's clean-up, 2026-11-04), per item: the saves under way, the ones that did not go through
+  // and can be sent again (each with what Try again sends), a refusal (shown for 8 s; the toast says why); and for the venue, a customers'
+  // page that did not regenerate after a save (pre-go-live audit H-13).
+  const [saves, setSaves] = useState<Record<string, ItemSaves>>({});
+  const editSaves = (id: string, f: (s: ItemSaves) => ItemSaves) => setSaves((all) => ({ ...all, [id]: f(all[id] ?? NO_SAVES) }));
+  const failKey = useRef(0);
+  const [unpublished, setUnpublished] = useState(false);
   // Undo answers taps from 600 ms after its toast appears (pre-go-live audit D-09: a second tap on "+ Add item" landed on it, 3 of 7 runs)
   const [armed, setArmed] = useState(false);
   useEffect(() => { setArmed(false); if (!toast) return; const t = setTimeout(() => setArmed(true), UNDO_ARM_MS); return () => clearTimeout(t); }, [toast?.key]);
@@ -166,15 +176,17 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   }, []);
   // The customers' page regenerated again on request (pre-go-live audit H-13): Try again on the toast that says it did not update.
   const publish = useCallback(async (): Promise<void> => {
-    try { const r = await call('/api/admin/publish', { venue: venue.id }); if (r.published === false) throw new ApiFail(503, 'The customers\' page did not update yet.'); setToast({ text: 'Customers\' page updated', revisions: [], key: Date.now() }); setReloadKey((k) => k + 1); }
+    try { const r = await call('/api/admin/publish', { venue: venue.id }); if (r.published === false) throw new ApiFail(503, 'The customers\' page did not update yet.'); setUnpublished(false); setToast({ text: 'Customers\' page updated', revisions: [], key: Date.now() }); setReloadKey((k) => k + 1); }
     catch (e) { setToast({ text: `Saved, but the customers' page did not update. ${(e as Error).message}`, revisions: [], key: Date.now(), error: true, retry: () => publish() }); }
   }, [venue.id]);
   const done = useCallback((r: Resp, text: string, f: Focus) => {
     if (r.published === false) { // saved, but the customers' page was not regenerated (before, the toast said "Saved" and customers kept the old menu up to an hour)
+      setUnpublished(true);
       setToast({ text: `${text}, but the customers' page did not update.`, revisions: r.revisions, key: Date.now(), error: true, retry: () => publish() });
       setReloadKey((k) => k + 1); setFocus(f); return;
     }
     if (!r.revisions.length) return;
+    setUnpublished(false); // this save regenerated the page, with every earlier change in it
     setToast({ text, revisions: r.revisions, key: Date.now() });
     setReloadKey((k) => k + 1);
     setFocus(f);
@@ -188,6 +200,38 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   }, []);
   const guard = <A extends unknown[]>(fn: (...a: A) => Promise<unknown>) => async (...a: A): Promise<void> => {
     try { await fn(...a); } catch (e) { fail(e, () => guard(fn)(...a)); throw e; }
+  };
+  // The same for one item's saves (its id first), keeping the item editor's top bar up to date: Saving… while one is under way; a failure
+  // that trying again can fix stays listed (Not saved · Retry) until it is sent again (Retry in the top bar, or Try again on the toast:
+  // the same function); a refusal shows "Not saved" for 8 s, its reason on the toast.
+  const guardItem = <A extends [string, ...unknown[]]>(fn: (...a: A) => Promise<unknown>) => {
+    const run = async (...a: A): Promise<void> => {
+      const id = a[0];
+      editSaves(id, (s) => ({ ...s, busy: s.busy + 1, refused: 0 }));
+      try { await fn(...a); }
+      catch (e) {
+        const key = ++failKey.current;
+        const again = async () => { editSaves(id, (s) => ({ ...s, failed: s.failed.filter((x) => x.key !== key) })); await run(...a); };
+        if (retryable(e)) editSaves(id, (s) => ({ ...s, failed: [...s.failed, { key, again }] }));
+        else { const at = Date.now(); editSaves(id, (s) => ({ ...s, refused: at })); setTimeout(() => editSaves(id, (s) => (s.refused === at ? { ...s, refused: 0 } : s)), 8000); }
+        fail(e, again);
+        throw e;
+      } finally { editSaves(id, (s) => ({ ...s, busy: Math.max(0, s.busy - 1) })); }
+    };
+    return run;
+  };
+  // Retry in the top bar: every change of the item that did not go through, sent again in the order made (the toast's Try again goes too).
+  const retryItem = (id: string) => {
+    const list = saves[id]?.failed ?? []; setToast((t) => (t?.retry ? null : t));
+    void (async () => { for (const f of list) await f.again().catch(() => undefined); })();
+  };
+  const saveStatus = (id: string): SaveStatus => {
+    const s = saves[id] ?? NO_SAVES;
+    if (s.busy > 0) return { state: 'saving' };
+    if (s.failed.length) return { state: 'failed', retry: () => retryItem(id) };
+    if (s.refused) return { state: 'refused' };
+    if (unpublished) return { state: 'unpublished', retry: () => { setToast((t) => (t?.retry ? null : t)); void publish(); } };
+    return { state: 'saved' };
   };
   const sectionOf = (id: string) => open?.id === id && open.section ? open.section : menu.items[id]?.placements[0]?.section_id ?? null;
   // One item's saves reach the server one after another, in the order they were made, and only the newest answer is applied: two quick
@@ -209,7 +253,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const itemCall = async (id: string, body: Record<string, unknown>, text: string) => { const { r, newest } = await inOrder(id, () => sendItem(id, body)); if (newest) apply(r); done(r, text, { id, alt: sectionOf(id) }); return r; };
 
   // Items. Simple patches are applied at once (the switch flips, the price shows) and put back if the server refuses.
-  const itemUpdate = guard(async (id: string, patch: Record<string, unknown>, text: string = 'Saved') => {
+  const itemUpdate = guardItem(async (id: string, patch: Record<string, unknown>, text: string = 'Saved') => {
     const before = menuRef.current.items[id];
     const optimistic = before && !('section_ids' in patch) ? { ...before, ...(patch as Partial<EditorItem>) } : null;
     if (optimistic) dispatch({ type: 'item', item: optimistic });
@@ -227,9 +271,9 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
       if (before && !(e instanceof ApiFail && e.status === 409)) dispatch({ type: 'item', item: before }); throw e; // a 409 already put the item as it is now
     }
   });
-  const itemNotes = guard(async (id: string, notes: Notes) => { await itemCall(id, { action: 'notes', notes }, 'Saved'); });
+  const itemNotes = guardItem(async (id: string, notes: Notes) => { await itemCall(id, { action: 'notes', notes }, 'Saved'); });
   // Researched allergen and dietary notes confirmed as they stand (Kian, 2026-10-12): they show to customers from now on; Undo puts the draft back.
-  const itemConfirm = guard(async (id: string) => { await itemCall(id, { action: 'confirm' }, 'Confirmed'); });
+  const itemConfirm = guardItem(async (id: string) => { await itemCall(id, { action: 'confirm' }, 'Confirmed'); });
   // key: the sheet's own key (D-05): an Add whose answer was lost, tapped again, answers the item it made instead of a second one.
   const itemCreate = async (sectionId: string, data: { name: string; price: number | null; photo: Photo | null; key: string }) => {
     const r = await call('/api/admin/item', { action: 'create', venue: venue.id, section_id: sectionId, name: { en: data.name, fa: null }, price: data.price, photo: data.photo, key: data.key });
@@ -237,15 +281,15 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     setOpen({ id: item.id, section: sectionId }); // the editor opens on the new item, for its description and sizes (Kian via the PM, 2026-10-13)
   };
   // "Looks good" on a field's Draft tag (Kian, 2026-10-13): that field's draft flag goes, nothing else; Undo puts it back.
-  const itemLooksGood = guard(async (id: string, field: string) => { await itemCall(id, { action: 'looks-good', field }, 'Looks good'); });
+  const itemLooksGood = guardItem(async (id: string, field: string) => { await itemCall(id, { action: 'looks-good', field }, 'Looks good'); });
   // Duplicate (Kian, 2026-10-13): a hidden copy in the same sections, right after the original; the editor opens on it with its name
   // selected; one Undo removes it (its editor then closes, the copy being gone).
-  const itemDuplicate = guard(async (id: string) => {
+  const itemDuplicate = guardItem(async (id: string) => {
     const { r } = await inOrder(id, () => call('/api/admin/item', { action: 'duplicate', id })); apply(r); const copy = r.item as EditorItem; // after the item's own saves, so the copy is of what is on screen
     done(r, 'Duplicated', { id: copy.id, alt: sectionOf(id) }); setOpen({ id: copy.id, section: sectionOf(id), selectName: true });
   });
   // Copy a choice group to other items (Kian via the PM, 2026-10-13): one call, one record per item, one toast whose Undo puts them all back.
-  const itemCopyChoices = guard(async (id: string, group: string, targets: string[]) => {
+  const itemCopyChoices = guardItem(async (id: string, group: string, targets: string[]) => {
     const { r } = await inOrder(id, () => call('/api/admin/item', { action: 'copy-choices', id, group, targets })); // after the item's own saves (Copy saves the group first)
     for (const it of (r.items as EditorItem[]) ?? []) { versions.current.set(it.id, it.updated_at); dispatch({ type: 'item', item: it }); }
     done(r, r.revisions.length ? `Copied to ${r.revisions.length} item${r.revisions.length === 1 ? '' : 's'}` : 'Already there', { id, alt: sectionOf(id) });
@@ -315,7 +359,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const bar = (phone: boolean) => <PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone={phone} />;
   const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onFail={fail} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} previewSeason={season ?? now.season} onPlay={playTransition} />;
 
-  const panel = openItem && <ItemPanel key={openItem.id} selectName={!!open?.selectName} toast={!!toast} item={openItem} venueId={venue.id} season={today} sections={menu.sections} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onLooksGood={(f) => itemLooksGood(openItem.id, f)} onDuplicate={() => itemDuplicate(openItem.id)} onDelete={() => itemDelete(openItem.id)} onMove={itemMove} onClose={() => setOpen(null)} />;
+  const panel = openItem && <ItemPanel key={openItem.id} selectName={!!open?.selectName} toast={!!toast} item={openItem} venueId={venue.id} season={today} sections={menu.sections} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onLooksGood={(f) => itemLooksGood(openItem.id, f)} onDuplicate={() => itemDuplicate(openItem.id)} onDelete={() => itemDelete(openItem.id)} save={saveStatus(openItem.id)} onClose={() => setOpen(null)} />;
   return (
     <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
       <div className="relative min-w-0">

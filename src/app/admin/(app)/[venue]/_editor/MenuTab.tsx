@@ -16,7 +16,7 @@ import type { EditorItem, SeasonId } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
 import { SEASON_NAMES, attention, money, needs, priceSummary, seasonState, seasonsCtx, type Filter, type Need, type Menu as MenuData, type Seasons } from './state';
 import { Badge, Menu, Photo, Switch } from './ui';
-import { card, chipCls, headingCls, headingStyle, textBtn } from '../../../_ui/look';
+import { chipCls, headingCls, headingStyle, panel, textBtn } from '../../../_ui/look';
 import { retryable } from './api';
 import { parsePrice, priceInput } from '@/lib/rules';
 
@@ -92,32 +92,36 @@ export function MenuTab(p: MenuTabProps) {
   return (
     <div className="mx-auto w-full max-w-4xl px-3 pb-32 sm:px-5">
       {anyAttention && (
-        <div className="mt-4" aria-label="Needs attention">
+        <div className="mb-1 mt-4" aria-label="Needs attention">
           <p className={`${headingCls} px-3 pb-1.5`} style={headingStyle}>Needs attention</p>
-          <div className={`${card} flex flex-wrap items-center gap-1.5 p-2`}>
+          <div className={`${panel} flex flex-wrap items-center gap-1.5 p-2`}>
             {(Object.keys(counts) as Exclude<Filter, 'all'>[]).filter((k) => counts[k] > 0).map((k) => (
               <button key={k} type="button" onClick={() => setFilter(filter === k ? 'all' : k)} aria-pressed={filter === k} className={chipCls(filter === k).replace('text-base', 'text-[13px]')}>{LABEL[k](counts[k])}</button>
             ))}
           </div>
         </div>
       )}
-      <div className="sticky top-[6.25rem] z-20 -mx-3 glass px-3 py-2 sm:-mx-5 sm:px-5">
+      {/* The search row stays in view under the tab row. Its backing is the page's own grey, opaque, so it never shows as a band of its own
+          and still hides what scrolls under it (Kian, 2026-11-07: the white bar stuck out 20 px past the cards on a laptop and ran edge to
+          edge on a phone); the fields are white like the cards and line up with their edges, 12 px from the cards above and below as cards
+          are from each other (mb-1 there, -mb-2 here). Height unchanged (60 px: the sections' scroll-mt-40). */}
+      <div className="sticky top-[6.25rem] z-20 -mx-3 -mb-2 bg-fill px-3 py-2 sm:-mx-5 sm:px-5">
         <div className="flex gap-2">
           <label className="relative min-w-0 flex-1">
             <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-muted" />
-            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search" aria-label="Search items" autoComplete="off" className="h-11 w-full rounded-xl border-0 bg-fill pl-10 pr-9 text-base placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-accent-ink/40" />
+            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search" aria-label="Search items" autoComplete="off" className="h-11 w-full rounded-xl border-0 bg-canvas pl-10 pr-9 text-base placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-accent-ink/40" />
             {query && <button type="button" onClick={() => setQuery('')} className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-xl text-ink-muted" aria-label="Clear search"><Icon name="close" className="h-4 w-4" /></button>}
           </label>
           <label className="relative shrink-0">
             <span className="sr-only">Jump to section</span>
-            <select value="" onChange={(e) => { if (e.target.value) jump(e.target.value); }} aria-label="Jump to section" className="h-11 max-w-[11rem] appearance-none rounded-xl bg-fill pl-3 pr-9 text-base font-medium text-ink focus:outline-none focus:ring-2 focus:ring-accent-ink/40">
+            <select value="" onChange={(e) => { if (e.target.value) jump(e.target.value); }} aria-label="Jump to section" className="h-11 max-w-[11rem] appearance-none rounded-xl bg-canvas pl-3 pr-9 text-base font-medium text-ink focus:outline-none focus:ring-2 focus:ring-accent-ink/40">
               <option value="">Jump to section</option>
               {menu.sections.map((s) => <option key={s.id} value={s.id}>{s.name.en}</option>)}
             </select>
             <Icon name="down" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" />
           </label>
         </div>
-        {narrowing && <p className="mt-2 flex flex-wrap items-center gap-x-2 text-[13px] text-ink-muted"><span>{shown} item{shown === 1 ? '' : 's'}{filter !== 'all' && <> · {LABEL[filter](counts[filter]).replace(/^\d+ /, '').replace(/ \(\d+\)$/, '')}</>}</span><button type="button" onClick={() => { setFilter('all'); setQuery(''); }} className="tap font-semibold text-accent-ink">Show all</button></p>}
+        {narrowing && <p className="mt-2 flex flex-wrap items-center gap-x-2 px-3 text-[13px] text-ink-muted"><span>{shown} item{shown === 1 ? '' : 's'}{filter !== 'all' && <> · {LABEL[filter](counts[filter]).replace(/^\d+ /, '').replace(/ \(\d+\)$/, '')}</>}</span><button type="button" onClick={() => { setFilter('all'); setQuery(''); }} className="tap font-semibold text-accent-ink">Show all</button></p>}
       </div>
 
       {groups.sections.map(({ s, ids }) => (

@@ -4,7 +4,7 @@ import type { Venue } from '@/lib/types';
 import type { Session } from '@/lib/admin/auth';
 import { Icon, type IconName } from './icons';
 import { messageOf } from '@/lib/admin/messages';
-import { card, caption, field, headingCls, headingStyle, pageTitle, primaryBtn, quietBtn } from './look';
+import { card, caption, field, headingCls, headingStyle, pageTitle, panel, primaryBtn, quietBtn } from './look';
 
 export type SP = Record<string, string | string[] | undefined>;
 export const one = (sp: SP, k: string) => (Array.isArray(sp[k]) ? sp[k]?.[0] : sp[k]) as string | undefined;
@@ -91,7 +91,7 @@ export const roleLabel = (s: Session) => (s.role === 'admin' ? 'Admin' : s.role 
 
 export function Empty({ icon = 'sparkle', title, hint, action }: { icon?: IconName; title: string; hint?: string; action?: React.ReactNode }) {
   return (
-    <div className={`${card} flex flex-col items-center px-4 py-10 text-center`}>
+    <div className={`${panel} flex flex-col items-center px-4 py-10 text-center`}>
       <span className="rounded-xl bg-fill p-3 text-ink-muted"><Icon name={icon} className="h-6 w-6" /></span>
       <p className="mt-3 text-base font-semibold">{title}</p>
       {hint && <p className={`mt-1 max-w-sm ${caption}`}>{hint}</p>}

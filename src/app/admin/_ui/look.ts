@@ -8,6 +8,9 @@
 // A card, and a row in it.
 export const card = 'rounded-xl bg-canvas divide-y divide-line';
 export const row = 'flex min-h-11 items-center gap-3 px-3';
+// A card whose content is not rows (chips, an empty state, a message): the card without the rows' dividers, which draw a line under every
+// child but the last (Kian, 2026-11-07: a line under three of the four "Needs attention" chips, under the icon and title of "No PINs yet").
+export const panel = 'rounded-xl bg-canvas';
 // The small grey heading over a card (13 px, uppercase), and the page title.
 export const headingCls = 'text-[13px] uppercase leading-5 text-ink-muted';
 export const headingStyle = { fontWeight: 500, letterSpacing: '.04em' } as const;

@@ -585,7 +585,7 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, checks: drillChecks('touch/touch-drill.json', !!m), evidence: ['touch/touch-drill.txt', 'touch/touch-drill.json', 'touch/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   }, 'touch');
-  await step('the admin\'s layout rules on every screen (the PM, 2026-11-06): the sign-in screens, the Menu tab and what opens from it, the item editor, the Style tab, Details, Team and Add venue on a laptop, a 390 px and a 360 px phone: nothing past the screen\'s edges, cut short or scrolling sideways; text 13, 16, 17 px and the page title\'s 28 px; one corner radius, 12 px', async () => {
+  await step('the admin\'s layout rules on every screen (the PM, 2026-11-06): the sign-in screens, the Menu tab and what opens from it, the item editor, the Style tab, Details, Team and Add venue on a laptop, a 390 px and a 360 px phone: nothing past the screen\'s edges, cut short or scrolling sideways; text 13, 16, 17 px and the page title\'s 28 px; one corner radius, 12 px; a card\'s row dividers under rows only; the Menu tab\'s search row in the page\'s own colour with its fields on the cards\' edges, at the top and stuck (Kian, 2026-11-07)', async () => {
     const r = await run('node', ['scripts/layout-drill.mjs', '--base', base, '--out', path.join(out, 'layout')], { env: drillEnv, logFile: 'layout/layout-drill.log' });
     const m = (r.stdout.match(/LAYOUT DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     return { pass: r.status === 0, checks: drillChecks('layout/layout-drill.json', !!m), evidence: ['layout/layout-drill.txt', 'layout/layout-drill.json'], note: m || `exit ${r.status}` };

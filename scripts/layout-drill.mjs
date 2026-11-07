@@ -6,7 +6,10 @@
 // group open; Details; Team; Add venue) is measured by scripts/layout-rules.mjs: nothing past the screen's edges, cut by its box, cut
 // short or scrolling sideways; the text sizes 13, 16 and 17 px and the page title's (28 px); one corner radius (12 px) on what the admin
 // draws. One check per screen width. On the two phones also: every row that scrolls sideways (the preview bar in the Style tab's sheet)
-// keeps the chip at the screen's edge visibly cut, at least CUT_MIN px shown and hidden (the PM, 2026-11-06). Needs a scratch server at
+// keeps the chip at the screen's edge visibly cut, at least CUT_MIN px shown and hidden (the PM, 2026-11-06). On every width, the Menu tab's
+// search row (Kian, 2026-11-07: its white bar stuck out past the cards): at the top and once stuck, its backing in the page's own colour,
+// its fields in the cards' white, the search field's left edge and the section menu's right edge on the cards' edges, 12 px from the
+// cards above and below at the top (as between cards), stuck right under the tab row. Needs a scratch server at
 // --base and DRILL_ADMIN_PIN (an admin PIN valid on any venue).
 //   DRILL_ADMIN_PIN=… node scripts/layout-drill.mjs --base http://127.0.0.1:<port> --out reports/checks/<stamp>/layout
 import fs from 'node:fs/promises';
@@ -36,6 +39,7 @@ const VIEWS = [
   { id: '360', title: '360 px phone', ctx: { viewport: { width: 360, height: 780 }, isMobile: true, hasTouch: true } },
 ];
 const browser = await chromium.launch();
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const all = [];
 for (const v of VIEWS) {
   const outCtx = await browser.newContext(v.ctx), inCtx = await browser.newContext(v.ctx);
@@ -51,6 +55,21 @@ for (const v of VIEWS) {
     rows.push({ key, title, ...m, otherSizes: sizes, otherRadii: radii });
     log(v.id, `${key}: ${m.found.length ? `${m.found.length} problem(s): ${m.found.slice(0, 3).join('; ')}` : 'nothing cut, past the edges or sideways'}; sizes ${m.sizes.join(' ')}; radii ${m.radii.join(' ') || 'none'}`);
     await page.keyboard.press('Escape').catch(() => {}); await page.keyboard.press('Escape').catch(() => {});
+  }
+  { // the Menu tab's search row: nothing of it shows as a band; the fields line up with the cards
+    await signedIn.goto(`${base}/admin/senso`); await signedIn.waitForSelector('[data-item]'); await settle(signedIn);
+    const at = async (y) => { await signedIn.evaluate((top) => scrollTo(0, top), y); await sleep(300); return signedIn.evaluate(() => {
+      const input = document.querySelector('input[aria-label="Search items"]'), row = input?.closest('.sticky'), select = row?.querySelector('select[aria-label="Jump to section"]');
+      const card = document.querySelector('section[id^="sec-"]'), tabs = document.querySelector('.glass.sticky.top-14'), attention = document.querySelector('[aria-label="Needs attention"] > div');
+      if (!row || !input || !select || !card || !tabs) return null;
+      const bg = (el) => getComputedStyle(el).backgroundColor, b = (el) => el.getBoundingClientRect();
+      return { rowBg: bg(row), pageBg: bg(document.querySelector('.admin')), fieldBg: bg(input), selectBg: bg(select), cardBg: bg(card), fieldLeft: b(input).left, selectRight: b(select).right, cardLeft: b(card).left, cardRight: b(card).right, rowTop: b(row).top, tabsBottom: b(tabs).bottom, gapAbove: attention ? b(input).top - b(attention).bottom : null, gapBelow: b(card).top - b(input).bottom, scrollY };
+    }); };
+    const top = await at(0), stuck = await at(800);
+    const spaced = (m) => !!m && (m.gapAbove === null || Math.abs(m.gapAbove - 12) <= 0.5) && Math.abs(m.gapBelow - 12) <= 0.5; // as cards are from each other (mt-3)
+    const fits = (m) => !!m && m.rowBg === m.pageBg && m.fieldBg === m.cardBg && m.selectBg === m.cardBg && Math.abs(m.fieldLeft - m.cardLeft) <= 0.5 && Math.abs(m.selectRight - m.cardRight) <= 0.5;
+    const say = (m) => (m ? `backing ${m.rowBg} (the page ${m.pageBg}), fields ${m.fieldBg} and ${m.selectBg} (the cards ${m.cardBg}), the fields' edges ${Math.round(m.fieldLeft * 10) / 10}–${Math.round(m.selectRight * 10) / 10} on the cards' ${Math.round(m.cardLeft * 10) / 10}–${Math.round(m.cardRight * 10) / 10}` : 'not found');
+    check(`search-row-${v.id}`, fits(top) && spaced(top) && fits(stuck) && stuck.scrollY > 0 && Math.abs(stuck.rowTop - stuck.tabsBottom) <= 0.5, `${v.title}, the Menu tab's search row: at the top, ${say(top)}, ${top ? `${top.gapAbove === null ? 'no Needs attention card' : `${Math.round(top.gapAbove * 10) / 10} px under the Needs attention card`} and ${Math.round(top.gapBelow * 10) / 10} px over the first section (12 each, as between cards)` : ''}; scrolled ${stuck?.scrollY} px, ${say(stuck)}, its top ${stuck ? Math.round(stuck.rowTop * 10) / 10 : '?'} under the tab row's bottom ${stuck ? Math.round(stuck.tabsBottom * 10) / 10 : '?'}`);
   }
   await outCtx.close(); await inCtx.close();
   if (v.id !== 'laptop') {

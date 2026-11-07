@@ -126,3 +126,4 @@ Runs made from 2026-11-03 on are added below as they are committed.
 | 2026-11-07T00-14-43Z | fast | PASS (42 of 43 checks passed, 1 KNOWN MISS) | ad1eb79 | here | the admin-wide clean-up's merge gate (the code of 206c493) |
 | 2026-11-07T04-04-22Z | fast | PASS (42 of 43 checks passed, 1 KNOWN MISS) | c865eec | here | the admin PIN rule's merge gate (Kian, 2026-11-06) |
 | 2026-11-07T05-10-25Z | fast | PASS (41 of 43 checks passed, 2 KNOWN MISS) | 4479612 | here | the Menu tab search row's merge gate (Kian, 2026-11-07) |
+| 2026-11-07T05-41-48Z | fast | PASS (41 of 43 checks passed, 2 KNOWN MISS) | bc53c30 | here | the item popup photo's merge gate (Kian, 2026-11-07; stacked on the search row) |

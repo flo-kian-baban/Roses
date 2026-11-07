@@ -299,6 +299,24 @@ for (const venue of VENUES) {
     const keys = await q.evaluate(() => { const a = document.activeElement; return { item: !!a?.matches?.('li.item'), outline: a ? getComputedStyle(a).outlineStyle : null }; });
     await c2.close();
     check('focus-ring-touch', touch.outline === 'none' && keys.item && keys.outline !== 'none', `after a tap and the ✕ (WebKit): focus on the item ${touch.item}, its outline ${touch.outline}; after Enter and Escape: focus on the item ${keys.item}, its outline ${keys.outline}`); }
+  // Kian, 2026-11-07: the popup shows its photo whole, never cropped (before: a 4:3 box cut an eighth off the top and the bottom of every
+  // square photo): at its own shape and as wide as the sheet, at most 75 % of the screen's height; a photo taller than that is drawn whole
+  // inside that height (object-fit contain). The first item with an uploaded photo (1254 × 1254), then a 600 × 1500 image swapped in.
+  { const shape = (p) => p.evaluate(() => { const i = document.querySelector('#sheet-hero img'), r = i.getBoundingClientRect(), s = document.getElementById('sheet').getBoundingClientRect(); return { w: Math.round(r.width * 10) / 10, h: Math.round(r.height * 10) / 10, nw: i.naturalWidth, nh: i.naturalHeight, fit: getComputedStyle(i).objectFit, sheetW: Math.round(s.width * 10) / 10, vh: innerHeight }; });
+    const own = (m) => m.nw > 0 && Math.abs(m.w - m.sheetW) <= 1 && Math.abs(m.h - m.w * m.nh / m.nw) <= 1 && m.h <= 0.75 * m.vh + 1;
+    const capped = (m) => m.nh === 1500 && Math.abs(m.w - m.sheetW) <= 1 && Math.abs(m.h - 0.75 * m.vh) <= 1 && m.fit === 'contain';
+    const runs = [];
+    for (const [name, ctxOf] of [['iPhone 13', () => browser.newContext(DEVICE)], ['laptop', () => browser.newContext({ viewport: { width: 1440, height: 900 } })], ['iPhone 13, WebKit', () => wk.newContext({ ...devices['iPhone 13'] })]]) {
+      const ctx = await ctxOf(); const p = await ctx.newPage(); await enter(p, 'senso');
+      const li = p.locator('main li.item[data-photo^="/uploads/"]').first(); await li.scrollIntoViewIfNeeded(); await li.click(); await p.waitForSelector('#sheet[open]');
+      await p.waitForFunction(() => { const i = document.querySelector('#sheet-hero img'); return !!i && i.complete && i.naturalWidth > 0; }, null, { timeout: 10000 }).catch(() => {}); await sleep(500);
+      const photo = await shape(p);
+      await p.evaluate(() => new Promise((res) => { const i = document.querySelector('#sheet-hero img'); i.onload = () => res(); i.onerror = () => res(); i.src = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="1500"><rect width="600" height="1500" fill="gray"/></svg>')}`; }));
+      await sleep(300); const tall = await shape(p);
+      runs.push({ name, photo, tall }); await ctx.close();
+    }
+    check('popup-photo-whole', runs.every((r) => own(r.photo) && capped(r.tall)), runs.map((r) => `${r.name}: the photo (${r.photo.nw} × ${r.photo.nh}) drawn ${r.photo.w} × ${r.photo.h} px in a sheet ${r.photo.sheetW} px wide (${Math.round(r.photo.h / r.photo.vh * 100)} % of the screen's height), object-fit ${r.photo.fit}; a 600 × 1500 image in ${r.tall.w} × ${r.tall.h} px (${Math.round(r.tall.h / r.tall.vh * 100)} % of ${r.tall.vh} px), object-fit ${r.tall.fit}`).join('; '));
+  }
   // #14: the keyboard path: the language chosen with Enter puts the focus on the menu's first heading; the category tabs are one stop, the arrows move between them
   { const ctx = await browser.newContext(DEVICE); const p = await ctx.newPage(); await p.goto(`${base}/senso`); await p.focus('#welcome button[data-lang="en"]'); await p.keyboard.press('Enter'); await sleep(1100);
     const first = await p.evaluate(() => { const a = document.activeElement, h = document.querySelector('main h2'); return { onHeading: a === h, text: h?.textContent?.trim() }; });

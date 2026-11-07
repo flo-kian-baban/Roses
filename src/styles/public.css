@@ -181,13 +181,16 @@ dialog.sheet.closing::backdrop { animation: dim-out .26s ease-in forwards; }
   dialog.sheet[open] { animation-name: sheet-in-centre; }
   dialog.sheet.closing { animation-name: sheet-out-centre; }
 }
-/* The photo (Kian, 2026-10-08): 4:3, its bottom edge softened by a slight gradient to the sheet background over the lower
-   12 % of the photo (a plain linear fade, about 35 px on a phone; Kian asked twice for less shade: the first version covered
-   45 % and reached full opacity at 70 % of its height, the second 22 %); the title block starts 8 px inside the faded edge. */
+/* The photo (Kian, 2026-10-08): its bottom edge softened by a slight gradient to the sheet background over the lower 12 % of the
+   photo (a plain linear fade; Kian asked twice for less shade: the first version covered 45 % and reached full opacity at 70 % of
+   its height, the second 22 %); the title block starts 8 px inside the faded edge. Shown whole (Kian, 2026-11-07, replacing the 4:3
+   crop, which cut an eighth off the top and the bottom of every square photo): as wide as the sheet at its own shape, at most 75 %
+   of the screen's height (a taller photo is scaled down whole, never cropped, on the sheet's own background); a square is kept for
+   it until it has loaded, most photos being square (every uploaded one is 1254 x 1254). */
 .sheet-top { position: relative; min-height: 64px; }
 .sheet-hero { position: relative; }
 .sheet-hero[hidden] { display: none; }
-.sheet-hero img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--c-sheet-hero); }
+.sheet-hero img { display: block; width: 100%; height: auto; aspect-ratio: auto 1 / 1; max-height: 75dvh; object-fit: contain; background: var(--c-sheet-bg); }
 .sheet-hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 12%; background: linear-gradient(to bottom, transparent, var(--c-sheet-bg)); pointer-events: none; }
 dialog.sheet.has-photo #sheet-content { position: relative; margin-top: -8px; }
 /* Close button (Kian, 2026-10-08, later: the 44 px circle was too big): a 36 px circle with an 18 px glyph, 12 px in from the

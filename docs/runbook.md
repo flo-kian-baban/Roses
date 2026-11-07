@@ -88,9 +88,15 @@ Photos and logos uploaded in the admin are checked whole before they are stored 
 
 **Reviewing the research** (Kian): `node tools/import/research-review-export.mjs <venue>` writes `reports/research-review-<venue>.csv` (section | item | price | existing description | new EN | new FA | key ingredients | allergens | dietary | source | confirmed | correction), one row per shown item. Edit new EN / new FA (rows the research wrote), allergens and dietary (comma separated), put "yes" under confirmed to confirm a row's allergens and dietary words as they stand, and write anything else under correction (a person reads it; never applied). `node tools/import/research-review-apply.mjs <venue> <csv> --reviewer "Kian"` (`--dry` first) reads it back: a changed text or word replaces the draft and clears its flag, "yes" confirms; one revision row per item as the reviewer. A sheet read back unchanged changes nothing. The same confirmation is one tap in the admin: Menu tab → Needs attention → "Allergens to confirm" → the item → Confirm (owner and admin only). Customers see a confirmed note in the item popup as "Contains: …" in English and Persian; until then nothing of the draft is in the public HTML.
 
-## Moving to hosted Postgres (later, on Kian's decision)
+## Deploy steps: moving to hosted Postgres (later, on Kian's decision)
 
-The hosted database is filled from the working database by dump and restore (`npm run db:backup`, then `pg_restore` into the hosted database, then equal per-table counts checked), never by re-import. Admin edits, Persian reviews and PINs made during Milestone 1 carry over unchanged.
+The hosted database is filled from the working database by dump and restore, never by re-import. Admin edits, Persian reviews and PINs made during Milestone 1 carry over unchanged.
+
+1. Nobody edits in the admin on the laptop during the move (the copy is the moment it is made).
+2. **Before the database is copied to hosting, sign-in failures, alerts and sessions are emptied** (the PM, 2026-11-06), so the hosted database starts with none from the laptop: `npm run db:backup -- --for-hosting` writes `backups/roses-hosting-<UTC timestamp>.dump`, in which the sign-in failures and locks (`login_failures`) and the alerts (`admin_alerts`) are left empty, their tables kept; the script checks the dump carries none of their rows. The working database keeps its own rows: nothing on the laptop is deleted. Sessions are not stored in the database (each one is a cookie signed with `SESSION_SECRET` and checked against the person's PIN or password on every page): the host's own new `SESSION_SECRET` (go-live checklist) ends every session made on the laptop, so nobody arrives signed in.
+3. Restore that dump into the hosted database: `pg_restore --no-owner --no-privileges -d "<the hosted DATABASE_URL>" backups/roses-hosting-<…>.dump`.
+4. Check: per-table row counts equal to the working database's for every table except `login_failures` and `admin_alerts`, which hold 0 rows on the host.
+5. Then the uploads and the rest of the go-live checklist.
 
 ## Go-live checklist
 
@@ -110,7 +116,8 @@ Done before anything goes public (nothing is public yet; hosting is Kian's decis
 - [ ] Uploads moved at the hosting move: the `uploads/` folder copied into Supabase Storage, the storage driver switched (`STORAGE_DRIVER`), then every photo and logo URL in the database (`items.photo->>'url'`, `venues.brand->'logo'->>'url'`) requested from the new storage with `scripts/check-photo-links.mjs` for each venue: zero failures, and zero files left on the local disk.
 - [ ] Until that move, every backup includes the `uploads/` folder next to the dump (see *Backups*).
 - [ ] No history rewrite for the old PIN mention (PM, 2026-10-08): the documents no longer carry it; changing Kian's admin PIN before hosting stays on this list (above).
-- [ ] Neither `ROSES_NOW` nor `ROSES_CHECK_SUITE` is set in the hosted environment (the PM, 2026-10-09; they are the check suite's clock hook, and since 2026-11-03 `ROSES_CHECK_SUITE` also turns on the admin API's test seams): checked in the host's environment settings, and a public page fetched from the live URL carries the season of the day in Toronto (`<div id="welcome" … data-season="…">`).
+- [ ] The hosted database was filled from a `--for-hosting` dump (*Deploy steps*): 0 rows in `login_failures` and in `admin_alerts` on the host, and its `SESSION_SECRET` is new, so no sign-in failure, alert or session comes from the laptop.
+- [ ] Neither `ROSES_NOW` nor `ROSES_CHECK_SUITE` is set in the hosted environment (the PM, 2026-10-09; they are the check suite's clock hook, and since 2026-11-03 `ROSES_CHECK_SUITE` also turns on the admin API's test seams): checked in the host's environment settings, a public page fetched from the live URL carries the season of the day in Toronto (`<div id="welcome" … data-season="…">`), and `GET <live URL>/api/scratch` answers 404 (the scratch-server probe answers only with the flag, since 2026-11-06).
 
 ## After launch (the PM's list of 2026-11-03; not now)
 
@@ -148,6 +155,19 @@ Needs once: `npx playwright install chromium`. Lighthouse uses Google Chrome whe
 **The gate** (Kian, 2026-10-14, until the owner demo): `npm run check` (fast) for every merge to main; `npm run check:full` runs only once before the owner demo and once before go-live. Merge with `git merge --no-ff` and say in the merge commit which gate ran and its result.
 
 **Information-only checks** (the PM, 2026-10-14, until the pre-demo full run): the transition drill's Persian tap (`persian-tap-senso`) and the season drill's first frames (`first-frame-senso-<season>`) are measured and printed every run, marked INFO (met or missed), and never fail it.
+
+## Hand tests and the scratch guard
+
+Drills and hand-test scripts refuse to start unless their target is a scratch server (the PM, 2026-11-06): every option a script needs is given (it prints them when one is missing, unknown or wrong, and stops with exit 2 before sending anything); nothing falls back to port 3000 or to the working database, and no `.env.local` is read. A scratch server is a hand server started on this machine with `ROSES_CHECK_SUITE=1` on a scratch copy of the database and of the uploads (process rule 5 in CLAUDE.md), never on port 3000:
+
+```sh
+docker exec roses-db sh -c "createdb -U roses roses_hand && pg_dump -U roses -Fc roses | pg_restore -U roses -d roses_hand --no-owner"
+cp -Rc uploads <scratch folder>/uploads-copy
+DATABASE_URL=postgres://roses@127.0.0.1:5433/roses_hand UPLOAD_DIR=<scratch folder>/uploads-copy ROSES_CHECK_SUITE=1 SESSION_SECRET=<32+ random characters> \
+  NEXT_DIST_DIR=.next-hand node node_modules/next/dist/bin/next start -H 127.0.0.1 -p <a free port>   # after a build into .next-hand
+```
+
+Before it sends anything else, a script asks the server `GET /api/scratch` (`src/pages/api/scratch.ts`: only a server with the flag answers, with the database and uploads folder it uses; every other server answers 404) and stops unless that database is the script's own (`DATABASE_URL` in its environment) and neither it nor the uploads folder is a working one. A build made before 2026-11-06 has no probe, so the scripts refuse it. The guard is `scripts/scratch-target.mjs` (bash: `scripts/backup-drill.sh` has its own); `scripts/scratch-guard-selftest.mjs` proves it on every suite run (step `scratch-guard`), with a tripwire that writes down every connection and child process a script starts. A tool that works on the working data on purpose (setup, admin:create, migrations, backups, uploads:clean, the performance fixture) is named in the selftest by name.
 
 ## Evidence scripts
 

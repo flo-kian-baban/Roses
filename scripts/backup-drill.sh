@@ -1,15 +1,29 @@
 #!/usr/bin/env bash
 # T7 drill: backup, restore into a scratch database, compare per-table counts, delete an item on purpose,
 # recover it from the restored copy, drop the scratch database. Output: the log path given as $1.
-# ROSES_DB (default roses) is the database drilled; BACKUP_DIR (default backups) is where the dump goes.
-# The check suite runs this against its own scratch copy, never against the working database.
+# ROSES_DB is the database drilled (a scratch copy); BACKUP_DIR is where the dump goes. Both must be given, with the report file as
+# the one argument: the drill deletes an item on purpose, so it refuses to start on the working database, or with anything missing,
+# before it runs a single command (the PM, 2026-11-06: nothing falls back to the working database; scripts/scratch-target.mjs for the
+# node scripts). The check suite runs it against its own scratch copy.
+#   ROSES_DB=<scratch database> BACKUP_DIR=<folder> bash scripts/backup-drill.sh <report file>
 set -euo pipefail
 cd "$(dirname "$0")/.."
-OUT="${1:-reports/checkpoint-b/backup-drill.txt}"
+refuse() { echo "scripts/backup-drill.sh: refused, nothing run: $1." >&2; echo "usage: ROSES_DB=<scratch database> BACKUP_DIR=<folder> bash scripts/backup-drill.sh <report file>" >&2; exit 2; }
+MAIN="$(pwd)"
+if [ -f .git ]; then MAIN="$(sed -nE 's#^gitdir: (.*)/\.git/worktrees/.*#\1#p' .git || true)"; fi
+WORKING="roses"
+for f in .env.local "$MAIN/.env.local"; do
+  if [ -f "$f" ]; then WORKING="$WORKING $(sed -nE 's#^[[:space:]]*DATABASE_URL[[:space:]]*=[[:space:]]*"?postgres(ql)?://[^/]*/([^"?[:space:]]+).*#\2#p' "$f" || true)"; fi
+done
+if [ $# -ne 1 ]; then refuse "give the report file as the one argument"; fi
+if [ -z "${ROSES_DB:-}" ]; then refuse "ROSES_DB is not set"; fi
+for w in $WORKING; do if [ "$ROSES_DB" = "$w" ]; then refuse "ROSES_DB names the working database \"$w\""; fi; done
+if [ -z "${BACKUP_DIR:-}" ]; then refuse "BACKUP_DIR is not set"; fi
+OUT="$1"
 C="${ROSES_DB_CONTAINER:-roses-db}"
-DB="${ROSES_DB:-roses}"
+DB="$ROSES_DB"
 SCRATCH="${DB}_restore_test"
-DUMPDIR="${BACKUP_DIR:-backups}"
+DUMPDIR="$BACKUP_DIR"
 Q() { docker exec "$C" psql -U roses -d "$1" -tAc "$2"; }
 {
   echo "# Backup and restore drill — $(date -u +%Y-%m-%dT%H:%M:%SZ) — database $DB"

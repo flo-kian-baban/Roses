@@ -5,15 +5,16 @@
 // hour write an admin_alerts row and lock nothing for the venue (the PM's ruling of 2026-11-03, S1-14), and pause admin PINs across the
 // venues ([Q3]) until an admin unlocks them. Also (pre-go-live audit, 2026-11-03): the address behind the proxy read one hop from the right
 // of X-Forwarded-For (S1-09), an IPv6 address counted per /64, the lock's end said in Toronto time (S1-18). Addresses are masked in the saved log.
-//   node scripts/lockout-drill.mjs --base4 http://127.0.0.1:3000 --base6 http://[::1]:3000 --proxyBase http://127.0.0.1:3001 --out reports/checkpoint-b
+//   DATABASE_URL=<scratch copy> DRILL_ADMIN_EMAIL=… DRILL_ADMIN_PASSWORD=… node scripts/lockout-drill.mjs --base4 http://127.0.0.1:<port> --base6 http://[::1]:<port> --proxyBase http://127.0.0.1:<port of a second scratch server with TRUST_PROXY=1> --out <folder>
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { connectDb, loadEnv } from './load-env.mjs';
+import { connectDb } from './load-env.mjs';
+import { scratchTarget } from './scratch-target.mjs';
 
-loadEnv();
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
-const base4 = args.base4 || 'http://127.0.0.1:3000', base6 = args.base6 || 'http://[::1]:3000', proxyBase = args.proxyBase || 'http://127.0.0.1:3001';
-const out = path.resolve(args.out || 'reports/checkpoint-b');
+// The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('scripts/lockout-drill.mjs', { options: { base4: 'server', base6: 'server', proxyBase: 'server', out: 'path' }, db: true, env: ['DRILL_ADMIN_EMAIL', 'DRILL_ADMIN_PASSWORD'] });
+const base4 = args.base4, base6 = args.base6, proxyBase = args.proxyBase;
+const out = path.resolve(args.out);
 const email = process.env.DRILL_ADMIN_EMAIL, password = process.env.DRILL_ADMIN_PASSWORD;
 if (!email || !password) { console.error('DRILL_ADMIN_EMAIL / DRILL_ADMIN_PASSWORD missing'); process.exit(2); }
 const lines = [];

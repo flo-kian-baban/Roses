@@ -32,14 +32,16 @@ import zlib from 'node:zlib';
 import net from 'node:net';
 import { spawn, execFileSync, spawnSync } from 'node:child_process';
 import { chromium, devices } from 'playwright';
-import { connectDb, loadEnv } from './load-env.mjs';
+import { connectDb } from './load-env.mjs';
+import { scratchTarget } from './scratch-target.mjs';
 import { compare, compareCss, extract } from './welcome-fixture.mjs';
 
-loadEnv();
+// The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+// It starts its own servers (on --port), so their database and uploads come from this environment and must be scratch copies too.
+const { args } = await scratchTarget('scripts/season-drill.mjs', { options: { dist: 'path', copy: 'path', port: 'port', out: 'path', venues: 'list', jpeg: 'flag' }, optional: ['venues'], db: true, uploads: true });
 const jpeg = process.argv.includes('--jpeg');
-const args = Object.fromEntries(process.argv.slice(2).filter((a) => a !== '--jpeg').map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
-const dist = args.dist || '.next-check', copy = args.copy || '.next-season', port = Number(args.port || 3102);
-const out = path.resolve(args.out || 'reports/season'); fs.mkdirSync(out, { recursive: true });
+const dist = args.dist, copy = args.copy, port = Number(args.port);
+const out = path.resolve(args.out); fs.mkdirSync(out, { recursive: true });
 const venues = (args.venues || 'senso,kebab-land').split(',').filter(Boolean);
 const ART_VENUES = ['senso'];
 const base = `http://127.0.0.1:${port}`;

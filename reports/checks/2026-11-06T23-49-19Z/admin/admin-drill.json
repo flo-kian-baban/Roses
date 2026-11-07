@@ -1,0 +1,841 @@
+{
+  "base": "http://127.0.0.1:52664",
+  "at": "2026-11-07T00:06:23.420Z",
+  "pass": true,
+  "results": [
+    {
+      "step": "e-unauth",
+      "ok": true,
+      "text": "unauthenticated POST /api/admin/item → 401 {\"ok\":false,\"error\":\"not signed in\"}"
+    },
+    {
+      "step": "c-cookie",
+      "ok": true,
+      "text": "Set-Cookie attributes: roses_session=<token>; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200 (Secure is added when served over https); signed in lands on /admin/drill-default-venue (the first venue's page editor)"
+    },
+    {
+      "step": "admin-pin",
+      "ok": true,
+      "text": "admin PIN on the Kebab Land sign-in → 303 to /admin/kebab-land, cookie set: true; Team (owner and admin) answers 200 with the admin accounts: true"
+    },
+    {
+      "step": "pin-create",
+      "ok": true,
+      "text": "PIN created for \"Drill staff\" (staff, senso): shown once on the response page (6 digits: true), hash stored: true"
+    },
+    {
+      "step": "pin-create",
+      "ok": true,
+      "text": "PIN created for \"Drill owner\" (owner, senso+kebab-land): shown once on the response page (6 digits: true), hash stored: true"
+    },
+    {
+      "step": "pin-create",
+      "ok": true,
+      "text": "PIN created for \"Drill owner senso\" (owner, senso): shown once on the response page (6 digits: true), hash stored: true"
+    },
+    {
+      "step": "owner-pin-scope",
+      "ok": true,
+      "text": "the Senso owner creates an owner PIN for Kebab Land → 403, PINs made: 0; revokes a PIN that also covers Kebab Land → 403, still active: true"
+    },
+    {
+      "step": "d-hash",
+      "ok": true,
+      "text": "pins with a hash not starting with $scrypt$: 0; plain PIN column: none exists (schema has pin_hash only)"
+    },
+    {
+      "step": "c-logout",
+      "ok": true,
+      "text": "logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://127.0.0.1:52664/admin shows the sign-in form and no admin frame (a still-valid token is simply no longer sent: 307)"
+    },
+    {
+      "step": "pin-login",
+      "ok": true,
+      "text": "staff PIN sign-in lands on http://127.0.0.1:52664/admin/senso (page editor); tabs visible to staff: Menu (no Style or Details)"
+    },
+    {
+      "step": "f-ui",
+      "ok": true,
+      "text": "editor: the Shown switch on \"Aash-e-Reshteh\" (no price) refuses with \"The item needs a price before it can be shown\"; still hidden in the database"
+    },
+    {
+      "step": "f-server",
+      "ok": true,
+      "text": "direct POST action=update listed=true → 400, error=\"The item needs a price before it can be shown\""
+    },
+    {
+      "step": "f-check",
+      "ok": true,
+      "text": "SQL \"update items set listed = true\" on the priceless item → 23514 listed_requires_price: new row for relation \"items\" violates check constraint \"listed_requires_price\""
+    },
+    {
+      "step": "f-sizes",
+      "ok": true,
+      "text": "save \"Prosecco\" shown with a second size without price → 400 \"Every size needs a price before the item can be shown\"; row unchanged: true"
+    },
+    {
+      "step": "f-public-listed",
+      "ok": true,
+      "text": "\"Aash-e-Reshteh\" priced $7.25 in place and switched on → on the public page after 328 ms"
+    },
+    {
+      "step": "f-public-hidden",
+      "ok": true,
+      "text": "hidden and price cleared again → gone from the public page after 7 ms"
+    },
+    {
+      "step": "g-section",
+      "ok": true,
+      "text": "section \"Extra\" switched off in the editor → gone from the public page after 314 ms"
+    },
+    {
+      "step": "g-section-back",
+      "ok": true,
+      "text": "section \"Extra\" switched on again → back after 338 ms"
+    },
+    {
+      "step": "g-last-item",
+      "ok": true,
+      "text": "all 3 items of \"Beverage\" hidden → the section disappears from the public page after 7 ms"
+    },
+    {
+      "step": "g-last-item-back",
+      "ok": true,
+      "text": "items shown again → \"Beverage\" back after 7 ms"
+    },
+    {
+      "step": "h-staff-ui",
+      "ok": true,
+      "text": "staff item panel: notes group or inputs present = false; explanatory line shown = true"
+    },
+    {
+      "step": "h-staff-403",
+      "ok": true,
+      "text": "staff POST action=notes → 403 \"Allergen, dietary and halal notes are set by the owner or an admin only\""
+    },
+    {
+      "step": "h-staff-confirm-403",
+      "ok": true,
+      "text": "staff POST action=confirm → 403 \"Allergen and dietary notes are confirmed by the owner or an admin only\""
+    },
+    {
+      "step": "h-staff-style",
+      "ok": true,
+      "text": "staff GET /admin/senso?tab=style → HTTP 200, refusal page shown: true, no Style tab rendered"
+    },
+    {
+      "step": "h-staff-scene",
+      "ok": true,
+      "text": "staff GET /api/admin/welcome-scene?venue=senso&season=winter → 200 (winter scene, 3087 B of markup, engine script included); on kebab-land (not their venue) → 403"
+    },
+    {
+      "step": "style-staff-403",
+      "ok": true,
+      "text": "staff GET /api/admin/style?venue=senso → 403 \"the Style tab is for the owner and admins\"; staff POST update → 403 \"the Style tab is for the owner and admins\""
+    },
+    {
+      "step": "layout-staff-403",
+      "ok": true,
+      "text": "staff POST section layout=grid → 403 \"the layout of a section is set by the owner or an admin\"; with a rename in the same patch → 403; \"Extra\" still list"
+    },
+    {
+      "step": "staff-add-venue",
+      "ok": true,
+      "text": "staff GET /admin/new → refusal shown: true, no form"
+    },
+    {
+      "step": "h-owner",
+      "ok": true,
+      "text": "owner saved notes in the panel with the chips (Tree nuts, then Halal; each tap on its own): {\"text\":{\"en\":null,\"fa\":null},\"halal\":true,\"dietary\":[\"Vegan\"],\"allergens\":[\"tree nuts\"]}"
+    },
+    {
+      "step": "undo-own-only",
+      "ok": true,
+      "text": "staff Undo of the owner's notes record 1296 → 403 \"Undo works on your own changes only\"; the notes unchanged: true"
+    },
+    {
+      "step": "h-admin",
+      "ok": true,
+      "text": "admin cleared the notes again: {\"text\":{\"en\":null,\"fa\":null},\"halal\":null,\"dietary\":[],\"allergens\":[]}"
+    },
+    {
+      "step": "venue-staff-403",
+      "ok": true,
+      "text": "staff POST /api/admin/venue → 403 \"venue details are edited by the owner or an admin\""
+    },
+    {
+      "step": "details-owner-get",
+      "ok": true,
+      "text": "owner GET /api/admin/venue?id=senso → 200; 1 location(s), logo /brand/senso-logo.png, template senso"
+    },
+    {
+      "step": "details-owner-save",
+      "ok": true,
+      "text": "owner changed the tagline in the Details tab (2 taps + typing + Enter) → the public page's description reads \"Drill tagline\" after 315 ms"
+    },
+    {
+      "step": "details-undo",
+      "ok": true,
+      "text": "Undo → tagline \"Experience the Best Breakfast & Drink with Us\" again, back on the public page after 7 ms"
+    },
+    {
+      "step": "style-owner-options",
+      "ok": true,
+      "text": "owner GET /api/admin/style?venue=senso → 200; template senso, 8 groups, 44 colour tokens, layout options welcome, transitionFall, transitionWinter, transitionSpring, transitionSummer, photos, 7 venue colours as swatches"
+    },
+    {
+      "step": "style-owner-save",
+      "ok": true,
+      "text": "owner tapped the venue colour \"Phone link: Grey #747474\" for the phone link (3 taps: Footer group, Phone link, swatch) → venues.style.colors {\"header.bg\":\"#ededed\",\"rows.desc\":\"#333333\",\"tabs.list\":\"#333333\",\"tabs.text\":\"#2e2e2e\",\"tabs.active\":\"#050505\",\"footer.phone\":\"#747474\",\"welcome.snow\":\"#042c7c\",\"header.langBg\":\"#042c7c\",\"headings.title\":\"#333333\",\"welcome.blossoms\":\"#ec6f98\"}; the public page's CSS carries --c-footer-phone:#747474 after 314 ms (452 ms after the tap)"
+    },
+    {
+      "step": "style-undo",
+      "ok": true,
+      "text": "Undo → --c-footer-phone:#042c7c back on the public page after 8 ms; venues.style.colors now {\"header.bg\":\"#ededed\",\"rows.desc\":\"#333333\",\"tabs.list\":\"#333333\",\"tabs.text\":\"#2e2e2e\",\"tabs.active\":\"#050505\",\"welcome.snow\":\"#042c7c\",\"header.langBg\":\"#042c7c\",\"headings.title\":\"#333333\",\"welcome.blossoms\":\"#ec6f98\"}"
+    },
+    {
+      "step": "style-welcome-switch",
+      "ok": true,
+      "text": "Welcome screen switch off → no overlay and no head decision in the public HTML after 312 ms; Undo → back after 8 ms"
+    },
+    {
+      "step": "csrf-refused",
+      "ok": true,
+      "text": "POST /api/admin/item from Origin https://evil.example → 403; with Sec-Fetch-Site same-site → 403; from the app's own origin → 200; a forged Team form (Origin https://evil.example) → 403, PINs made: 0"
+    },
+    {
+      "step": "json-only",
+      "ok": true,
+      "text": "a form-encoded \"action=delete\" to the JSON item route → 415 \"The admin API takes JSON only\"; the item still there: true"
+    },
+    {
+      "step": "security-headers",
+      "ok": true,
+      "text": "/admin: CSP \"frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'\", X-Frame-Options DENY, nosniff nosniff, Referrer-Policy strict-origin-when-cross-origin; /senso: header CSP \"frame-ancestors 'self'; base-uri 'none'; object-src 'none'\", its <meta> CSP allows 47 script hashes, the page's 5 inline scripts all among them: true; 'unsafe-inline' or eval in script-src: false"
+    },
+    {
+      "step": "fonts-removed",
+      "ok": true,
+      "text": "the public page's 2 stylesheet(s) and HTML name Tinos or Montserrat: false (H-17: two fonts loaded on every page, never used)"
+    },
+    {
+      "step": "csp-no-violation",
+      "ok": true,
+      "text": "the public pages under their CSP, the welcome tap, an item popup and the section list: violations {\"senso\":[],\"kebab-land\":[]}"
+    },
+    {
+      "step": "owner-add-venue-403",
+      "ok": true,
+      "text": "owner POST \"+ Add venue\" → 403 \"Adding a venue is for an admin\", venues made: 0; owner GET /admin/new → refusal: true, no form"
+    },
+    {
+      "step": "pin-create-checks",
+      "ok": true,
+      "text": "a PIN for venue \"nowhere\" → 303 error=venue-unknown, PINs made: 0; the owner's new staff PIN → recorded as made by \"Drill owner\", Team says \"by Drill owner\": true"
+    },
+    {
+      "step": "components-strict",
+      "ok": true,
+      "text": "a combo part naming a Kebab Land item → 400 \"A combo part must be an item of this venue\"; one with a 2000-deep extra value and a price → 200, stored keys [\"item_id\",\"label\",\"qty\"]; the venue's editor still answers 200"
+    },
+    {
+      "step": "photo-hosts",
+      "ok": true,
+      "text": "photo addresses {\"//evil.example/x.jpg\":400,\"/\\\\evil.example/x.jpg\":400,\"https://evil.example/x.jpg\":400,\"javascript:alert(1)\":400}; a linked photo on mealsymedia.s3.amazonaws.com → 200; a logo at https://evil.example → 400"
+    },
+    {
+      "step": "strict-readers",
+      "ok": true,
+      "text": "section_ids → 400 \"section_ids: expected a list of ids\"; listed → 400 \"listed: expected true or false\"; variants → 400 \"Sizes: expected a list\"; locations → 400 \"locations: expected a list\"; logo → 400 \"logo: expected { url, width, height } or null\"; the item's sections, the locations and the logo unchanged: true"
+    },
+    {
+      "step": "length-limits",
+      "ok": true,
+      "text": "name 101 → 400; description 501 → 400; size name 61 → 400; 21 sizes → 400; 11 choice groups → 400; 21 choices in a group → 400; 21 combo parts → 400; section name 61 → 400; tagline 161 → 400; address 201 → 400; a 100-character name → 200"
+    },
+    {
+      "step": "text-cleaned",
+      "ok": true,
+      "text": "a name with U+202E, U+0007 and U+2066 → stored \"Drill clean name\"; a name of only zero-width characters → 400 \"The English name is required\"; on the public page a row with sizes isolates each size's name and amount: true"
+    },
+    {
+      "step": "price-pattern",
+      "ok": true,
+      "text": "prices sent: blank → 200 (null); dollar → 400; hex → 400; exponent → 400; thousandth → 400; comma → 200 (1.50); persian → 200 (12.50)"
+    },
+    {
+      "step": "phone-digits",
+      "ok": true,
+      "text": "a phone \"------\" → 400 \"A phone number has 7 to 15 digits and can hold spaces, (), + and - only\"; one typed in Persian digits → 200, stored \"905 555 0100\""
+    },
+    {
+      "step": "pin-persian-digits",
+      "ok": true,
+      "text": "the staff PIN typed in Persian digits → 303 to /admin/senso, cookie set: true"
+    },
+    {
+      "step": "signin-messages",
+      "ok": true,
+      "text": "?error=<text of anyone's choosing> shows it: false (the page's own line instead: true); ?error=wrong-pin&left=3 → \"Wrong PIN (3 tries left).\": true"
+    },
+    {
+      "step": "stray-cookie",
+      "ok": true,
+      "text": "a request carrying another cookie \"other=%E0%A4%A\" beside the session → 200"
+    },
+    {
+      "step": "server-fault-500",
+      "ok": true,
+      "text": "a database fault → 500 \"Something went wrong on the server. Try again.\"; the database's own text in the answer: false"
+    },
+    {
+      "step": "publish-reported",
+      "ok": true,
+      "text": "a save whose page regeneration failed → 200 with published: false; POST /api/admin/publish → 200, published: true"
+    },
+    {
+      "step": "create-once",
+      "ok": true,
+      "text": "the same add sent twice with its key → 200, 200, the same item: true (second marked repeated: true); items made: 1"
+    },
+    {
+      "step": "style-concurrent",
+      "ok": true,
+      "text": "6 colour saves sent at once (each a token's colour moved by one step): 6 accepted, 0 refused by the readability guard; kept at the end: 6 of 6 (before the fix: 1)"
+    },
+    {
+      "step": "versions-stale-409",
+      "ok": true,
+      "text": "locations saved over an older copy → 409 \"Someone else changed the locations since you opened this page. They are now on screen as they are; make your change again if it is still needed.\", unchanged: true; a section renamed over an older name → 409, still \"Senso Signature\""
+    },
+    {
+      "step": "f-check-sizes",
+      "ok": true,
+      "text": "SQL adding an unpriced size to a shown item → 23514 listed_requires_price"
+    },
+    {
+      "step": "upload-structure",
+      "ok": true,
+      "text": "a 4 × 3 PNG → 200 (4 × 3); the same PNG with a web page after it → 400 \"This file cannot be used: the PNG carries something after its end. Try another photo, or save it again as a JPEG or PNG.\"; an SVG logo with a script → 400; a PNG 20000 px wide → 400"
+    },
+    {
+      "step": "add-venue",
+      "ok": true,
+      "text": "+ Add venue: 3 taps (venue menu, Add venue, Create) + the name → /admin/drill-venue (Details tab) 81 ms after Create; venues row template=default, 1 starting section and 1 Seasonal section; GET /drill-venue → 200 in 2 ms (default template, name on the page: true); in the venue dropdown: true"
+    },
+    {
+      "step": "upload-quota",
+      "ok": true,
+      "text": "a venue made for the check, \"drill-quota-mw5n81vg\" (200); its uploads folder at the start: empty; 100 photos uploaded to it → all 200: true; the 101st within the hour → 429 \"100 photos were uploaded for this venue in the last hour; try again later.\""
+    },
+    {
+      "step": "b-revoked",
+      "ok": true,
+      "text": "revoked staff PIN → 303, error=\"wrong-pin\", cookie set: false"
+    },
+    {
+      "step": "revoked-session",
+      "ok": true,
+      "text": "the revoked staff PIN's earlier session (its cookie) → POST /api/admin/item 401 \"not signed in\""
+    }
+  ],
+  "measures": [
+    "Details: change the tagline: 2 taps (Details tab, field) + typing + Enter; on the public page in 315 ms",
+    "Style: change the footer phone-link colour: 3 taps (group, token, swatch); on the public page in 314 ms",
+    "+ Add venue: 3 taps + the name; Details tab open 81 ms after Create; the new page answers 200 (2 ms)"
+  ],
+  "transcript": [
+    {
+      "at": "2026-11-07T00:06:06.372Z",
+      "ms": 5,
+      "step": "db",
+      "text": "connected to database \"roses_check_20261106t234919z\" as application \"roses-check:admin-drill\""
+    },
+    {
+      "at": "2026-11-07T00:06:06.489Z",
+      "ms": 122,
+      "step": "e-unauth",
+      "text": "PASS: unauthenticated POST /api/admin/item → 401 {\"ok\":false,\"error\":\"not signed in\"}"
+    },
+    {
+      "at": "2026-11-07T00:06:06.733Z",
+      "ms": 366,
+      "step": "shot",
+      "text": "01-login-pin.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:06.809Z",
+      "ms": 442,
+      "step": "shot",
+      "text": "02-login-admin.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:07.121Z",
+      "ms": 754,
+      "step": "shot",
+      "text": "03-editor-admin.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:07.167Z",
+      "ms": 800,
+      "step": "c-cookie",
+      "text": "PASS: Set-Cookie attributes: roses_session=<token>; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200 (Secure is added when served over https); signed in lands on /admin/drill-default-venue (the first venue's page editor)"
+    },
+    {
+      "at": "2026-11-07T00:06:07.260Z",
+      "ms": 893,
+      "step": "admin-pin",
+      "text": "PASS: admin PIN on the Kebab Land sign-in → 303 to /admin/kebab-land, cookie set: true; Team (owner and admin) answers 200 with the admin accounts: true"
+    },
+    {
+      "at": "2026-11-07T00:06:07.363Z",
+      "ms": 996,
+      "step": "pin-create",
+      "text": "PASS: PIN created for \"Drill staff\" (staff, senso): shown once on the response page (6 digits: true), hash stored: true"
+    },
+    {
+      "at": "2026-11-07T00:06:07.503Z",
+      "ms": 1136,
+      "step": "pin-create",
+      "text": "PASS: PIN created for \"Drill owner\" (owner, senso+kebab-land): shown once on the response page (6 digits: true), hash stored: true"
+    },
+    {
+      "at": "2026-11-07T00:06:07.662Z",
+      "ms": 1295,
+      "step": "pin-create",
+      "text": "PASS: PIN created for \"Drill owner senso\" (owner, senso): shown once on the response page (6 digits: true), hash stored: true"
+    },
+    {
+      "at": "2026-11-07T00:06:07.770Z",
+      "ms": 1403,
+      "step": "owner-pin-scope",
+      "text": "PASS: the Senso owner creates an owner PIN for Kebab Land → 403, PINs made: 0; revokes a PIN that also covers Kebab Land → 403, still active: true"
+    },
+    {
+      "at": "2026-11-07T00:06:07.776Z",
+      "ms": 1409,
+      "step": "d-hash",
+      "text": "PASS: pins with a hash not starting with $scrypt$: 0; plain PIN column: none exists (schema has pin_hash only)"
+    },
+    {
+      "at": "2026-11-07T00:06:07.948Z",
+      "ms": 1581,
+      "step": "shot",
+      "text": "04-team.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:08.112Z",
+      "ms": 1745,
+      "step": "c-logout",
+      "text": "PASS: logout → Set-Cookie: roses_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; GET /admin without the cookie → 200 at http://127.0.0.1:52664/admin shows the sign-in form and no admin frame (a still-valid token is simply no longer sent: 307)"
+    },
+    {
+      "at": "2026-11-07T00:06:08.556Z",
+      "ms": 2189,
+      "step": "pin-login",
+      "text": "PASS: staff PIN sign-in lands on http://127.0.0.1:52664/admin/senso (page editor); tabs visible to staff: Menu (no Style or Details)"
+    },
+    {
+      "at": "2026-11-07T00:06:08.669Z",
+      "ms": 2302,
+      "step": "shot",
+      "text": "05-editor-staff.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:08.746Z",
+      "ms": 2379,
+      "step": "f-ui",
+      "text": "PASS: editor: the Shown switch on \"Aash-e-Reshteh\" (no price) refuses with \"The item needs a price before it can be shown\"; still hidden in the database"
+    },
+    {
+      "at": "2026-11-07T00:06:08.861Z",
+      "ms": 2494,
+      "step": "shot",
+      "text": "06-needs-price-refused.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:08.867Z",
+      "ms": 2500,
+      "step": "f-server",
+      "text": "PASS: direct POST action=update listed=true → 400, error=\"The item needs a price before it can be shown\""
+    },
+    {
+      "at": "2026-11-07T00:06:08.868Z",
+      "ms": 2501,
+      "step": "f-check",
+      "text": "PASS: SQL \"update items set listed = true\" on the priceless item → 23514 listed_requires_price: new row for relation \"items\" violates check constraint \"listed_requires_price\""
+    },
+    {
+      "at": "2026-11-07T00:06:09.244Z",
+      "ms": 2877,
+      "step": "f-sizes",
+      "text": "PASS: save \"Prosecco\" shown with a second size without price → 400 \"Every size needs a price before the item can be shown\"; row unchanged: true"
+    },
+    {
+      "at": "2026-11-07T00:06:09.680Z",
+      "ms": 3313,
+      "step": "f-public-listed",
+      "text": "PASS: \"Aash-e-Reshteh\" priced $7.25 in place and switched on → on the public page after 328 ms"
+    },
+    {
+      "at": "2026-11-07T00:06:09.815Z",
+      "ms": 3448,
+      "step": "shot",
+      "text": "07-priced-and-shown.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:09.855Z",
+      "ms": 3488,
+      "step": "f-public-hidden",
+      "text": "PASS: hidden and price cleared again → gone from the public page after 7 ms"
+    },
+    {
+      "at": "2026-11-07T00:06:10.244Z",
+      "ms": 3877,
+      "step": "g-section",
+      "text": "PASS: section \"Extra\" switched off in the editor → gone from the public page after 314 ms"
+    },
+    {
+      "at": "2026-11-07T00:06:10.369Z",
+      "ms": 4002,
+      "step": "shot",
+      "text": "08-section-hidden.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:10.747Z",
+      "ms": 4380,
+      "step": "g-section-back",
+      "text": "PASS: section \"Extra\" switched on again → back after 338 ms"
+    },
+    {
+      "at": "2026-11-07T00:06:10.872Z",
+      "ms": 4505,
+      "step": "g-last-item",
+      "text": "PASS: all 3 items of \"Beverage\" hidden → the section disappears from the public page after 7 ms"
+    },
+    {
+      "at": "2026-11-07T00:06:10.965Z",
+      "ms": 4598,
+      "step": "g-last-item-back",
+      "text": "PASS: items shown again → \"Beverage\" back after 7 ms"
+    },
+    {
+      "at": "2026-11-07T00:06:11.136Z",
+      "ms": 4769,
+      "step": "shot",
+      "text": "09-staff-no-notes.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:11.136Z",
+      "ms": 4769,
+      "step": "h-staff-ui",
+      "text": "PASS: staff item panel: notes group or inputs present = false; explanatory line shown = true"
+    },
+    {
+      "at": "2026-11-07T00:06:11.141Z",
+      "ms": 4774,
+      "step": "h-staff-403",
+      "text": "PASS: staff POST action=notes → 403 \"Allergen, dietary and halal notes are set by the owner or an admin only\""
+    },
+    {
+      "at": "2026-11-07T00:06:11.145Z",
+      "ms": 4778,
+      "step": "h-staff-confirm-403",
+      "text": "PASS: staff POST action=confirm → 403 \"Allergen and dietary notes are confirmed by the owner or an admin only\""
+    },
+    {
+      "at": "2026-11-07T00:06:11.154Z",
+      "ms": 4787,
+      "step": "h-staff-style",
+      "text": "PASS: staff GET /admin/senso?tab=style → HTTP 200, refusal page shown: true, no Style tab rendered"
+    },
+    {
+      "at": "2026-11-07T00:06:11.191Z",
+      "ms": 4824,
+      "step": "h-staff-scene",
+      "text": "PASS: staff GET /api/admin/welcome-scene?venue=senso&season=winter → 200 (winter scene, 3087 B of markup, engine script included); on kebab-land (not their venue) → 403"
+    },
+    {
+      "at": "2026-11-07T00:06:11.195Z",
+      "ms": 4828,
+      "step": "style-staff-403",
+      "text": "PASS: staff GET /api/admin/style?venue=senso → 403 \"the Style tab is for the owner and admins\"; staff POST update → 403 \"the Style tab is for the owner and admins\""
+    },
+    {
+      "at": "2026-11-07T00:06:11.202Z",
+      "ms": 4835,
+      "step": "layout-staff-403",
+      "text": "PASS: staff POST section layout=grid → 403 \"the layout of a section is set by the owner or an admin\"; with a rename in the same patch → 403; \"Extra\" still list"
+    },
+    {
+      "at": "2026-11-07T00:06:11.212Z",
+      "ms": 4845,
+      "step": "staff-add-venue",
+      "text": "PASS: staff GET /admin/new → refusal shown: true, no form"
+    },
+    {
+      "at": "2026-11-07T00:06:12.391Z",
+      "ms": 6024,
+      "step": "shot",
+      "text": "10-owner-notes-saved.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:12.391Z",
+      "ms": 6024,
+      "step": "h-owner",
+      "text": "PASS: owner saved notes in the panel with the chips (Tree nuts, then Halal; each tap on its own): {\"text\":{\"en\":null,\"fa\":null},\"halal\":true,\"dietary\":[\"Vegan\"],\"allergens\":[\"tree nuts\"]}"
+    },
+    {
+      "at": "2026-11-07T00:06:12.401Z",
+      "ms": 6034,
+      "step": "undo-own-only",
+      "text": "PASS: staff Undo of the owner's notes record 1296 → 403 \"Undo works on your own changes only\"; the notes unchanged: true"
+    },
+    {
+      "at": "2026-11-07T00:06:12.717Z",
+      "ms": 6350,
+      "step": "h-admin",
+      "text": "PASS: admin cleared the notes again: {\"text\":{\"en\":null,\"fa\":null},\"halal\":null,\"dietary\":[],\"allergens\":[]}"
+    },
+    {
+      "at": "2026-11-07T00:06:12.729Z",
+      "ms": 6362,
+      "step": "venue-staff-403",
+      "text": "PASS: staff POST /api/admin/venue → 403 \"venue details are edited by the owner or an admin\""
+    },
+    {
+      "at": "2026-11-07T00:06:12.736Z",
+      "ms": 6369,
+      "step": "details-owner-get",
+      "text": "PASS: owner GET /api/admin/venue?id=senso → 200; 1 location(s), logo /brand/senso-logo.png, template senso"
+    },
+    {
+      "at": "2026-11-07T00:06:13.268Z",
+      "ms": 6901,
+      "step": "shot",
+      "text": "11-details-tagline.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:13.268Z",
+      "ms": 6901,
+      "step": "details-owner-save",
+      "text": "PASS: owner changed the tagline in the Details tab (2 taps + typing + Enter) → the public page's description reads \"Drill tagline\" after 315 ms"
+    },
+    {
+      "at": "2026-11-07T00:06:13.694Z",
+      "ms": 7327,
+      "step": "details-undo",
+      "text": "PASS: Undo → tagline \"Experience the Best Breakfast & Drink with Us\" again, back on the public page after 7 ms"
+    },
+    {
+      "at": "2026-11-07T00:06:13.700Z",
+      "ms": 7333,
+      "step": "style-owner-options",
+      "text": "PASS: owner GET /api/admin/style?venue=senso → 200; template senso, 8 groups, 44 colour tokens, layout options welcome, transitionFall, transitionWinter, transitionSpring, transitionSummer, photos, 7 venue colours as swatches"
+    },
+    {
+      "at": "2026-11-07T00:06:14.140Z",
+      "ms": 7773,
+      "step": "style",
+      "text": "footer background #ffffff; venue colours the guard would refuse there, skipped: #cc9434 (2.7:1); picking #747474"
+    },
+    {
+      "at": "2026-11-07T00:06:14.592Z",
+      "ms": 8225,
+      "step": "shot",
+      "text": "12-style-footer-phone.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:14.592Z",
+      "ms": 8225,
+      "step": "style-owner-save",
+      "text": "PASS: owner tapped the venue colour \"Phone link: Grey #747474\" for the phone link (3 taps: Footer group, Phone link, swatch) → venues.style.colors {\"header.bg\":\"#ededed\",\"rows.desc\":\"#333333\",\"tabs.list\":\"#333333\",\"tabs.text\":\"#2e2e2e\",\"tabs.active\":\"#050505\",\"footer.phone\":\"#747474\",\"welcome.snow\":\"#042c7c\",\"header.langBg\":\"#042c7c\",\"headings.title\":\"#333333\",\"welcome.blossoms\":\"#ec6f98\"}; the public page's CSS carries --c-footer-phone:#747474 after 314 ms (452 ms after the tap)"
+    },
+    {
+      "at": "2026-11-07T00:06:14.964Z",
+      "ms": 8598,
+      "step": "style-undo",
+      "text": "PASS: Undo → --c-footer-phone:#042c7c back on the public page after 8 ms; venues.style.colors now {\"header.bg\":\"#ededed\",\"rows.desc\":\"#333333\",\"tabs.list\":\"#333333\",\"tabs.text\":\"#2e2e2e\",\"tabs.active\":\"#050505\",\"welcome.snow\":\"#042c7c\",\"header.langBg\":\"#042c7c\",\"headings.title\":\"#333333\",\"welcome.blossoms\":\"#ec6f98\"}"
+    },
+    {
+      "at": "2026-11-07T00:06:15.857Z",
+      "ms": 9490,
+      "step": "style-welcome-switch",
+      "text": "PASS: Welcome screen switch off → no overlay and no head decision in the public HTML after 312 ms; Undo → back after 8 ms"
+    },
+    {
+      "at": "2026-11-07T00:06:15.912Z",
+      "ms": 9545,
+      "step": "csrf-refused",
+      "text": "PASS: POST /api/admin/item from Origin https://evil.example → 403; with Sec-Fetch-Site same-site → 403; from the app's own origin → 200; a forged Team form (Origin https://evil.example) → 403, PINs made: 0"
+    },
+    {
+      "at": "2026-11-07T00:06:15.913Z",
+      "ms": 9546,
+      "step": "json-only",
+      "text": "PASS: a form-encoded \"action=delete\" to the JSON item route → 415 \"The admin API takes JSON only\"; the item still there: true"
+    },
+    {
+      "at": "2026-11-07T00:06:15.925Z",
+      "ms": 9558,
+      "step": "security-headers",
+      "text": "PASS: /admin: CSP \"frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'\", X-Frame-Options DENY, nosniff nosniff, Referrer-Policy strict-origin-when-cross-origin; /senso: header CSP \"frame-ancestors 'self'; base-uri 'none'; object-src 'none'\", its <meta> CSP allows 47 script hashes, the page's 5 inline scripts all among them: true; 'unsafe-inline' or eval in script-src: false"
+    },
+    {
+      "at": "2026-11-07T00:06:15.928Z",
+      "ms": 9561,
+      "step": "fonts-removed",
+      "text": "PASS: the public page's 2 stylesheet(s) and HTML name Tinos or Montserrat: false (H-17: two fonts loaded on every page, never used)"
+    },
+    {
+      "at": "2026-11-07T00:06:21.106Z",
+      "ms": 14739,
+      "step": "csp-no-violation",
+      "text": "PASS: the public pages under their CSP, the welcome tap, an item popup and the section list: violations {\"senso\":[],\"kebab-land\":[]}"
+    },
+    {
+      "at": "2026-11-07T00:06:21.121Z",
+      "ms": 14754,
+      "step": "owner-add-venue-403",
+      "text": "PASS: owner POST \"+ Add venue\" → 403 \"Adding a venue is for an admin\", venues made: 0; owner GET /admin/new → refusal: true, no form"
+    },
+    {
+      "at": "2026-11-07T00:06:21.305Z",
+      "ms": 14938,
+      "step": "pin-create-checks",
+      "text": "PASS: a PIN for venue \"nowhere\" → 303 error=venue-unknown, PINs made: 0; the owner's new staff PIN → recorded as made by \"Drill owner\", Team says \"by Drill owner\": true"
+    },
+    {
+      "at": "2026-11-07T00:06:21.371Z",
+      "ms": 15004,
+      "step": "components-strict",
+      "text": "PASS: a combo part naming a Kebab Land item → 400 \"A combo part must be an item of this venue\"; one with a 2000-deep extra value and a price → 200, stored keys [\"item_id\",\"label\",\"qty\"]; the venue's editor still answers 200"
+    },
+    {
+      "at": "2026-11-07T00:06:21.418Z",
+      "ms": 15051,
+      "step": "photo-hosts",
+      "text": "PASS: photo addresses {\"//evil.example/x.jpg\":400,\"/\\\\evil.example/x.jpg\":400,\"https://evil.example/x.jpg\":400,\"javascript:alert(1)\":400}; a linked photo on mealsymedia.s3.amazonaws.com → 200; a logo at https://evil.example → 400"
+    },
+    {
+      "at": "2026-11-07T00:06:21.441Z",
+      "ms": 15074,
+      "step": "strict-readers",
+      "text": "PASS: section_ids → 400 \"section_ids: expected a list of ids\"; listed → 400 \"listed: expected true or false\"; variants → 400 \"Sizes: expected a list\"; locations → 400 \"locations: expected a list\"; logo → 400 \"logo: expected { url, width, height } or null\"; the item's sections, the locations and the logo unchanged: true"
+    },
+    {
+      "at": "2026-11-07T00:06:21.498Z",
+      "ms": 15131,
+      "step": "length-limits",
+      "text": "PASS: name 101 → 400; description 501 → 400; size name 61 → 400; 21 sizes → 400; 11 choice groups → 400; 21 choices in a group → 400; 21 combo parts → 400; section name 61 → 400; tagline 161 → 400; address 201 → 400; a 100-character name → 200"
+    },
+    {
+      "at": "2026-11-07T00:06:21.536Z",
+      "ms": 15169,
+      "step": "text-cleaned",
+      "text": "PASS: a name with U+202E, U+0007 and U+2066 → stored \"Drill clean name\"; a name of only zero-width characters → 400 \"The English name is required\"; on the public page a row with sizes isolates each size's name and amount: true"
+    },
+    {
+      "at": "2026-11-07T00:06:21.624Z",
+      "ms": 15257,
+      "step": "price-pattern",
+      "text": "PASS: prices sent: blank → 200 (null); dollar → 400; hex → 400; exponent → 400; thousandth → 400; comma → 200 (1.50); persian → 200 (12.50)"
+    },
+    {
+      "at": "2026-11-07T00:06:21.683Z",
+      "ms": 15316,
+      "step": "phone-digits",
+      "text": "PASS: a phone \"------\" → 400 \"A phone number has 7 to 15 digits and can hold spaces, (), + and - only\"; one typed in Persian digits → 200, stored \"905 555 0100\""
+    },
+    {
+      "at": "2026-11-07T00:06:21.723Z",
+      "ms": 15356,
+      "step": "pin-persian-digits",
+      "text": "PASS: the staff PIN typed in Persian digits → 303 to /admin/senso, cookie set: true"
+    },
+    {
+      "at": "2026-11-07T00:06:21.736Z",
+      "ms": 15369,
+      "step": "signin-messages",
+      "text": "PASS: ?error=<text of anyone's choosing> shows it: false (the page's own line instead: true); ?error=wrong-pin&left=3 → \"Wrong PIN (3 tries left).\": true"
+    },
+    {
+      "at": "2026-11-07T00:06:21.741Z",
+      "ms": 15374,
+      "step": "stray-cookie",
+      "text": "PASS: a request carrying another cookie \"other=%E0%A4%A\" beside the session → 200"
+    },
+    {
+      "at": "2026-11-07T00:06:21.747Z",
+      "ms": 15380,
+      "step": "server-fault-500",
+      "text": "PASS: a database fault → 500 \"Something went wrong on the server. Try again.\"; the database's own text in the answer: false"
+    },
+    {
+      "at": "2026-11-07T00:06:21.774Z",
+      "ms": 15407,
+      "step": "publish-reported",
+      "text": "PASS: a save whose page regeneration failed → 200 with published: false; POST /api/admin/publish → 200, published: true"
+    },
+    {
+      "at": "2026-11-07T00:06:21.828Z",
+      "ms": 15461,
+      "step": "create-once",
+      "text": "PASS: the same add sent twice with its key → 200, 200, the same item: true (second marked repeated: true); items made: 1"
+    },
+    {
+      "at": "2026-11-07T00:06:21.966Z",
+      "ms": 15599,
+      "step": "style-concurrent",
+      "text": "PASS: 6 colour saves sent at once (each a token's colour moved by one step): 6 accepted, 0 refused by the readability guard; kept at the end: 6 of 6 (before the fix: 1)"
+    },
+    {
+      "at": "2026-11-07T00:06:21.982Z",
+      "ms": 15615,
+      "step": "versions-stale-409",
+      "text": "PASS: locations saved over an older copy → 409 \"Someone else changed the locations since you opened this page. They are now on screen as they are; make your change again if it is still needed.\", unchanged: true; a section renamed over an older name → 409, still \"Senso Signature\""
+    },
+    {
+      "at": "2026-11-07T00:06:21.983Z",
+      "ms": 15616,
+      "step": "f-check-sizes",
+      "text": "PASS: SQL adding an unpriced size to a shown item → 23514 listed_requires_price"
+    },
+    {
+      "at": "2026-11-07T00:06:21.995Z",
+      "ms": 15628,
+      "step": "upload-structure",
+      "text": "PASS: a 4 × 3 PNG → 200 (4 × 3); the same PNG with a web page after it → 400 \"This file cannot be used: the PNG carries something after its end. Try another photo, or save it again as a JPEG or PNG.\"; an SVG logo with a script → 400; a PNG 20000 px wide → 400"
+    },
+    {
+      "at": "2026-11-07T00:06:22.586Z",
+      "ms": 16219,
+      "step": "shot",
+      "text": "13-venue-added.jpg"
+    },
+    {
+      "at": "2026-11-07T00:06:22.588Z",
+      "ms": 16221,
+      "step": "add-venue",
+      "text": "PASS: + Add venue: 3 taps (venue menu, Add venue, Create) + the name → /admin/drill-venue (Details tab) 81 ms after Create; venues row template=default, 1 starting section and 1 Seasonal section; GET /drill-venue → 200 in 2 ms (default template, name on the page: true); in the venue dropdown: true"
+    },
+    {
+      "at": "2026-11-07T00:06:23.026Z",
+      "ms": 16659,
+      "step": "upload-quota",
+      "text": "PASS: a venue made for the check, \"drill-quota-mw5n81vg\" (200); its uploads folder at the start: empty; 100 photos uploaded to it → all 200: true; the 101st within the hour → 429 \"100 photos were uploaded for this venue in the last hour; try again later.\""
+    },
+    {
+      "at": "2026-11-07T00:06:23.382Z",
+      "ms": 17015,
+      "step": "b-revoked",
+      "text": "PASS: revoked staff PIN → 303, error=\"wrong-pin\", cookie set: false"
+    },
+    {
+      "at": "2026-11-07T00:06:23.385Z",
+      "ms": 17018,
+      "step": "revoked-session",
+      "text": "PASS: the revoked staff PIN's earlier session (its cookie) → POST /api/admin/item 401 \"not signed in\""
+    }
+  ]
+}

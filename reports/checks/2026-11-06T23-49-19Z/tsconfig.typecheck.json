@@ -1,0 +1,14 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": [
+    "../../../next-env.d.ts",
+    "../../../src/**/*.ts",
+    "../../../src/**/*.tsx",
+    "../../../.next-check/types/**/*.ts"
+  ]
+}

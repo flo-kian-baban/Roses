@@ -13,12 +13,13 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium, devices } from 'playwright';
 import { connectDb } from '../../scripts/load-env.mjs';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
 
-const args = Object.fromEntries(process.argv.slice(2).filter((a) => a !== '--measure-only').map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
-const base = args.base, label = args.label || 'after';
-const out = path.resolve(args.out || 'reports/editor-cleanup/shots');
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('reports/editor-cleanup/shots.mjs', { options: { base: 'server', label: ['before', 'after'], out: 'path', 'measure-only': 'flag' }, db: true, env: ['DRILL_ADMIN_PIN'] });
+const base = args.base, label = args.label;
+const out = path.resolve(args.out);
 const pin = process.env.DRILL_ADMIN_PIN;
-if (!base || !pin) { console.error('usage: DRILL_ADMIN_PIN=… node reports/editor-cleanup/shots.mjs --base <url> --label before|after'); process.exit(2); }
 await fs.mkdir(out, { recursive: true });
 const db = await connectDb('editor-cleanup-shots');
 const idOf = async (venue, name) => (await db.query(`select id from items where venue_id = $1 and name->>'en' = $2 order by listed desc limit 1`, [venue, name])).rows[0]?.id;

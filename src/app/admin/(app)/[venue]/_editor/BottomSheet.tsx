@@ -34,10 +34,10 @@ export function BottomSheet({ detent, onDetent, max = 'full', top, header, child
   const onPointerMove = (e: React.PointerEvent) => { const d = drag.current; if (!d) return; const dy = d.y0 - e.clientY; if (Math.abs(dy) > 4) d.moved = true; if (d.moved) setDragging(Math.max(heights.collapsed, Math.min(heights[max], d.h0 + dy))); };
   const onPointerUp = () => { const d = drag.current; drag.current = null; if (!d) return; if (d.moved && dragging != null) onDetent(nearest(dragging)); else onDetent(allowed[(allowed.indexOf(detent) + 1) % allowed.length]); setDragging(null); };
   return (
-    <div role="region" aria-label={label} data-style-sheet={detent} className="fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-[20px] bg-white shadow-[0_-8px_30px_-12px_rgba(0,0,0,.25)]"
+    <div role="region" aria-label={label} data-style-sheet={detent} className="fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-xl bg-canvas shadow-sheet"
       style={{ height, transition: dragging == null ? 'height .2s cubic-bezier(.2,.8,.2,1)' : 'none' }}>
       <div ref={headRef} className="shrink-0 touch-none select-none" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
-        <button type="button" className="relative flex h-5 w-full items-center justify-center before:absolute before:inset-x-0 before:-top-6 before:bottom-0 before:content-['']" aria-label={`Controls: ${detent}. Tap to ${detent === 'full' || detent === max ? 'collapse' : 'expand'}`} data-style-sheet-handle><span className="h-1.5 w-10 rounded-full bg-neutral-300" aria-hidden="true" /></button>
+        <button type="button" className="relative flex h-5 w-full items-center justify-center before:absolute before:inset-x-0 before:-top-6 before:bottom-0 before:content-['']" aria-label={`Controls: ${detent}. Tap to ${detent === 'full' || detent === max ? 'collapse' : 'expand'}`} data-style-sheet-handle><span className="h-1.5 w-10 rounded-xl bg-track-strong" aria-hidden="true" /></button>
         {header}
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain border-t border-line" data-style-sheet-body>{children}</div>

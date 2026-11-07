@@ -1,0 +1,1374 @@
+{
+  "base": "http://127.0.0.1:57511",
+  "at": "2026-11-07T00:38:33.513Z",
+  "pass": true,
+  "results": [
+    {
+      "step": "layout-laptop",
+      "ok": true,
+      "text": "laptop (1440 × 900): 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px"
+    },
+    {
+      "step": "sideways-cut-390",
+      "ok": true,
+      "text": "390 px phone (iPhone 13): 3 sideways row(s) measured (style: \"EN\" 29.3 px shown, 14.7 px hidden; style-colour: \"EN\" 29.3 px shown, 14.7 px hidden; style-welcome: \"EN\" 29.3 px shown, 14.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)"
+    },
+    {
+      "step": "layout-390",
+      "ok": true,
+      "text": "390 px phone (iPhone 13): 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px"
+    },
+    {
+      "step": "sideways-cut-360",
+      "ok": true,
+      "text": "360 px phone: 3 sideways row(s) measured (style: \"EN\" 15.3 px shown, 28.7 px hidden; style-colour: \"EN\" 15.3 px shown, 28.7 px hidden; style-welcome: \"EN\" 15.3 px shown, 28.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)"
+    },
+    {
+      "step": "layout-360",
+      "ok": true,
+      "text": "360 px phone: 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px"
+    }
+  ],
+  "views": [
+    {
+      "view": "laptop",
+      "rows": [
+        {
+          "key": "signin-venues",
+          "title": "Sign-in: venue picker",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "signin-pin",
+          "title": "Sign-in: PIN",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "signin-email",
+          "title": "Sign-in: email and password",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "menu",
+          "title": "Menu tab (with an alert)",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "venue-switcher",
+          "title": "Venue switcher open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "account-menu",
+          "title": "Account menu open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "section-menu",
+          "title": "A section's menu",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "reorder",
+          "title": "Reorder items in a section",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "add-item",
+          "title": "Add item sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "add-section",
+          "title": "Add section sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "rename-section",
+          "title": "Rename section sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "delete-section",
+          "title": "Delete section sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "item-editor",
+          "title": "Item editor",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "style",
+          "title": "Style tab",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "style-colour",
+          "title": "Style: a colour open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "style-welcome",
+          "title": "Style: Welcome group open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "details",
+          "title": "Details tab",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "team",
+          "title": "Team",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "add-venue",
+          "title": "Add venue",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        }
+      ]
+    },
+    {
+      "view": "390",
+      "rows": [
+        {
+          "key": "signin-venues",
+          "title": "Sign-in: venue picker",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "signin-pin",
+          "title": "Sign-in: PIN",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "signin-email",
+          "title": "Sign-in: email and password",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "menu",
+          "title": "Menu tab (with an alert)",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "venue-switcher",
+          "title": "Venue switcher open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "account-menu",
+          "title": "Account menu open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "section-menu",
+          "title": "A section's menu",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "reorder",
+          "title": "Reorder items in a section",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "add-item",
+          "title": "Add item sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "add-section",
+          "title": "Add section sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "rename-section",
+          "title": "Rename section sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "delete-section",
+          "title": "Delete section sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "item-editor",
+          "title": "Item editor",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "style",
+          "title": "Style tab",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [
+            {
+              "chip": "EN",
+              "shown": 29.3,
+              "hidden": 14.7
+            }
+          ],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "style-colour",
+          "title": "Style: a colour open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [
+            {
+              "chip": "EN",
+              "shown": 29.3,
+              "hidden": 14.7
+            }
+          ],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "style-welcome",
+          "title": "Style: Welcome group open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [
+            {
+              "chip": "EN",
+              "shown": 29.3,
+              "hidden": 14.7
+            }
+          ],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "details",
+          "title": "Details tab",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "team",
+          "title": "Team",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "add-venue",
+          "title": "Add venue",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        }
+      ]
+    },
+    {
+      "view": "360",
+      "rows": [
+        {
+          "key": "signin-venues",
+          "title": "Sign-in: venue picker",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "signin-pin",
+          "title": "Sign-in: PIN",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "signin-email",
+          "title": "Sign-in: email and password",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "menu",
+          "title": "Menu tab (with an alert)",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "venue-switcher",
+          "title": "Venue switcher open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "account-menu",
+          "title": "Account menu open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "section-menu",
+          "title": "A section's menu",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "reorder",
+          "title": "Reorder items in a section",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "add-item",
+          "title": "Add item sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "add-section",
+          "title": "Add section sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "rename-section",
+          "title": "Rename section sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "delete-section",
+          "title": "Delete section sheet",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "item-editor",
+          "title": "Item editor",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "style",
+          "title": "Style tab",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [
+            {
+              "chip": "EN",
+              "shown": 15.3,
+              "hidden": 28.7
+            }
+          ],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "style-colour",
+          "title": "Style: a colour open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [
+            {
+              "chip": "EN",
+              "shown": 15.3,
+              "hidden": 28.7
+            }
+          ],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "style-welcome",
+          "title": "Style: Welcome group open",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "17px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [
+            {
+              "chip": "EN",
+              "shown": 15.3,
+              "hidden": 28.7
+            }
+          ],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "details",
+          "title": "Details tab",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "team",
+          "title": "Team",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        },
+        {
+          "key": "add-venue",
+          "title": "Add venue",
+          "found": [],
+          "sizes": [
+            "13px",
+            "16px",
+            "28px"
+          ],
+          "radii": [
+            "12px"
+          ],
+          "sideways": [],
+          "otherSizes": [],
+          "otherRadii": []
+        }
+      ]
+    }
+  ],
+  "transcript": [
+    {
+      "at": "2026-11-07T00:37:26.832Z",
+      "ms": 10,
+      "step": "db",
+      "text": "connected to database \"roses_check_20261107t001443z\" as application \"roses-check:layout-drill\""
+    },
+    {
+      "at": "2026-11-07T00:37:28.562Z",
+      "ms": 1740,
+      "step": "laptop",
+      "text": "signin-venues: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:29.551Z",
+      "ms": 2729,
+      "step": "laptop",
+      "text": "signin-pin: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:30.537Z",
+      "ms": 3715,
+      "step": "laptop",
+      "text": "signin-email: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:31.774Z",
+      "ms": 4952,
+      "step": "laptop",
+      "text": "menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:32.968Z",
+      "ms": 6146,
+      "step": "laptop",
+      "text": "venue-switcher: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:34.162Z",
+      "ms": 7340,
+      "step": "laptop",
+      "text": "account-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:35.474Z",
+      "ms": 8652,
+      "step": "laptop",
+      "text": "section-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:36.897Z",
+      "ms": 10075,
+      "step": "laptop",
+      "text": "reorder: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:38.081Z",
+      "ms": 11259,
+      "step": "laptop",
+      "text": "add-item: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:39.941Z",
+      "ms": 13119,
+      "step": "laptop",
+      "text": "add-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:41.129Z",
+      "ms": 14307,
+      "step": "laptop",
+      "text": "rename-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:42.348Z",
+      "ms": 15526,
+      "step": "laptop",
+      "text": "delete-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:43.587Z",
+      "ms": 16765,
+      "step": "laptop",
+      "text": "item-editor: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:44.680Z",
+      "ms": 17858,
+      "step": "laptop",
+      "text": "style: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:45.752Z",
+      "ms": 18930,
+      "step": "laptop",
+      "text": "style-colour: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:46.818Z",
+      "ms": 19996,
+      "step": "laptop",
+      "text": "style-welcome: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:47.869Z",
+      "ms": 21047,
+      "step": "laptop",
+      "text": "details: nothing cut, past the edges or sideways; sizes 13px 16px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:48.874Z",
+      "ms": 22052,
+      "step": "laptop",
+      "text": "team: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:49.855Z",
+      "ms": 23033,
+      "step": "laptop",
+      "text": "add-venue: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:49.866Z",
+      "ms": 23044,
+      "step": "layout-laptop",
+      "text": "PASS: laptop (1440 × 900): 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:51.396Z",
+      "ms": 24574,
+      "step": "390",
+      "text": "signin-venues: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:52.388Z",
+      "ms": 25566,
+      "step": "390",
+      "text": "signin-pin: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:53.377Z",
+      "ms": 26555,
+      "step": "390",
+      "text": "signin-email: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:54.539Z",
+      "ms": 27717,
+      "step": "390",
+      "text": "menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:55.625Z",
+      "ms": 28803,
+      "step": "390",
+      "text": "venue-switcher: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:56.736Z",
+      "ms": 29914,
+      "step": "390",
+      "text": "account-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:57.933Z",
+      "ms": 31111,
+      "step": "390",
+      "text": "section-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:37:59.206Z",
+      "ms": 32384,
+      "step": "390",
+      "text": "reorder: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:00.294Z",
+      "ms": 33472,
+      "step": "390",
+      "text": "add-item: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:01.906Z",
+      "ms": 35084,
+      "step": "390",
+      "text": "add-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:03.050Z",
+      "ms": 36228,
+      "step": "390",
+      "text": "rename-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:04.175Z",
+      "ms": 37353,
+      "step": "390",
+      "text": "delete-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:05.333Z",
+      "ms": 38511,
+      "step": "390",
+      "text": "item-editor: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:06.414Z",
+      "ms": 39592,
+      "step": "390",
+      "text": "style: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:07.489Z",
+      "ms": 40667,
+      "step": "390",
+      "text": "style-colour: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:08.556Z",
+      "ms": 41734,
+      "step": "390",
+      "text": "style-welcome: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:09.576Z",
+      "ms": 42754,
+      "step": "390",
+      "text": "details: nothing cut, past the edges or sideways; sizes 13px 16px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:10.567Z",
+      "ms": 43745,
+      "step": "390",
+      "text": "team: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:11.559Z",
+      "ms": 44737,
+      "step": "390",
+      "text": "add-venue: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:11.565Z",
+      "ms": 44743,
+      "step": "sideways-cut-390",
+      "text": "PASS: 390 px phone (iPhone 13): 3 sideways row(s) measured (style: \"EN\" 29.3 px shown, 14.7 px hidden; style-colour: \"EN\" 29.3 px shown, 14.7 px hidden; style-welcome: \"EN\" 29.3 px shown, 14.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)"
+    },
+    {
+      "at": "2026-11-07T00:38:11.565Z",
+      "ms": 44743,
+      "step": "layout-390",
+      "text": "PASS: 390 px phone (iPhone 13): 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:13.108Z",
+      "ms": 46286,
+      "step": "360",
+      "text": "signin-venues: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:14.113Z",
+      "ms": 47291,
+      "step": "360",
+      "text": "signin-pin: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:15.095Z",
+      "ms": 48273,
+      "step": "360",
+      "text": "signin-email: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:16.232Z",
+      "ms": 49410,
+      "step": "360",
+      "text": "menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:17.319Z",
+      "ms": 50497,
+      "step": "360",
+      "text": "venue-switcher: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:18.415Z",
+      "ms": 51593,
+      "step": "360",
+      "text": "account-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:19.862Z",
+      "ms": 53040,
+      "step": "360",
+      "text": "section-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:21.161Z",
+      "ms": 54339,
+      "step": "360",
+      "text": "reorder: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:22.292Z",
+      "ms": 55470,
+      "step": "360",
+      "text": "add-item: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:23.863Z",
+      "ms": 57041,
+      "step": "360",
+      "text": "add-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:24.980Z",
+      "ms": 58158,
+      "step": "360",
+      "text": "rename-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:26.091Z",
+      "ms": 59269,
+      "step": "360",
+      "text": "delete-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:27.247Z",
+      "ms": 60425,
+      "step": "360",
+      "text": "item-editor: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:28.356Z",
+      "ms": 61534,
+      "step": "360",
+      "text": "style: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:29.416Z",
+      "ms": 62594,
+      "step": "360",
+      "text": "style-colour: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:30.470Z",
+      "ms": 63648,
+      "step": "360",
+      "text": "style-welcome: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:31.482Z",
+      "ms": 64660,
+      "step": "360",
+      "text": "details: nothing cut, past the edges or sideways; sizes 13px 16px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:32.470Z",
+      "ms": 65648,
+      "step": "360",
+      "text": "team: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:33.453Z",
+      "ms": 66631,
+      "step": "360",
+      "text": "add-venue: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px"
+    },
+    {
+      "at": "2026-11-07T00:38:33.459Z",
+      "ms": 66637,
+      "step": "sideways-cut-360",
+      "text": "PASS: 360 px phone: 3 sideways row(s) measured (style: \"EN\" 15.3 px shown, 28.7 px hidden; style-colour: \"EN\" 15.3 px shown, 28.7 px hidden; style-welcome: \"EN\" 15.3 px shown, 28.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)"
+    },
+    {
+      "at": "2026-11-07T00:38:33.459Z",
+      "ms": 66637,
+      "step": "layout-360",
+      "text": "PASS: 360 px phone: 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px"
+    }
+  ]
+}

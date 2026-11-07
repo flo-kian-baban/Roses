@@ -2,6 +2,9 @@
 // each particle's position, whether the sample ran before any rAF, and the first painted frames from a trace (screenshots).
 import { chromium, devices } from '/Users/kianbaban/Roses/node_modules/playwright/index.mjs';
 import fs from 'node:fs';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+await scratchTarget('reports/spring-first-frame/first-frame.mjs', { env: ['PORT', 'OUT'], servers: () => [`http://127.0.0.1:${process.env.PORT}`] });
 const base = `http://127.0.0.1:${process.env.PORT}`, out = process.env.OUT, N = Number(process.env.N || 10);
 const DEVICE = { ...devices['iPhone 13'], defaultBrowserType: 'chromium' };
 const browser = await chromium.launch();

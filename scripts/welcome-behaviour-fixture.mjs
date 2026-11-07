@@ -34,7 +34,9 @@ export function compareBehaviour(want, got, gotCss) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
+  // the target is a scratch server, or nothing is sent (the PM, 2026-11-06; scripts/scratch-target.mjs)
+  const { scratchTarget } = await import('./scratch-target.mjs');
+  const { args } = await scratchTarget('scripts/welcome-behaviour-fixture.mjs', { options: { base: 'server', venue: 'value', season: ['fall', 'winter', 'spring', 'summer'], commit: 'value', out: 'path' } });
   const html = await (await fetch(`${args.base}/${args.venue}`, { cache: 'no-store' })).text();
   const b = behaviourOf(html);
   if (b.season !== args.season) { console.error(`the page carries the ${b.season} scene, not ${args.season}`); process.exit(1); }

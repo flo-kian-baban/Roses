@@ -1,0 +1,746 @@
+{
+ "at": "2026-11-06T23:51:29.792Z",
+ "pass": true,
+ "results": [
+  {
+   "step": "static-guarded",
+   "ok": true,
+   "text": "58 scripts under scripts/ and reports/ reach a server, a browser or a database: 44 start with the guard, 14 are tools named by name (reports/welcome/gallery/shots.mjs, scripts/admin-create.mjs, scripts/check.mjs, scripts/db-backup.sh, scripts/db-migrate.mjs, scripts/db-restore.sh, scripts/layout-rules.mjs, scripts/load-env.mjs, scripts/network-watch.mjs, scripts/perf-fixture.mjs, scripts/scratch-guard-selftest.mjs, scripts/scratch-target.mjs, scripts/setup.mjs, scripts/uploads-clean.mjs); not guarded: none; guarded but reading .env.local: none"
+  },
+  {
+   "step": "no-options-sends-nothing",
+   "ok": true,
+   "text": "44 guarded scripts, each started with no options in an empty environment and with the working settings exported (88 runs): 88 stopped with exit 2 and a message, with nothing sent (no connection, no child process)"
+  },
+  {
+   "step": "refuse-wrong-option",
+   "ok": true,
+   "text": "the lockout drill given --base (it takes --base4, --base6, --proxyBase): exit 2, \"scripts/lockout-drill.mjs: refused, nothing sent: unknown option --base; missing --base4; missing --base6; missing --proxyBase; unexpected argument http://127.0.0.1:52907.\"; sent: 0 connection(s) or child process(es)"
+  },
+  {
+   "step": "refuse-port-3000",
+   "ok": true,
+   "text": "the layout drill given port 3000: exit 2, \"scripts/layout-drill.mjs: refused, nothing sent: --base \"http://127.0.0.1:3000\" is port 3000, Kian's review server, never a target.\"; sent: 0 connection(s) or child process(es)"
+  },
+  {
+   "step": "refuse-off-machine",
+   "ok": true,
+   "text": "the layout drill given an address off this machine: exit 2, \"scripts/layout-drill.mjs: refused, nothing sent: --base \"http://192.0.2.10:8080\" is not on this machine.\"; sent: 0 connection(s) or child process(es)"
+  },
+  {
+   "step": "refuse-working-db",
+   "ok": true,
+   "text": "the layout drill with DATABASE_URL on the working database: exit 2, \"scripts/layout-drill.mjs: refused, nothing sent: DATABASE_URL names the working database \"roses\".\"; sent: 0 connection(s) or child process(es)"
+  },
+  {
+   "step": "refuse-probe-404",
+   "ok": true,
+   "text": "the layout drill at a server that answers the probe with 404 (Kian's review server, production): exit 2, \"scripts/layout-drill.mjs: refused, nothing sent but the probe: http://127.0.0.1:52907/ is not a scratch server: GET /api/scratch answered 404.\"; sent: 1 request(s) to the stand-in (GET /api/scratch)"
+  },
+  {
+   "step": "refuse-server-working-db",
+   "ok": true,
+   "text": "the layout drill at a scratch server on the working database: exit 2, \"scripts/layout-drill.mjs: refused, nothing sent but the probe: http://127.0.0.1:52907/ uses the working database \"roses\".\"; sent: 1 request(s) to the stand-in (GET /api/scratch)"
+  },
+  {
+   "step": "refuse-server-other-db",
+   "ok": true,
+   "text": "the layout drill at a scratch server on another scratch database than its own: exit 2, \"scripts/layout-drill.mjs: refused, nothing sent but the probe: http://127.0.0.1:52907/ uses the database \"roses_some_other_copy\" and this script \"roses_guard_selftest\" (DATABASE_URL): they must be the same scratch copy.\"; sent: 1 request(s) to the stand-in (GET /api/scratch)"
+  },
+  {
+   "step": "refuse-server-working-uploads",
+   "ok": true,
+   "text": "the layout drill at a scratch server on the working uploads: exit 2, \"scripts/layout-drill.mjs: refused, nothing sent but the probe: http://127.0.0.1:52907/ uses the working uploads folder (/Users/kianbaban/Roses/uploads).\"; sent: 1 request(s) to the stand-in (GET /api/scratch)"
+  },
+  {
+   "step": "refuse-backup-working-db",
+   "ok": true,
+   "text": "the backup drill with ROSES_DB on the working database: exit 2, \"scripts/backup-drill.sh: refused, nothing run: ROSES_DB names the working database \"roses\".\"; sent: 0 connection(s) or child process(es)"
+  },
+  {
+   "step": "control-scratch-server-passes",
+   "ok": true,
+   "text": "the layout drill at a stand-in scratch server on its own database: the guard let it through (exit 1, not 2), after the one probe (GET /api/scratch) it went for its database (127.0.0.1:5433, written down and refused by the tripwire): the tripwire sees what a script sends"
+  }
+ ],
+ "guarded": [
+  "reports/admin-audit/editor-stills.mjs",
+  "reports/admin-audit/panel-layout.mjs",
+  "reports/admin-audit/probe-webkit-done.mjs",
+  "reports/admin-cleanup/shots.mjs",
+  "reports/editor-cleanup/shots.mjs",
+  "reports/menu-research/samples.mjs",
+  "reports/persian-tap/layout-check.mjs",
+  "reports/persian-tap/persian-tap.mjs",
+  "reports/persian-tap/scroll-follow.mjs",
+  "reports/persian-tap/visual-diff.mjs",
+  "reports/save-order/saves-within-2s.mjs",
+  "reports/section-grid/capture.mjs",
+  "reports/sheet-layout/measure.mjs",
+  "reports/sheet-motion/measure.mjs",
+  "reports/spring-first-frame/drill-sequence.mjs",
+  "reports/spring-first-frame/first-frame.mjs",
+  "reports/spring-first-frame/inline-ab.mjs",
+  "reports/spring-first-frame/server.mjs",
+  "reports/spring-first-frame/timeline.mjs",
+  "reports/style-no-jump/measure.mjs",
+  "reports/tabs-follow-scroll/tabs-measure.mjs",
+  "reports/ui-audit/ui-audit.mjs",
+  "reports/welcome/logo-stills.mjs",
+  "scripts/admin-drill.mjs",
+  "scripts/after-tap-drill.mjs",
+  "scripts/backup-drill.sh",
+  "scripts/check-lighthouse.mjs",
+  "scripts/check-page.mjs",
+  "scripts/check-photo-links.mjs",
+  "scripts/editor-drill.mjs",
+  "scripts/layout-drill.mjs",
+  "scripts/lockout-drill.mjs",
+  "scripts/new-venue-drill.mjs",
+  "scripts/preview-drill.mjs",
+  "scripts/research-drill.mjs",
+  "scripts/revalidation-drill.mjs",
+  "scripts/season-drill.mjs",
+  "scripts/signin-links-check.mjs",
+  "scripts/style-drill.mjs",
+  "scripts/style-identity.mjs",
+  "scripts/touch-drill.mjs",
+  "scripts/transition-drill.mjs",
+  "scripts/welcome-behaviour-fixture.mjs",
+  "scripts/welcome-drill.mjs"
+ ],
+ "notGuarded": {
+  "reports/welcome/gallery/shots.mjs": "shoots a local file (gallery.html): no server, no database",
+  "scripts/admin-create.mjs": "creates or resets an admin (Kian's own PIN, go-live)",
+  "scripts/check.mjs": "the check suite: copies the working database read only, proves it untouched, runs everything on its own copies",
+  "scripts/db-backup.sh": "backs up the working database",
+  "scripts/db-migrate.mjs": "applies migrations to the database it is given",
+  "scripts/db-restore.sh": "restores a backup",
+  "scripts/layout-rules.mjs": "the library of the layout drill and the screenshots (nothing at the top level)",
+  "scripts/load-env.mjs": "the library a drill opens its database with (after its guard)",
+  "scripts/network-watch.mjs": "probes the three outside photo hosts for the suite",
+  "scripts/perf-fixture.mjs": "freezes the performance fixture from the working database (read only) and verifies it",
+  "scripts/scratch-guard-selftest.mjs": "this selftest (its own fake servers)",
+  "scripts/scratch-target.mjs": "the guard itself (its one probe)",
+  "scripts/setup.mjs": "a fresh clone's setup: imports into the working database",
+  "scripts/uploads-clean.mjs": "removes uploads no row references (go-live list)"
+ },
+ "noOptions": [
+  {
+   "script": "reports/admin-audit/editor-stills.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/admin-audit/editor-stills.mjs: refused, nothing sent: missing --sp; missing --out; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "reports/admin-audit/editor-stills.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/admin-audit/editor-stills.mjs: refused, nothing sent: missing --sp; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "reports/admin-audit/panel-layout.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/admin-audit/panel-layout.mjs: refused, nothing sent: missing --sp.",
+   "sent": []
+  },
+  {
+   "script": "reports/admin-audit/panel-layout.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/admin-audit/panel-layout.mjs: refused, nothing sent: missing --sp.",
+   "sent": []
+  },
+  {
+   "script": "reports/admin-audit/probe-webkit-done.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/admin-audit/probe-webkit-done.mjs: refused, nothing sent: missing --sp; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "reports/admin-audit/probe-webkit-done.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/admin-audit/probe-webkit-done.mjs: refused, nothing sent: missing --sp; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "reports/admin-cleanup/shots.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/admin-cleanup/shots.mjs: refused, nothing sent: missing --base; missing --label; missing --out; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "reports/admin-cleanup/shots.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/admin-cleanup/shots.mjs: refused, nothing sent: missing --base; missing --label; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "reports/editor-cleanup/shots.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/editor-cleanup/shots.mjs: refused, nothing sent: missing --base; missing --label; missing --out; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "reports/editor-cleanup/shots.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/editor-cleanup/shots.mjs: refused, nothing sent: missing --base; missing --label; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "reports/menu-research/samples.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/menu-research/samples.mjs: refused, nothing sent: DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "reports/menu-research/samples.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/menu-research/samples.mjs: refused, nothing sent: DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "reports/persian-tap/layout-check.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/persian-tap/layout-check.mjs: refused, nothing sent: missing --before; missing --after; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/persian-tap/layout-check.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/persian-tap/layout-check.mjs: refused, nothing sent: missing --before; missing --after; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/persian-tap/persian-tap.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/persian-tap/persian-tap.mjs: refused, nothing sent: missing --before; missing --after; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/persian-tap/persian-tap.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/persian-tap/persian-tap.mjs: refused, nothing sent: missing --before; missing --after; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/persian-tap/scroll-follow.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/persian-tap/scroll-follow.mjs: refused, nothing sent: missing --before; missing --after; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/persian-tap/scroll-follow.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/persian-tap/scroll-follow.mjs: refused, nothing sent: missing --before; missing --after; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/persian-tap/visual-diff.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/persian-tap/visual-diff.mjs: refused, nothing sent: missing --before; missing --after; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/persian-tap/visual-diff.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/persian-tap/visual-diff.mjs: refused, nothing sent: missing --before; missing --after; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/save-order/saves-within-2s.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/save-order/saves-within-2s.mjs: refused, nothing sent: DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "reports/save-order/saves-within-2s.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/save-order/saves-within-2s.mjs: refused, nothing sent: DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "reports/section-grid/capture.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/section-grid/capture.mjs: refused, nothing sent: missing --base; missing --out; DRILL_ADMIN_PIN is not set.",
+   "sent": []
+  },
+  {
+   "script": "reports/section-grid/capture.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/section-grid/capture.mjs: refused, nothing sent: missing --base; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/sheet-layout/measure.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/sheet-layout/measure.mjs: refused, nothing sent: missing --base; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/sheet-layout/measure.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/sheet-layout/measure.mjs: refused, nothing sent: missing --base; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/sheet-motion/measure.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/sheet-motion/measure.mjs: refused, nothing sent: missing --base; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/sheet-motion/measure.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/sheet-motion/measure.mjs: refused, nothing sent: missing --base; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/spring-first-frame/drill-sequence.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/spring-first-frame/drill-sequence.mjs: refused, nothing sent: CWD is not set; DIST is not set; NOW is not set; OUT is not set; WANT is not set; DATABASE_URL is not set (no .env.local is read); UPLOAD_DIR is not s",
+   "sent": []
+  },
+  {
+   "script": "reports/spring-first-frame/drill-sequence.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/spring-first-frame/drill-sequence.mjs: refused, nothing sent: DIST is not set; NOW is not set; OUT is not set; WANT is not set; DATABASE_URL names the working database \"roses\"; UPLOAD_DIR is the working uploads f",
+   "sent": []
+  },
+  {
+   "script": "reports/spring-first-frame/first-frame.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/spring-first-frame/first-frame.mjs: refused, nothing sent: PORT is not set; OUT is not set.",
+   "sent": []
+  },
+  {
+   "script": "reports/spring-first-frame/first-frame.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/spring-first-frame/first-frame.mjs: refused, nothing sent: OUT is not set.",
+   "sent": []
+  },
+  {
+   "script": "reports/spring-first-frame/inline-ab.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/spring-first-frame/inline-ab.mjs: refused, nothing sent: PORT is not set; OUT is not set.",
+   "sent": []
+  },
+  {
+   "script": "reports/spring-first-frame/inline-ab.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/spring-first-frame/inline-ab.mjs: refused, nothing sent: OUT is not set.",
+   "sent": []
+  },
+  {
+   "script": "reports/spring-first-frame/server.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/spring-first-frame/server.mjs: refused, nothing sent: CWD is not set; DIST is not set; COPY is not set; NOW is not set; WANT is not set; LOG is not set; DATABASE_URL is not set (no .env.local is read); UPLOAD_DIR",
+   "sent": []
+  },
+  {
+   "script": "reports/spring-first-frame/server.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/spring-first-frame/server.mjs: refused, nothing sent: DIST is not set; COPY is not set; NOW is not set; WANT is not set; LOG is not set; DATABASE_URL names the working database \"roses\"; UPLOAD_DIR is the working ",
+   "sent": []
+  },
+  {
+   "script": "reports/spring-first-frame/timeline.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/spring-first-frame/timeline.mjs: refused, nothing sent: CWD is not set; DIST is not set; NOW is not set; OUT is not set; WANT is not set; DATABASE_URL is not set (no .env.local is read); UPLOAD_DIR is not set (a ",
+   "sent": []
+  },
+  {
+   "script": "reports/spring-first-frame/timeline.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/spring-first-frame/timeline.mjs: refused, nothing sent: DIST is not set; NOW is not set; OUT is not set; WANT is not set; DATABASE_URL names the working database \"roses\"; UPLOAD_DIR is the working uploads folder ",
+   "sent": []
+  },
+  {
+   "script": "reports/style-no-jump/measure.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/style-no-jump/measure.mjs: refused, nothing sent: missing --base; missing --out; DRILL_ADMIN_PIN is not set.",
+   "sent": []
+  },
+  {
+   "script": "reports/style-no-jump/measure.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/style-no-jump/measure.mjs: refused, nothing sent: missing --base; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "reports/tabs-follow-scroll/tabs-measure.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/tabs-follow-scroll/tabs-measure.mjs: refused, nothing sent: missing <base>; missing <venue>; missing <label>.",
+   "sent": []
+  },
+  {
+   "script": "reports/tabs-follow-scroll/tabs-measure.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/tabs-follow-scroll/tabs-measure.mjs: refused, nothing sent: missing <base>; missing <venue>; missing <label>.",
+   "sent": []
+  },
+  {
+   "script": "reports/ui-audit/ui-audit.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/ui-audit/ui-audit.mjs: refused, nothing sent: missing --base.",
+   "sent": []
+  },
+  {
+   "script": "reports/ui-audit/ui-audit.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/ui-audit/ui-audit.mjs: refused, nothing sent: missing --base.",
+   "sent": []
+  },
+  {
+   "script": "reports/welcome/logo-stills.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "reports/welcome/logo-stills.mjs: refused, nothing sent: missing --base.",
+   "sent": []
+  },
+  {
+   "script": "reports/welcome/logo-stills.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "reports/welcome/logo-stills.mjs: refused, nothing sent: missing --base.",
+   "sent": []
+  },
+  {
+   "script": "scripts/admin-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/admin-drill.mjs: refused, nothing sent: missing --base; missing --out; DRILL_ADMIN_EMAIL is not set; DRILL_ADMIN_PASSWORD is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/admin-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/admin-drill.mjs: refused, nothing sent: missing --base; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/after-tap-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/after-tap-drill.mjs: refused, nothing sent: missing --base; missing --out; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/after-tap-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/after-tap-drill.mjs: refused, nothing sent: missing --base; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/backup-drill.sh",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/backup-drill.sh: refused, nothing run: give the report file as the one argument.",
+   "sent": []
+  },
+  {
+   "script": "scripts/backup-drill.sh",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/backup-drill.sh: refused, nothing run: give the report file as the one argument.",
+   "sent": []
+  },
+  {
+   "script": "scripts/check-lighthouse.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/check-lighthouse.mjs: refused, nothing sent: missing --out; missing <url>.",
+   "sent": []
+  },
+  {
+   "script": "scripts/check-lighthouse.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/check-lighthouse.mjs: refused, nothing sent: missing --out; missing <url>.",
+   "sent": []
+  },
+  {
+   "script": "scripts/check-page.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/check-page.mjs: refused, nothing sent: missing --base; missing --out; missing <venue>.",
+   "sent": []
+  },
+  {
+   "script": "scripts/check-page.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/check-page.mjs: refused, nothing sent: missing --base; missing --out; missing <venue>.",
+   "sent": []
+  },
+  {
+   "script": "scripts/check-photo-links.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/check-photo-links.mjs: refused, nothing sent: missing --base; missing --out; missing <venue>; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/check-photo-links.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/check-photo-links.mjs: refused, nothing sent: missing --base; missing --out; missing <venue>; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/editor-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/editor-drill.mjs: refused, nothing sent: missing --base; missing --out; missing --dist; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/editor-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/editor-drill.mjs: refused, nothing sent: missing --base; missing --out; missing --dist; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/layout-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/layout-drill.mjs: refused, nothing sent: missing --base; missing --out; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/layout-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/layout-drill.mjs: refused, nothing sent: missing --base; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/lockout-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/lockout-drill.mjs: refused, nothing sent: missing --base4; missing --base6; missing --proxyBase; missing --out; DRILL_ADMIN_EMAIL is not set; DRILL_ADMIN_PASSWORD is not set; DATABASE_URL is not set (no .env.loca",
+   "sent": []
+  },
+  {
+   "script": "scripts/lockout-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/lockout-drill.mjs: refused, nothing sent: missing --base4; missing --base6; missing --proxyBase; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/new-venue-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/new-venue-drill.mjs: refused, nothing sent: missing --out; DATABASE_URL is not set (no .env.local is read); missing --base (or --remove <venue id>); DRILL_ADMIN_EMAIL / DRILL_ADMIN_PASSWORD are not set.",
+   "sent": []
+  },
+  {
+   "script": "scripts/new-venue-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/new-venue-drill.mjs: refused, nothing sent: missing --out; DATABASE_URL names the working database \"roses\"; missing --base (or --remove <venue id>).",
+   "sent": []
+  },
+  {
+   "script": "scripts/preview-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/preview-drill.mjs: refused, nothing sent: missing --base; missing --out; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/preview-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/preview-drill.mjs: refused, nothing sent: missing --base; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/research-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/research-drill.mjs: refused, nothing sent: missing --base; missing --out; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/research-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/research-drill.mjs: refused, nothing sent: missing --base; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/revalidation-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/revalidation-drill.mjs: refused, nothing sent: missing --base; missing --out; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/revalidation-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/revalidation-drill.mjs: refused, nothing sent: missing --base; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/season-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/season-drill.mjs: refused, nothing sent: missing --dist; missing --copy; missing --port; missing --out; DATABASE_URL is not set (no .env.local is read); UPLOAD_DIR is not set (a server started without it would us",
+   "sent": []
+  },
+  {
+   "script": "scripts/season-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/season-drill.mjs: refused, nothing sent: missing --dist; missing --copy; missing --port; missing --out; DATABASE_URL names the working database \"roses\"; UPLOAD_DIR is the working uploads folder (/Users/kianbaban/",
+   "sent": []
+  },
+  {
+   "script": "scripts/signin-links-check.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/signin-links-check.mjs: refused, nothing sent: missing --base; missing --out; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/signin-links-check.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/signin-links-check.mjs: refused, nothing sent: missing --base; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/style-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/style-drill.mjs: refused, nothing sent: missing --base; missing --out; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/style-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/style-drill.mjs: refused, nothing sent: missing --base; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/style-identity.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/style-identity.mjs: refused, nothing sent: missing --base; missing --out; missing <mode>.",
+   "sent": []
+  },
+  {
+   "script": "scripts/style-identity.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/style-identity.mjs: refused, nothing sent: missing --base; missing --out; missing <mode>.",
+   "sent": []
+  },
+  {
+   "script": "scripts/touch-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/touch-drill.mjs: refused, nothing sent: missing --base; missing --out; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/touch-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/touch-drill.mjs: refused, nothing sent: missing --base; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  },
+  {
+   "script": "scripts/transition-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/transition-drill.mjs: refused, nothing sent: missing --dist; missing --copy; missing --port; missing --out; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read); UPLOAD_DIR is not set (a se",
+   "sent": []
+  },
+  {
+   "script": "scripts/transition-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/transition-drill.mjs: refused, nothing sent: missing --dist; missing --copy; missing --port; missing --out; DATABASE_URL names the working database \"roses\"; UPLOAD_DIR is the working uploads folder (/Users/kianba",
+   "sent": []
+  },
+  {
+   "script": "scripts/welcome-behaviour-fixture.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/welcome-behaviour-fixture.mjs: refused, nothing sent: missing --base; missing --venue; missing --season; missing --commit; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "scripts/welcome-behaviour-fixture.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/welcome-behaviour-fixture.mjs: refused, nothing sent: missing --base; missing --venue; missing --season; missing --commit; missing --out.",
+   "sent": []
+  },
+  {
+   "script": "scripts/welcome-drill.mjs",
+   "env": "empty environment",
+   "status": 2,
+   "message": "scripts/welcome-drill.mjs: refused, nothing sent: missing --base; missing --out; DRILL_ADMIN_PIN is not set; DATABASE_URL is not set (no .env.local is read).",
+   "sent": []
+  },
+  {
+   "script": "scripts/welcome-drill.mjs",
+   "env": "the working settings exported",
+   "status": 2,
+   "message": "scripts/welcome-drill.mjs: refused, nothing sent: missing --base; missing --out; DATABASE_URL names the working database \"roses\".",
+   "sent": []
+  }
+ ]
+}

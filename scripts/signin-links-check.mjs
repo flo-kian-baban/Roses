@@ -2,17 +2,17 @@
 // Evidence for the per-venue sign-in links: /admin/<venue> shows the sign-in form with that venue preselected and
 // no picker; /admin shows the picker; a wrong PIN typed on a bookmarked venue link counts against that venue + the
 // client address. Screenshots and a log in reports/checkpoint-b/signin/. Addresses are masked in the log.
-//   node scripts/signin-links-check.mjs --base http://127.0.0.1:3000 --out reports/checkpoint-b/signin
+//   DATABASE_URL=<scratch copy> node scripts/signin-links-check.mjs --base http://127.0.0.1:<scratch server port> --out <folder>
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import pg from 'pg';
 import { chromium, devices } from 'playwright';
-import { loadEnv } from './load-env.mjs';
+import { scratchTarget } from './scratch-target.mjs';
 
-loadEnv();
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
-const base = args.base || 'http://127.0.0.1:3000';
-const out = path.resolve(args.out || 'reports/checkpoint-b/signin');
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('scripts/signin-links-check.mjs', { options: { base: 'server', out: 'path' }, db: true });
+const base = args.base;
+const out = path.resolve(args.out);
 await fs.mkdir(out, { recursive: true });
 const lines = []; const results = [];
 const mask = (s) => String(s).replaceAll('127.0.0.1', '<addr-A>').replaceAll('::1', '<addr-B>');

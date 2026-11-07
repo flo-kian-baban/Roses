@@ -2,14 +2,19 @@
 // Day-one visual identity of the colour tokens (Kian, 2026-10-08): screenshots of the public pages before and after the
 // token system, compared pixel by pixel. No new dependency: the PNGs are decoded and compared on a canvas inside Playwright's
 // Chromium, which also draws the diff image. Reduced motion is emulated so the intro is skipped and nothing animates.
-//   node scripts/style-identity.mjs shoot --base http://127.0.0.1:3003 --out <dir> [--venues senso,kebab-land]
+//   node scripts/style-identity.mjs shoot --base http://127.0.0.1:<scratch server port> --out <dir> [--venues senso,kebab-land]
 //   node scripts/style-identity.mjs compare --before <dir> --after <dir> --out <dir> [--tolerance 0]
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium, devices } from 'playwright';
+import { scratchTarget } from './scratch-target.mjs';
 
-const [mode, ...rest] = process.argv.slice(2);
-const args = Object.fromEntries(rest.map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+// compare reads two folders of screenshots only; shoot needs a scratch server.
+const MODES = ['shoot', 'compare'];
+const { args, pos: [mode] } = await scratchTarget('scripts/style-identity.mjs', process.argv[2] === 'compare'
+  ? { options: { before: 'path', after: 'path', out: 'path', tolerance: 'number' }, optional: ['tolerance'], positional: [['mode', MODES]] }
+  : { options: { base: 'server', out: 'path', venues: 'list' }, optional: ['venues'], positional: [['mode', MODES]] });
 const venues = (args.venues || 'senso,kebab-land').split(',');
 const DEVICE = { ...devices['iPhone 13'], defaultBrowserType: 'chromium' };
 
@@ -31,7 +36,7 @@ async function loadAllImages(page) {
 }
 
 if (mode === 'shoot') {
-  const base = args.base || 'http://127.0.0.1:3002'; const out = path.resolve(args.out || 'reports/style-tokens/shots');
+  const base = args.base; const out = path.resolve(args.out);
   await fs.mkdir(out, { recursive: true });
   const browser = await chromium.launch();
   const manifest = { base, at: new Date().toISOString(), shots: [] };
@@ -60,7 +65,7 @@ if (mode === 'shoot') {
 }
 
 if (mode === 'compare') {
-  const before = path.resolve(args.before), after = path.resolve(args.after), out = path.resolve(args.out || 'reports/style-tokens/diff');
+  const before = path.resolve(args.before), after = path.resolve(args.after), out = path.resolve(args.out);
   const tolerance = Number(args.tolerance || 0);
   await fs.mkdir(out, { recursive: true });
   const names = (await fs.readdir(before)).filter((f) => f.endsWith('.png')).sort();

@@ -118,7 +118,8 @@ function run(cmd, args, { env = {}, logFile } = {}) {
     let stdout = '', stderr = '';
     p.stdout.on('data', (d) => { stdout += d; }); p.stderr.on('data', (d) => { stderr += d; });
     p.on('close', (status) => {
-      if (logFile) fs.writeFileSync(path.join(out, logFile), `$ ${cmd} ${args.join(' ')}\n${stdout}${stderr}`);
+      // the log's folder is made here: a script that refuses to start (its guard, 2026-11-06) never made its own --out
+      if (logFile) { fs.mkdirSync(path.dirname(path.join(out, logFile)), { recursive: true }); fs.writeFileSync(path.join(out, logFile), `$ ${cmd} ${args.join(' ')}\n${stdout}${stderr}`); }
       resolve({ status, stdout, stderr });
     });
   });
@@ -359,12 +360,23 @@ try {
     const j = fs.existsSync(path.join(out, 'colour-literals.json')) ? JSON.parse(fs.readFileSync(path.join(out, 'colour-literals.json'), 'utf8')) : null;
     return { pass: r.status === 0 && j?.count === 0, evidence: ['colour-literals.txt', 'colour-literals.json'], note: j ? `${j.count} colour literal(s) in ${j.files.length} public files; ${j.tokensFileHexLiterals} hex values live in the token defaults file` : `exit ${r.status}` };
   }, 'colour-literals');
-  await step('colour literals in the item editor (the PM, 2026-11-04: the admin\'s colours are defined in one place, src/app/globals.css; 0 in the editor\'s own files)', async () => {
-    const files = ['kit.tsx', 'ItemPanel.tsx', 'Choices.tsx', 'GoodToKnow.tsx', 'SectionPicker.tsx'].map((f) => `src/app/admin/(app)/[venue]/_editor/${f}`);
-    const r = await run('node', ['scripts/check-colour-literals.mjs', '--json', path.join(out, 'editor-colour-literals.json'), ...files], { logFile: 'editor-colour-literals.txt' });
-    const j = fs.existsSync(path.join(out, 'editor-colour-literals.json')) ? JSON.parse(fs.readFileSync(path.join(out, 'editor-colour-literals.json'), 'utf8')) : null;
-    return { pass: r.status === 0 && j?.count === 0, evidence: ['editor-colour-literals.txt', 'editor-colour-literals.json'], note: j ? `${j.count} colour literal(s) in the item editor's ${j.files.length} files` : `exit ${r.status}` };
-  }, 'editor-colour-literals');
+  // The admin's code: its pages and components, its API and its library. One file is allowed by name (the PM, 2026-11-06): the new-PIN
+  // page, which src/pages/api/admin/pin.ts sends whole and which cannot load the stylesheet, so it writes the token values inline.
+  const COLOUR_ALLOWED = 'src/pages/api/admin/pin.ts';
+  await step(`colour literals in the admin (the PM, 2026-11-06: the admin's colours are defined in one place, src/app/globals.css; 0 in every file of src/app/admin, src/pages/api/admin and src/lib/admin, ${COLOUR_ALLOWED} allowed by name)`, async () => {
+    const files = ['src/app/admin', 'src/pages/api/admin', 'src/lib/admin'].flatMap((d) => fs.readdirSync(d, { recursive: true }).map((f) => path.join(d, String(f)))).filter((f) => /\.(tsx?|css)$/.test(f)).sort();
+    const r = await run('node', ['scripts/check-colour-literals.mjs', '--json', path.join(out, 'admin-colour-literals.json'), ...files], { logFile: 'admin-colour-literals.txt' });
+    const j = fs.existsSync(path.join(out, 'admin-colour-literals.json')) ? JSON.parse(fs.readFileSync(path.join(out, 'admin-colour-literals.json'), 'utf8')) : null;
+    const elsewhere = j ? j.literals.filter((l) => l.file !== COLOUR_ALLOWED) : null, allowed = j ? j.literals.filter((l) => l.file === COLOUR_ALLOWED).length : 0;
+    return { pass: !!j && files.includes(COLOUR_ALLOWED) && elsewhere.length === 0, evidence: ['admin-colour-literals.txt', 'admin-colour-literals.json'],
+      note: j ? `${elsewhere.length} colour literal(s) in the admin's ${j.files.length} files outside ${COLOUR_ALLOWED}${elsewhere.length ? ` (${[...new Set(elsewhere.map((l) => `${l.file}:${l.line}`))].slice(0, 6).join(', ')})` : ''}; ${allowed} in ${COLOUR_ALLOWED}, allowed by name (the new-PIN page it sends whole)` : `exit ${r.status}` };
+  }, 'admin-colour-literals');
+
+  await step('drills and hand-test scripts refuse to start unless their target is a scratch server (the PM, 2026-11-06): every script that reaches a server or a database starts with the guard (scripts/scratch-target.mjs) or is a tool named by name; each one started with no options sends nothing (exit 2, a message; a tripwire writes down every connection and child process); a wrong option, port 3000, the working database or uploads, and a server that is not a scratch one are refused with nothing sent but the probe', async () => {
+    const r = await run('node', ['scripts/scratch-guard-selftest.mjs', '--out', path.join(out, 'scratch-guard')], { logFile: 'scratch-guard/scratch-guard-selftest.log' });
+    const m = (r.stdout.match(/SCRATCH GUARD SELFTEST (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    return { pass: r.status === 0, checks: drillChecks('scratch-guard/scratch-guard.json', !!m), evidence: ['scratch-guard/scratch-guard.txt', 'scratch-guard/scratch-guard.json'], note: m || `exit ${r.status}` };
+  }, 'scratch-guard');
 
   await step('the network rules, self-test (the PM, 2026-10-13: wait for the photo hosts; a failure during an outage marked "invalid: network" and run once more, counting only on a clean second attempt), on simulated readings', async () => {
     const r = await run('node', ['scripts/network-watch-selftest.mjs'], { logFile: 'network-watch-selftest.txt' });
@@ -457,7 +469,7 @@ try {
   let perfVenue = null, perfServer = null;
   if (perfReady) await step(`the performance fixture's server on ${PERF_PORT} (picked free at start, its listener the process the suite spawned), the temporary venue created in it through the admin API, warmed`, async () => {
     if (!(await portFree(PERF_PORT, '127.0.0.1')) || !(await portFree(PERF_PORT, '::1'))) return { pass: false, note: `port ${PERF_PORT} was taken after it was picked; whatever listens there is left alone` };
-    perfServer = startServer(PERF_PORT, { NEXT_DIST_DIR: PERF_DIST, DATABASE_URL: perfUrl, ROSES_DB: perfName, UPLOAD_DIR: perfUploads, ROSES_APP_NAME: 'roses-check:perf-server' }, `perf/server-${PERF_PORT}.log`);
+    perfServer = startServer(PERF_PORT, { NEXT_DIST_DIR: PERF_DIST, DATABASE_URL: perfUrl, ROSES_DB: perfName, UPLOAD_DIR: perfUploads, ROSES_APP_NAME: 'roses-check:perf-server', ROSES_CHECK_SUITE: '1' /* the scratch-server probe the drills ask before anything else (2026-11-06) */ }, `perf/server-${PERF_PORT}.log`);
     const up = await waitHttp(`${perfBase}/senso`);
     const pids = listeners(PERF_PORT), mine = perfServer.exitCode === null && pids.length > 0 && pids.every((x) => x === perfServer.pid);
     if (!up || !mine) return { pass: false, evidence: [`perf/server-${PERF_PORT}.log`], note: `${up ? 'answers on /senso' : 'did not come up'}; listener ${pids.join(',') || 'none'}, spawned pid ${perfServer.pid}` };
@@ -573,6 +585,11 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, checks: drillChecks('touch/touch-drill.json', !!m), evidence: ['touch/touch-drill.txt', 'touch/touch-drill.json', 'touch/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   }, 'touch');
+  await step('the admin\'s layout rules on every screen (the PM, 2026-11-06): the sign-in screens, the Menu tab and what opens from it, the item editor, the Style tab, Details, Team and Add venue on a laptop, a 390 px and a 360 px phone: nothing past the screen\'s edges, cut short or scrolling sideways; text 13, 16, 17 px and the page title\'s 28 px; one corner radius, 12 px', async () => {
+    const r = await run('node', ['scripts/layout-drill.mjs', '--base', base, '--out', path.join(out, 'layout')], { env: drillEnv, logFile: 'layout/layout-drill.log' });
+    const m = (r.stdout.match(/LAYOUT DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    return { pass: r.status === 0, checks: drillChecks('layout/layout-drill.json', !!m), evidence: ['layout/layout-drill.txt', 'layout/layout-drill.json'], note: m || `exit ${r.status}` };
+  }, 'layout');
   await step('backup and restore drill (pg_dump, scratch restore, equal counts, item recovered)', async () => {
     const r = await run('bash', ['scripts/backup-drill.sh', path.join(out, 'backup-drill.txt')], { logFile: 'backup-drill.log' }); // drills the scratch copy (ROSES_DB), dump into the run folder
     const t = fs.existsSync(path.join(out, 'backup-drill.txt')) ? fs.readFileSync(path.join(out, 'backup-drill.txt'), 'utf8') : '';

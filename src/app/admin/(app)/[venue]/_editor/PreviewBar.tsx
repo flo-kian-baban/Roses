@@ -9,7 +9,10 @@
 // Persian in four taps: Style, Winter, Evening, FA.
 // Touch targets (the PM, 2026-10-09): on a phone the chips keep their 36 px look and get a 44 × 44 tap area from an invisible pad (.tap),
 // which fits inside the row's own padding, so the bottom sheet's header stays short and the controls keep their room on a small phone.
-import { useRef } from 'react';
+// On a phone the row scrolls sideways, and the chip at the screen's edge stays visibly cut so staff can tell it scrolls (the PM,
+// 2026-11-06): where the edge falls depends on the phone's width, so the chips' side padding is adjusted by a pixel or two (9–16 px,
+// 12 by default) until at least 14 px of the cut chip shows and 14 px are hidden (fitCut; measured by the layout drill).
+import { useLayoutEffect, useRef } from 'react';
 import { SEASONS } from '@/lib/welcome';
 import { Icon } from '../../../_ui/icons';
 import { SCREENS, SLOTS, type PageNow, type View, type ViewPatch } from './view';
@@ -18,22 +21,49 @@ export type Compare = { on: boolean; set: (on: boolean) => void } | null;
 
 function Seg<T extends string>({ label, items, value, onPick, attr, phone }: { label: string; items: { id: T; label: string }[]; value: T | null; onPick: (id: T) => void; attr: string; phone: boolean }) {
   return (
-    <div role="group" aria-label={label} className="flex shrink-0 rounded-full bg-black/[.06] p-0.5">
-      {items.map((i) => <button key={i.id} type="button" aria-pressed={value === i.id} {...{ [attr]: i.id }} onClick={() => onPick(i.id)} className={`${phone ? 'tap h-9 min-w-11 px-3 text-[13px]' : 'h-7 px-2.5 text-[12px]'} rounded-full font-semibold whitespace-nowrap transition ${value === i.id ? 'bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,.12)]' : 'text-ink-muted hover:text-ink'}`}>{i.label}</button>)}
+    <div role="group" aria-label={label} className="flex shrink-0 rounded-xl bg-fill p-0.5">
+      {items.map((i) => <button key={i.id} type="button" aria-pressed={value === i.id} {...{ [attr]: i.id }} onClick={() => onPick(i.id)} className={`${phone ? 'tap h-9 min-w-11 px-[var(--chip-px,12px)]' : 'h-7 px-2.5'} rounded-xl text-[13px] font-semibold whitespace-nowrap transition ${value === i.id ? 'bg-accent-soft text-accent-ink' : 'text-ink-muted hover:text-ink'}`}>{i.label}</button>)}
     </div>
   );
 }
 
+// The smaller of what shows and what is hidden of the chip under the row's right edge, with the row at its start (0: no chip there).
+const cutOf = (row: HTMLElement) => {
+  const edge = row.getBoundingClientRect().right;
+  for (const b of row.querySelectorAll('button')) { const r = b.getBoundingClientRect(); if (r.left < edge && r.right > edge) return Math.min(edge - r.left, r.right - edge); }
+  return 0;
+};
+function fitCut(row: HTMLElement) {
+  row.style.removeProperty('--chip-px');
+  if (row.scrollWidth <= row.clientWidth + 1) return; // it fits: nothing scrolls, nothing to cut
+  const at = row.scrollLeft; row.scrollLeft = 0;
+  let best = { px: 12, cut: cutOf(row) };
+  for (const px of [11, 13, 10, 14, 9, 15, 16]) {
+    if (best.cut >= 14) break;
+    row.style.setProperty('--chip-px', `${px}px`);
+    const cut = cutOf(row); if (cut > best.cut) best = { px, cut };
+  }
+  if (best.px === 12) row.style.removeProperty('--chip-px'); else row.style.setProperty('--chip-px', `${best.px}px`);
+  row.scrollLeft = at;
+}
+
 export function PreviewBar({ view, onView, now, compare, phone = false }: { view: View; onView: (p: ViewPatch) => void; now: PageNow; compare: Compare; phone?: boolean }) {
   const held = useRef(false);
-  const btn = `flex shrink-0 items-center gap-1 rounded-full border border-line bg-white font-semibold whitespace-nowrap shadow-[0_1px_2px_rgba(0,0,0,.04)] transition active:scale-[.97] ${phone ? 'tap h-9 min-w-11 px-3 text-[13px]' : 'h-7 px-2.5 text-[12px]'}`;
+  const row = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = row.current; if (!phone || !el) return;
+    fitCut(el);
+    const ro = new ResizeObserver(() => fitCut(el)); ro.observe(el); // a new width (rotation, the sheet's size): fit again
+    return () => ro.disconnect();
+  }, [phone, !!compare]); // Compare's presence changes the row (the object itself is new on every render)
+  const btn = `flex shrink-0 items-center gap-1 rounded-xl bg-fill text-[13px] font-semibold whitespace-nowrap transition active:scale-[.97] ${phone ? 'tap h-9 min-w-11 px-[var(--chip-px,12px)]' : 'h-7 px-2.5'}`;
   const groups = (
     <>
       <Seg label="Preview screen" attr="data-preview-screen" phone={phone} items={SCREENS} value={view.screen} onPick={(screen) => onView({ screen })} />
       <Seg label="Preview language" attr="data-preview-lang" phone={phone} items={[{ id: 'en' as const, label: 'EN' }, { id: 'fa' as const, label: 'FA' }]} value={view.lang} onPick={(lang) => onView({ lang })} />
       <button type="button" className={btn} data-preview-replay onClick={() => onView({ screen: 'welcome', replay: true })} aria-label="Replay the welcome animation" title="Replay the welcome animation"><Icon name="restore" className="h-4 w-4" />Replay</button>
       {compare && (
-        <button type="button" className={`${btn} ${compare.on ? 'border-ink bg-ink text-white' : ''}`} data-preview-compare aria-pressed={compare.on}
+        <button type="button" className={`${btn} ${compare.on ? 'bg-accent-soft text-accent-ink' : ''}`} data-preview-compare aria-pressed={compare.on}
           onPointerDown={(e) => { if (e.pointerType === 'mouse') return; held.current = true; compare.set(true); }}
           onPointerUp={() => { if (held.current) compare.set(false); }} onPointerCancel={() => { if (held.current) compare.set(false); }} onPointerLeave={() => { if (held.current) compare.set(false); }}
           onClick={() => { if (held.current) { held.current = false; return; } compare.set(!compare.on); }}
@@ -45,11 +75,11 @@ export function PreviewBar({ view, onView, now, compare, phone = false }: { view
       <Seg label="Time of day in the preview" attr="data-preview-slot" phone={phone} items={SLOTS} value={view.slot ?? now.slot} onPick={(slot) => onView({ screen: 'welcome', slot: slot === now.slot ? null : slot })} />
     </>
   );
-  const note = <p className="text-[11px] leading-4 text-ink-muted" data-preview-note>Season and time of day change this preview only. Customers get the season and the time of their own visit.</p>;
+  const note = <p className="text-[13px] leading-4 text-ink-muted" data-preview-note>Season and time of day change this preview only. Customers get the season and the time of their own visit.</p>;
   if (phone) {
     return (
       <div className="w-full" data-preview-bar="phone">
-        <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto px-3 py-1">{groups}</div>
+        <div ref={row} className="no-scrollbar flex items-center gap-1.5 overflow-x-auto px-3 py-1" data-scrolls-sideways="">{groups}</div>
         <div className="flex items-center justify-between gap-2 px-3 pb-1">{note}</div>
       </div>
     );

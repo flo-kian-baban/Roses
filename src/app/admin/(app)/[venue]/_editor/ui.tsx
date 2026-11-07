@@ -1,20 +1,22 @@
 'use client';
-// The editor's small kit: fields that save themselves on change, the iOS-style switch, sheets and buttons.
+// The editor's small kit: fields that save themselves on change, the iOS-style switch, sheets and buttons, in the admin's look
+// (../../../_ui/look.ts; the admin-wide clean-up, 2026-11-06).
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '../../../_ui/icons';
 import { retryable } from './api';
+import { dangerBtn, field, popover, popoverItem, primaryBtn, quietBtn } from '../../../_ui/look';
 
-export const btn = 'inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-4 text-[15px] font-semibold whitespace-nowrap transition active:scale-[.97] disabled:cursor-not-allowed disabled:opacity-50';
-export const btnPrimary = `${btn} bg-[linear-gradient(180deg,var(--color-accent-bright),var(--color-accent))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.28),0_8px_20px_-8px_rgba(238,106,58,.7)]`;
-export const btnSecondary = `${btn} border border-line bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,.04)] hover:bg-fill`;
-export const btnGhost = `${btn} text-ink hover:bg-fill`;
-export const btnDanger = `${btn} border border-red-200 bg-white text-red-600 hover:bg-red-50`;
-export const fieldCls = 'block w-full rounded-xl border border-[#d2d2d7] bg-white px-3.5 py-2.5 text-base text-ink placeholder:text-neutral-400 focus:border-accent focus:outline-none focus:ring-[3px] focus:ring-accent/20';
+export const btnPrimary = primaryBtn; // the one filled button of a screen
+export const btnSecondary = quietBtn; // Cancel, Done and the like
+export const btnGhost = 'inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl px-3 text-base font-semibold whitespace-nowrap text-accent-ink disabled:cursor-not-allowed disabled:opacity-50';
+export const btnDanger = dangerBtn; // the confirmation of a Delete
+export const fieldCls = field;
 
-const TONE = { grey: 'bg-neutral-100 text-neutral-700', red: 'bg-red-100 text-red-800', amber: 'bg-amber-100 text-amber-900', blue: 'bg-sky-100 text-sky-800', green: 'bg-emerald-100 text-emerald-800' };
+// A short tag (Hidden, Needs price, To confirm…): 13 px text, no box; red only for an error (red marks Delete and errors only).
+const TONE = { grey: 'text-ink-muted', red: 'font-semibold text-danger', amber: 'text-ink-muted', blue: 'text-ink-muted', green: 'text-ink-muted' };
 export function Badge({ tone = 'grey', children }: { tone?: keyof typeof TONE; children: React.ReactNode }) {
-  return <span className={`inline-flex items-center rounded-full px-1.5 py-px text-[11px] font-medium whitespace-nowrap ${TONE[tone]}`}>{children}</span>;
+  return <span className={`inline-flex items-center text-[13px] whitespace-nowrap ${TONE[tone]}`}>{children}</span>;
 }
 
 // A native checkbox drawn as a toggle (see .switch in globals.css). `onChange` may reject with a one-line reason.
@@ -52,11 +54,11 @@ export function TextField({ value, onCommit, label, placeholder, dir, lang, mult
   const common = { value: draft, placeholder, dir, lang, autoFocus, maxLength, 'aria-label': label, onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setDraft(e.target.value), onBlur: () => { void commit(); } };
   return (
     <label className={`block ${className}`}>
-      {label && !compact && <span className="mb-1 flex items-center gap-2 text-sm font-medium">{label}{required && <span className="text-ink-muted">*</span>}{badge}</span>}
+      {label && !compact && <span className="mb-1 flex flex-wrap items-center gap-x-2 text-[13px] text-ink-muted">{label}{required && <span>*</span>}{badge}</span>}
       {multiline
         ? <textarea {...common} className={`${fieldCls} min-h-24`} />
-        : <input {...common} type="text" inputMode={inputMode} className={`${fieldCls} ${compact ? 'py-2' : ''}`} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLInputElement).blur(); } }} />}
-      {(err || hint) && <span className={`mt-1 block text-xs ${err ? 'text-red-600' : 'text-ink-muted'}`}>{err || hint}</span>}
+        : <input {...common} type="text" inputMode={inputMode} className={fieldCls} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLInputElement).blur(); } }} />}
+      {(err || hint) && <span className={`mt-1 block text-[13px] ${err ? 'text-danger' : 'text-ink-muted'}`}>{err || hint}</span>}
     </label>
   );
 }
@@ -69,9 +71,9 @@ export function Sheet({ title, onClose, children, wide }: { title: string; onClo
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose]);
   const sheet = (
     <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={title} data-sheet="">
-      <button type="button" className="backdrop-in absolute inset-0 bg-black/40" onClick={onClose} aria-label="Close" />
-      <div className={`sheet-in relative max-h-[92dvh] w-full overflow-y-auto rounded-t-[24px] bg-white p-5 shadow-pop sm:rounded-[24px] ${wide ? 'sm:w-[36rem]' : 'sm:w-[26rem]'}`} style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}>
-        <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-[19px] font-semibold">{title}</h2><button type="button" onClick={onClose} className="flex h-11 w-11 items-center justify-center rounded-full bg-fill text-ink-muted hover:text-ink" aria-label="Close"><Icon name="close" className="h-5 w-5" /></button></div>
+      <button type="button" className="backdrop-in absolute inset-0 bg-scrim" onClick={onClose} aria-label="Close" />
+      <div className={`sheet-in relative max-h-[92dvh] w-full overflow-y-auto rounded-t-xl bg-canvas p-5 shadow-pop sm:rounded-xl ${wide ? 'sm:w-[36rem]' : 'sm:w-[26rem]'}`} style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}>
+        <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-[17px] font-semibold [overflow-wrap:anywhere]">{title}</h2><button type="button" onClick={onClose} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-fill text-ink-muted hover:text-ink" aria-label="Close"><Icon name="close" className="h-5 w-5" /></button></div>
         {children}
       </div>
     </div>
@@ -84,8 +86,8 @@ export function ConfirmSheet({ title, body, label, onConfirm, onClose }: { title
   const [busy, setBusy] = useState(false); const [err, setErr] = useState<string | null>(null);
   return (
     <Sheet title={title} onClose={onClose}>
-      <div className="text-[15px] text-ink-muted">{body}</div>
-      {err && <p role="alert" className="mt-3 text-sm text-red-600">{err}</p>}
+      <div className="text-base text-ink-muted">{body}</div>
+      {err && <p role="alert" className="mt-3 text-[13px] text-danger">{err}</p>}
       <div className="mt-5 flex gap-2">
         <button type="button" className={`${btnDanger} flex-1`} disabled={busy} onClick={async () => { setBusy(true); setErr(null); try { await onConfirm(); } catch (e) { setErr((e as Error).message); setBusy(false); } }}>{label}</button>
         <button type="button" className={`${btnSecondary} flex-1`} onClick={onClose}>Cancel</button>
@@ -107,10 +109,10 @@ export function Menu({ label, items }: { label: string; items: { text: string; o
   }, [open]);
   return (
     <div ref={ref} className="relative">
-      <button type="button" aria-label={label} aria-haspopup="menu" aria-expanded={open} onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); }} className="flex h-11 w-11 items-center justify-center rounded-full text-ink-muted hover:bg-fill hover:text-ink"><Icon name="more" className="h-5 w-5" /></button>
+      <button type="button" aria-label={label} aria-haspopup="menu" aria-expanded={open} onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); }} className="flex h-11 w-11 items-center justify-center rounded-xl text-ink-muted hover:bg-fill hover:text-ink"><Icon name="more" className="h-5 w-5" /></button>
       {open && (
-        <div role="menu" className="absolute right-0 top-full z-40 mt-1 w-48 overflow-hidden rounded-2xl border border-black/5 bg-white p-1 shadow-pop">
-          {items.map((it) => <button key={it.text} type="button" role="menuitem" disabled={it.disabled} onClick={() => { setOpen(false); it.onClick(); }} className={`block min-h-11 w-full rounded-xl px-3 py-2.5 text-left text-[15px] disabled:opacity-40 ${it.danger ? 'text-red-600 hover:bg-red-50' : 'hover:bg-fill'}`}>{it.text}</button>)}
+        <div role="menu" className={`absolute right-0 top-full z-40 mt-1 w-52 ${popover}`}>
+          {items.map((it) => <button key={it.text} type="button" role="menuitem" disabled={it.disabled} onClick={() => { setOpen(false); it.onClick(); }} className={`${popoverItem} ${it.danger ? 'text-danger' : ''}`}>{it.text}</button>)}
         </div>
       )}
     </div>
@@ -120,7 +122,7 @@ export function Menu({ label, items }: { label: string; items: { text: string; o
 export function Photo({ url, className = '' }: { url?: string | null; className?: string }) {
   return url
     ? <img src={url} alt="" loading="lazy" decoding="async" className={`object-cover ${className}`} />
-    : <span className={`flex items-center justify-center bg-fill text-neutral-300 ${className}`}><Icon name="image" className="h-5 w-5" /></span>;
+    : <span className={`flex items-center justify-center bg-fill text-ink-muted/40 ${className}`}><Icon name="image" className="h-5 w-5" /></span>;
 }
 
 // The item editor's own pieces (cards, cells, tags, headings, chips) are in kit.tsx (the PM's clean-up, 2026-11-04).

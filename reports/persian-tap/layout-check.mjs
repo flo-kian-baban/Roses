@@ -13,10 +13,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium, webkit, devices } from 'playwright';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
 
-const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('reports/persian-tap/layout-check.mjs', { options: { before: 'server', after: 'server', out: 'path', venues: 'list' }, optional: ['venues'] });
 const venues = (args.venues || 'senso,kebab-land').split(',');
-const out = path.resolve(args.out || 'reports/persian-tap');
+const out = path.resolve(args.out);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const DEVICE = { chromium: devices['iPhone 13'], webkit: { viewport: { width: 390, height: 664 }, deviceScaleFactor: 3, hasTouch: true, isMobile: false } };
 

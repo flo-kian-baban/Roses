@@ -2,7 +2,8 @@ import { notFound } from 'next/navigation';
 import { canEditNotes, canEditVenue, canManage, isAdmin } from '@/lib/admin/auth';
 import { getVenueRow } from '@/lib/admin/venue';
 import { editorMenu, openAlerts } from '@/lib/admin/overview';
-import { Badge, Card, Notice, When, one, primary, secondary, sm, type SP } from '../../_ui';
+import { Badge, Card, Notice, When, one, primary, type SP } from '../../_ui';
+import { textBtn } from '../../_ui/look';
 import { TopBar } from '../../_ui/TopBar';
 import { SignIn } from '../../_ui/SignIn';
 import { Forbidden } from '../_forbidden';
@@ -30,16 +31,16 @@ export default async function VenueEditor({ params, searchParams }: { params: Pr
       {(one(sp, 'error') || one(sp, 'unlocked') || one(sp, 'seen')) && <div className="mx-auto max-w-3xl px-4 pt-4"><Notice sp={sp} /></div>}
       {alerts.length > 0 && (
         <div className="mx-auto max-w-3xl px-4 pt-4">
-          <Card tone="danger" icon="bell" title="Alerts" description="PIN sign-in problems for an admin to look at.">
-            <ul className="divide-y divide-red-100">
+          <Card tone="danger" title="Alerts" description="PIN sign-in problems for an admin to look at." bare>
+            <ul className="divide-y divide-line">
               {alerts.map((a) => (
-                <li key={a.id} className="py-3 first:pt-0 last:pb-0">
-                  <p className="flex flex-wrap items-center gap-2 text-[15px]"><Badge tone="red">{a.kind}</Badge>{a.venue_id && <strong>{all.find((v) => v.id === a.venue_id)?.name.en ?? a.venue_id}</strong>}<span>{a.message}</span></p>
-                  <p className="mt-1 text-xs text-ink-muted"><When at={a.created_at} /></p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {a.venue_id && <form method="post" action="/api/admin/alert"><input type="hidden" name="_action" value="unlock" /><input type="hidden" name="venue" value={a.venue_id} /><input type="hidden" name="_back" value={back} /><button className={`${primary} ${sm}`} type="submit">Unlock PIN login</button></form>}
-                    {a.kind === 'admin-pin-cap' && <form method="post" action="/api/admin/alert"><input type="hidden" name="_action" value="unlock-admin-pins" /><input type="hidden" name="_back" value={back} /><button className={`${primary} ${sm}`} type="submit">Unlock admin PINs</button></form>}
-                    <form method="post" action="/api/admin/alert"><input type="hidden" name="_action" value="seen" /><input type="hidden" name="id" value={a.id} /><input type="hidden" name="_back" value={back} /><button className={`${secondary} ${sm}`} type="submit">Mark as seen</button></form>
+                <li key={a.id} className="px-4 py-3">
+                  <p className="flex flex-wrap items-center gap-x-2 text-base"><Badge tone="red">{a.kind}</Badge>{a.venue_id && <strong>{all.find((v) => v.id === a.venue_id)?.name.en ?? a.venue_id}</strong>}<span>{a.message}</span></p>
+                  <p className="mt-0.5 text-[13px] text-ink-muted"><When at={a.created_at} /></p>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
+                    {a.venue_id && <form method="post" action="/api/admin/alert"><input type="hidden" name="_action" value="unlock" /><input type="hidden" name="venue" value={a.venue_id} /><input type="hidden" name="_back" value={back} /><button className={primary} type="submit">Unlock PIN login</button></form>}
+                    {a.kind === 'admin-pin-cap' && <form method="post" action="/api/admin/alert"><input type="hidden" name="_action" value="unlock-admin-pins" /><input type="hidden" name="_back" value={back} /><button className={primary} type="submit">Unlock admin PINs</button></form>}
+                    <form method="post" action="/api/admin/alert"><input type="hidden" name="_action" value="seen" /><input type="hidden" name="id" value={a.id} /><input type="hidden" name="_back" value={back} /><button className={textBtn} type="submit">Mark as seen</button></form>
                   </div>
                 </li>
               ))}

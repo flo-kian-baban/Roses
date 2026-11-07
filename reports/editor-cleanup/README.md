@@ -1,8 +1,8 @@
 # Item editor clean-up (the PM, 2026-11-04)
 
-Branch `editor-cleanup`, not merged: Kian rules on the screenshots first.
+Kian approved the screenshots on 2026-11-06 (no changes); the batch was merged into `main` (92563ff) after the PM's six items, and the screenshots below were deleted then, as ruled.
 
-## Screenshots (on disk only, gitignored, deleted after Kian's ruling)
+## Screenshots (on disk only, gitignored; deleted on 2026-11-06 after Kian's ruling)
 
 `reports/editor-cleanup/shots/` in the `../roses-editor-cleanup` worktree; `index.html` there puts each before beside its after.
 
@@ -14,7 +14,7 @@ Branch `editor-cleanup`, not merged: Kian rules on the screenshots first.
 Made by `shots.mjs` (this folder):
 
 ```
-DATABASE_URL=<scratch copy> DRILL_ADMIN_PIN=<throwaway admin> node reports/editor-cleanup/shots.mjs --base http://127.0.0.1:<port> --label before|after
+DATABASE_URL=<scratch copy> DRILL_ADMIN_PIN=<throwaway admin> node reports/editor-cleanup/shots.mjs --base http://127.0.0.1:<scratch server port> --label before|after --out reports/editor-cleanup/shots
 ```
 
 ## Overflow at 440, 390 and 360 px (the brief's acceptance)

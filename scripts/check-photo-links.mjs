@@ -4,12 +4,12 @@
 //   node scripts/check-photo-links.mjs senso [--out reports/checkpoint-a2] [--base http://127.0.0.1:3100]   (--base: where uploaded photos, /uploads/…, are fetched)
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { connectDb, loadEnv } from './load-env.mjs';
+import { connectDb } from './load-env.mjs';
+import { scratchTarget } from './scratch-target.mjs';
 
-loadEnv();
-const [venue, ...rest] = process.argv.slice(2);
-const args = Object.fromEntries(rest.map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
-const out = path.resolve(args.out || 'reports/checkpoint-a2');
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args, pos: [venue] } = await scratchTarget('scripts/check-photo-links.mjs', { options: { base: 'server', out: 'path' }, positional: [['venue', 'value']], db: true });
+const out = path.resolve(args.out);
 await fs.mkdir(out, { recursive: true });
 const client = await connectDb('photo-links');
 const items = (await client.query(`select i.name->>'en' as item, i.listed, i.photo->>'url' as url from items i where i.venue_id = $1 and i.photo is not null order by i.listed desc, 1`, [venue])).rows;

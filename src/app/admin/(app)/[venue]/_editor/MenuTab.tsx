@@ -7,6 +7,7 @@
 // Seasonal items (Kian, 2026-10-12): the venue's Seasonal section sits at the top with its switch and "+ Add item" (adding there tags the
 // item with today's season); it cannot be renamed, moved or deleted. Items hidden by their seasons today show "Out of season" (or "No
 // season" in the Seasonal section) and count in the Needs-attention bar.
+// In the admin's look (the admin-wide clean-up, 2026-11-06): white cards on the grey page, the needs as chips, names in full (never cut short).
 // Reorder items (the PM's clean-up of the item editor, 2026-11-04, which took Move up / Move down out of the editor): every section's menu,
 // the Seasonal section's included, has "Reorder items"; the section's rows then show Move up and Move down (44 × 44 each) in place of the
 // price and the switch, and Done ends it. A laptop also drags the rows, as before.
@@ -14,7 +15,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { EditorItem, SeasonId } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
 import { SEASON_NAMES, attention, money, needs, priceSummary, seasonState, seasonsCtx, type Filter, type Need, type Menu as MenuData, type Seasons } from './state';
-import { Badge, Menu, Photo, Switch, btnSecondary } from './ui';
+import { Badge, Menu, Photo, Switch } from './ui';
+import { card, chipCls, headingCls, headingStyle, textBtn } from '../../../_ui/look';
 import { retryable } from './api';
 import { parsePrice, priceInput } from '@/lib/rules';
 
@@ -90,51 +92,53 @@ export function MenuTab(p: MenuTabProps) {
   return (
     <div className="mx-auto w-full max-w-4xl px-3 pb-32 sm:px-5">
       {anyAttention && (
-        <div className="mt-3 flex flex-wrap items-center gap-1.5 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2" aria-label="Needs attention">
-          <span className="mr-1 flex items-center gap-1 text-sm font-semibold text-amber-900"><Icon name="alert" className="h-4 w-4" />Needs attention</span>
-          {(Object.keys(counts) as Exclude<Filter, 'all'>[]).filter((k) => counts[k] > 0).map((k) => (
-            <button key={k} type="button" onClick={() => setFilter(filter === k ? 'all' : k)} aria-pressed={filter === k} className={`min-h-11 rounded-full px-3 py-1 text-[13px] font-medium ${filter === k ? 'bg-amber-900 text-white' : 'bg-white text-amber-900 shadow-[0_1px_2px_rgba(0,0,0,.06)]'}`}>{LABEL[k](counts[k])}</button>
-          ))}
+        <div className="mt-4" aria-label="Needs attention">
+          <p className={`${headingCls} px-3 pb-1.5`} style={headingStyle}>Needs attention</p>
+          <div className={`${card} flex flex-wrap items-center gap-1.5 p-2`}>
+            {(Object.keys(counts) as Exclude<Filter, 'all'>[]).filter((k) => counts[k] > 0).map((k) => (
+              <button key={k} type="button" onClick={() => setFilter(filter === k ? 'all' : k)} aria-pressed={filter === k} className={chipCls(filter === k).replace('text-base', 'text-[13px]')}>{LABEL[k](counts[k])}</button>
+            ))}
+          </div>
         </div>
       )}
       <div className="sticky top-[6.25rem] z-20 -mx-3 glass px-3 py-2 sm:-mx-5 sm:px-5">
         <div className="flex gap-2">
           <label className="relative min-w-0 flex-1">
-            <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
-            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search" aria-label="Search items" autoComplete="off" className="h-11 w-full rounded-full border-0 bg-fill pl-10 pr-9 text-base placeholder:text-neutral-500 focus:bg-white focus:outline-none focus:ring-[3px] focus:ring-accent/25" />
-            {query && <button type="button" onClick={() => setQuery('')} className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-ink-muted" aria-label="Clear search"><Icon name="close" className="h-4 w-4" /></button>}
+            <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-muted" />
+            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search" aria-label="Search items" autoComplete="off" className="h-11 w-full rounded-xl border-0 bg-fill pl-10 pr-9 text-base placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-accent-ink/40" />
+            {query && <button type="button" onClick={() => setQuery('')} className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-xl text-ink-muted" aria-label="Clear search"><Icon name="close" className="h-4 w-4" /></button>}
           </label>
           <label className="relative shrink-0">
             <span className="sr-only">Jump to section</span>
-            <select value="" onChange={(e) => { if (e.target.value) jump(e.target.value); }} aria-label="Jump to section" className="h-11 max-w-[11rem] appearance-none rounded-full bg-fill pl-4 pr-9 text-[15px] font-medium text-ink focus:outline-none focus:ring-[3px] focus:ring-accent/25">
+            <select value="" onChange={(e) => { if (e.target.value) jump(e.target.value); }} aria-label="Jump to section" className="h-11 max-w-[11rem] appearance-none rounded-xl bg-fill pl-3 pr-9 text-base font-medium text-ink focus:outline-none focus:ring-2 focus:ring-accent-ink/40">
               <option value="">Jump to section</option>
               {menu.sections.map((s) => <option key={s.id} value={s.id}>{s.name.en}</option>)}
             </select>
             <Icon name="down" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" />
           </label>
         </div>
-        {narrowing && <p className="mt-2 flex items-center gap-2 text-sm text-ink-muted"><span>{shown} item{shown === 1 ? '' : 's'}{filter !== 'all' && <> · {LABEL[filter](counts[filter]).replace(/^\d+ /, '').replace(/ \(\d+\)$/, '')}</>}</span><button type="button" onClick={() => { setFilter('all'); setQuery(''); }} className="font-medium text-ink underline-offset-4 hover:underline">Show all</button></p>}
+        {narrowing && <p className="mt-2 flex flex-wrap items-center gap-x-2 text-[13px] text-ink-muted"><span>{shown} item{shown === 1 ? '' : 's'}{filter !== 'all' && <> · {LABEL[filter](counts[filter]).replace(/^\d+ /, '').replace(/ \(\d+\)$/, '')}</>}</span><button type="button" onClick={() => { setFilter('all'); setQuery(''); }} className="tap font-semibold text-accent-ink">Show all</button></p>}
       </div>
 
       {groups.sections.map(({ s, ids }) => (
-        <section key={s.id} id={`sec-${s.id}`} data-seasonal={s.seasonal ? '' : undefined} data-reorder={reordering === s.id ? s.id : undefined} className={`relative mt-3 scroll-mt-40 rounded-2xl border border-line bg-white shadow-card ${dropCls(s.id)}`}
+        <section key={s.id} id={`sec-${s.id}`} data-seasonal={s.seasonal ? '' : undefined} data-reorder={reordering === s.id ? s.id : undefined} className={`relative mt-3 scroll-mt-40 rounded-xl bg-canvas ${dropCls(s.id)}`}
           onDragOver={dnd.overRow('section', s.id)} onDrop={dnd.drop('section', s.id)}>
           <header className={`flex items-center gap-1 py-1.5 pl-1 pr-2 ${s.listed ? '' : 'opacity-70'}`} draggable={fine && !s.seasonal} onDragStart={dnd.start({ kind: 'section', id: s.id })} onDragEnd={dnd.end}>
-            <button type="button" onClick={() => toggle(s.id)} aria-expanded={!collapsed.has(s.id)} aria-label={collapsed.has(s.id) ? `Expand ${s.name.en}` : `Collapse ${s.name.en}`} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-fill"><Icon name="down" className={`h-5 w-5 transition ${collapsed.has(s.id) ? '-rotate-90' : ''}`} /></button>
+            <button type="button" onClick={() => toggle(s.id)} aria-expanded={!collapsed.has(s.id)} aria-label={collapsed.has(s.id) ? `Expand ${s.name.en}` : `Collapse ${s.name.en}`} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-ink-muted hover:bg-fill"><Icon name="down" className={`h-5 w-5 transition ${collapsed.has(s.id) ? '-rotate-90' : ''}`} /></button>
             {/* the name wraps (two lines at most) instead of "Senso …" on a 360 px phone (Part B #6) */}
             <button type="button" onClick={() => toggle(s.id)} className="flex min-h-11 min-w-0 flex-1 flex-wrap items-center gap-x-2 text-left" data-section-name="">
               <span className="line-clamp-2 min-w-0 text-[17px] font-semibold leading-6 [overflow-wrap:anywhere]">{s.name.en}</span>
-              <span className="shrink-0 text-sm leading-6 tabular-nums text-ink-muted">{s.item_ids.length}</span>
-              {s.name.fa && <span lang="fa" dir="rtl" className="hidden min-w-0 truncate text-[14px] leading-6 text-ink-muted sm:inline">{s.name.fa}</span>}
+              <span className="shrink-0 text-[13px] leading-6 tabular-nums text-ink-muted">{s.item_ids.length}</span>
+              {s.name.fa && <span lang="fa" dir="rtl" className="hidden min-w-0 text-[13px] leading-6 text-ink-muted [overflow-wrap:anywhere] sm:inline">{s.name.fa}</span>}
               {/* the badges sit inside the name button, so on a small phone they do not squeeze its tap area below 44 px (the PM, 2026-10-09) */}
               {!s.listed && <Badge>Hidden</Badge>}
               {s.listed && s.item_ids.length > 0 && !s.item_ids.some((id) => menu.items[id]?.listed) && <Badge tone="amber">No item shown</Badge>}
               {s.fa_draft.length > 0 && <Badge tone="blue">Persian draft</Badge>}
             </button>
             {reordering === s.id
-              ? <button type="button" data-reorder-done="" onClick={() => setReordering(null)} className="ml-1 flex h-11 min-w-11 shrink-0 items-center rounded-full px-3 text-[15px] font-semibold text-accent-strong hover:bg-accent-soft">Done</button>
+              ? <button type="button" data-reorder-done="" onClick={() => setReordering(null)} className="ml-1 flex h-11 min-w-11 shrink-0 items-center rounded-xl px-3 text-base font-semibold text-accent-ink hover:bg-accent-soft">Done</button>
               : <span className="flex shrink-0 items-center gap-0.5">
-              <button type="button" onClick={() => p.onAdd(s.id)} className="ml-1 flex h-11 min-w-11 items-center gap-1 rounded-full px-2.5 text-[14px] font-semibold text-accent-strong hover:bg-accent-soft" aria-label={`Add item to ${s.name.en}`}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} /><span className="hidden sm:inline">Add item</span><span className="sm:hidden">Add</span></button>
+              <button type="button" onClick={() => p.onAdd(s.id)} className="ml-1 flex h-11 min-w-11 items-center gap-1 rounded-xl px-2.5 text-base font-semibold text-accent-ink hover:bg-accent-soft" aria-label={`Add item to ${s.name.en}`}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} /><span className="hidden sm:inline">Add item</span><span className="sm:hidden">Add</span></button>
               <Menu label={`Section menu: ${s.name.en}`} items={s.seasonal ? [{ text: 'Reorder items', disabled: s.item_ids.length < 2, onClick: () => reorder(s.id) }] : [
                 { text: 'Rename', onClick: () => p.onRename(s.id) },
                 { text: 'Reorder items', disabled: s.item_ids.length < 2, onClick: () => reorder(s.id) },
@@ -149,7 +153,7 @@ export function MenuTab(p: MenuTabProps) {
           {s.seasonal && !collapsed.has(s.id) && reordering !== s.id && <p className="border-t border-line px-4 py-2 text-[13px] text-ink-muted">Customers see it first, as “{SEASON_NAMES[p.season]} Menu”, with the items here tagged {SEASON_NAMES[p.season]}. An item added here is tagged {SEASON_NAMES[p.season]}; change its seasons in the item.</p>}
           {!collapsed.has(s.id) && (
             ids.length === 0
-              ? <p className="border-t border-line px-4 py-4 text-sm text-ink-muted">{narrowing ? 'No matching item here.' : <>No items yet. <button type="button" onClick={() => p.onAdd(s.id)} className="inline-flex min-h-11 items-center font-medium text-accent-strong underline-offset-4 hover:underline">Add the first item</button></>}</p>
+              ? <p className="border-t border-line px-4 py-3 text-base text-ink-muted">{narrowing ? 'No matching item here.' : <>No items yet. <button type="button" onClick={() => p.onAdd(s.id)} className="inline-flex min-h-11 items-center font-semibold text-accent-ink">Add the first item</button></>}</p>
               : <ul className="border-t border-line px-1 pb-1">{ids.map((id) => <Row key={id} item={menu.items[id]} ctx={ctx} sectionId={s.id} fine={fine} dropCls={dropCls(id)} highlighted={p.highlightId === id} onOpen={p.onOpen} onToggle={p.onToggleItem} onPrice={p.onPrice}
                   reorder={reordering === s.id ? { first: s.item_ids.indexOf(id) <= 0, last: s.item_ids.indexOf(id) >= s.item_ids.length - 1, busy: moving, up: () => { void moveBy(s.id, id, -1); }, down: () => { void moveBy(s.id, id, 1); } } : undefined}
                   dragProps={{ draggable: fine, onDragStart: dnd.start({ kind: 'item', id, section: s.id }), onDragOver: dnd.overRow('item', id, s.id), onDrop: dnd.drop('item', id, s.id), onDragEnd: dnd.end }} />)}</ul>
@@ -158,14 +162,14 @@ export function MenuTab(p: MenuTabProps) {
       ))}
 
       {groups.orphans.length > 0 && (
-        <section id="sec-none" className="mt-3 scroll-mt-40 rounded-2xl border border-amber-200 bg-white shadow-card">
-          <header className="flex flex-wrap items-center gap-2 px-4 py-3"><span className="text-[17px] font-semibold">In no section</span><span className="text-sm tabular-nums text-ink-muted">{groups.orphans.length}</span><Badge tone="amber">Not shown to customers</Badge><span className="basis-full text-xs text-ink-muted">Open an item and tick a section under “Also show in…” to put it back on the menu.</span></header>
+        <section id="sec-none" className="mt-3 scroll-mt-40 rounded-xl bg-canvas">
+          <header className="flex flex-wrap items-center gap-2 px-4 py-3"><span className="text-[17px] font-semibold">In no section</span><span className="text-[13px] tabular-nums text-ink-muted">{groups.orphans.length}</span><Badge tone="amber">Not shown to customers</Badge><span className="basis-full text-[13px] text-ink-muted">Open an item and tick a section under “Also show in…” to put it back on the menu.</span></header>
           <ul className="border-t border-line px-1 pb-1">{groups.orphans.map((id) => <Row key={id} item={menu.items[id]} ctx={ctx} sectionId={null} fine={false} dropCls="" highlighted={p.highlightId === id} onOpen={p.onOpen} onToggle={p.onToggleItem} onPrice={p.onPrice} dragProps={{}} />)}</ul>
         </section>
       )}
 
-      {shown === 0 && narrowing && <p className="mt-8 text-center text-sm text-ink-muted">Nothing matches. <button type="button" onClick={() => { setFilter('all'); setQuery(''); }} className="font-medium text-ink underline-offset-4 hover:underline">Show all</button></p>}
-      {!narrowing && <div className="mt-4 flex justify-center"><button type="button" onClick={p.onAddSection} className={btnSecondary}><Icon name="plus" className="h-4 w-4" />Add section</button></div>}
+      {shown === 0 && narrowing && <p className="mt-8 text-center text-base text-ink-muted">Nothing matches. <button type="button" onClick={() => { setFilter('all'); setQuery(''); }} className="tap font-semibold text-accent-ink">Show all</button></p>}
+      {!narrowing && <div className="mt-4 flex justify-center"><button type="button" onClick={p.onAddSection} className={textBtn}><Icon name="plus" className="h-4 w-4" strokeWidth={2.4} />Add section</button></div>}
     </div>
   );
 }
@@ -178,22 +182,22 @@ function Row({ item, ctx, sectionId, fine, dropCls, highlighted, onOpen, onToggl
   const st = seasonState(item, ctx), off = st === 'none' && sectionId !== ctx.seasonalId ? null : st; // "No season" only where it is not shown: in the Seasonal section
   return (
     <li {...dragProps} data-item={item.id} className={`group relative flex flex-wrap items-center gap-x-2 rounded-xl px-1 py-1 ${dropCls} ${highlighted ? 'bg-accent-soft' : ''}`}>
-      {fine && <span className="hidden h-8 w-4 shrink-0 cursor-grab items-center justify-center text-neutral-300 group-hover:text-neutral-400 sm:flex" aria-hidden="true"><Icon name="grip" className="h-4 w-4" /></span>}
+      {fine && <span className="hidden h-8 w-4 shrink-0 cursor-grab items-center justify-center text-ink-muted/40 group-hover:text-ink-muted sm:flex" aria-hidden="true"><Icon name="grip" className="h-4 w-4" /></span>}
       <button type="button" onClick={() => onOpen(item.id, sectionId)} className="flex min-w-0 flex-1 items-center gap-3 py-1 text-left" aria-label={`Edit ${item.name.en ?? 'item'}`}>
-        <Photo url={item.photo?.url} className="h-12 w-12 shrink-0 rounded-lg" />
+        <Photo url={item.photo?.url} className="h-12 w-12 shrink-0 rounded-xl" />
         <span className="min-w-0 flex-1">
-          <span className={`block truncate text-[15px] font-medium leading-5 ${item.listed ? '' : 'text-ink-muted'}`}>{item.name.en}</span>
-          {item.name.fa && <span lang="fa" dir="rtl" className="block truncate text-left text-[13px] leading-4 text-ink-muted">{item.name.fa}</span>}
+          <span className={`block text-base font-medium leading-5 [overflow-wrap:anywhere] ${item.listed ? '' : 'text-ink-muted'}`}>{item.name.en}</span>
+          {item.name.fa && <span lang="fa" dir="rtl" className="block text-left text-[13px] leading-5 text-ink-muted [overflow-wrap:anywhere]">{item.name.fa}</span>}
           {(!item.listed || n.price || n.draft || n.photo || off) && (
-            <span className="mt-0.5 flex flex-wrap gap-1">{!item.listed && <Badge>Hidden</Badge>}{off === 'out' && <Badge tone="amber">Out of season</Badge>}{off === 'none' && <Badge tone="amber">No season</Badge>}{n.price && <Badge tone="amber">Needs price</Badge>}{n.draft && <Badge tone="blue">Persian draft</Badge>}{n.photo && <Badge>No photo</Badge>}</span>
+            <span className="mt-0.5 flex flex-wrap gap-x-2">{!item.listed && <Badge>Hidden</Badge>}{off === 'out' && <Badge tone="amber">Out of season</Badge>}{off === 'none' && <Badge tone="amber">No season</Badge>}{n.price && <Badge tone="amber">Needs price</Badge>}{n.draft && <Badge tone="blue">Persian draft</Badge>}{n.photo && <Badge>No photo</Badge>}</span>
           )}
         </span>
       </button>
       {reorder ? (
         // reordering the section: Move up and Move down in place of the price and the switch
         <span className="flex shrink-0 items-center" data-reorder-row="">
-          <button type="button" aria-label={`Move ${item.name.en ?? 'item'} up`} disabled={reorder.first || reorder.busy} onClick={reorder.up} className="flex h-11 w-11 items-center justify-center rounded-full text-accent-strong hover:bg-accent-soft disabled:text-neutral-300 disabled:hover:bg-transparent"><Icon name="up" className="h-5 w-5" strokeWidth={2.2} /></button>
-          <button type="button" aria-label={`Move ${item.name.en ?? 'item'} down`} disabled={reorder.last || reorder.busy} onClick={reorder.down} className="flex h-11 w-11 items-center justify-center rounded-full text-accent-strong hover:bg-accent-soft disabled:text-neutral-300 disabled:hover:bg-transparent"><Icon name="down" className="h-5 w-5" strokeWidth={2.2} /></button>
+          <button type="button" aria-label={`Move ${item.name.en ?? 'item'} up`} disabled={reorder.first || reorder.busy} onClick={reorder.up} className="flex h-11 w-11 items-center justify-center rounded-xl text-accent-ink hover:bg-accent-soft disabled:text-ink-muted/30 disabled:hover:bg-transparent"><Icon name="up" className="h-5 w-5" strokeWidth={2.2} /></button>
+          <button type="button" aria-label={`Move ${item.name.en ?? 'item'} down`} disabled={reorder.last || reorder.busy} onClick={reorder.down} className="flex h-11 w-11 items-center justify-center rounded-xl text-accent-ink hover:bg-accent-soft disabled:text-ink-muted/30 disabled:hover:bg-transparent"><Icon name="down" className="h-5 w-5" strokeWidth={2.2} /></button>
         </span>
       ) : (<>
       <PriceCell item={item} onPrice={(v) => onPrice(item.id, v)} onOpen={() => onOpen(item.id, sectionId)} />
@@ -202,7 +206,7 @@ function Row({ item, ctx, sectionId, fine, dropCls, highlighted, onOpen, onToggl
         <Switch checked={item.listed} label={item.listed ? `${item.name.en}: shown. Tap to hide` : `${item.name.en}: hidden. Tap to show`} onChange={async (v) => { setReason(null); try { await onToggle(item.id, v); } catch (e) { setReason((e as Error).message); } }} />
       </span>
       </>)}
-      {reason && <p role="alert" className="basis-full px-1 pb-1 text-[13px] text-red-600">{reason}</p>}
+      {reason && <p role="alert" className="basis-full px-1 pb-1 text-[13px] text-danger">{reason}</p>}
     </li>
   );
 }
@@ -218,7 +222,7 @@ function PriceCell({ item, onPrice, onOpen }: { item: EditorItem; onPrice: (v: n
   const committed = useRef(false);
   useEffect(() => { if (!err || unsaved) return; const t = setTimeout(() => setErr(null), 4000); return () => clearTimeout(t); }, [err, unsaved]);
   useEffect(() => { if (unsaved && item.price === unsaved.v) { setUnsaved(null); setErr(null); } }, [item.price, unsaved]);
-  if (item.variants.length) return <button type="button" onClick={onOpen} className="min-h-11 shrink-0 rounded-lg px-2 text-right text-[15px] font-semibold tabular-nums hover:bg-fill" aria-label={`Sizes: ${priceSummary(item)}. Tap to edit`}>{priceSummary(item)}</button>;
+  if (item.variants.length) return <button type="button" onClick={onOpen} className="min-h-11 shrink-0 rounded-xl px-2 text-right text-base font-semibold tabular-nums hover:bg-fill" aria-label={`Sizes: ${priceSummary(item)}. Tap to edit`}>{priceSummary(item)}</button>;
   const commit = async () => {
     if (committed.current) return; committed.current = true;
     const n = parsePrice(draft); // the server's own reading (pre-go-live audit S2-07)
@@ -232,15 +236,15 @@ function PriceCell({ item, onPrice, onOpen }: { item: EditorItem; onPrice: (v: n
     <span className="relative shrink-0">
       <input type="text" inputMode="decimal" value={draft} autoFocus aria-label="Price" onChange={(e) => setDraft(e.target.value)} onFocus={(e) => e.target.select()}
         onBlur={() => { void commit(); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void commit(); } if (e.key === 'Escape') { committed.current = true; setEditing(false); } }}
-        className="h-11 w-24 rounded-xl border border-accent bg-white px-2 text-right text-[15px] font-semibold tabular-nums focus:outline-none focus:ring-[3px] focus:ring-accent/25" />
+        className="h-11 w-24 rounded-xl bg-fill px-2 text-right text-base font-semibold tabular-nums focus:outline-none focus:ring-2 focus:ring-accent-ink/40" />
     </span>
   );
   return (
     <span className="relative shrink-0">
-      <button type="button" data-price data-unsaved={unsaved ? '' : undefined} onClick={() => { committed.current = false; const shown = unsaved ? unsaved.v : item.price; setDraft(priceInput(shown)); setEditing(true); }} className={`min-h-11 min-w-[4.5rem] rounded-lg px-2 text-right text-[15px] font-semibold tabular-nums hover:bg-fill ${unsaved ? 'text-red-600 underline decoration-dotted' : item.price == null ? 'text-neutral-400' : ''}`} aria-label={unsaved ? `Price ${unsaved.v == null ? 'cleared' : money(unsaved.v)}, not saved. Tap to change` : item.price == null ? 'No price. Tap to add one' : `Price ${money(item.price)}. Tap to change`}>
+      <button type="button" data-price data-unsaved={unsaved ? '' : undefined} onClick={() => { committed.current = false; const shown = unsaved ? unsaved.v : item.price; setDraft(priceInput(shown)); setEditing(true); }} className={`min-h-11 min-w-[4.5rem] rounded-xl px-2 text-right text-base font-semibold tabular-nums hover:bg-fill ${unsaved ? 'text-danger underline decoration-dotted' : item.price == null ? 'text-ink-muted' : ''}`} aria-label={unsaved ? `Price ${unsaved.v == null ? 'cleared' : money(unsaved.v)}, not saved. Tap to change` : item.price == null ? 'No price. Tap to add one' : `Price ${money(item.price)}. Tap to change`}>
         {unsaved ? (unsaved.v == null ? 'No price' : money(unsaved.v)) : item.price == null ? 'Add price' : money(item.price)}
       </button>
-      {err && <span role="alert" className="absolute right-0 top-full z-10 mt-0.5 whitespace-nowrap rounded-md bg-red-600 px-2 py-0.5 text-[12px] text-white">{err}</span>}
+      {err && <span role="alert" className="absolute right-0 top-full z-10 mt-0.5 whitespace-nowrap rounded-xl bg-danger px-2 py-0.5 text-[13px] text-canvas">{err}</span>}
     </span>
   );
 }

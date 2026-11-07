@@ -9,10 +9,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium, devices } from 'playwright';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
 
-const args = Object.fromEntries(process.argv.slice(2).filter((a) => a !== '--control').map((a, i, all) => (a.startsWith('--') ? [a.slice(2), all[i + 1]] : [])).filter((x) => x.length));
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args } = await scratchTarget('reports/persian-tap/visual-diff.mjs', { options: { before: 'server', after: 'server', out: 'path', venues: 'list', control: 'flag' }, optional: ['venues'] });
 args.control = process.argv.includes('--control');
-const venues = (args.venues || 'kebab-land').split(','), out = path.resolve(args.out || 'reports/persian-tap'); fs.mkdirSync(path.join(out, 'diff'), { recursive: true });
+const venues = (args.venues || 'kebab-land').split(','), out = path.resolve(args.out); fs.mkdirSync(path.join(out, 'diff'), { recursive: true });
 const DEVICE = { ...devices['iPhone 13'], defaultBrowserType: 'chromium' };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const browser = await chromium.launch();

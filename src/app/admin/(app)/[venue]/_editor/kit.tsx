@@ -9,31 +9,32 @@ import { Icon } from '../../../_ui/icons';
 import { retryable } from './api';
 import { useUnsaved } from './ui';
 import { parsePrice, priceInput } from '@/lib/rules';
+import { card, chipCls as chip, headingCls, headingStyle as hStyle, segCls as seg, textBtn as tBtn } from '../../../_ui/look';
 
-// A card: white on the column's grey, its rows split by hairlines.
-export const cardCls = 'rounded-xl bg-canvas divide-y divide-line';
+// A card: white on the column's grey, its rows split by hairlines (the admin's look, ../../../_ui/look.ts, shared since 2026-11-06).
+export const cardCls = card;
 // A field inside a card: no box of its own (the card is the box), 16 px text, 44 px tall.
 export const cellCls = 'block w-full min-w-0 bg-transparent px-3 py-2.5 text-base leading-6 text-ink placeholder:text-ink-muted/60 focus:outline-none';
 // An action: plain accent text, no border.
-export const textBtn = 'inline-flex min-h-11 items-center gap-1.5 text-base font-semibold text-accent-ink disabled:cursor-not-allowed disabled:opacity-50';
+export const textBtn = tBtn;
 // A choice that is on or off (an allergen, a diet, halal): grey when off, the accent when on, with a check so it never depends on colour alone.
-export const chipCls = (on: boolean) => `inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-xl px-3 text-base ${on ? 'bg-accent-soft font-semibold text-accent-ink' : 'bg-fill text-ink'}`;
+export const chipCls = chip;
 // One of a row of equal choices (the seasons): as a chip, in the small text size so five fit on a 360 px phone.
-export const segCls = (on: boolean) => `flex h-11 min-w-0 items-center justify-center rounded-xl px-1 text-[13px] ${on ? 'bg-accent-soft font-semibold text-accent-ink' : 'bg-fill text-ink'} disabled:cursor-not-allowed`;
+export const segCls = seg;
 export const OnMark = () => <Icon name="check" className="h-4 w-4" strokeWidth={2.4} />;
 
 // The small grey heading over a card (VISIBILITY, ITEM, PRICE…). `right`: what sits at its other end.
 export function Heading({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) {
   return (
     <div className="flex items-end justify-between gap-3 px-3 pb-1.5 pt-6">
-      <h3 className="text-[13px] uppercase leading-5 text-ink-muted" style={{ fontWeight: 500, letterSpacing: '.04em' }}>{children}</h3>
+      <h3 className={headingCls} style={hStyle}>{children}</h3>
       {right}
     </div>
   );
 }
 // The heading's own style, for a heading that is a button (Allergens & diet opens and closes).
-export const headingText = 'text-[13px] uppercase leading-5 text-ink-muted';
-export const headingStyle = { fontWeight: 500, letterSpacing: '.04em' } as const;
+export const headingText = headingCls;
+export const headingStyle = hStyle;
 
 // A field inside a card that saves itself (on leaving it, or Enter on one line; re-synced when the saved value changes, e.g. Undo). `lines`:
 // a text box as tall as its text at any width, so a description is read in full, never cut short. A save that did not go through keeps what

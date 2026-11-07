@@ -4,6 +4,10 @@
 import { chromium, devices } from '/Users/kianbaban/Roses/node_modules/playwright/index.mjs';
 import { spawn, execFileSync } from 'node:child_process';
 import fs from 'node:fs'; import path from 'node:path'; import net from 'node:net';
+import { scratchTarget } from '../../scripts/scratch-target.mjs';
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+// It starts its own servers, so the database and uploads they use come from this environment and must be scratch copies.
+await scratchTarget('reports/spring-first-frame/timeline.mjs', { db: true, uploads: true, env: ['CWD', 'DIST', 'NOW', 'OUT', 'WANT'] });
 const cwd = process.env.CWD, copy = path.join(cwd, '.next-fixture'), N = Number(process.env.N || 10), out = process.env.OUT;
 if (fs.existsSync(copy)) fs.rmSync(copy, { recursive: true, force: true });
 execFileSync('cp', ['-Rc', path.join(cwd, process.env.DIST), copy]);

@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 // Lighthouse mobile, N runs, against a running server. Local estimate only (not the hosted result).
-//   node scripts/check-lighthouse.mjs http://localhost:3000/senso [--runs 3] [--out reports/checkpoint-a]
+//   node scripts/check-lighthouse.mjs http://127.0.0.1:<scratch server port>/senso [--runs 3] --out <folder>
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import lighthouse from 'lighthouse';
 import { launch } from 'chrome-launcher';
+import { scratchTarget } from './scratch-target.mjs';
 
-const [url, ...rest] = process.argv.slice(2);
-const args = Object.fromEntries(rest.map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : []).filter((x) => x.length));
+// The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
+const { args, pos: [url] } = await scratchTarget('scripts/check-lighthouse.mjs', { options: { runs: 'number', out: 'path' }, optional: ['runs'], positional: [['url', 'server']] });
 const runs = Number(args.runs || 3);
-const out = path.resolve(args.out || 'reports/checkpoint-a');
+const out = path.resolve(args.out);
 await fs.mkdir(out, { recursive: true });
 const rows = [];
 // the images the run loaded (count and transferred KB), for the suite's content cost (2026-10-12)

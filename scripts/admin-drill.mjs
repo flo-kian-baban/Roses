@@ -9,11 +9,14 @@
 import fs from 'node:fs/promises';
 import { existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes, randomInt, scryptSync, timingSafeEqual } from 'node:crypto';
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import zlib from 'node:zlib';
 import { chromium, devices } from 'playwright';
 import { connectDb } from './load-env.mjs';
 import { scratchTarget } from './scratch-target.mjs';
+import { adminPinProblem } from './admin-pin-rule.mjs';
 
 // The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
 const { args } = await scratchTarget('scripts/admin-drill.mjs', { options: { base: 'server', out: 'path', jpeg: 'flag' }, db: true, env: ['DRILL_ADMIN_EMAIL', 'DRILL_ADMIN_PASSWORD'] });
@@ -78,6 +81,86 @@ if (process.env.DRILL_ADMIN_PIN) {
   const team = c ? await fetch(`${base}/admin/team`, { headers: { cookie: c } }) : null;
   const teamHtml = team ? await team.text() : '';
   check('admin-pin', r.status === 303 && r.location === '/admin/kebab-land' && !!c && team?.status === 200 && teamHtml.includes('Admin accounts'), `admin PIN on the Kebab Land sign-in → ${r.status} to ${r.location}, cookie set: ${!!c}; Team (owner and admin) answers ${team?.status} with the admin accounts: ${teamHtml.includes('Admin accounts')}`);
+}
+
+// Admin PIN rule (Kian, 2026-11-06, replacing the 6 to 12 digits of 2026-11-03): an admin PIN is set with 4 to 6 digits, and not one digit
+// repeated or a straight run up or down (scripts/admin-pin-rule.mjs); admin:create applies it, with or without --reset; a PIN set before is
+// not checked again (the sign-in is unchanged). The tool runs here as an admin runs it, on this drill's own database (DATABASE_URL given, and
+// started in the drill's folder, so it reads no settings file), for throwaway accounts removed at the end; no PIN this drill sets is written down.
+{
+  const ADMIN_CREATE = path.join(path.dirname(fileURLToPath(import.meta.url)), 'admin-create.mjs');
+  const ownDb = (await db.query('select current_database() as d')).rows[0].d;
+  const tool = (argv) => new Promise((resolve) => {
+    const p = spawn(process.execPath, [ADMIN_CREATE, ...argv], { cwd: out, env: { PATH: process.env.PATH, HOME: process.env.HOME, DATABASE_URL: process.env.DATABASE_URL, ROSES_APP_NAME: 'roses-check:admin-create' } });
+    let stdout = '', stderr = ''; p.stdout.on('data', (d) => { stdout += d; }); p.stderr.on('data', (d) => { stderr += d; });
+    p.on('close', (status) => { const r = { status, stdout: stdout.trim(), stderr: stderr.trim() }; for (const l of r.stdout.split('\n').filter(Boolean)) log('admin-create', l); resolve(r); });
+  });
+  const hashOf = (pin) => { const salt = randomBytes(16); return `$scrypt$N=16384,r=8,p=1$${salt.toString('base64')}$${scryptSync(pin.normalize('NFKC'), salt, 32, { N: 16384, r: 8, p: 1 }).toString('base64')}`; };
+  const matches = (pin, h) => { const m = h.match(/^\$scrypt\$N=(\d+),r=(\d+),p=(\d+)\$([^$]+)\$([^$]+)$/); if (!m) return false; const e = Buffer.from(m[5], 'base64'); const x = scryptSync(pin.normalize('NFKC'), Buffer.from(m[4], 'base64'), e.length, { N: Number(m[1]), r: Number(m[2]), p: Number(m[3]) }); return x.length === e.length && timingSafeEqual(x, e); };
+  // the rule over every PIN of 4 to 6 digits, against the PM's words defined independently: one digit repeated, or each digit one up from the
+  // one before (9 → 0 only as the last step: 7890) or one down (0 → 9 only as the first step: 0987)
+  const steps = (p) => [...p].slice(1).map((c, i) => (Number(c) - Number(p[i]) + 10) % 10);
+  const obvious = (p) => new Set(p).size === 1
+    || (steps(p).every((x) => x === 1) && ![...p].slice(0, -2).some((c, i) => c === '9' && p[i + 1] === '0'))
+    || (steps(p).every((x) => x === 9) && ![...p].slice(1, -1).some((c, i) => c === '0' && p[i + 2] === '9'));
+  const refused = { 4: [], 5: [], 6: [] }; let differ = [];
+  for (const d of [4, 5, 6]) for (let i = 0; i < 10 ** d; i++) { const p = String(i).padStart(d, '0'); const no = !!adminPinProblem(p); if (no) refused[d].push(p); if (no !== obvious(p)) differ.push(p); }
+  const all = [...refused[4], ...refused[5], ...refused[6]], runs = all.filter((p) => new Set(p).size > 1);
+  const edges = { refused: ['1234', '4321', '7890', '0987', '123456', '654321'], allowed: ['8901', '9012', '1098', '1122', '2468', '1235'] };
+  const edgesOk = edges.refused.every((p) => adminPinProblem(p)) && edges.allowed.every((p) => !adminPinProblem(p)) && ['123', '1234567', '12a4', ''].every((p) => adminPinProblem(p) === 'an admin PIN is 4 to 6 digits');
+  const exhaustiveOk = differ.length === 0 && refused[4].length === 26 && refused[5].length === 24 && refused[6].length === 22 && edgesOk;
+  // a PIN that signs in no other account or active PIN here (Kian's own account is in this copy too): one the rule allows, an obvious one, or any
+  const others = async () => [...(await db.query('select pin_hash as h from admins where pin_hash is not null')).rows, ...(await db.query('select pin_hash as h from pins where revoked_at is null')).rows].map((r) => r.h);
+  const freshPin = async (digits, kind = 'allowed') => { const hs = await others(); for (let t = 0; t < 200; t++) { const p = kind === 'obvious' ? refused[digits][randomInt(0, refused[digits].length)] : String(randomInt(0, 10 ** digits)).padStart(digits, '0'); if (kind === 'allowed' && adminPinProblem(p)) continue; if (!hs.some((h) => matches(p, h))) return p; } throw new Error('no free PIN found'); };
+  // a PIN on a venue's sign-in: where it lands and who is signed in (the account menu's name and role; Add venue is in it for admins only)
+  const pinSignIn = async (venue, pin) => {
+    const r = await post('/api/admin/login', { mode: 'pin', venue, pin }); const c = (r.setCookie || '').split(';')[0];
+    const html = c.startsWith('roses_session=') ? await (await fetch(`${base}/admin/${venue}`, { headers: { cookie: c } })).text() : '';
+    const m = html.match(/aria-label="Account".*?<p class="text-base font-semibold[^"]*">([^<]*)<\/p><p class="text-\[13px\] text-ink-muted">([^<]*)<\/p>/s);
+    const o = { status: r.status, location: r.location, name: m?.[1] ?? null, role: m?.[2] ?? null, addVenue: html.includes('href="/admin/new"') };
+    return { ...o, ok: r.status === 303 && r.location === `/admin/${venue}` && o.role === 'Admin' && o.addVenue };
+  };
+  const emails = []; const throwaway = () => { const e = `check-suite-pinrule-${randomBytes(4).toString('hex')}@localhost`; emails.push(e); return e; };
+  const refusedAs = (r, why) => r.status === 2 && r.stderr.split('\n').includes(why) && !r.stdout;
+  try {
+    // set: a 4-digit PIN the rule allows, on a new account; it signs in through the Senso sign-in page on the iPhone viewport
+    const e1 = throwaway(), n1 = 'Drill PIN rule', four = await freshPin(4);
+    const made = await tool(['--email', e1, '--name', n1, '--pin', four]);
+    const row1 = (await db.query('select pin_hash from admins where email = $1', [e1])).rows[0];
+    const onOwn = made.stdout.includes(`connected to database "${ownDb}"`);
+    const ctx = await browser.newContext(DEVICE);
+    const pg1 = await loginPage(ctx, 'pin', { venue: 'senso', pin: four });
+    await pg1.waitForSelector('[data-item]', { timeout: 15000 }).catch(() => {});
+    const who = await pg1.$eval('summary[aria-label="Account"] + div p', (el) => el.textContent).catch(() => null);
+    const role = await pg1.$eval('summary[aria-label="Account"] + div p + p', (el) => el.textContent).catch(() => null);
+    const landed = pg1.url().replace(base, ''); await pg1.close(); await ctx.close();
+    check('admin-pin-4-digits', made.status === 0 && /^created admin "Drill PIN rule" with a PIN$/m.test(made.stdout) && onOwn && !!row1?.pin_hash?.startsWith('$scrypt$') && landed === '/admin/senso' && who === n1 && role === 'Admin', `admin:create --pin with 4 digits the rule allows, new account → exit ${made.status}, "${made.stdout.split('\n').at(-1)}", written on this drill's database ${ownDb}: ${onOwn}, scrypt hash stored: ${!!row1?.pin_hash?.startsWith('$scrypt$')}; that PIN on the Senso sign-in page (iPhone 13) → ${landed}, signed in as "${who}" (${role})`);
+    // refused when set: every obvious PIN through the tool, with --reset on that account (its PIN kept) and as a new account (none made)
+    const batch = async (pins, argvOf) => { const res = []; for (let k = 0; k < pins.length; k += 8) res.push(...await Promise.all(pins.slice(k, k + 8).map((p) => tool(argvOf(p)).then((r) => ({ p, ...r }))))); return res; };
+    const e2 = throwaway();
+    const viaReset = await batch(all, (p) => ['--email', e1, '--name', n1, '--pin', p, '--reset']);
+    const viaNew = await batch(all, (p) => ['--email', e2, '--name', 'Drill PIN rule (refused)', '--pin', p]);
+    const viaLength = await batch(['123', '1234567', '12345678', '12a4'], (p) => ['--email', e1, '--name', n1, '--pin', p, '--reset']);
+    const kept = (await db.query('select pin_hash from admins where email = $1', [e1])).rows[0]?.pin_hash === row1?.pin_hash;
+    const madeNew = Number((await db.query('select count(*) as n from admins where email = $1', [e2])).rows[0].n);
+    const bad = [...viaReset.filter((r) => !refusedAs(r, adminPinProblem(r.p))), ...viaNew.filter((r) => !refusedAs(r, adminPinProblem(r.p))), ...viaLength.filter((r) => !refusedAs(r, 'an admin PIN is 4 to 6 digits'))];
+    check('admin-pin-patterns-refused', exhaustiveOk && bad.length === 0 && kept && madeNew === 0, `the rule over every PIN of 4 to 6 digits (1,110,000) refuses exactly the obvious ones as defined independently here (differences: ${differ.length}): ${refused[4].length} + ${refused[5].length} + ${refused[6].length} = ${all.length}, one digit repeated (30) and the runs up or down, 0 also after 9 (${runs.length}: ${runs.join(' ')}); allowed: ${edges.allowed.join(' ')}; each of the ${all.length} through admin:create → exit 2 with its reason: with --reset on the account above ${viaReset.length - viaReset.filter((r) => !refusedAs(r, adminPinProblem(r.p))).length} of ${all.length} (its PIN unchanged: ${kept}), as a new account ${viaNew.length - viaNew.filter((r) => !refusedAs(r, adminPinProblem(r.p))).length} of ${all.length} (accounts made: ${madeNew}); 3, 7 and 8 digits and a letter → "an admin PIN is 4 to 6 digits" ${viaLength.length - viaLength.filter((r) => !refusedAs(r, 'an admin PIN is 4 to 6 digits')).length} of ${viaLength.length}${bad.length ? `; NOT refused as expected: ${bad.map((r) => `${r.p} (exit ${r.status})`).join(', ')}` : ''}`);
+    // --reset with a 5-digit PIN the rule allows: set, and it signs in on Kebab Land as that account
+    const five = await freshPin(5);
+    const reset = await tool(['--email', e1, '--name', n1, '--pin', five, '--reset']);
+    const changed = (await db.query('select pin_hash from admins where email = $1', [e1])).rows[0]?.pin_hash !== row1?.pin_hash;
+    const s5 = await pinSignIn('kebab-land', five);
+    check('admin-pin-reset', reset.status === 0 && /^updated admin "Drill PIN rule" with a PIN$/m.test(reset.stdout) && reset.stdout.includes(`connected to database "${ownDb}"`) && changed && s5.ok && s5.name === n1, `admin:create --reset --pin with 5 digits the rule allows → exit ${reset.status}, "${reset.stdout.split('\n').at(-1)}", stored hash changed: ${changed}; that PIN on the Kebab Land sign-in → ${s5.status} to ${s5.location}, signed in as "${s5.name}" (${s5.role}, Add venue in the menu: ${s5.addVenue})`);
+    // not checked again: admin PINs stored as the tool stored them before the rule (an obvious one, as allowed until 2026-11-03; 12 digits, as
+    // allowed from 2026-11-03 to today) still sign in
+    const e3 = throwaway(), e4 = throwaway(), obv = await freshPin(4, 'obvious'), twelve = await freshPin(12, 'any');
+    await db.query('insert into admins (email, pin_hash, name) values ($1, $2, $3), ($4, $5, $6)', [e3, hashOf(obv), 'Drill PIN set before (obvious)', e4, hashOf(twelve), 'Drill PIN set before (12 digits)']);
+    const s3 = await pinSignIn('senso', obv), s4 = await pinSignIn('senso', twelve);
+    check('admin-pin-set-before', s3.ok && s3.name === 'Drill PIN set before (obvious)' && s4.ok && s4.name === 'Drill PIN set before (12 digits)', `admin PINs stored before the rule are not checked again (the sign-in is unchanged, 4 to 12 digits): an obvious 4-digit one → ${s3.status} to ${s3.location}, signed in as "${s3.name}" (${s3.role}); a 12-digit one → ${s4.status} to ${s4.location}, signed in as "${s4.name}" (${s4.role})`);
+  } finally {
+    const del = await db.query('delete from admins where email = any($1)', [emails]);
+    log('admin-pin-rule', `throwaway admin accounts removed: ${del.rowCount} (of ${emails.length} addresses; the refused one was never made)`);
+  }
 }
 
 // Team: create staff (senso) and owner (both venues) PINs; the PIN pages are not screenshotted

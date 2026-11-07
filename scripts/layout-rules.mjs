@@ -3,6 +3,8 @@
 //   found: what breaks the rules: the page wider than the screen; anything reaching past the screen's edges, cut by the box around it,
 //     cut short (an ellipsis, a line clamp, a one-line text box holding more than it shows) or scrolling sideways;
 //   sizes: the text sizes in use; radii: the corner radii of what the admin draws.
+//   Also in found: a card's row divider (divide-y) under a child that does not span the card, so is not a row (Kian, 2026-11-07: lines
+//   under three of the four "Needs attention" chips, under the icon and the title of "No PINs yet").
 // Left out, as not the admin's own interface: the customers' page in the preview (the iframe) and the iPhone frame around it. Form
 // controls keep their own drawing (the iOS switch's pill, the check box and the radio dot: .switch, .check) and a person's initials
 // their circle ([data-avatar]). A row of chips made to scroll sideways on a phone (the
@@ -25,6 +27,12 @@ export const MEASURE = () => {
     const sideways = el.closest('[data-scrolls-sideways]');
     if (/(auto|scroll)/.test(st.overflowX) && el.scrollWidth > el.clientWidth + 1 && !el.hasAttribute('data-scrolls-sideways')) found.push(`scrolls sideways: ${desc(el)}`);
     if (r.width < 1 || r.height < 1 || st.visibility === 'hidden' || st.display === 'none' || el.closest('.sr-only')) continue;
+    const pa = el.parentElement;
+    if (pa && pa.classList.contains('divide-y') && parseFloat(st.borderBottomWidth) > 0) {
+      const pr = pa.getBoundingClientRect(), ps = getComputedStyle(pa);
+      const left = pr.left + parseFloat(ps.borderLeftWidth) + parseFloat(ps.paddingLeft), right = pr.right - parseFloat(ps.borderRightWidth) - parseFloat(ps.paddingRight);
+      if (r.left > left + 1 || r.right < right - 1) found.push(`a row divider under something that is not a row: ${desc(el)} (${Math.round(r.left)}–${Math.round(r.right)} in a card ${Math.round(left)}–${Math.round(right)})`);
+    }
     if (!sideways && (r.right > innerWidth + 0.5 || r.left < -0.5)) found.push(`past the screen's edge: ${desc(el)} (${Math.round(r.left)}–${Math.round(r.right)} of ${innerWidth})`);
     if (!sideways) for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) { if (getComputedStyle(a).overflowX === 'visible') continue; const ar = a.getBoundingClientRect(); if (r.left < ar.left - 0.5 || r.right > ar.right + 0.5) { found.push(`cut by the box around it: ${desc(el)}`); break; } }
     const hides = st.overflowX !== 'visible' || st.textOverflow === 'ellipsis' || +st.webkitLineClamp > 0;

@@ -125,3 +125,4 @@ Runs made from 2026-11-03 on are added below as they are committed.
 | 2026-11-06T23-49-19Z | fast | FAIL (41 of 43 checks passed, 1 KNOWN MISS) | 206c493 | here | one timing check outside the batch's code: the Style drill's section-grid preview 1090 ms (limit 1000; 118–225 ms before, 148 ms by hand on the same code) in a stall that also slowed that save's public page from ~7 to 91 ms |
 | 2026-11-07T00-14-43Z | fast | PASS (42 of 43 checks passed, 1 KNOWN MISS) | ad1eb79 | here | the admin-wide clean-up's merge gate (the code of 206c493) |
 | 2026-11-07T04-04-22Z | fast | PASS (42 of 43 checks passed, 1 KNOWN MISS) | c865eec | here | the admin PIN rule's merge gate (Kian, 2026-11-06) |
+| 2026-11-07T05-10-25Z | fast | PASS (41 of 43 checks passed, 2 KNOWN MISS) | 4479612 | here | the Menu tab search row's merge gate (Kian, 2026-11-07) |

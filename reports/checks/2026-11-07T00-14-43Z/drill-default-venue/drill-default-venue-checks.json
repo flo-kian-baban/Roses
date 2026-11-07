@@ -1,0 +1,4078 @@
+{
+  "url": "http://127.0.0.1:57511/drill-default-venue",
+  "at": "2026-11-07T00:20:57.345Z",
+  "checks": {
+    "welcomeInFirstHtml": {
+      "present": true,
+      "headScript": true,
+      "seasonRendered": true,
+      "noStoredFlag": true,
+      "bytes": 29765
+    },
+    "firstVisit": {
+      "upAtFirstSampleMs": 61,
+      "upAtFirstSample": true,
+      "greet": "evening",
+      "season": "fall",
+      "bothLanguagesShown": true,
+      "noPreHighlight": true,
+      "particles": 18,
+      "animationsRunning": 36,
+      "menuInertBehind": true,
+      "entrance": {
+        "logoShownAtMs": 61,
+        "greetingEnAtMs": 912,
+        "greetingFaAtMs": 1056,
+        "buttonsAtMs": 1304,
+        "greetingWasHidden": true,
+        "samplesBeforeStyledOverlay": 1,
+        "firstRawSample": {
+          "t": 9,
+          "welcome": "show",
+          "display": "block",
+          "styled": false,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 1
+            }
+          ],
+          "particles": 18,
+          "running": 0,
+          "storedKeys": [],
+          "page": {
+            "header": null,
+            "tabs": null,
+            "h2": null,
+            "row1": null
+          },
+          "inert": null
+        }
+      },
+      "tap": {
+        "ms": 218,
+        "gone": true,
+        "usableMs": 5,
+        "faded": true,
+        "tx": null,
+        "welcome": "off",
+        "lang": "en",
+        "rowVisible": true,
+        "off": true,
+        "menuInertAfter": false,
+        "storedKeys": [
+          "roses-lang"
+        ],
+        "displayAfter": "none"
+      },
+      "samples": [
+        {
+          "t": 9,
+          "welcome": "show",
+          "display": "block",
+          "styled": false,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 1
+            }
+          ],
+          "particles": 18,
+          "running": 0,
+          "storedKeys": [],
+          "page": {
+            "header": null,
+            "tabs": null,
+            "h2": null,
+            "row1": null
+          },
+          "inert": null
+        },
+        {
+          "t": 61,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 85,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 107,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 130,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 153,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 175,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 197,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 220,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 243,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 265,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 287,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 310,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 332,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 354,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 377,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 399,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 422,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.000208005,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 446,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.269238,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 470,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.396153,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 493,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.605402,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 517,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.681898,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 544,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.789693,
+          "fa": 0.10754,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 569,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.827614,
+          "fa": 0.242404,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 595,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.88292,
+          "fa": 0.488752,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 620,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.903394,
+          "fa": 0.588111,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 645,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.934301,
+          "fa": 0.731126,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 669,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.946032,
+          "fa": 0.780853,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 695,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.964285,
+          "fa": 0.852536,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.10754
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 719,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.971289,
+          "fa": 0.878389,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.242404
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 744,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.982113,
+          "fa": 0.917106,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.488973
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 768,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.986238,
+          "fa": 0.931713,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.588111
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 792,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.992431,
+          "fa": 0.95412,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.731126
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.10754
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 816,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.994686,
+          "fa": 0.962733,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.781028
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.242404
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 841,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.997831,
+          "fa": 0.976069,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.852477
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.488752
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 865,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.998827,
+          "fa": 0.981177,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.878296
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.587575
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 888,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 0.999499,
+          "fa": 0.985459,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.899547
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.66774
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 912,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 0.991924,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.931713
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.781119
+            }
+          ],
+          "particles": 18,
+          "running": 39,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 937,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 0.99427,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.94386
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.820617
+            }
+          ],
+          "particles": 18,
+          "running": 39,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 962,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 0.997588,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.962717
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.878341
+            }
+          ],
+          "particles": 18,
+          "running": 39,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 987,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 0.998656,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.96997
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.899547
+            }
+          ],
+          "particles": 18,
+          "running": 39,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1010,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 0.999824,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.981177
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.931633
+            }
+          ],
+          "particles": 18,
+          "running": 39,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1033,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 0.999995,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.985459
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.94386
+            }
+          ],
+          "particles": 18,
+          "running": 39,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1056,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.989009
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.95412
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1078,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.994266
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.969956
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1101,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.996146
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.976081
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1123,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.998658
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.985466
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1146,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.999387
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.98899
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1168,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.999824
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.991908
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1191,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.996146
+            }
+          ],
+          "particles": 18,
+          "running": 37,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1213,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.997586
+            }
+          ],
+          "particles": 18,
+          "running": 37,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1235,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.998654
+            }
+          ],
+          "particles": 18,
+          "running": 37,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1258,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.999824
+            }
+          ],
+          "particles": 18,
+          "running": 37,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1281,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 0.999995
+            }
+          ],
+          "particles": 18,
+          "running": 37,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1304,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": null,
+          "lang": "en",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": null,
+              "opacity": 1
+            }
+          ],
+          "particles": 18,
+          "running": 36,
+          "storedKeys": [],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        }
+      ],
+      "ok": true
+    },
+    "images": {
+      "total": 3,
+      "complete": 3,
+      "loaded": 3,
+      "failed": []
+    },
+    "tabs": {
+      "barHeight": 48.4,
+      "sections": 2,
+      "summary": {
+        "count": 5,
+        "onTappedTab": 5,
+        "atBar": 5,
+        "othersLit": 0,
+        "tabVisible": 5,
+        "maxSettleMs": 606
+      },
+      "scroll": {
+        "down": {
+          "samples": 6,
+          "mismatches": 0,
+          "first": []
+        },
+        "lastTabActiveAtBottom": true,
+        "up": {
+          "samples": 6,
+          "mismatches": 0,
+          "first": []
+        }
+      },
+      "ok": true,
+      "taps": [
+        {
+          "id": "s-breakfast",
+          "active": "s-breakfast",
+          "atBar": true,
+          "topMinusBar": -0.5,
+          "othersLit": [],
+          "tabVisible": true,
+          "settleMs": 481
+        },
+        {
+          "id": "s-drinks",
+          "active": "s-drinks",
+          "atBar": true,
+          "topMinusBar": 66.5,
+          "othersLit": [],
+          "tabVisible": true,
+          "settleMs": 594
+        },
+        {
+          "id": "s-breakfast",
+          "active": "s-breakfast",
+          "atBar": true,
+          "topMinusBar": -0.5,
+          "othersLit": [],
+          "tabVisible": true,
+          "settleMs": 586
+        },
+        {
+          "id": "s-drinks",
+          "active": "s-drinks",
+          "atBar": true,
+          "topMinusBar": 66.5,
+          "othersLit": [],
+          "tabVisible": true,
+          "settleMs": 606
+        },
+        {
+          "id": "s-drinks",
+          "active": "s-drinks",
+          "atBar": true,
+          "topMinusBar": 66.5,
+          "othersLit": [],
+          "tabVisible": true,
+          "settleMs": 320
+        }
+      ],
+      "directLink": {
+        "target": "s-drinks",
+        "behindOverlayY": 351,
+        "active": "s-breakfast",
+        "under": "s-breakfast",
+        "atBottom": false,
+        "y": 0,
+        "ok": true
+      }
+    },
+    "dom": {
+      "lang": "en",
+      "dir": "ltr",
+      "title": "Drill default venue — Menu",
+      "sections": [
+        {
+          "id": "s-breakfast",
+          "en": "Breakfast",
+          "fa": "صبحانه",
+          "items": 2
+        },
+        {
+          "id": "s-drinks",
+          "en": "Drinks",
+          "fa": "نوشیدنی‌ها",
+          "items": 2
+        }
+      ],
+      "items": 4,
+      "pricesWithNonWesternDigits": 0,
+      "photos": 2
+    },
+    "fontRequests": {
+      "urls": [
+        "http://127.0.0.1:57511/_next/static/media/vazirmatn_arabic_600_normal-s.0xrr7-8upn16_.woff2"
+      ],
+      "thirdParty": []
+    },
+    "persianToggle": {
+      "lang": "fa",
+      "dir": "rtl",
+      "dataLang": "fa",
+      "visibleFaHeadings": 2,
+      "visibleEnHeadings": 0
+    },
+    "imagesFa": {
+      "total": 3,
+      "complete": 3,
+      "loaded": 3,
+      "failed": []
+    },
+    "topAfterReload": {
+      "beforeReload": {
+        "y": 103,
+        "hash": ""
+      },
+      "afterReload": {
+        "y": 0,
+        "hash": "",
+        "scrollRestoration": "manual"
+      },
+      "welcomePreHighlighted": [
+        "fa"
+      ],
+      "ok": true
+    },
+    "repeatVisit": {
+      "upAtFirstSampleMs": 13,
+      "upAtFirstSample": true,
+      "saved": "fa",
+      "lang": "fa",
+      "pressed": [
+        "fa"
+      ],
+      "storedKeys": [
+        "roses-lang"
+      ],
+      "showsAgain": true,
+      "samples": [
+        {
+          "t": 13,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 41,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 70,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 98,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 132,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 163,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 194,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 225,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 257,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 289,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 322,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 363,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0.000168003,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 395,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0.269198,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 426,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0.509848,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 456,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0.605376,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 487,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0,
+          "fa": 0.741943,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 515,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.242364,
+          "fa": 0.827604,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 545,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.488719,
+          "fa": 0.882913,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 574,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.667573,
+          "fa": 0.92017,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 604,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.731109,
+          "fa": 0.934297,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 41,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 632,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.820394,
+          "fa": 0.955889,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 661,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.878382,
+          "fa": 0.971287,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.242364
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 690,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.899541,
+          "fa": 0.977165,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.371725
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 722,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.931629,
+          "fa": 0.986214,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.587548
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 750,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.954061,
+          "fa": 0.992416,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.730773
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.106688
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 779,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.969941,
+          "fa": 0.996458,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.820462
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.371217
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 811,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.981166,
+          "fa": 0.998825,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.878242
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.587366
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 840,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.985434,
+          "fa": 0.999496,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.899425
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.667292
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 870,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.991907,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.931629
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.780839
+            }
+          ],
+          "particles": 18,
+          "running": 40,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 901,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.996136,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.954061
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.852355
+            }
+          ],
+          "particles": 18,
+          "running": 39,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 929,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.998652,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.969941
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.899462
+            }
+          ],
+          "particles": 18,
+          "running": 39,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 963,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 0.999824,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.981175
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.931629
+            }
+          ],
+          "particles": 18,
+          "running": 39,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 992,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.988982
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.954042
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1021,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.991902
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.962683
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1049,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.996142
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.976068
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1078,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.998654
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.98545
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1107,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.999824
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.991902
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1139,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 0.999995
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.994257
+            }
+          ],
+          "particles": 18,
+          "running": 38,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1169,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.997585
+            }
+          ],
+          "particles": 18,
+          "running": 37,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1200,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.999388
+            }
+          ],
+          "particles": 18,
+          "running": 37,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1231,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 0.999995
+            }
+          ],
+          "particles": 18,
+          "running": 37,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        },
+        {
+          "t": 1262,
+          "welcome": "show",
+          "display": "grid",
+          "styled": true,
+          "opacity": "1",
+          "greet": "evening",
+          "season": "fall",
+          "saved": "fa",
+          "lang": "fa",
+          "en": 1,
+          "fa": 1,
+          "enShown": true,
+          "faShown": true,
+          "logo": 1,
+          "buttons": [
+            {
+              "lang": "en",
+              "pressed": null,
+              "opacity": 1
+            },
+            {
+              "lang": "fa",
+              "pressed": "true",
+              "opacity": 1
+            }
+          ],
+          "particles": 18,
+          "running": 36,
+          "storedKeys": [
+            "roses-lang"
+          ],
+          "page": {
+            "header": 1,
+            "tabs": 1,
+            "h2": 1,
+            "row1": 1
+          },
+          "inert": true
+        }
+      ]
+    },
+    "reducedMotion": {
+      "t": 416,
+      "welcome": "show",
+      "display": "grid",
+      "styled": true,
+      "opacity": "1",
+      "greet": "evening",
+      "season": "fall",
+      "saved": null,
+      "lang": "en",
+      "en": 1,
+      "fa": 1,
+      "enShown": true,
+      "faShown": true,
+      "logo": 1,
+      "buttons": [
+        {
+          "lang": "en",
+          "pressed": null,
+          "opacity": 1
+        },
+        {
+          "lang": "fa",
+          "pressed": null,
+          "opacity": 1
+        }
+      ],
+      "particles": 18,
+      "running": 0,
+      "storedKeys": [],
+      "page": {
+        "header": 1,
+        "tabs": 1,
+        "h2": 1,
+        "row1": 1
+      },
+      "inert": true,
+      "prefersReduced": true,
+      "tap": {
+        "ms": 4,
+        "gone": true,
+        "usableMs": 4,
+        "faded": false,
+        "tx": null,
+        "welcome": "off",
+        "lang": "en",
+        "rowVisible": true
+      },
+      "shownStill": true,
+      "pageVisibleAtOnce": true,
+      "instantOff": true,
+      "fade150": null
+    },
+    "javascriptOff": {
+      "welcome": null,
+      "overlayInHtml": true,
+      "display": "none",
+      "rowVisible": true,
+      "ok": true
+    }
+  }
+}

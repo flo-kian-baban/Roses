@@ -1,0 +1,72 @@
+Layout drill PASS (5/5 checks)
+
+PASS layout-laptop: laptop (1440 × 900): 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px
+PASS sideways-cut-390: 390 px phone (iPhone 13): 3 sideways row(s) measured (style: "EN" 29.3 px shown, 14.7 px hidden; style-colour: "EN" 29.3 px shown, 14.7 px hidden; style-welcome: "EN" 29.3 px shown, 14.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)
+PASS layout-390: 390 px phone (iPhone 13): 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px
+PASS sideways-cut-360: 360 px phone: 3 sideways row(s) measured (style: "EN" 15.3 px shown, 28.7 px hidden; style-colour: "EN" 15.3 px shown, 28.7 px hidden; style-welcome: "EN" 15.3 px shown, 28.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)
+PASS layout-360: 360 px phone: 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px
+
+Transcript:
+2026-11-07T00:37:26.832Z [db] connected to database "roses_check_20261107t001443z" as application "roses-check:layout-drill"
+2026-11-07T00:37:28.562Z [laptop] signin-venues: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:37:29.551Z [laptop] signin-pin: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:37:30.537Z [laptop] signin-email: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:37:31.774Z [laptop] menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:32.968Z [laptop] venue-switcher: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:34.162Z [laptop] account-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:35.474Z [laptop] section-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:36.897Z [laptop] reorder: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:38.081Z [laptop] add-item: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:39.941Z [laptop] add-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:41.129Z [laptop] rename-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:42.348Z [laptop] delete-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:43.587Z [laptop] item-editor: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:44.680Z [laptop] style: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:45.752Z [laptop] style-colour: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:46.818Z [laptop] style-welcome: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:47.869Z [laptop] details: nothing cut, past the edges or sideways; sizes 13px 16px; radii 12px
+2026-11-07T00:37:48.874Z [laptop] team: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:37:49.855Z [laptop] add-venue: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:37:49.866Z [layout-laptop] PASS: laptop (1440 × 900): 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px
+2026-11-07T00:37:51.396Z [390] signin-venues: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:37:52.388Z [390] signin-pin: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:37:53.377Z [390] signin-email: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:37:54.539Z [390] menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:55.625Z [390] venue-switcher: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:56.736Z [390] account-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:57.933Z [390] section-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:37:59.206Z [390] reorder: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:00.294Z [390] add-item: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:01.906Z [390] add-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:03.050Z [390] rename-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:04.175Z [390] delete-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:05.333Z [390] item-editor: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:06.414Z [390] style: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:07.489Z [390] style-colour: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:08.556Z [390] style-welcome: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:09.576Z [390] details: nothing cut, past the edges or sideways; sizes 13px 16px; radii 12px
+2026-11-07T00:38:10.567Z [390] team: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:38:11.559Z [390] add-venue: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:38:11.565Z [sideways-cut-390] PASS: 390 px phone (iPhone 13): 3 sideways row(s) measured (style: "EN" 29.3 px shown, 14.7 px hidden; style-colour: "EN" 29.3 px shown, 14.7 px hidden; style-welcome: "EN" 29.3 px shown, 14.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)
+2026-11-07T00:38:11.565Z [layout-390] PASS: 390 px phone (iPhone 13): 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px
+2026-11-07T00:38:13.108Z [360] signin-venues: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:38:14.113Z [360] signin-pin: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:38:15.095Z [360] signin-email: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:38:16.232Z [360] menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:17.319Z [360] venue-switcher: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:18.415Z [360] account-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:19.862Z [360] section-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:21.161Z [360] reorder: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:22.292Z [360] add-item: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:23.863Z [360] add-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:24.980Z [360] rename-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:26.091Z [360] delete-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:27.247Z [360] item-editor: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:28.356Z [360] style: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:29.416Z [360] style-colour: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:30.470Z [360] style-welcome: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-07T00:38:31.482Z [360] details: nothing cut, past the edges or sideways; sizes 13px 16px; radii 12px
+2026-11-07T00:38:32.470Z [360] team: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:38:33.453Z [360] add-venue: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-07T00:38:33.459Z [sideways-cut-360] PASS: 360 px phone: 3 sideways row(s) measured (style: "EN" 15.3 px shown, 28.7 px hidden; style-colour: "EN" 15.3 px shown, 28.7 px hidden; style-welcome: "EN" 15.3 px shown, 28.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)
+2026-11-07T00:38:33.459Z [layout-360] PASS: 360 px phone: 19 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px

@@ -123,3 +123,4 @@ Runs made from 2026-11-03 on are added below as they are committed.
 | 2026-11-06T20-10-47Z | fast | PASS (39 of 41 checks passed, 2 KNOWN MISS) | 85fa553 | here | the item editor clean-up's merge gate (merged in 92563ff) |
 | 2026-11-06T22-00-49Z | fast | PASS (41 of 42 checks passed, 1 KNOWN MISS) | 9421921 | here | the admin-wide clean-up's gate, on branch admin-cleanup (not merged: Kian rules on the screenshots first) |
 | 2026-11-06T23-49-19Z | fast | FAIL (41 of 43 checks passed, 1 KNOWN MISS) | 206c493 | here | one timing check outside the batch's code: the Style drill's section-grid preview 1090 ms (limit 1000; 118–225 ms before, 148 ms by hand on the same code) in a stall that also slowed that save's public page from ~7 to 91 ms |
+| 2026-11-07T00-14-43Z | fast | PASS (42 of 43 checks passed, 1 KNOWN MISS) | ad1eb79 | here | the admin-wide clean-up's merge gate (the code of 206c493) |

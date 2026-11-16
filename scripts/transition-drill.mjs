@@ -61,6 +61,7 @@ import { spawn, execFileSync, spawnSync } from 'node:child_process';
 import { chromium, webkit, devices } from 'playwright';
 import { connectDb } from './load-env.mjs';
 import { scratchTarget } from './scratch-target.mjs';
+import { choose } from './preview-pick.mjs';
 import { behaviourOf, compareBehaviour, stylesheetHashes } from './welcome-behaviour-fixture.mjs';
 
 // The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
@@ -413,13 +414,13 @@ try {
     const stored = async (season, want) => { const t = Date.now(); let v = null; while (Date.now() - t < 4000) { v = (await db.query(`select style->>$1 as t from venues where id = 'senso'`, [TXKEY[season]])).rows[0]?.t; if (v === want) break; await sleep(100); } return v; };
     const a = await watchPlay(p, () => p.selectOption('[data-transition-select="fall"]', 'T6'));
     const savedFall = await stored('fall', 'T6');
-    const screen = await p.getAttribute('[data-style-bar] [data-preview-screen][aria-pressed="true"]', 'data-preview-screen');
+    const screen = await p.getAttribute('[data-style-bar] [data-preview-pick="screen"]', 'data-value');
     const b = await watchPlay(p, () => p.click('[data-transition-play="winter"]'));
-    const barSeason = await p.getAttribute('[data-style-bar] [data-preview-season][aria-pressed="true"]', 'data-preview-season');
+    const barSeason = await p.getAttribute('[data-style-bar] [data-preview-pick="season"]', 'data-value');
     const c = await watchPlay(p, () => p.click('[data-transition-play="winter"]'));
     const d = await watchPlay(p, () => p.selectOption('[data-transition-select="spring"]', 'T9'));
     const savedSpring = await stored('spring', 'T9');
-    await p.click('[data-style-bar] [data-preview-season="summer"]');
+    await choose(p, '[data-preview-season="summer"]', '[data-style-bar]');
     let summerKey = null; { const t = Date.now(); while (Date.now() - t < 5000) { summerKey = await p.evaluate(() => { const f = document.querySelector('iframe[data-preview-frame]'); const w = f && f.contentDocument && f.contentDocument.getElementById('welcome'); return (w && w.dataset.season === 'summer' && w.rosesTxKey) || null; }); if (summerKey) break; await sleep(100); } }
     await p.screenshot({ path: path.join(out, `admin-play-laptop.${jpeg ? 'jpg' : 'png'}`), ...(jpeg ? { type: 'jpeg', quality: 70 } : {}) });
     const want = { b: `${CHOICE.winter}-winter`, s: `${CHOICE.summer}-summer` };

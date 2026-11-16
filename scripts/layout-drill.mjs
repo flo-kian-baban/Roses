@@ -4,13 +4,18 @@
 // three sign-in screens; the Menu tab with an alert, the venue switcher and the account menu open, a section's menu, a section being
 // reordered, the Add item, Add section, Rename and Delete section sheets; the item editor, its Goes well with card holding three pairs
 // with the venue's longest names (set by the drill, put back at the end) and its picker; the Style tab, a colour open, the Welcome
-// group open; Details; Team; Add venue) is measured by scripts/layout-rules.mjs: nothing past the screen's edges, cut by its box, cut
-// short or scrolling sideways; the text sizes 13, 16 and 17 px and the page title's (28 px); one corner radius (12 px) on what the admin
-// draws. One check per screen width. On the two phones also: every row that scrolls sideways (the preview bar in the Style tab's sheet)
-// keeps the chip at the screen's edge visibly cut, at least CUT_MIN px shown and hidden (the PM, 2026-11-06). On every width, the Menu tab's
-// search row (Kian, 2026-11-07: its white bar stuck out past the cards): at the top and once stuck, its backing in the page's own colour,
-// its fields in the cards' white, the search field's left edge and the section menu's right edge on the cards' edges, 12 px from the
-// cards above and below at the top (as between cards), stuck right under the tab row. Needs a scratch server at
+// group open, the Season dropdown of the preview controls open; Details; Team; Add venue) is measured by scripts/layout-rules.mjs: nothing
+// past the screen's edges, cut by its box, cut short or scrolling sideways; the text sizes 13, 16 and 17 px and the page title's (28 px);
+// one corner radius (12 px) on what the admin draws. One check per screen width. On the two phones also: every row that scrolls sideways
+// (the preview controls in the Style tab's sheet) keeps the control at the screen's edge visibly cut, at least CUT_MIN px shown and hidden
+// (the PM, 2026-11-06). On every width, the Menu tab's search row (Kian, 2026-11-07: its white bar stuck out past the cards): at the top
+// and once stuck, its backing in the page's own colour, its fields in the cards' white, the search field's left edge and the section
+// menu's right edge on the cards' edges, 12 px from the cards above and below at the top (as between cards), stuck right under the tab
+// row. The Style tab's preview controls (Kian, 2026-11-15: one row of dropdowns like the search row, not a big container): on a laptop,
+// at the top and once stuck, one row of four dropdowns and two buttons, 44 px tall, their backing in the page's own colour and 60 px tall
+// as the search row's, the controls in the cards' white, the first one's left edge and the last one's right edge on the cards' edges,
+// stuck right under the tab row, the colours' first line 12 px under them; on the phones, one row of the same six controls in the
+// sheet's header, 44 px tall, grey on the white sheet, no group of chips. Needs a scratch server at
 // --base and DRILL_ADMIN_PIN (an admin PIN valid on any venue).
 //   DRILL_ADMIN_PIN=… node scripts/layout-drill.mjs --base http://127.0.0.1:<port> --out reports/checks/<stamp>/layout
 import fs from 'node:fs/promises';
@@ -75,6 +80,33 @@ for (const v of VIEWS) {
     const fits = (m) => !!m && m.rowBg === m.pageBg && m.fieldBg === m.cardBg && m.selectBg === m.cardBg && Math.abs(m.fieldLeft - m.cardLeft) <= 0.5 && Math.abs(m.selectRight - m.cardRight) <= 0.5;
     const say = (m) => (m ? `backing ${m.rowBg} (the page ${m.pageBg}), fields ${m.fieldBg} and ${m.selectBg} (the cards ${m.cardBg}), the fields' edges ${Math.round(m.fieldLeft * 10) / 10}–${Math.round(m.selectRight * 10) / 10} on the cards' ${Math.round(m.cardLeft * 10) / 10}–${Math.round(m.cardRight * 10) / 10}` : 'not found');
     check(`search-row-${v.id}`, fits(top) && spaced(top) && fits(stuck) && stuck.scrollY > 0 && Math.abs(stuck.rowTop - stuck.tabsBottom) <= 0.5, `${v.title}, the Menu tab's search row: at the top, ${say(top)}, ${top ? `${top.gapAbove === null ? 'no Needs attention card' : `${Math.round(top.gapAbove * 10) / 10} px under the Needs attention card`} and ${Math.round(top.gapBelow * 10) / 10} px over the first section (12 each, as between cards)` : ''}; scrolled ${stuck?.scrollY} px, ${say(stuck)}, its top ${stuck ? Math.round(stuck.rowTop * 10) / 10 : '?'} under the tab row's bottom ${stuck ? Math.round(stuck.tabsBottom * 10) / 10 : '?'}`);
+  }
+  { // the Style tab's preview controls (Kian, 2026-11-15): one row of dropdowns and two buttons, like the search row
+    await signedIn.goto(`${base}/admin/senso?tab=style`); await signedIn.waitForSelector('[data-style-group="tabs"]'); await signedIn.waitForSelector('[data-preview-pick="season"]'); await settle(signedIn);
+    const CONTROLS = '[data-preview-pick], [data-preview-replay], [data-preview-compare]';
+    const r1 = (x) => Math.round(x * 10) / 10;
+    if (v.id === 'laptop') {
+      const at = async (y) => { await signedIn.evaluate((top) => scrollTo(0, top), y); await sleep(300); return signedIn.evaluate((CONTROLS) => {
+        const bar = document.querySelector('[data-style-bar]'), row = bar?.querySelector('[data-preview-bar="laptop"]'), ctl = row ? [...row.querySelectorAll(CONTROLS)] : [];
+        const card = document.querySelector('[data-style-group]'), tabs = document.querySelector('.glass.sticky.top-14'), first = document.querySelector('[data-style-tab] > p');
+        if (!bar || ctl.length === 0 || !card || !tabs) return null;
+        const bg = (el) => getComputedStyle(el).backgroundColor, b = (el) => el.getBoundingClientRect();
+        return { kinds: ctl.map((e) => e.dataset.previewPick ?? (e.matches('[data-preview-replay]') ? 'replay' : 'compare')), chips: row.querySelectorAll('[role=group]').length, barBg: bg(bar), pageBg: bg(document.querySelector('.admin')), ctlBg: [...new Set(ctl.map(bg))], cardBg: bg(card), left: b(ctl[0]).left, right: b(ctl[ctl.length - 1]).right, cardLeft: b(card).left, cardRight: b(card).right, tops: [...new Set(ctl.map((e) => Math.round(b(e).top)))], heights: [...new Set(ctl.map((e) => Math.round(b(e).height)))], barTop: b(bar).top, barH: b(bar).height, tabsBottom: b(tabs).bottom, gapBelow: first ? b(first).top - Math.max(...ctl.map((e) => b(e).bottom)) : null, scrollY: Math.round(scrollY) };
+      }, CONTROLS); };
+      const top = await at(0), stuck = await at(800);
+      const fits = (m) => !!m && m.kinds.join() === 'screen,lang,season,slot,replay,compare' && m.chips === 0 && m.barBg === m.pageBg && m.ctlBg.length === 1 && m.ctlBg[0] === m.cardBg && Math.abs(m.left - m.cardLeft) <= 0.5 && Math.abs(m.right - m.cardRight) <= 0.5 && m.tops.length === 1 && m.heights.join() === '44' && Math.abs(m.barH - 60) <= 0.5 && Math.abs(m.barTop - m.tabsBottom) <= 0.5;
+      const say = (m) => (m ? `${m.kinds.join(', ')} (${m.chips} chip groups) in ${m.tops.length} row(s), ${m.heights.join('/')} px tall, in ${m.ctlBg.join(' / ')} (the cards ${m.cardBg}) on a ${r1(m.barH)} px backing in ${m.barBg} (the page ${m.pageBg}); their edges ${r1(m.left)}–${r1(m.right)} on the cards' ${r1(m.cardLeft)}–${r1(m.cardRight)}; the backing's top ${r1(m.barTop)} under the tab row's bottom ${r1(m.tabsBottom)}` : 'not found');
+      check('style-row-laptop', fits(top) && top.gapBelow !== null && Math.abs(top.gapBelow - 12) <= 0.5 && fits(stuck) && stuck.scrollY > 0, `${v.title}, the Style tab's preview controls: at the top, ${say(top)}, the colours' first line ${top?.gapBelow == null ? '?' : r1(top.gapBelow)} px under them (12); scrolled ${stuck?.scrollY} px, ${say(stuck)}`);
+    } else {
+      const m = await signedIn.evaluate((CONTROLS) => {
+        const sheet = document.querySelector('[data-style-sheet]'), row = sheet?.querySelector('[data-preview-bar="phone"] [data-scrolls-sideways]'), ctl = row ? [...row.querySelectorAll(CONTROLS)] : [];
+        if (!sheet || ctl.length === 0) return null;
+        const bg = (el) => getComputedStyle(el).backgroundColor, b = (el) => el.getBoundingClientRect();
+        return { kinds: ctl.map((e) => e.dataset.previewPick ?? (e.matches('[data-preview-replay]') ? 'replay' : 'compare')), chips: row.querySelectorAll('[role=group]').length, ctlBg: [...new Set(ctl.map(bg))], pageBg: bg(document.querySelector('.admin')), sheetBg: bg(sheet), tops: [...new Set(ctl.map((e) => Math.round(b(e).top)))], heights: [...new Set(ctl.map((e) => Math.round(b(e).height)))], headH: Math.round(b(sheet.firstElementChild).height) };
+      }, CONTROLS);
+      const ok = !!m && m.kinds.join() === 'screen,lang,season,slot,replay,compare' && m.chips === 0 && m.ctlBg.length === 1 && m.ctlBg[0] === m.pageBg && m.sheetBg !== m.pageBg && m.tops.length === 1 && m.heights.join() === '44';
+      check(`style-row-${v.id}`, ok, `${v.title}, the Style tab's preview controls in the sheet's header: ${m ? `${m.kinds.join(', ')} (${m.chips} chip groups) in ${m.tops.length} row(s), ${m.heights.join('/')} px tall, in ${m.ctlBg.join(' / ')} (the page's grey ${m.pageBg}) on the sheet's ${m.sheetBg}; the header (handle and row) ${m.headH} px tall` : 'not found'}`);
+    }
   }
   await outCtx.close(); await inCtx.close();
   if (v.id !== 'laptop') {

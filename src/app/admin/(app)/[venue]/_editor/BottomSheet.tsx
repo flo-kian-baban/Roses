@@ -4,7 +4,7 @@
 // viewport to the preview (its height is computed from that: 55 % of the viewport less the space above the preview); full covers
 // the preview. While a colour is being edited the sheet is capped at half (`max`), so the live colour stays in view. Drag the handle
 // (or the header's empty space) to the nearest detent, or tap the handle to step to the next one. A tap on a control in the header
-// (the preview bar's chips) belongs to that control: the header no longer captures it, which had made such a tap step the sheet
+// (the preview controls' dropdowns and buttons) belongs to that control: the header no longer captures it, which had made such a tap step the sheet
 // instead (found 2026-10-10, when the bar became the Style tab's only one). Transform and opacity are not needed: the
 // height animates, 200 ms, none under reduced motion. Touch target (the PM, 2026-10-09): the handle looks 20 px tall and its tap area reaches
 // 24 px above the sheet's edge (over the bottom of the preview, which stays visible), so it meets the finger over 44 px without making the
@@ -20,10 +20,13 @@ export function BottomSheet({ detent, onDetent, max = 'full', top, header, child
   const [headH, setHeadH] = useState(120);
   const drag = useRef<{ y0: number; h0: number; moved: boolean } | null>(null);
   const [dragging, setDragging] = useState<number | null>(null); // the height while the finger is on the handle
+  // The header's height is also written on the page (--style-sheet-head): while the sheet is down, the "Saved · Undo" toast sits just
+  // above it instead of over its handle and controls (globals.css; found 2026-11-15, when the header became 72 px and its handle fell
+  // under the toast, so a tap meant for it could land on Undo).
   useLayoutEffect(() => {
-    const f = () => { setVh(window.innerHeight); if (headRef.current) setHeadH(headRef.current.offsetHeight); };
+    const f = () => { setVh(window.innerHeight); if (headRef.current) { setHeadH(headRef.current.offsetHeight); document.body.style.setProperty('--style-sheet-head', `${headRef.current.offsetHeight}px`); } };
     f(); window.addEventListener('resize', f); const ro = headRef.current ? new ResizeObserver(f) : null; if (headRef.current) ro!.observe(headRef.current);
-    return () => { window.removeEventListener('resize', f); ro?.disconnect(); };
+    return () => { window.removeEventListener('resize', f); ro?.disconnect(); document.body.style.removeProperty('--style-sheet-head'); };
   }, []);
   const heights: Record<Detent, number> = { collapsed: headH, half: Math.max(headH, Math.floor(vh * 0.55 - top)), full: Math.max(headH, vh - top) };
   const allowed = ORDER.slice(0, ORDER.indexOf(max) + 1);

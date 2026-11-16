@@ -36,6 +36,7 @@ import path from 'node:path';
 import { chromium, devices } from 'playwright';
 import { connectDb } from './load-env.mjs';
 import { scratchTarget } from './scratch-target.mjs';
+import { choose } from './preview-pick.mjs';
 
 // The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
 const { args } = await scratchTarget('scripts/style-drill.mjs', { options: { base: 'server', out: 'path', jpeg: 'flag' }, db: true, env: ['DRILL_ADMIN_PIN'] });
@@ -142,14 +143,16 @@ let i13 = null; // the iPhone 13's sheet geometry with a colour open, compared w
     const gEditing = await geo(); i13 = gEditing;
     await snap(p, 'style-phone-editing');
     await p.click('[data-style-sheet-handle]'); await sleep(350); const gTap = await geo();
+    // the sheet down right after the save: the "Saved · Undo" toast sits above it, never over its handle or the preview controls (2026-11-15)
+    const toastClear = await p.evaluate(() => { const t = document.querySelector('.toast'), s = document.querySelector('[data-style-sheet]'); if (!t || !s) return null; const a = t.getBoundingClientRect(), b = s.getBoundingClientRect(); return { clear: a.bottom <= b.top + 0.5, toastBottom: Math.round(a.bottom), sheetTop: Math.round(b.top) }; });
     await snap(p, 'style-phone-collapsed');
-    await p.click('[data-style-sheet-handle]'); await sleep(350); const gBack = await geo();
+    const tBack = Date.now(); await p.click('[data-style-sheet-handle]'); const backMs = Date.now() - tBack; await sleep(350); const gBack = await geo();
     const frameVarP = (n) => p.evaluate((n) => { const d = document.querySelector('iframe[data-preview-frame]')?.contentDocument; return d ? getComputedStyle(d.documentElement).getPropertyValue(n).trim() : null; }, n);
     const cmp = p.locator('[data-preview-compare]'); await cmp.scrollIntoViewIfNeeded();
     await cmp.dispatchEvent('pointerdown', { pointerType: 'touch', pointerId: 1, isPrimary: true }); await sleep(150); const held = await frameVarP('--c-tabs-bg'); const heldPressed = await cmp.getAttribute('aria-pressed');
     await snap(p, 'style-phone-compare-held');
     await cmp.dispatchEvent('pointerup', { pointerType: 'touch', pointerId: 1, isPrimary: true }); await sleep(150); const released = await frameVarP('--c-tabs-bg');
-    check('phone-style-layout', !!gEditing && gEditing.tokenOpen && gEditing.detent === 'half' && gEditing.pct >= 45 && gEditing.swatchesInView && gTap?.detent === 'collapsed' && gTap.pct > gEditing.pct && gBack?.detent === 'half' && gBack.pct >= 45 && held === WHITE && heldPressed === 'true' && released === pick.c, `Style tab on the iPhone 13 viewport: the preview on top (frame from ${gEditing?.frameTop} px), the controls in a bottom sheet at "${gEditing?.detent}" with the colour open: ${gEditing?.visible} of ${gEditing?.innerHeight} px of preview = ${gEditing?.pct} % (target ≥ 45), the open colour's swatches in view in the sheet: ${gEditing?.swatchesInView} (${gEditing?.swatchesH} px in ${gEditing?.controlsH} px of controls); the handle while a colour is open: ${gTap?.detent} (${gTap?.pct} %), then ${gBack?.detent} (${gBack?.pct} %), never full; Compare held on touch → the bar background shows the venue default ${held} (pressed ${heldPressed}), released → ${released} (the saved colour)`);
+    check('phone-style-layout', !!gEditing && gEditing.tokenOpen && gEditing.detent === 'half' && gEditing.pct >= 45 && gEditing.swatchesInView && gTap?.detent === 'collapsed' && gTap.pct > gEditing.pct && !!toastClear?.clear && gBack?.detent === 'half' && gBack.pct >= 45 && held === WHITE && heldPressed === 'true' && released === pick.c, `Style tab on the iPhone 13 viewport: the preview on top (frame from ${gEditing?.frameTop} px), the controls in a bottom sheet at "${gEditing?.detent}" with the colour open: ${gEditing?.visible} of ${gEditing?.innerHeight} px of preview = ${gEditing?.pct} % (target ≥ 45), the open colour's swatches in view in the sheet: ${gEditing?.swatchesInView} (${gEditing?.swatchesH} px in ${gEditing?.controlsH} px of controls); the handle while a colour is open: ${gTap?.detent} (${gTap?.pct} %; the "Saved · Undo" toast ${toastClear ? `ends at ${toastClear.toastBottom} px, the sheet starts at ${toastClear.sheetTop} px: ${toastClear.clear ? 'clear of it' : 'OVER it'}` : 'gone before it was measured'}), then ${gBack?.detent} (${gBack?.pct} %; the handle tapped in ${backMs} ms), never full; Compare held on touch → the bar background shows the venue default ${held} (pressed ${heldPressed}), released → ${released} (the saved colour)`);
     measure(`Style tab on a phone: with a colour open the preview keeps ${gEditing?.pct} % of the viewport (${gEditing?.visible} of ${gEditing?.innerHeight} px; target ≥ 45 %); Compare held → the default colours, released → the saved ones`);
   }
   await p.click('[role=status] button:has-text("Undo")'); await p.waitForSelector('[role=status]:has-text("Undone")');
@@ -355,7 +358,7 @@ await snap(l, 'style-laptop');
         ok = (EXPECT[g] === 'welcome' ? st.welcome === 'grid' : EXPECT[g] === 'sheet' ? st.sheet && st.welcome === 'none' : st.welcome === 'none' && !st.sheet) && st.outlined > 0 && (g === 'page' || g === 'welcome' || st.inView);
         if (ok) break; await sleep(30);
       }
-      const bar = await l.$eval('[data-preview-screen][aria-pressed="true"]', (e) => e.dataset.previewScreen).catch(() => null);
+      const bar = await l.$eval('[data-preview-pick="screen"]', (e) => e.dataset.value || null).catch(() => null);
       rows.push({ g, ms: Date.now() - t, ...st, bar, ok: ok && bar === EXPECT[g] });
     }
     await snap(l, 'groups-screens');
@@ -372,12 +375,12 @@ await snap(l, 'style-laptop');
   await snap(l, 'region-welcome');
   // the preview-only season switch: Winter shows the winter scene in the frame; nothing is saved; Now puts the frame back on today's season
   const styleBefore = JSON.stringify((await db.query(`select style from venues where id='senso'`)).rows[0].style);
-  await l.click('[data-preview-season="winter"]');
+  await choose(l, '[data-preview-season="winter"]');
   { const t = Date.now(); while (Date.now() - t < 4000 && !(await frameEval((d) => !!d.querySelector('#welcome .scene-winter .p')))) await sleep(50); } // the scene is fetched from the admin API and swapped in (current season only, the PM 2026-10-09)
   const winter = await frameEval((d) => ({ season: d.getElementById('welcome')?.dataset.season, scene: [...d.querySelectorAll('#welcome .scene')].filter((e) => getComputedStyle(e).display !== 'none').map((e) => e.dataset.scene).join('+'), flakes: d.querySelectorAll('#welcome .scene-winter .p').length, running: d.getElementById('welcome').getAnimations({ subtree: true }).filter((a) => a.playState === 'running').length }));
   await snap(l, 'region-welcome-winter');
   const styleAfter = JSON.stringify((await db.query(`select style from venues where id='senso'`)).rows[0].style);
-  await l.click(`[data-preview-season="${welcome.season}"]`); await sleep(250); // the page's own season again
+  await choose(l, `[data-preview-season="${welcome.season}"]`); await sleep(250); // the page's own season again
   const now = await frameEval((d) => d.getElementById('welcome')?.dataset.season);
   const thisSeason = welcome.season; // the season the page was rendered for (America/Toronto; the PM, 2026-10-09)
   check('welcome-season', welcome.display === 'grid' && welcome.visible && welcome.sheetClosed && welcome.running > 0 && welcome.scene === welcome.season && winter.season === 'winter' && winter.scene === 'winter' && winter.flakes > 0 && winter.flakes <= 20 && winter.running > 0 && styleAfter === styleBefore && now === thisSeason, `Welcome group open → the welcome screen shown live in the preview (display ${welcome.display}, visible ${welcome.visible}, ${welcome.running} animations running, today's scene ${welcome.scene}; the sheet closed again: ${welcome.sheetClosed}); Winter in the season switch → the frame shows the winter scene (${winter.scene}, ${winter.flakes} flakes, ${winter.running} animations) and venues.style is unchanged (${styleAfter === styleBefore}); Now → ${now} (the page's own season ${thisSeason})`);
@@ -417,7 +420,7 @@ await snap(l, 'style-laptop');
   await api('/api/admin/style', { action: 'reset', venue: 'senso' }, await cookieOf(laptop)); await waitPublic('senso', (h) => publicVar(h, 'tabs.text') === '#6b6b6b');
   { // position and screen kept through a colour save (Kian, 2026-10-09): the footer in view on the Menu screen, a colour saved → the same scroll position, no welcome screen, no popup; the popup open (Item popup group), its colour saved → open again
     const probe = () => frameEval((d) => ({ y: Math.round(d.defaultView.scrollY), welcome: getComputedStyle(d.getElementById('welcome')).display, sheet: !!d.getElementById('sheet')?.open, sheetOutlined: !!d.querySelector('dialog#sheet[open].roses-region') }));
-    const bar = () => l.$eval('[data-preview-screen][aria-pressed="true"]', (e) => e.dataset.previewScreen).catch(() => null);
+    const bar = () => l.$eval('[data-preview-pick="screen"]', (e) => e.dataset.value || null).catch(() => null);
     await openGroup('footer'); await sleep(300);
     const before = await probe();
     await setHex('footer.address', '#333333'); await l.waitForSelector('[role=status]:has-text("Saved")'); await waitPublic('senso', (h) => publicVar(h, 'footer.address') === '#333333'); await frameReady(); await sleep(900);
@@ -469,10 +472,10 @@ await snap(l, 'style-laptop');
     check('section-grid-undo', backList.ok && dbBack === 'list' && controlBack === 'list' && cardsOf(backList.html || await publicHtml('senso'))?.rows === sec.n && rec.length === 2 && rec[1].action === 'update' && rec[1].b === 'list' && rec[1].a === 'grid' && rec[0].action === 'restore' && bad.status === 400, `Undo → "${sec.name}" is a list again (database ${dbBack}, control ${controlBack}), ${sec.n} rows back on the public page after ${backList.ms} ms; change records: ${rec.map((r) => `${r.action} ${r.b ?? '∅'}→${r.a ?? '∅'}`).join(', ')}; an unknown layout on the route → ${bad.status} "${bad.json?.error}"`);
   }
   // the Persian view keeps the same colours
-  const en = await frameVar('--c-page-bg'); await l.click('[aria-label="Preview language"] button:has-text("FA")'); await sleep(300);
+  const en = await frameVar('--c-page-bg'); await choose(l, '[data-preview-lang="fa"]'); await sleep(300);
   const fa = await frameEval((d) => ({ dir: d.documentElement.dir, bg: getComputedStyle(d.documentElement).getPropertyValue('--c-page-bg').trim() }));
   check('persian-same', fa.dir === 'rtl' && fa.bg === en, `Persian view: dir=${fa.dir}, page background ${fa.bg} (English ${en})`);
-  await l.click('[aria-label="Preview language"] button:has-text("EN")');
+  await choose(l, '[data-preview-lang="en"]');
 }
 { // Discard this session's changes (Kian, 2026-10-09): the snapshot taken when the Style tab opened (colours, the template's switches, every section's layout) back in one step; Undo brings the discarded state back
   const c = await cookieOf(laptop);

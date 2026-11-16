@@ -391,8 +391,11 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
               onToggleSection={(id, listed) => sectionUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onRename={(id) => setRenaming(id)} onMoveSection={sectionMove}
               onDeleteSection={sectionDelete} onReorderSections={sectionReorder} onMoveItem={itemMove} />}
         {tab === 'style' && !phoneStyle && me.canManage && <>
-          {/* The preview bar at the top of the Style tab, under the tab row; it stays in view while the colours scroll (Kian, 2026-10-10). */}
-          <div className="glass sticky top-[100px] z-20 shadow-[inset_0_-1px_0_var(--color-line)]" data-style-bar><div className="mx-auto w-full max-w-3xl px-4 py-2 sm:px-6">{bar(false)}</div></div>
+          {/* The preview controls at the top of the Style tab, under the tab row; they stay in view while the colours scroll (Kian, 2026-10-10).
+              One row like the Menu tab's search row (Kian, 2026-11-15): the backing is the page's own grey, opaque, so it never shows as a
+              band of its own and still hides what scrolls under it; the controls are white like the cards and line up with their edges
+              (the Style tab's own width and padding), 60 px in all as the search row; the colours start 12 px under them (StyleTab, lg:pt-1). */}
+          <div className="sticky top-[6.25rem] z-20 bg-fill" data-style-bar><div className="mx-auto w-full max-w-3xl px-3 py-2 sm:px-5">{bar(false)}</div></div>
           {styleTab}
         </>}
         {tab === 'details' && me.canManage && <DetailsTab venue={venue} version={reloadKey} onSaved={savedElsewhere} onFail={fail} />}

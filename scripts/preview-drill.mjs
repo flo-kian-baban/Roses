@@ -1,12 +1,18 @@
 #!/usr/bin/env node
-// Preview control bar acceptance (Kian, 2026-10-09; the bar moved into the Style tab on 2026-10-10), measured by Playwright:
+// Preview control bar acceptance (Kian, 2026-10-09; the bar moved into the Style tab on 2026-10-10; one row of four dropdowns and two
+// buttons since 2026-11-15, scripts/preview-pick.mjs), measured by Playwright:
 //   the bar is in the Style tab only: at the top of the tab on a laptop, in the bottom sheet's header on a phone; none beside the
 //     iPhone, none on the Menu tab, none in the phone's full-screen preview;
+//   the dropdowns (2026-11-15): on a laptop one row (the screen, the language, the season, the time of day; Replay, Compare), no group
+//     of chips; each dropdown lists its choices with the current one checked, the season and the time of day say "preview only" and mark
+//     the page's own "now"; Escape and a tap outside close it, the keyboard opens it on the current choice and chooses with the arrows
+//     and Enter; on the phone every dropdown's card lies inside the screen, beside its pill (above it when the sheet leaves no room below);
 //   task target on the iPhone 13 viewport with the tap count: from the Menu tab, preview the welcome screen in Winter, in the evening,
-//     in Persian (Style, Winter, Evening, FA: choosing a season or a time of day shows the welcome screen) in at most 4 taps; the
-//     greeting and the scene match; the customers' page and venues.style are unchanged (byte for byte, nothing saved);
-//   every switch of the bar shows within 300 ms, on the phone and on a laptop: the four screens, the two languages, the four seasons
-//     (another season's scene is fetched from the admin API), the three times of day, Replay;
+//     in Persian (Style; Season, Winter; Time of day, Evening; Language, FA: choosing a season or a time of day shows the welcome
+//     screen) in 7 taps (two a choice: the dropdown and its row; 4 with the chips before 2026-11-15); the greeting and the scene match;
+//     the customers' page and venues.style are unchanged (byte for byte, nothing saved);
+//   every switch of the bar shows within 300 ms of the tap on its row, on the phone and on a laptop: the four screens, the two
+//     languages, the four seasons (another season's scene is fetched from the admin API), the three times of day, Replay;
 //   the preview keeps its frame across the tabs (no reload on a tab switch): the Menu tab shows the menu, the Style tab its own screen
 //     again on return;
 //   after a save in the Style tab the preview stays on its screen: the section list open again, the item popup open again (position
@@ -20,6 +26,7 @@ import path from 'node:path';
 import { chromium, devices } from 'playwright';
 import { connectDb } from './load-env.mjs';
 import { scratchTarget } from './scratch-target.mjs';
+import { choose, menuOf, openPick, pickValues } from './preview-pick.mjs';
 
 // The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
 const { args } = await scratchTarget('scripts/preview-drill.mjs', { options: { base: 'server', out: 'path', jpeg: 'flag' }, db: true, env: ['DRILL_ADMIN_PIN'] });
@@ -54,9 +61,10 @@ const fe = (p, fn, arg) => p.evaluate(([src, a]) => { const f = document.querySe
 // what the frame shows
 const PROBE = (d) => { const h = d.documentElement, w = d.getElementById('welcome'), s = d.getElementById('sheet'), l = d.getElementById('sections-dialog'); const vis = (sel) => { const e = d.querySelector(sel); return !!e && getComputedStyle(e).display !== 'none'; }; return { welcome: w ? getComputedStyle(w).display : 'absent', state: h.dataset.welcome || null, season: w?.dataset.season ?? null, scene: [...d.querySelectorAll('#welcome .scene')].map((e) => e.dataset.scene).join('+'), particles: d.querySelectorAll('#welcome .scene .p').length, greet: h.dataset.greet ?? null, greetShown: ['morning', 'afternoon', 'evening'].filter((g) => vis(`.welcome-greet .g[data-g="${g}"]`)).join('+'), lang: h.lang, dir: h.dir, sheet: !!s?.open, sheetTitle: (s?.querySelector('h2 [lang=en]') ?? s?.querySelector('h2.sheet-title'))?.textContent ?? null, sheetPrice: s?.querySelector('.sheet-price bdi')?.textContent ?? null, list: !!l?.open, y: Math.round(d.defaultView.scrollY), running: w ? w.getAnimations({ subtree: true }).filter((a) => a.playState === 'running').length : 0, mark: d.rosesMark ?? null }; };
 const probe = (p) => fe(p, PROBE);
-const pressed = (p) => p.evaluate(() => ({ screen: document.querySelector('[data-preview-screen][aria-pressed="true"]')?.dataset.previewScreen ?? null, lang: document.querySelector('[data-preview-lang][aria-pressed="true"]')?.dataset.previewLang ?? null, season: document.querySelector('[data-preview-season][aria-pressed="true"]')?.dataset.previewSeason ?? null, slot: document.querySelector('[data-preview-slot][aria-pressed="true"]')?.dataset.previewSlot ?? null }));
-// a bar switch, timed from the click until the frame shows it (polled every 10 ms; the poll itself costs a few ms)
-async function switchTo(p, sel, pred, label, limit = 300) { const t = Date.now(); await p.click(sel); let ms = null; while (Date.now() - t < 4000) { if (pred(await probe(p))) { ms = Date.now() - t; break; } await sleep(10); } return { label, ms, ok: ms != null && ms <= limit }; }
+const pressed = (p) => pickValues(p); // what the four dropdowns show
+// a bar switch, timed from the click on its row (the dropdown opened first; Replay is a button) until the frame shows it (polled every
+// 10 ms; the poll itself costs a few ms)
+async function switchTo(p, sel, pred, label, limit = 300) { const row = /data-preview-(screen|lang|season|slot)=/.test(sel); if (row) await openPick(p, sel); const t = Date.now(); await p.click(row ? `${menuOf(sel)} ${sel}` : sel); let ms = null; while (Date.now() - t < 4000) { if (pred(await probe(p))) { ms = Date.now() - t; break; } await sleep(10); } return { label, ms, ok: ms != null && ms <= limit }; }
 const styleOf = async () => JSON.stringify((await db.query(`select style from venues where id = $1`, [VENUE])).rows[0].style);
 
 const htmlBefore = { senso: await publicHtml('senso'), 'kebab-land': await publicHtml('kebab-land') };
@@ -82,16 +90,17 @@ const STYLE_TAB = `a[href="/admin/${VENUE}?tab=style"]:visible`, MENU_TAB = `a[h
   await tap(STYLE_TAB); await p.waitForSelector('[data-style-sheet] [data-preview-bar="phone"]'); await frameReady(p); await sleep(200);
   const before = await probe(p);
   const stillBar = await snap(p, 'preview-bar-phone');
-  const tWinter = Date.now(); await tap(`[data-preview-season="${otherSeason}"]`);
+  // two taps a choice since 2026-11-15: the dropdown, then its row
+  await tap('[data-preview-pick="season"]'); const tWinter = Date.now(); await tap(`[data-preview-menu="season"] [data-preview-season="${otherSeason}"]`);
   let shownAt = null; while (Date.now() - tWinter < 4000) { const s = await probe(p); if (s.welcome === 'grid' && s.scene === otherSeason && s.particles > 0) { shownAt = Date.now() - tWinter; break; } await sleep(10); }
-  await tap('[data-preview-slot="evening"]'); await sleep(60);
-  await tap('[data-preview-lang="fa"]'); await sleep(120);
+  await tap('[data-preview-pick="slot"]'); await tap('[data-preview-menu="slot"] [data-preview-slot="evening"]'); await sleep(60);
+  await tap('[data-preview-pick="lang"]'); await tap('[data-preview-menu="lang"] [data-preview-lang="fa"]'); await sleep(120);
   const after = await probe(p); const bar = await pressed(p);
   const htmlAfter = await publicHtml('senso'); const styleAfter = await styleOf();
   const still = await snap(p, `preview-phone-welcome-${otherSeason}-evening-fa`);
-  const ok = taps === 4 && before.welcome === 'none' && after.welcome === 'grid' && after.scene === otherSeason && after.season === otherSeason && after.particles > 0 && after.particles <= 20 && after.greet === 'evening' && after.greetShown === 'evening' && after.lang === 'fa' && after.dir === 'rtl' && after.running > 0 && bar.screen === 'welcome' && bar.season === otherSeason && bar.slot === 'evening' && bar.lang === 'fa' && htmlAfter === htmlBefore.senso && styleAfter === styleBefore && shownAt != null;
-  check('t-welcome-preview', ok, `from the Menu tab on the phone: ${taps} taps (Style, ${otherSeason[0].toUpperCase() + otherSeason.slice(1)}, Evening, FA) → the welcome screen (display ${after.welcome}, ${after.running} animations running) with the ${after.scene} scene (${after.particles} particles; the page's own season is ${pageSeason}) ${shownAt} ms after the season tap, the evening greeting (data-greet ${after.greet}, shown: ${after.greetShown}), Persian (lang ${after.lang}, dir ${after.dir}); the bar reads ${JSON.stringify(bar)}; the customers' page byte-identical: ${htmlAfter === htmlBefore.senso}; venues.style unchanged: ${styleAfter === styleBefore}; stills ${stillBar}, ${still}`);
-  measure(`preview the welcome screen in ${otherSeason}, in the evening, in Persian from the Menu tab: ${taps} taps (Style, season, time of day, language); the scene shown ${shownAt} ms after the season tap`);
+  const ok = taps === 7 && before.welcome === 'none' && after.welcome === 'grid' && after.scene === otherSeason && after.season === otherSeason && after.particles > 0 && after.particles <= 20 && after.greet === 'evening' && after.greetShown === 'evening' && after.lang === 'fa' && after.dir === 'rtl' && after.running > 0 && bar.screen === 'welcome' && bar.season === otherSeason && bar.slot === 'evening' && bar.lang === 'fa' && htmlAfter === htmlBefore.senso && styleAfter === styleBefore && shownAt != null;
+  check('t-welcome-preview', ok, `from the Menu tab on the phone: ${taps} taps (Style; Season, ${otherSeason[0].toUpperCase() + otherSeason.slice(1)}; Time of day, Evening; Language, FA) → the welcome screen (display ${after.welcome}, ${after.running} animations running) with the ${after.scene} scene (${after.particles} particles; the page's own season is ${pageSeason}) ${shownAt} ms after the season tap, the evening greeting (data-greet ${after.greet}, shown: ${after.greetShown}), Persian (lang ${after.lang}, dir ${after.dir}); the bar reads ${JSON.stringify(bar)}; the customers' page byte-identical: ${htmlAfter === htmlBefore.senso}; venues.style unchanged: ${styleAfter === styleBefore}; stills ${stillBar}, ${still}`);
+  measure(`preview the welcome screen in ${otherSeason}, in the evening, in Persian from the Menu tab: ${taps} taps (Style, then the season, the time of day and the language, two taps each); the scene shown ${shownAt} ms after the tap on the season's row`);
   // every switch of the bar, timed
   const t = [];
   t.push(await switchTo(p, '[data-preview-screen="menu"]', (s) => s.welcome === 'none' && !s.sheet && !s.list, 'Menu'));
@@ -103,7 +112,7 @@ const STYLE_TAB = `a[href="/admin/${VENUE}?tab=style"]:visible`, MENU_TAB = `a[h
   for (const season of ['fall', 'winter', 'spring', 'summer']) t.push(await switchTo(p, `[data-preview-season="${season}"]`, (s) => s.scene === season && s.season === season && s.particles > 0, `${season}${season === pageSeason ? ' (the page\'s own)' : ''}`));
   for (const slot of ['morning', 'afternoon', 'evening']) t.push(await switchTo(p, `[data-preview-slot="${slot}"]`, (s) => s.greet === slot && s.greetShown === slot, slot));
   // Replay on an artwork scene (senso's fall and winter) draws fresh particles; on every scene the entrance animations start over
-  await p.click(`[data-preview-season="${pageSeason === 'winter' ? 'winter' : 'fall'}"]`); await sleep(300);
+  await choose(p, `[data-preview-season="${pageSeason === 'winter' ? 'winter' : 'fall'}"]`); await sleep(300);
   const firstParticle = await fe(p, (d) => { const e = d.querySelector('#welcome .scene .p'); if (e) e.setAttribute('data-drill-old', '1'); return { marked: !!e, engine: !!d.querySelector('#welcome .scene[data-engine]'), scene: d.querySelector('#welcome .scene')?.dataset.scene }; });
   await sleep(1500); // well into the entrance, so a restart is visible as a small current time
   t.push(await switchTo(p, '[data-preview-replay]', (s) => s.welcome === 'grid', 'Replay'));
@@ -111,8 +120,28 @@ const STYLE_TAB = `a[href="/admin/${VENUE}?tab=style"]:visible`, MENU_TAB = `a[h
   const restarted = replaced.logoAnim != null && Number(replaced.logoAnim.split(',')[0]) < 600;
   const worst = Math.max(...t.map((x) => x.ms ?? 9999));
   check('bar-timing-phone', t.every((x) => x.ok) && firstParticle.marked && (!firstParticle.engine || replaced.oldGone) && restarted, `every switch shows within 300 ms on the phone (worst ${worst} ms): ${t.map((x) => `${x.label} ${x.ms ?? 'never'} ms`).join(', ')}; Replay on the ${firstParticle.scene} scene 1.5 s into the entrance: the logo's entrance animation back at ${replaced.logoAnim} ms (restarted: ${restarted})${firstParticle.engine ? `, a fresh artwork scene drawn (old particles gone: ${replaced.oldGone}, ${replaced.particles} particles)` : ` (a fixed scene: ${replaced.particles} particles restart with it)`}`);
-  measure(`preview bar on the phone: every switch within ${worst} ms (screens, languages, seasons fetched from the admin API, times of day, Replay)`);
-  await p.click('[data-preview-lang="en"]'); await p.click(`[data-preview-season="${pageSeason}"]`); await p.click('[data-preview-slot="afternoon"]'); await p.click('[data-preview-screen="menu"]');
+  measure(`preview bar on the phone: every switch within ${worst} ms of the tap on its row (screens, languages, seasons fetched from the admin API, times of day, Replay)`);
+  { // every dropdown's card on the phone: inside the screen, its rows 44 px tall at least, beside its pill without covering it (above it
+    // when the sheet leaves no room below); with the sheet down (collapsed) too, at the foot of the screen
+    const cards = [];
+    for (const detent of ['default', 'collapsed']) {
+      if (detent === 'collapsed') for (let i = 0; i < 3 && (await p.getAttribute('[data-style-sheet]', 'data-style-sheet')) !== 'collapsed'; i++) { await p.click('[data-style-sheet-handle]'); await sleep(350); }
+      for (const k of ['screen', 'lang', 'season', 'slot']) {
+        await p.click(`[data-preview-pick="${k}"]`); await p.waitForSelector(`[data-preview-menu="${k}"]`); await sleep(80);
+        cards.push(await p.evaluate(([k, detent]) => {
+          const m = document.querySelector(`[data-preview-menu="${k}"]`), pill = document.querySelector(`[data-preview-pick="${k}"]`), r = m.getBoundingClientRect(), pr = pill.getBoundingClientRect();
+          const rows = [...m.querySelectorAll('[role=menuitemradio]')];
+          return { k, detent, sheet: document.querySelector('[data-style-sheet]')?.dataset.styleSheet, inside: r.left >= -0.5 && r.top >= -0.5 && r.right <= innerWidth + 0.5 && r.bottom <= innerHeight + 0.5, side: r.top >= pr.bottom - 0.5 ? 'below' : r.bottom <= pr.top + 0.5 ? 'above' : 'over', rows: rows.length, minRow: Math.round(Math.min(...rows.map((x) => x.getBoundingClientRect().height)) * 10) / 10 };
+        }, [k, detent]));
+        await p.keyboard.press('Escape'); await sleep(80);
+      }
+    }
+    await snap(p, 'preview-phone-collapsed');
+    for (let i = 0; i < 3 && (await p.getAttribute('[data-style-sheet]', 'data-style-sheet')) !== 'half'; i++) { await p.click('[data-style-sheet-handle]'); await sleep(350); }
+    const bad = cards.filter((c) => !c.inside || c.side === 'over' || c.minRow < 44 || c.rows < 2);
+    check('bar-dropdowns-phone', bad.length === 0 && cards.some((c) => c.sheet === 'collapsed'), `on the phone each dropdown's card lies inside the screen beside its pill, rows at least 44 px: ${cards.map((c) => `${c.k} (sheet ${c.sheet}): ${c.rows} rows ${c.side}${c.inside ? '' : ', OUTSIDE the screen'}, rows ≥ ${c.minRow} px`).join('; ')}`);
+  }
+  await choose(p, '[data-preview-lang="en"]'); await choose(p, `[data-preview-season="${pageSeason}"]`); await choose(p, '[data-preview-slot="afternoon"]'); await choose(p, '[data-preview-screen="menu"]');
   await collectCsp(p); await phone.close();
 }
 
@@ -132,6 +161,43 @@ const cookie = await cookieOf(laptop);
   await l.evaluate(() => window.scrollTo(0, 0)); await sleep(200);
   check('bar-style-only-laptop', onMenu.length === 0 && onStyle.join() === 'laptop' && !where.inAside && where.inColumn && where.top < where.groupTop && scrolled.y > 0 && scrolled.visible, `laptop: Menu tab ${onMenu.length} bars; Style tab ${onStyle.length} (${onStyle.join()}), in the Style column ${where.inColumn}, beside the iPhone ${where.inAside}, its top at ${where.top} px above the first group (${where.groupTop} px); the tab scrolled by ${scrolled.y} px → the bar still in view at ${scrolled.top} px (${scrolled.visible})`);
 }
+{ // one row of four dropdowns and two buttons (Kian, 2026-11-15), no group of chips; each dropdown lists its choices, the current one
+  // checked and focused; the season and the time of day say "preview only" and mark the page's own "now"; Escape and a tap outside close
+  // a dropdown; the keyboard opens one on its current choice, moves with the arrows and chooses with Enter
+  const shape = await l.evaluate(() => {
+    const bar = document.querySelector('[data-style-bar] [data-preview-bar="laptop"]'), picks = [...bar.querySelectorAll('[data-preview-pick]')], btns = [...bar.querySelectorAll('[data-preview-replay], [data-preview-compare]')];
+    const all = [...picks, ...btns], box = (e) => e.getBoundingClientRect();
+    return { picks: picks.map((e) => e.dataset.previewPick), buttons: btns.map((e) => (e.matches('[data-preview-replay]') ? 'Replay' : 'Compare')), groups: bar.querySelectorAll('[role=group], [aria-pressed][data-preview-screen]').length, tops: [...new Set(all.map((e) => Math.round(box(e).top)))], heights: [...new Set(all.map((e) => Math.round(box(e).height)))] };
+  });
+  const menus = [];
+  for (const k of ['screen', 'lang', 'season', 'slot']) {
+    await l.click(`[data-preview-pick="${k}"]`); await l.waitForSelector(`[data-preview-menu="${k}"]`); await sleep(80);
+    menus.push(await l.evaluate((k) => {
+      const m = document.querySelector(`[data-preview-menu="${k}"]`), pill = document.querySelector(`[data-preview-pick="${k}"]`), rows = [...m.querySelectorAll('[role=menuitemradio]')];
+      const r = m.getBoundingClientRect(), pr = pill.getBoundingClientRect();
+      return { k, value: pill.dataset.value, expanded: pill.getAttribute('aria-expanded'), rows: rows.map((x) => x.querySelector('span')?.textContent.trim()), checked: rows.filter((x) => x.getAttribute('aria-checked') === 'true').map((x) => x.getAttribute(`data-preview-${k}`)), focused: document.activeElement?.getAttribute(`data-preview-${k}`) ?? null, now: rows.filter((x) => [...x.querySelectorAll('span')].some((s) => s.textContent.trim() === 'now')).map((x) => x.getAttribute(`data-preview-${k}`)), note: m.querySelector('[data-preview-note]')?.textContent.trim() ?? null, below: r.top >= pr.bottom - 0.5, inside: r.left >= 0 && r.right <= innerWidth && r.bottom <= innerHeight };
+    }, k));
+    await l.keyboard.press('Escape'); await sleep(80);
+  }
+  const afterEsc = await l.evaluate(() => ({ open: document.querySelectorAll('[data-preview-menu]').length, focus: document.activeElement?.dataset.previewPick ?? null }));
+  await l.click('[data-preview-pick="screen"]'); await l.waitForSelector('[data-preview-menu="screen"]'); await l.mouse.click(8, 640); await sleep(150); // the grey page beside the cards
+  const outside = await l.locator('[data-preview-menu]').count();
+  // the keyboard on the Language dropdown (a choice that opens nothing in the frame: Item popup and Section list open a dialog there, which
+  // takes the focus into the preview, with the chips as now)
+  const was = (await pickValues(l)).lang, order = ['en', 'fa'];
+  await l.focus('[data-preview-pick="lang"]'); await l.keyboard.press('ArrowDown'); await l.waitForSelector('[data-preview-menu="lang"]'); await sleep(80);
+  const onCurrent = await l.evaluate(() => document.activeElement?.getAttribute('data-preview-lang') ?? null);
+  await l.keyboard.press('ArrowDown'); const moved = await l.evaluate(() => document.activeElement?.getAttribute('data-preview-lang') ?? null);
+  await l.keyboard.press('Enter'); await sleep(400);
+  const chosen = (await pickValues(l)).lang, closed = await l.locator('[data-preview-menu]').count(), backOn = await l.evaluate(() => document.activeElement?.dataset.previewPick ?? null);
+  await choose(l, `[data-preview-lang="${was}"]`); await sleep(300);
+  const want = { screen: ['Welcome', 'Menu', 'Item popup', 'Section list'], lang: ['English', 'فارسی'], season: ['Fall', 'Winter', 'Spring', 'Summer'], slot: ['Morning', 'Afternoon', 'Evening'] };
+  const menuOk = (m) => m.expanded === 'true' && m.rows.join() === want[m.k].join() && m.checked.length === 1 && m.checked[0] === m.value && m.focused === m.value && m.below && m.inside
+    && (m.k === 'season' || m.k === 'slot' ? /preview only/i.test(m.note || '') && /customers/i.test(m.note || '') && m.now.length === 1 && (m.k !== 'season' || m.now[0] === pageSeason) : m.note === null && m.now.length === 0);
+  const ok = shape.picks.join() === 'screen,lang,season,slot' && shape.buttons.join() === 'Replay,Compare' && shape.groups === 0 && shape.tops.length === 1 && shape.heights.join() === '44'
+    && menus.every(menuOk) && afterEsc.open === 0 && afterEsc.focus === 'slot' && outside === 0 && onCurrent === was && moved === order[(order.indexOf(was) + 1) % 2] && chosen === moved && closed === 0 && backOn === 'lang';
+  check('bar-dropdowns-laptop', ok, `laptop: one row (tops ${shape.tops.join('/')} px, heights ${shape.heights.join('/')} px) of the dropdowns ${shape.picks.join(', ')} and the buttons ${shape.buttons.join(', ')}, ${shape.groups} chip groups; ${menus.map((m) => `${m.k}: ${m.rows.join(' / ')}, checked ${m.checked.join() || 'none'} (the pill: ${m.value}; focused ${m.focused})${m.now.length ? `, "now" on ${m.now.join()}` : ''}${m.note ? `, "${m.note}"` : ''}, ${m.below ? 'under its pill' : 'NOT under its pill'}${m.inside ? '' : ', OUTSIDE the screen'}${menuOk(m) ? '' : ' ← WRONG'}`).join('; ')}; Escape closed it (${afterEsc.open} open, focus back on ${afterEsc.focus}); a tap outside closed it (${outside} open); keyboard: ArrowDown opened Language on ${onCurrent} (was ${was}), ArrowDown moved to ${moved}, Enter chose ${chosen} (${closed} open, focus back on ${backOn})`);
+}
 {
   const t = [];
   t.push(await switchTo(l, '[data-preview-screen="welcome"]', (s) => s.welcome === 'grid', 'Welcome'));
@@ -144,12 +210,11 @@ const cookie = await cookieOf(laptop);
   t.push(await switchTo(l, '[data-preview-screen="list"]', (s) => s.list && !s.sheet, 'Section list'));
   t.push(await switchTo(l, '[data-preview-screen="menu"]', (s) => !s.list && !s.sheet && s.welcome === 'none', 'Menu'));
   const worst = Math.max(...t.map((x) => x.ms ?? 9999));
-  const note = await l.textContent('[data-preview-note]');
-  check('bar-timing-laptop', t.every((x) => x.ok) && /preview only/i.test(note || '') && /customers/i.test(note || ''), `every switch shows within 300 ms on the laptop (worst ${worst} ms): ${t.map((x) => `${x.label} ${x.ms ?? 'never'} ms`).join(', ')}; the bar says "${(note || '').trim()}"; still ${still}`);
-  measure(`preview bar on the laptop: every switch within ${worst} ms`);
+  check('bar-timing-laptop', t.every((x) => x.ok), `every switch shows within 300 ms of the tap on its row on the laptop (worst ${worst} ms): ${t.map((x) => `${x.label} ${x.ms ?? 'never'} ms`).join(', ')}; still ${still}`);
+  measure(`preview bar on the laptop: every switch within ${worst} ms of the tap on its row`);
 }
 { // the frame is kept across the tabs (no reload): the Menu tab shows the menu, the Style tab its own screen again on return
-  await l.click('[data-preview-screen="welcome"]'); await sleep(100);
+  await choose(l, '[data-preview-screen="welcome"]'); await sleep(100);
   await fe(l, (d) => { d.rosesMark = 'kept'; });
   await l.click(MENU_TAB); await l.waitForSelector('[data-item]'); await sleep(300);
   const onMenu = await probe(l); const barsMenu = await bars(l); const urlMenu = l.url();
@@ -164,19 +229,19 @@ const cookie = await cookieOf(laptop);
   let s = null; while (Date.now() - t < 3000) { s = await probe(l); if (s.welcome === 'none' && s.lang === 'fa') break; await sleep(10); }
   const bar = await pressed(l);
   check('welcome-lang-tap', s.welcome === 'none' && s.lang === 'fa' && s.dir === 'rtl' && s.state === 'off' && bar.lang === 'fa' && bar.screen === 'menu', `tap on فارسی inside the previewed welcome screen → the menu in Persian ${Date.now() - t} ms later (overlay ${s.welcome}, lang ${s.lang}, dir ${s.dir}); the page's own handler did not run (data-welcome stays "${s.state}"); the bar follows: language ${bar.lang}, screen ${bar.screen}`);
-  await l.click('[data-preview-lang="en"]');
+  await choose(l, '[data-preview-lang="en"]');
 }
 { // after a save in the Style tab the preview stays on its screen: a section's layout saved with the section list open, then with the item popup open
   const sec = (await db.query(`select id, name->>'en' as name, layout from sections where venue_id = $1 and listed order by position desc limit 1`, [VENUE])).rows[0];
   await api('/api/admin/section', { action: 'update', id: sec.id, patch: { layout: 'list' } }, cookie); // the precondition (a scratch copy carries Kian's own choices)
   await l.reload(); await l.waitForSelector(`[data-section-layout="${sec.id}"]`); await frameReady(l); await sleep(300);
   const layoutBtn = (v) => `[data-section-layout="${sec.id}"] button[role=radio]:has-text("${v}")`;
-  await l.click('[data-preview-screen="list"]'); await sleep(300);
+  await choose(l, '[data-preview-screen="list"]'); await sleep(300);
   const listBefore = await probe(l);
   await l.click(layoutBtn('Grid')); await l.waitForSelector('[role=status]:has-text("Grid")'); await frameReady(l); await sleep(900);
   const listAfter = await probe(l); const barList = await pressed(l);
   const still1 = await snap(l, 'list-kept-after-save');
-  await l.click('[data-preview-screen="sheet"]'); await sleep(400);
+  await choose(l, '[data-preview-screen="sheet"]'); await sleep(400);
   const sheetBefore = await probe(l);
   await l.click(layoutBtn('List')); await l.waitForSelector('[role=status]:has-text("List")'); await frameReady(l); await sleep(900);
   const sheetAfter = await probe(l); const barSheet = await pressed(l);
@@ -184,7 +249,7 @@ const cookie = await cookieOf(laptop);
   const layout = (await db.query('select layout from sections where id = $1', [sec.id])).rows[0].layout;
   check('screen-kept-after-save', listBefore.list && listAfter.list && !listAfter.sheet && listAfter.welcome === 'none' && barList.screen === 'list' && sheetBefore.sheet && sheetAfter.sheet && sheetAfter.sheetTitle === sheetBefore.sheetTitle && sheetAfter.welcome === 'none' && barSheet.screen === 'sheet' && layout === 'list', `Style tab, section list open, "${sec.name}" saved as Grid → after the reload the list is open again (${listAfter.list}; popup ${listAfter.sheet}, overlay ${listAfter.welcome}; the bar on ${barList.screen}); item popup on "${sheetBefore.sheetTitle}", "${sec.name}" saved as List → the popup open again on "${sheetAfter.sheetTitle}" (overlay ${sheetAfter.welcome}; the bar on ${barSheet.screen}); the section back to ${layout}; stills ${still1}, ${still2}`);
   measure('after a save in the Style tab the preview is back on its screen (section list; item popup)');
-  await l.click('[data-preview-screen="menu"]');
+  await choose(l, '[data-preview-screen="menu"]');
   if (sec.layout !== 'list') await api('/api/admin/section', { action: 'update', id: sec.id, patch: { layout: sec.layout } }, cookie); // as it was, so the customers' page compares byte for byte
 }
 { // seasonal items (Kian, 2026-10-12): the bar's season switch shows each season's Seasonal section in the preview; the customers' page
@@ -203,11 +268,11 @@ const cookie = await cookieOf(laptop);
   for (let t = Date.now(); Date.now() - t < 10000 && !(seasonalIn(await publicHtml(VENUE)) || '').includes(by[pageSeason].id);) await sleep(150);
   const pubBefore = await publicHtml(VENUE);
   // the items were saved through the API, not the editor: the admin page reloaded (Style tab), its frame shows the page as saved
-  await l.click(STYLE_TAB).catch(() => {}); await l.reload(); await l.waitForSelector('[data-preview-season]'); await frameReady(l); await l.click('[data-preview-screen="menu"]');
+  await l.click(STYLE_TAB).catch(() => {}); await l.reload(); await l.waitForSelector('[data-preview-pick="season"]'); await frameReady(l); await choose(l, '[data-preview-screen="menu"]');
   for (let t = Date.now(); Date.now() - t < 8000;) { const x = await fe(l, (d) => !!d.querySelector('section.seasonal')); if (x) break; await sleep(100); }
   const rows = [];
   for (const S of [...SEAS.filter((x) => x !== pageSeason), pageSeason]) {
-    const t0 = Date.now(); await l.click(`[data-preview-season="${S}"]`);
+    await openPick(l, `[data-preview-season="${S}"]`); const t0 = Date.now(); await l.click(`[data-preview-menu="season"] [data-preview-season="${S}"]`);
     let seen = null, ms = null;
     while (Date.now() - t0 < 5000) { seen = await fe(l, (d) => { const sec = d.querySelector('section.seasonal'); return sec ? { title: sec.querySelector('h2 span[lang="en"]')?.textContent ?? sec.querySelector('h2')?.textContent, ids: [...sec.querySelectorAll('li.item')].map((li) => li.dataset.id), first: d.querySelector('main section[data-id]') === sec } : null; }); if (seen && seen.title === TITLE[S] && seen.ids.join() === wantIds(S) && seen.first) { ms = Date.now() - t0; break; } await sleep(20); }
     rows.push({ S, ok: ms !== null, ms, seen });

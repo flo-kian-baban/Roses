@@ -164,7 +164,8 @@ export function StyleTab({ venueId, version, onSaved, onFail, onApply, onLive, o
   const anyCustom = customKeys.length > 0 || 'accent' in data.style || 'tile' in data.style;
   const groups = data.groups.filter((g) => tokensOfGroup(g.id).length > 0);
   return (
-    <div className="mx-auto w-full max-w-3xl px-3 pb-32 pt-4 sm:px-5" data-style-tab>
+    // lg:pt-1: on a laptop the preview controls sit above (Editor.tsx), so the first line starts 12 px under them (8 of the row's own + 4)
+    <div className="mx-auto w-full max-w-3xl px-3 pb-32 pt-4 sm:px-5 lg:pt-1" data-style-tab>
       <p className="px-3 text-[13px] text-ink-muted">Colours by part of the page, top to bottom. Tap a part in the preview, or open a group. Each change saves itself and shows in the preview.</p>
       {err && <p role="alert" className={`${card} mt-3 px-4 py-3 text-base text-danger`}>{err}</p>}
       {warnings.length > 0 && <p role="status" className={`${card} mt-3 px-4 py-3 text-base text-ink`} data-style-warnings>Hard to read: {warnings.map((w) => `${label(w.key)} on the ${baseName(w.on)} (${w.ratio.toFixed(1)}:1, needs ${w.threshold}:1)`).join('; ')}.</p>}

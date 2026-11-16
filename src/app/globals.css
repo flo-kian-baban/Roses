@@ -48,7 +48,7 @@
 .admin .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 9999px; background: #fff; box-shadow: 0 3px 8px rgba(0, 0, 0, .15), 0 1px 1px rgba(0, 0, 0, .16); transition: transform .2s cubic-bezier(.2, .8, .2, 1); }
 .admin .switch:checked { background: var(--color-ok); }
 /* Tap areas (the PM, 2026-10-09): every interactive element of the admin meets the finger over at least 44 × 44 CSS px on a phone. Where the
-   visual stays smaller (the switch, the chips of the preview bar, the tabs) an invisible pad centred on it makes up the difference; the
+   visual stays smaller (the switch, the tabs) an invisible pad centred on it makes up the difference; the
    bottom sheet's handle has its own, reaching above the sheet (BottomSheet.tsx). A pad never reaches into a neighbouring control. */
 .admin .switch::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
 .admin .tap { position: relative; }
@@ -102,3 +102,6 @@
 /* While a sheet is open the "Saved · Undo" toast moves to the top of the screen, so it never covers the sheet's own button at the
    bottom (found by the re-measure of 2026-10-13: it sat on "Copy to N items" right after a choice was saved). */
 body:has([data-sheet]) .toast { top: max(0.75rem, env(safe-area-inset-top)); bottom: auto !important; }
+/* The Style tab on a phone with its bottom sheet down (only its header showing): the toast sits 12 px above the sheet, never over its
+   handle or the preview controls (2026-11-15; the header's height comes from BottomSheet.tsx). */
+body:has([data-style-sheet="collapsed"]):not(:has([data-sheet])) .toast { bottom: calc(var(--style-sheet-head, 0px) + 0.75rem) !important; }

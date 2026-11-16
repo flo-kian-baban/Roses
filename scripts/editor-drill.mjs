@@ -506,7 +506,12 @@ const listedIds = async () => new Set((await db.query('select id from items wher
     check('t-toast-clear', clear.zone && clear.scrollBottom <= clear.toastTop + 0.5 && clear.over.length === 0, `while "Saved · Undo" shows: the editor's scroll area ends at ${clear.scrollBottom} px, the toast starts at ${clear.toastTop} px (the strip kept free: ${clear.zone}); controls of the editor under the toast: ${clear.over.length ? clear.over.join(', ') : 'none'}`);
     taps++; await p.getByRole('button', { name: 'Looks good: the Persian description' }).click();
     const w2 = await waitDb('select drafts, fa_draft, description, name from items where id=$1', [itemId], (r) => !r?.fa_draft?.includes('description'));
-    const tagGone = (await p.locator('.item-panel').getByRole('button', { name: /^Looks good: the (English|Persian) description$/ }).count()) === 0;
+    // the button goes when the save's answer arrives, after the database write (the route regenerates the public page before it answers):
+    // its end state is waited for, up to 5 s, not read the instant the database shows the change (run 2026-11-16T05-57-44Z, the machine
+    // under memory pressure: a slower regeneration, the button read before the answer came)
+    const tags = p.locator('.item-panel').getByRole('button', { name: /^Looks good: the (English|Persian) description$/ });
+    for (const t = Date.now(); Date.now() - t < 5000 && (await tags.count()) > 0;) await sleep(50);
+    const tagGone = (await tags.count()) === 0;
     await p.click('[role=status] button:has-text("Undo")'); await p.waitForSelector('[role=status]:has-text("Undone")', { timeout: 5000 }).catch(() => {});
     const w3 = await waitDb('select drafts, fa_draft from items where id=$1', [itemId], (r) => r?.fa_draft?.includes('description'));
     const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);

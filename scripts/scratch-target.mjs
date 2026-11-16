@@ -5,7 +5,7 @@
 // server stops it with one message (exit 2) before it sends anything. No .env.local is read: what a script uses comes from its command
 // line and its environment. scripts/scratch-guard-selftest.mjs (suite step scratch-guard) proves all of this.
 //
-// A scratch server: on this machine (127.0.0.1, localhost or ::1), not port 3000, started with the suite's own flag ROSES_CHECK_SUITE=1,
+// A scratch server: on this machine (127.0.0.1, localhost or ::1), not port 4928 or 3000, started with the suite's own flag ROSES_CHECK_SUITE=1,
 // so GET /api/scratch (src/pages/api/scratch.ts; every other server answers 404) names the database it uses and its uploads folder; that
 // database is not the working one (roses, or the one a .env.local names) and, for a script that uses a database, is the script's own; that
 // folder is not the working uploads (<main checkout>/uploads). The probe is the only request a script sends before its target is proven.
@@ -25,7 +25,11 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const LOOPBACK = new Set(['127.0.0.1', 'localhost', '::1', '[::1]']);
-const REVIEW_PORT = '3000'; // Kian's review server (CLAUDE.md): never a target
+// Never a target, as a server's address or as a port to start one on (CLAUDE.md, "Review server on port 4928", Kian, 2026-11-15): Kian's
+// review server, and 3000, its port until then and the one `next start` and `next dev` take when given none. The check suite never picks
+// either for its own servers (REVIEW_PORTS, scripts/check.mjs).
+const NEVER = new Map([['4928', "Kian's review server"], ['3000', "next's own default port, Kian's review server until 2026-11-15"]]);
+export const REVIEW_PORTS = [...NEVER.keys()].map(Number);
 
 // The main checkout (a worktree's .git is a file naming <main>/.git/worktrees/<name>); read from disk, no git process.
 export function mainCheckout(root = ROOT) {
@@ -56,7 +60,7 @@ function usage(script, spec) {
   return `usage: node ${script} ${[...p, ...o].join(' ')}${env.length ? `; in the environment: ${env.join(', ')}` : ''}`;
 }
 function refuse(script, spec, problems, sent = 'nothing sent') {
-  console.error(`${script}: refused, ${sent}: ${problems.join('; ')}.\n${usage(script, spec)}\nA scratch server runs on this machine (never port 3000) with ROSES_CHECK_SUITE=1, on a scratch copy of the database and of the uploads.`);
+  console.error(`${script}: refused, ${sent}: ${problems.join('; ')}.\n${usage(script, spec)}\nA scratch server runs on this machine (never port 4928 or 3000) with ROSES_CHECK_SUITE=1, on a scratch copy of the database and of the uploads.`);
   process.exit(2);
 }
 function checkServer(name, v, problems) {
@@ -64,7 +68,7 @@ function checkServer(name, v, problems) {
   if (!/^https?:$/.test(u.protocol)) { problems.push(`${name} "${v}" is not an http address`); return null; }
   if (!LOOPBACK.has(u.hostname)) { problems.push(`${name} "${v}" is not on this machine`); return null; }
   if (!u.port) { problems.push(`${name} "${v}" names no port`); return null; }
-  if (u.port === REVIEW_PORT) { problems.push(`${name} "${v}" is port 3000, Kian's review server, never a target`); return null; }
+  if (NEVER.has(u.port)) { problems.push(`${name} "${v}" is port ${u.port} (${NEVER.get(u.port)}), never a target`); return null; }
   return u;
 }
 
@@ -89,7 +93,7 @@ export async function scratchTarget(script, spec = {}) {
   const kindCheck = (label, k, v) => {
     if (Array.isArray(k)) { if (!k.includes(v)) problems.push(`${label} "${v}" is not one of ${k.join(', ')}`); return; }
     if (k === 'server') { const u = checkServer(label, v, problems); if (u) servers.push(u.href); return; }
-    if (k === 'port') { const n = Number(v); if (!Number.isInteger(n) || n < 1024 || n > 65535) problems.push(`${label} "${v}" is not a port`); else if (String(n) === REVIEW_PORT) problems.push(`${label} 3000 is Kian's review server's port`); return; }
+    if (k === 'port') { const n = Number(v); if (!Number.isInteger(n) || n < 1024 || n > 65535) problems.push(`${label} "${v}" is not a port`); else if (NEVER.has(String(n))) problems.push(`${label} is port ${n} (${NEVER.get(String(n))}), never a target`); return; }
     if (k === 'number') { if (!Number.isFinite(Number(v))) problems.push(`${label} "${v}" is not a number`); return; }
     if (k === 'list') { if (!v.split(',').filter(Boolean).length) problems.push(`${label} is empty`); }
   };

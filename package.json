@@ -7,9 +7,9 @@
     "node": "22.x"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p ${PORT:-4928}",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p ${PORT:-4928}",
     "db:up": "docker compose up -d",
     "db:migrate": "node scripts/db-migrate.mjs",
     "db:backup": "bash scripts/db-backup.sh",

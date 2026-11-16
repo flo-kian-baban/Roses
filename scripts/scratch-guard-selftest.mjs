@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 // Proves the PM's rule of 2026-11-06: drills and hand-test scripts refuse to start unless their target is a scratch server; wrong or
-// missing options abort with a message; nothing falls back to port 3000 or the working database. No real server and no database is
+// missing options abort with a message; nothing falls back to port 3000 or the working database; port 4928 (Kian's review server since
+// 2026-11-15) and 3000 are never a target. No real server and no database is
 // used: every script runs under scripts/scratch-guard-tripwire.mjs, which writes down and refuses every connection and child process.
 //   static     every script under scripts/ and reports/ that reaches a server or a database (fetch, page.goto, a browser, pg, docker …)
 //              starts with the guard (scripts/scratch-target.mjs; scripts/backup-drill.sh has its own in bash), or is one of the tools
 //              named below that work on the working data or the outside world on purpose; no guarded script reads .env.local
 //   no-options each guarded script started with no options, once in an empty environment and once with the working settings exported
-//              (DATABASE_URL on the working database, UPLOAD_DIR on the working uploads, PORT 3000, an admin's variables): exit 2, a
+//              (DATABASE_URL on the working database, UPLOAD_DIR on the working uploads, PORT 4928, an admin's variables): exit 2, a
 //              message saying what to give, and nothing sent (the tripwire's log empty)
-//   refusals   on the lockout and layout drills: a wrong option (--base given to the lockout drill, the mistake of 2026-11-06), port 3000,
+//   refusals   on the lockout, layout and season drills: a wrong option (--base given to the lockout drill, the mistake of 2026-11-06),
+//              port 4928 and port 3000 as the server's address and as the port the season drill would start its own server on,
 //              an address off this machine, a DATABASE_URL naming the working database, and a fake server standing in for the target:
 //              answering the probe with 404 (as Kian's review server and production do), on the working database, on another scratch
 //              database than the drill's, on the working uploads; each: exit 2, a message, and nothing sent but the one probe
@@ -84,7 +86,7 @@ const bash = (script, args, env) => run('bash', [script, ...args], { ...env, PAT
 const said = (r) => (r.stderr.split('\n').find((l) => /refused/.test(l)) || r.stderr.split('\n')[0] || r.stdout.split('\n')[0] || '').slice(0, 220);
 
 // The working settings someone may have exported in their shell (or a .env.local would give): every script must still refuse.
-const WORKING_ENV = { DATABASE_URL: `postgres://roses@127.0.0.1:5433/${[...WORKING.dbs][0]}`, ROSES_DB: [...WORKING.dbs][0], UPLOAD_DIR: WORKING.uploads, PORT: '3000', CWD: WORKING.main,
+const WORKING_ENV = { DATABASE_URL: `postgres://roses@127.0.0.1:5433/${[...WORKING.dbs][0]}`, ROSES_DB: [...WORKING.dbs][0], UPLOAD_DIR: WORKING.uploads, PORT: '4928', CWD: WORKING.main,
   DRILL_ADMIN_PIN: '000000', DRILL_ADMIN_EMAIL: 'guard-selftest@example.invalid', DRILL_ADMIN_PASSWORD: 'not-a-password', BACKUP_DIR: tmp };
 const noOptions = [];
 for (const f of guarded) {
@@ -107,6 +109,9 @@ const outDir = path.join(tmp, 'out');
 const cases = [
   ['wrong-option', 'the lockout drill given --base (it takes --base4, --base6, --proxyBase)', 'scripts/lockout-drill.mjs', ['--base', FAKE, '--out', outDir], {}, null, /unknown option --base/, 0],
   ['port-3000', 'the layout drill given port 3000', 'scripts/layout-drill.mjs', ['--base', 'http://127.0.0.1:3000', '--out', outDir], {}, null, /port 3000/, 0],
+  ['port-4928', 'the layout drill given port 4928 (Kian\'s review server since 2026-11-15)', 'scripts/layout-drill.mjs', ['--base', 'http://localhost:4928', '--out', outDir], {}, null, /port 4928/, 0],
+  ['port-option-4928', 'the season drill told to start its own server on port 4928', 'scripts/season-drill.mjs', ['--dist', path.join(tmp, 'dist'), '--copy', path.join(tmp, 'copy'), '--port', '4928', '--out', outDir], { UPLOAD_DIR: SCRATCH_UPLOADS }, null, /port 4928/, 0],
+  ['port-option-3000', 'the season drill told to start its own server on port 3000', 'scripts/season-drill.mjs', ['--dist', path.join(tmp, 'dist'), '--copy', path.join(tmp, 'copy'), '--port', '3000', '--out', outDir], { UPLOAD_DIR: SCRATCH_UPLOADS }, null, /port 3000/, 0],
   ['off-machine', 'the layout drill given an address off this machine', 'scripts/layout-drill.mjs', ['--base', 'http://192.0.2.10:8080', '--out', outDir], {}, null, /not on this machine/, 0],
   ['working-db', 'the layout drill with DATABASE_URL on the working database', 'scripts/layout-drill.mjs', ['--base', FAKE, '--out', outDir], { DATABASE_URL: WORKING_ENV.DATABASE_URL }, { status: 200, body: { scratch: true, database: SCRATCH_DB, uploads: SCRATCH_UPLOADS } }, /working database/, 0],
   ['probe-404', 'the layout drill at a server that answers the probe with 404 (Kian\'s review server, production)', 'scripts/layout-drill.mjs', ['--base', FAKE, '--out', outDir], {}, { status: 404 }, /is not a scratch server/, 1],

@@ -77,7 +77,7 @@ else { say('8/8 production build'); run('npx', ['next', 'build']); }
 
 console.log(`
 Done. Next:
-  npm run start                     public pages http://localhost:3000/senso and /kebab-land, admin http://localhost:3000/admin
+  npm run start                     public pages http://localhost:4928/senso and /kebab-land, admin http://localhost:4928/admin
                                     (the start command also prints a Network address for phones on the same Wi-Fi)
   npm run admin:create -- --email <email> --name "<name>"   create the main admin account (asks for a password)
 `);

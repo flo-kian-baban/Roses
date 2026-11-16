@@ -127,3 +127,4 @@ Runs made from 2026-11-03 on are added below as they are committed.
 | 2026-11-07T04-04-22Z | fast | PASS (42 of 43 checks passed, 1 KNOWN MISS) | c865eec | here | the admin PIN rule's merge gate (Kian, 2026-11-06) |
 | 2026-11-07T05-10-25Z | fast | PASS (41 of 43 checks passed, 2 KNOWN MISS) | 4479612 | here | the Menu tab search row's merge gate (Kian, 2026-11-07) |
 | 2026-11-07T05-41-48Z | fast | PASS (41 of 43 checks passed, 2 KNOWN MISS) | bc53c30 | here | the item popup photo's merge gate (Kian, 2026-11-07; stacked on the search row) |
+| 2026-11-16T01-48-28Z | fast | PASS (42 of 43 checks passed, 1 KNOWN MISS) | bcaad73 | here | the review server port's merge gate (Kian, 2026-11-15); waited 922 s before the build on Spotify's renderer; the touch drill's first attempt invalid: network (02:38:55Z, the three photo hosts ENOTFOUND), its second attempt passed |

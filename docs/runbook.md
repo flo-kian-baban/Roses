@@ -15,20 +15,31 @@ npm run admin:create -- --email <your email> --name "<your name>" --pin <4 to 6 
 ```
 
 - `npm run setup` writes `.env.local` with a random session secret, starts Postgres in Docker, applies the migrations, imports both venues from `data/raw`, applies the committed Persian review records (`data/import/<date>/<venue>/persian-review.json`, so Senso comes up with 0 draft flags), applies the committed seasonal menu records (`data/import/<date>/<venue>/*-menu.json`, Kian's printed seasonal cards, by `tools/import/seasonal-menu-apply.mjs`; the first, Senso's Fall Menu of 2026-10-12), applies the committed menu research records (`data/import/<date>/<venue>/research.json`, by `tools/import/research-apply.mjs`) and makes the production build. It is safe to run again.
-- `npm run start` serves http://localhost:3000/senso, http://localhost:3000/kebab-land and http://localhost:3000/admin.
+- `npm run start` serves http://localhost:4928/senso, http://localhost:4928/kebab-land and http://localhost:4928/admin (port 4928 since 2026-11-15, was 3000; a `PORT` in the environment, as a Node host sets it, takes its place).
 - `npm run admin:create -- --email <email> --name "<name>" --pin <4 to 6 digits>` creates the main admin account (not one digit repeated and not a straight run up or down: Kian, 2026-11-06); admins sign in with that PIN on any venue (no email typing). Add `--password` to also set an email + password sign-in. Staff PINs are then created in Admin → PINs.
 - Development with live reload: `npm run dev` instead of `npm run start` (pages are rendered on request there, not pre-built).
 
 ### On a phone on the same Wi-Fi
 
-`npm run start` (and `npm run dev`) listen on every network interface and print a line `Network: http://<laptop-ip>:3000`. Open that address on the phone, for example `http://<laptop-ip>:3000/senso` or `/admin/senso`. If the line is missing, the laptop's address is in System Settings → Wi-Fi → Details, or from `ipconfig getifaddr en0` on macOS. macOS may ask once to allow incoming connections for Node. The lockout counts the phone's Wi-Fi address as its client address.
+`npm run start` (and `npm run dev`) listen on every network interface on port 4928 and print a line `Network: http://<laptop-ip>:4928`. Open that address on the phone, for example `http://<laptop-ip>:4928/senso` or `/admin/senso`. If the line is missing, the laptop's address is in System Settings → Wi-Fi → Details, or from `ipconfig getifaddr en0` on macOS. macOS may ask once to allow incoming connections for Node. The lockout counts the phone's Wi-Fi address as its client address.
+
+### Kian's review server (http://localhost:4928)
+
+Kian reviews every batch on http://localhost:4928 (Kian, 2026-11-15; port 3000 before): a production build of the latest committed batch, on the working database and uploads, listening on this computer only. After every committed batch it is built and restarted from the checkout that holds the newest commit (the main checkout once the batch is merged):
+
+```sh
+NEXT_DIST_DIR=.next-kian npx next build     # on the working database (.env.local); then `git checkout tsconfig.json` if the build edited it
+NEXT_DIST_DIR=.next-kian UPLOAD_DIR=<main checkout>/uploads node node_modules/next/dist/bin/next start -p 4928 -H 127.0.0.1
+```
+
+`.next-kian` is its own build folder, so the check suite (`.next-check`) never touches it. Drills and hand tests never target port 4928 (nor 3000), and the suite never picks either for its own servers (*Hand tests and the scratch guard*). For the real-phone test it is started without `-H 127.0.0.1` (every interface), and with it again afterwards.
 
 ## Daily
 
-- Public pages: http://localhost:3000/senso and /kebab-land. They are pre-rendered; an admin save regenerates the page within seconds (`res.revalidate`), no rebuild needed. A full `npm run build` is needed only after code changes.
+- Public pages: http://localhost:4928/senso and /kebab-land. They are pre-rendered; an admin save regenerates the page within seconds (`res.revalidate`), no rebuild needed. A full `npm run build` is needed only after code changes.
 - **Welcome screen** (Kian, 2026-10-09, replacing the logo intro): every visit and refresh opens on a full-screen welcome with the logo, a greeting for the time of day in both languages (morning 05:00–11:59, afternoon 12:00–16:59, evening otherwise, from the phone's clock), two big buttons *English* / *فارسی* and the season's scene (leaves in fall, snow in winter, blossoms in spring, warm light in summer, by the month in Toronto: the page is rendered for the current season and refreshed at least hourly, so it flips within an hour of midnight on the 1st; Senso's fall leaves and winter snow are Kian's picked artwork of 2026-10-09, drawn anew on every load with three depth layers; Senso's summer, from 2026-10-10, is his pick of the summer candidates: a Persian sun in the top corner with its rays turning slowly, twinkling sparkles, motes of light and a few dandelion seeds on a breeze, sized so the sun never reaches the card; the sun carries its own colours, so Senso's Welcome group has no "Summer light" colour). A tap on a language opens the menu in that language at once, always from the top of the page (Kian, 2026-10-09), and remembers it; next time that button is already filled. Phones with reduced motion get a still scene and no fade; with JavaScript off the menu shows directly. The admin's preview never shows it after a save; it shows it only while the Style tab's *Welcome* group is open.
 - **Transition into the menu** (Senso, 2026-10-10; one choice per season since 2026-10-11; Kebab Land and venues on the default template keep the 200 ms fade): after the tap, the welcome screen hands over to the menu with one of ten transitions, T1–T3 subtle, T4–T7 expressive, T8–T10 bold, each made for every season with that season's own artwork (fall leaves, winter snow, spring blossoms, the summer sun and seeds). The menu can be scrolled and tapped from the moment of the tap; the transition is over within 0.9 s; phones with reduced motion get a 150 ms fade instead. Choose them in the admin: Style tab → *Welcome* → *Transition* (owner and admin): four rows, Fall, Winter, Spring and Summer, each with its own choice and *Play*; choosing one saves it and plays it in the iPhone preview in that season, *Play* plays it again. Only the current season's choice is in the customers' page, switched with the season on the 1st. A season not chosen yet keeps the venue's single choice of 2026-10-10 (T1 if there was none).
-- Admin: http://localhost:3000/admin. Everyone signs in with a PIN on the venue's sign-in link (staff and owner PINs are venue-scoped; admin PINs work on any venue); email + password stays available for admin accounts that have one. Signed in, `/admin` goes straight to the first venue's page editor.
+- Admin: http://localhost:4928/admin. Everyone signs in with a PIN on the venue's sign-in link (staff and owner PINs are venue-scoped; admin PINs work on any venue); email + password stays available for admin accounts that have one. Signed in, `/admin` goes straight to the first venue's page editor.
 
 ## Admin layout (page editor, Kian's rebuild of 2026-10-07)
 
@@ -159,7 +170,7 @@ Needs once: `npx playwright install chromium`. Lighthouse uses Google Chrome whe
 
 ## Hand tests and the scratch guard
 
-Drills and hand-test scripts refuse to start unless their target is a scratch server (the PM, 2026-11-06): every option a script needs is given (it prints them when one is missing, unknown or wrong, and stops with exit 2 before sending anything); nothing falls back to port 3000 or to the working database, and no `.env.local` is read. A scratch server is a hand server started on this machine with `ROSES_CHECK_SUITE=1` on a scratch copy of the database and of the uploads (process rule 5 in CLAUDE.md), never on port 3000:
+Drills and hand-test scripts refuse to start unless their target is a scratch server (the PM, 2026-11-06): every option a script needs is given (it prints them when one is missing, unknown or wrong, and stops with exit 2 before sending anything); nothing falls back to port 3000 or to the working database, and no `.env.local` is read; port 4928 (Kian's review server since 2026-11-15) and port 3000 are never a target, neither as a server's address nor as the port a drill starts its own server on. A scratch server is a hand server started on this machine with `ROSES_CHECK_SUITE=1` on a scratch copy of the database and of the uploads (process rule 5 in CLAUDE.md), never on port 4928 or 3000:
 
 ```sh
 docker exec roses-db sh -c "createdb -U roses roses_hand && pg_dump -U roses -Fc roses | pg_restore -U roses -d roses_hand --no-owner"

@@ -15,7 +15,7 @@ Run every step on **an iPhone with Safari** and **an Android phone with Chrome**
 
 ## Before you start
 
-- **The address.** Use the live address once hosting is set up. Until then the menu runs on Kian's laptop, and both phones must be on the same Wi-Fi as the laptop: open `http://<laptop address>:3000/senso` (runbook, "On a phone on the same Wi-Fi"). Port 3000 listens only on the laptop itself at the moment, so ask for it to be opened to the Wi-Fi for the test and closed again afterwards.
+- **The address.** Use the live address once hosting is set up. Until then the menu runs on Kian's laptop, and both phones must be on the same Wi-Fi as the laptop: open `http://<laptop address>:4928/senso` (runbook, "On a phone on the same Wi-Fi"). Port 4928 (Kian's review server) listens only on the laptop itself, so ask for it to be opened to the Wi-Fi for the test and closed again afterwards.
 - **A test PIN.** Kian signs in to the admin on the laptop, opens **Team**, creates a **staff** PIN for Senso named "Phone test" and writes it on paper. Revoke it when the test is over (step 16).
 - **A first visit.** Open the menu in a **private tab** (Safari: Tabs → Private; Chrome: ⋮ → New Incognito tab), so the phone has not remembered a language yet.
 - Keep the printed **Fall Menu card** next to you for step 4.

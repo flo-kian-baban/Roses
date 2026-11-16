@@ -1,7 +1,7 @@
 // The scratch-server probe (the PM, 2026-11-06: drills and hand-test scripts refuse to start unless their target is a scratch server).
 // Only a server started with the check suite's own flag ROSES_CHECK_SUITE=1 answers: the suite's servers, and hand servers on a scratch
 // copy. It names the database it uses and its uploads folder, so scripts/scratch-target.mjs can refuse the working ones before a drill
-// sends anything else. Every other server (production, Kian's review server on port 3000) answers 404, as for an address that does not
+// sends anything else. Every other server (production, Kian's review server on port 4928) answers 404, as for an address that does not
 // exist; the flag is never set in production (go-live checklist), like ROSES_NOW.
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { pool } from '@/lib/db';

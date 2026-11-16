@@ -76,6 +76,7 @@ import { loadEnv } from './load-env.mjs';
 import { readPointer as readFixture, verify as verifyFixture } from './perf-fixture.mjs';
 import { readings as preReadings, offenders as preOffenders, describe as preDescribe, markdown as preMarkdown, waitQuiet, sample as loadSample, TIMING, LIMIT as CPU_LIMIT } from './preflight.mjs';
 import { down, probeHosts, retryOnOutage, waitNetwork } from './network-watch.mjs';
+import { REVIEW_PORTS } from './scratch-target.mjs';
 
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
@@ -84,11 +85,12 @@ fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.j
 const DIST = '.next-check';
 // Free ports, picked at start (the PM, 2026-10-09; 3100 had been taken by another project's server): the system hands out a free port for
 // each of the suite's three servers, and each is checked free on 127.0.0.1 and ::1 (the lockout drill reaches the server over IPv6).
+// Never Kian's review server's port 4928 or 3000 (REVIEW_PORTS, Kian, 2026-11-15), whatever the system hands out.
 const portFree = (port, host = '127.0.0.1') => new Promise((res) => { const s = net.createServer(); s.once('error', (e) => res(e.code !== 'EADDRINUSE')); s.listen(port, host, () => s.close(() => res(true))); });
 async function freePort(avoid) {
   for (let i = 0; i < 50; i++) {
     const p = await new Promise((res, rej) => { const s = net.createServer(); s.once('error', rej); s.listen(0, '127.0.0.1', () => { const { port } = s.address(); s.close(() => res(port)); }); });
-    if (!avoid.includes(p) && (await portFree(p, '127.0.0.1')) && (await portFree(p, '::1'))) return p;
+    if (!avoid.includes(p) && !REVIEW_PORTS.includes(p) && (await portFree(p, '127.0.0.1')) && (await portFree(p, '::1'))) return p;
   }
   throw new Error('no free port found');
 }
@@ -372,7 +374,7 @@ try {
       note: j ? `${elsewhere.length} colour literal(s) in the admin's ${j.files.length} files outside ${COLOUR_ALLOWED}${elsewhere.length ? ` (${[...new Set(elsewhere.map((l) => `${l.file}:${l.line}`))].slice(0, 6).join(', ')})` : ''}; ${allowed} in ${COLOUR_ALLOWED}, allowed by name (the new-PIN page it sends whole)` : `exit ${r.status}` };
   }, 'admin-colour-literals');
 
-  await step('drills and hand-test scripts refuse to start unless their target is a scratch server (the PM, 2026-11-06): every script that reaches a server or a database starts with the guard (scripts/scratch-target.mjs) or is a tool named by name; each one started with no options sends nothing (exit 2, a message; a tripwire writes down every connection and child process); a wrong option, port 3000, the working database or uploads, and a server that is not a scratch one are refused with nothing sent but the probe', async () => {
+  await step('drills and hand-test scripts refuse to start unless their target is a scratch server (the PM, 2026-11-06): every script that reaches a server or a database starts with the guard (scripts/scratch-target.mjs) or is a tool named by name; each one started with no options sends nothing (exit 2, a message; a tripwire writes down every connection and child process); a wrong option, port 4928 (Kian\'s review server since 2026-11-15) or 3000 as a server or as a port to start one on, the working database or uploads, and a server that is not a scratch one are refused with nothing sent but the probe', async () => {
     const r = await run('node', ['scripts/scratch-guard-selftest.mjs', '--out', path.join(out, 'scratch-guard')], { logFile: 'scratch-guard/scratch-guard-selftest.log' });
     const m = (r.stdout.match(/SCRATCH GUARD SELFTEST (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
     return { pass: r.status === 0, checks: drillChecks('scratch-guard/scratch-guard.json', !!m), evidence: ['scratch-guard/scratch-guard.txt', 'scratch-guard/scratch-guard.json'], note: m || `exit ${r.status}` };
@@ -706,7 +708,7 @@ const knownStatus = (k) => !k.run ? '**NOT RUN** (the suite stopped before its s
 const lines = [
   `# Check suite — ${stamp.replace('T', ' ').replace(/-(\d\d)-(\d\d)Z$/, ':$1:$2Z')}`, '',
   `**Suite: ${FULL ? 'full** (`npm run check:full`: the transition drill on all 40 versions; run once before the owner demo and once before go-live, Kian 2026-10-14)' : 'fast** (`npm run check`: the transition drill\'s browser checks on the four versions chosen now, the served HTML and size of all 40; not enough for a merge to main, which needs `npm run check:full`)'}`, '',
-  `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, ${KNOWN_FILE} included) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server), ${PERF_PORT} (the performance fixture's server); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
+  `Commit ${commit} (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, ${KNOWN_FILE} included) · Node ${process.version} · Next ${JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version} · build dir ${DIST} · ports picked free at start: ${PORT} (server), ${PROXY_PORT} (server with TRUST_PROXY=1), ${SEASON_PORT} (the season drill's server), ${TX_PORT} (the transition drill's server), ${PERF_PORT} (the performance fixture's server), never ${REVIEW_PORTS.join(' or ')} (Kian's review server, next's own default); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy ${scratchName} of ${workName}, dropped at the end · total ${((Date.now() - started) / 1000).toFixed(0)} s`, '',
   `Scratch copy: ${scratchName} from a pg_dump of ${workName}; ${uploadsNote}.`, '',
   `Performance fixture (Lighthouse\'s regression checks run on it, the PM 2026-10-12): ${perfNote}; its own build ${PERF_DIST} and server on port ${PERF_PORT}.`, '',
   `Content cost (Senso on the live data copy, information only, never fails the run): ${costLine(contentCost)}${tapLine(contentCost?.afterTap)}.`, '',

@@ -6,7 +6,7 @@ import { pool } from '@/lib/db';
 type Q = Pool | PoolClient;
 import type { Bi, SectionLayout } from '@/lib/types';
 import { recordRevision, type By } from './revisions';
-import { dbError, itemSnapshot, sectionOrder, type Result } from './items';
+import { dbError, deletedSnapshot, sectionOrder, type Result } from './items';
 
 // seasonal: the venue's Seasonal section (Kian, 2026-10-12): it cannot be deleted (it can be hidden), its name is the admin's label (customers
 // see the season's title), and it stays first, outside the venue's order of sections.
@@ -95,7 +95,7 @@ export async function deleteSection(id: string, by: By, mode: DeleteItems = { it
       for (const itemId of items) {
         const elsewhere = (await client.query<{ n: string }>('select count(*) as n from item_sections where item_id = $1 and section_id <> $2', [itemId, id])).rows[0].n;
         if (Number(elsewhere) > 0) continue;
-        const snap = await itemSnapshot(client, itemId);
+        const snap = await deletedSnapshot(client, itemId); // with the "Goes well with" lists it is in, for Undo
         await client.query('delete from items where id = $1', [itemId]);
         itemRevisions.push(await recordRevision(client, { venueId: row.venue_id, table: 'items', rowId: itemId, action: 'delete', before: snap, after: null, by }));
         deleted.push(itemId);

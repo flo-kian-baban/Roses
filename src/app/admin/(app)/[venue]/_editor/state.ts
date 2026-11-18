@@ -68,6 +68,18 @@ export function seasonState(i: EditorItem, ctx: Seasons | null): 'out' | 'none' 
   if (ctx.seasonalId && i.placements.some((p) => p.section_id === ctx.seasonalId) && !i.seasons.includes(ctx.season)) return 'none';
   return null;
 }
+// Why customers do not see an item now, in the words the Menu list uses, or null when they do (the public page's own rule, src/lib/menu.ts:
+// shown, in season, and in a shown section; in the Seasonal section only when tagged for today's season). "Goes well with" (Kian via the
+// PM, 2026-11-18) labels such items in its picker and its card: they can be picked, and customers get them once they are back on the menu.
+export function notShownWhy(i: EditorItem, m: Pick<Menu, 'sections'>, ctx: Seasons): string | null {
+  if (!i.listed) return 'Hidden';
+  if (i.seasons.length && !i.seasons.includes(ctx.season)) return 'Out of season';
+  const secs = i.placements.map((p) => m.sections.find((s) => s.id === p.section_id)).filter((s): s is EditorSection => !!s);
+  if (!secs.length) return 'In no section';
+  const live = secs.filter((s) => !s.seasonal || i.seasons.includes(ctx.season));
+  if (!live.length) return 'No season';
+  return live.some((s) => s.listed) ? null : 'Section hidden';
+}
 // allergens: allergen or dietary notes drafted from research, waiting for an owner's or admin's Confirm (Kian, 2026-10-12; the bar shows it to them only)
 export const notesToConfirm = (i: EditorItem) => !!i.drafts?.some((f) => f === 'allergens' || f === 'dietary');
 export const needs = (i: EditorItem, ctx: Seasons | null = null) => ({ price: !!listingProblem(i), draft: i.fa_draft.length > 0, fa: persianMissing(i), photo: !i.photo, season: !!seasonState(i, ctx), allergens: notesToConfirm(i), hidden: !i.listed });

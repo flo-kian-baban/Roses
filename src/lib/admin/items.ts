@@ -6,7 +6,7 @@ import { pool } from '@/lib/db';
 import type { Basis, Bi, Variant, AddOn, Component, Notes, Placement, EditorItem, Photo, SeasonId } from '@/lib/types';
 type Q = Pool | PoolClient;
 import { recordRevision, type By } from './revisions';
-import { listingProblem } from '@/lib/rules';
+import { COUNTS, listingProblem } from '@/lib/rules';
 export { listingProblem };
 
 export type { Notes, Placement };
@@ -15,11 +15,15 @@ export type ItemRow = {
   serves: string | null; photo: Photo | null; notes: Notes; listed: boolean; fa_draft: string[]; updated_at: string; updated_by: By | null; import_key: string | null;
   seasons: SeasonId[]; // Kian, 2026-10-12: shown only in these seasons, everywhere; none = all year
   drafts: string[]; // Kian, 2026-10-12: fields written from research ('description' = English, 'allergens', 'dietary'), cleared by a person's edit or Confirm
+  pairs: string[]; // "Goes well with" (Kian via the PM, 2026-11-18): up to 4 other items of the venue, in the order picked; one-way
 };
-export type ItemSnapshot = Omit<ItemRow, 'id' | 'venue_id' | 'updated_at' | 'updated_by' | 'import_key' | 'price'> & { price: string | number | null; placements: Placement[] };
-export type ItemPatch = Partial<Pick<ItemRow, 'name' | 'description' | 'variants' | 'add_ons' | 'components' | 'serves' | 'photo' | 'notes' | 'listed' | 'seasons' | 'drafts' | 'fa_draft'>> & { price?: string | number | null; section_ids?: string[] };
+// paired_by, in a delete's record only: the lists the item was in when it was deleted (the item listing it and its place there, from 0),
+// so that Undo puts it back where it was; the database takes a deleted item out of every list by itself (migration 009).
+export type PairedBy = { item_id: string; index: number };
+export type ItemSnapshot = Omit<ItemRow, 'id' | 'venue_id' | 'updated_at' | 'updated_by' | 'import_key' | 'price'> & { price: string | number | null; placements: Placement[]; paired_by?: PairedBy[] };
+export type ItemPatch = Partial<Pick<ItemRow, 'name' | 'description' | 'variants' | 'add_ons' | 'components' | 'serves' | 'photo' | 'notes' | 'listed' | 'seasons' | 'drafts' | 'fa_draft' | 'pairs'>> & { price?: string | number | null; section_ids?: string[] };
 
-const COLS = 'id, venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_at, updated_by, import_key, seasons, drafts';
+const COLS = 'id, venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_at, updated_by, import_key, seasons, drafts, pairs';
 // The research basis of an item (src/lib/types.ts Basis), from its internal source column: the research import's entry, if any.
 export const BASIS_SQL = `jsonb_path_query_first(source, '$[*] ? (@.source == "research")')`;
 export const basisOf = (b: Record<string, unknown> | null | undefined): Basis | null => (b ? { ingredients: Array.isArray(b.ingredients) ? b.ingredients.map(String) : [], source: typeof b.url === 'string' ? b.url : null, sourceTitle: typeof b.sourceTitle === 'string' ? b.sourceTitle : null, note: typeof b.note === 'string' ? b.note : null, file: typeof b.file === 'string' ? b.file : null } : null);
@@ -36,7 +40,7 @@ export function toEditorItem(row: ItemRow & { placements: Placement[]; basis?: R
   return {
     id: row.id, name: row.name, description: row.description, price: row.price == null ? null : Number(row.price), variants: row.variants, add_ons: row.add_ons, components: row.components,
     serves: row.serves, photo: row.photo, notes: row.notes, listed: row.listed, fa_draft: row.fa_draft, placements: row.placements, seasons: row.seasons ?? [],
-    drafts: row.drafts ?? [], basis: basisOf(row.basis), updated_at: new Date(row.updated_at).toISOString(),
+    drafts: row.drafts ?? [], basis: basisOf(row.basis), updated_at: new Date(row.updated_at).toISOString(), pairs: row.pairs ?? [],
   };
 }
 export async function editorItem(id: string): Promise<EditorItem | null> { const r = await getItem(id); return r ? toEditorItem(r) : null; }
@@ -48,6 +52,41 @@ export async function itemSnapshot(client: Q, id: string): Promise<ItemSnapshot 
   void _i; void _v; void _a; void _b; void _k;
   const p = await client.query<Placement>(`select section_id, position from item_sections where item_id = $1 order by position`, [id]);
   return { ...rest, placements: p.rows };
+}
+
+// "Goes well with" (Kian via the PM, 2026-11-18). Of a list of item ids, the ones that are items of this venue other than the item
+// itself, each once, in the order given, at most four. Their rows are locked against deletion (key share) until the transaction ends:
+// a delete of one of them waits, then takes it out of the list it has just been put in (the database's own rule, migration 009), so a
+// list never keeps an item that is gone.
+export async function pairsThatExist(client: Q, venueId: string, selfId: string, ids: string[]): Promise<string[]> {
+  if (!ids.length) return [];
+  const have = new Set((await client.query<{ id: string }>('select id from items where id = any($1::uuid[]) and venue_id = $2 and id <> $3 for key share', [ids, venueId, selfId])).rows.map((r) => r.id));
+  return [...new Set(ids)].filter((x) => have.has(x)).slice(0, COUNTS.pairs);
+}
+export const PAIR_GONE = 'An item under “Goes well with” must be another item of this venue';
+// The lists an item is in, read before it is deleted (its delete record keeps them for Undo).
+export async function pairedBy(client: Q, id: string): Promise<PairedBy[]> {
+  return (await client.query<PairedBy>('select id as item_id, array_position(pairs, $1::uuid) - 1 as index from items where pairs @> array[$1::uuid] order by id', [id])).rows;
+}
+// An item as its delete record holds it: the snapshot and the lists it is in.
+export async function deletedSnapshot(client: Q, id: string): Promise<ItemSnapshot | null> {
+  const snap = await itemSnapshot(client, id);
+  if (!snap) return null;
+  const lists = await pairedBy(client, id);
+  return lists.length ? { ...snap, paired_by: lists } : snap;
+}
+// Puts an item's "Goes well with" back to a snapshot (Undo): its own list, less what is no longer an item of the venue; and, for an item
+// brought back from a delete, its place in the lists it was in, wherever the listing item still exists, does not list it already and
+// has room. Safe to run again once every row of an undo is back (an item restored first may list one restored after it).
+export async function applyPairs(client: Q, venueId: string, id: string, snap: ItemSnapshot, by: By): Promise<void> {
+  const own = await pairsThatExist(client, venueId, id, snap.pairs ?? []); // records written before the lists existed read as none
+  await client.query('update items set pairs = $2::uuid[] where id = $1 and pairs is distinct from $2::uuid[]', [id, own]);
+  for (const p of snap.paired_by ?? []) {
+    await client.query(
+      `update items set pairs = pairs[1:$3::int] || $2::uuid || pairs[$3::int + 1:], updated_at = now(), updated_by = $4
+        where id = $1 and venue_id = $5 and id <> $2::uuid and not ($2::uuid = any(pairs)) and cardinality(pairs) < $6::int`,
+      [p.item_id, id, Math.max(0, Math.trunc(Number(p.index) || 0)), by, venueId, COUNTS.pairs]);
+  }
 }
 
 // Persian typed by a person is no longer a draft.
@@ -71,6 +110,8 @@ function clearResearchDrafts(drafts: string[], before: ItemSnapshot, after: Item
 
 // `revision` is the id of the change record written (absent when nothing changed).
 export type Result = { ok: true; id: string; revision?: number } | { ok: false; error: string; conflict?: boolean; fault?: boolean };
+// affected: the other items a delete changed (the lists the deleted item was in), for the editor to read again.
+export type Deleted = Result & { affected?: string[] };
 // Pre-go-live audit (2026-11-02, D-03): a save carries the version of the item the editor holds (its updated_at); when the item was changed
 // since, by someone else or on another device, the save is refused instead of putting back the editor's older copy of the other fields.
 export const CHANGED = 'Someone else changed this item since you opened it. The latest version is now on screen; make your change again if it is still needed.';
@@ -81,9 +122,14 @@ export async function updateItem(id: string, patch: ItemPatch, by: By, base: str
   const client = await pool.connect();
   try {
     await client.query('begin');
-    const row = (await client.query<ItemRow>(`select ${COLS} from items where id = $1 for update`, [id])).rows[0];
+    // "Goes well with": the listed items are locked first (they cannot be deleted until this save is in), then the item itself: the order
+    // a delete takes them in (the deleted item, then the lists it is in), so the two never wait on each other. The item's own lock is the
+    // one an update needs (no key update), which a key share on it (another item being paired with it) does not wait for.
+    const paired = patch.pairs ? await pairsThatExist(client, (await client.query<{ venue_id: string }>('select venue_id from items where id = $1', [id])).rows[0]?.venue_id ?? '', id, patch.pairs) : null;
+    const row = (await client.query<ItemRow>(`select ${COLS} from items where id = $1 for no key update`, [id])).rows[0];
     if (!row) { await client.query('rollback'); return { ok: false, error: 'item not found' }; }
     if (base && stale(row.updated_at, base)) { await client.query('rollback'); return { ok: false, error: CHANGED, conflict: true }; }
+    if (patch.pairs && paired!.length !== patch.pairs.length) { await client.query('rollback'); return { ok: false, error: PAIR_GONE }; } // an item of another venue, the item itself, one listed twice, a fifth, or one deleted meanwhile
     const before = (await itemSnapshot(client, id))!;
     const { section_ids: _s, ...fields } = patch; void _s;
     const next: ItemSnapshot = { ...before, ...stripUndefined(fields) } as ItemSnapshot;
@@ -102,8 +148,8 @@ export async function updateItem(id: string, patch: ItemPatch, by: By, base: str
     next.drafts = patch.drafts ?? clearResearchDrafts(row.drafts ?? [], before, next); // Confirm and "Looks good" set them; any other edit clears what it touched
     if (same(before, next)) { await client.query('rollback'); return { ok: true, id }; } // nothing changed: no write, no record
     await client.query(
-      `update items set name=$2, description=$3, price=$4, variants=$5, add_ons=$6, components=$7, serves=$8, photo=$9, notes=$10, listed=$11, fa_draft=$12, seasons=$14, drafts=$15, updated_at=now(), updated_by=$13 where id=$1`,
-      [id, next.name, next.description, next.price, JSON.stringify(next.variants), JSON.stringify(next.add_ons), JSON.stringify(next.components), next.serves, next.photo, next.notes, next.listed, next.fa_draft, by, next.seasons ?? [], next.drafts ?? []]);
+      `update items set name=$2, description=$3, price=$4, variants=$5, add_ons=$6, components=$7, serves=$8, photo=$9, notes=$10, listed=$11, fa_draft=$12, seasons=$14, drafts=$15, pairs=$16::uuid[], updated_at=now(), updated_by=$13 where id=$1`,
+      [id, next.name, next.description, next.price, JSON.stringify(next.variants), JSON.stringify(next.add_ons), JSON.stringify(next.components), next.serves, next.photo, next.notes, next.listed, next.fa_draft, by, next.seasons ?? [], next.drafts ?? [], next.pairs ?? []]);
     if (patch.section_ids) {
       await client.query('delete from item_sections where item_id = $1', [id]);
       for (const p of next.placements) await client.query('insert into item_sections (item_id, section_id, position) values ($1,$2,$3)', [id, p.section_id, p.position]);
@@ -130,7 +176,7 @@ export async function createItem(venueId: string, data: ItemPatch & { name: Bi }
     const snap: ItemSnapshot = {
       name: data.name, description: data.description ?? { en: null, fa: null }, price: data.price ?? null, variants: data.variants ?? [], add_ons: data.add_ons ?? [], components: data.components ?? [],
       serves: data.serves ?? null, photo: data.photo ?? null, notes: data.notes ?? { allergens: [], dietary: [], halal: null, text: { en: null, fa: null } }, listed: !!data.listed, fa_draft: [], placements: [],
-      seasons: data.seasons ?? [], drafts: [],
+      seasons: data.seasons ?? [], drafts: [], pairs: [],
     };
     if (snap.listed && listingProblem(snap)) { await client.query('rollback'); return { ok: false, error: listingProblem(snap)! }; }
     const r = await client.query<{ id: string }>(
@@ -151,23 +197,24 @@ export async function createItem(venueId: string, data: ItemPatch & { name: Bi }
   } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
-export async function deleteItem(id: string, by: By): Promise<Result> {
+export async function deleteItem(id: string, by: By): Promise<Deleted> {
   const client = await pool.connect();
   try {
     await client.query('begin');
     const row = (await client.query<ItemRow>(`select venue_id from items where id = $1 for update`, [id])).rows[0];
     if (!row) { await client.query('rollback'); return { ok: false, error: 'item not found' }; }
-    const before = (await itemSnapshot(client, id))!;
-    await client.query('delete from items where id = $1', [id]); // item_sections rows go with it (on delete cascade)
+    const before = (await deletedSnapshot(client, id))!; // with the "Goes well with" lists it is in, for Undo
+    await client.query('delete from items where id = $1', [id]); // item_sections rows go with it (on delete cascade), and it leaves every list it was in (migration 009)
     const revision = await recordRevision(client, { venueId: row.venue_id, table: 'items', rowId: id, action: 'delete', before, after: null, by });
     await client.query('commit');
-    return { ok: true, id, revision };
+    return { ok: true, id, revision, affected: (before.paired_by ?? []).map((p) => p.item_id) };
   } catch (e) { await client.query('rollback'); return { ok: false, ...dbError(e) }; } finally { client.release(); }
 }
 
 // Duplicate (Kian, 2026-10-13): a copy of the item named "<name> (copy)" in both languages, hidden, in the same sections (right after the
 // original in each), with the same price, sizes, choices, combo parts, serves, description, photo reference (the same file), seasons,
-// notes and draft flags (so the allergen state is the original's, the research basis included, and its Persian drafts stay drafts). One
+// notes and draft flags (so the allergen state is the original's, the research basis included, and its Persian drafts stay drafts), and
+// the same "Goes well with" list (the PM, 2026-11-18; the copy itself is in nobody's list: the lists are one-way). One
 // 'create' record, so one Undo removes the copy; the items after it keep their order.
 export async function duplicateItem(id: string, by: By): Promise<Result & { orders?: { section_id: string; item_ids: string[] }[] }> {
   const client = await pool.connect();
@@ -178,9 +225,10 @@ export async function duplicateItem(id: string, by: By): Promise<Result & { orde
     const from = (await itemSnapshot(client, id))!;
     const name: Bi = { en: `${src.name.en ?? ''} (copy)`.trim(), fa: src.name.fa ? `${src.name.fa} (کپی)` : null };
     const research = (src.source ?? []).filter((s) => s && s.source === 'research');
+    const pairs = await pairsThatExist(client, src.venue_id, id, src.pairs ?? []);
     const r = await client.query<{ id: string }>(
-      `insert into items (venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_by, seasons, drafts, source) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,false,$11,$12,$13,$14,$15) returning id`,
-      [src.venue_id, name, src.description, src.price, JSON.stringify(src.variants), JSON.stringify(src.add_ons), JSON.stringify(src.components), src.serves, src.photo, src.notes, src.fa_draft, by, src.seasons ?? [], src.drafts ?? [], JSON.stringify(research)]);
+      `insert into items (venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_by, seasons, drafts, source, pairs) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,false,$11,$12,$13,$14,$15,$16::uuid[]) returning id`,
+      [src.venue_id, name, src.description, src.price, JSON.stringify(src.variants), JSON.stringify(src.add_ons), JSON.stringify(src.components), src.serves, src.photo, src.notes, src.fa_draft, by, src.seasons ?? [], src.drafts ?? [], JSON.stringify(research), pairs]);
     const copyId = r.rows[0].id;
     const placements: Placement[] = [];
     for (const p of from.placements) {
@@ -188,7 +236,7 @@ export async function duplicateItem(id: string, by: By): Promise<Result & { orde
       await client.query('insert into item_sections (item_id, section_id, position) values ($1,$2,$3)', [copyId, p.section_id, p.position + 1]);
       placements.push({ section_id: p.section_id, position: p.position + 1 });
     }
-    const after: ItemSnapshot = { ...from, name, listed: false, placements };
+    const after: ItemSnapshot = { ...from, name, listed: false, placements, pairs };
     const revision = await recordRevision(client, { venueId: src.venue_id, table: 'items', rowId: copyId, action: 'create', before: null, after, by });
     const orders = [];
     for (const p of placements) orders.push({ section_id: p.section_id, item_ids: await sectionOrder(client, p.section_id) });
@@ -255,7 +303,8 @@ export async function applyItemOrder(client: Q, sectionId: string, order: string
   for (let i = 0; i < order.length; i++) await client.query('update item_sections set position = $3 where section_id = $1 and item_id = $2', [sectionId, order[i], i]);
 }
 
-// Puts an item back to a snapshot (Undo). Re-creates a deleted item with its old id and placements.
+// Puts an item back to a snapshot (Undo). Re-creates a deleted item with its old id and placements, and with its "Goes well with":
+// its own list and its place in the lists it was in (applyPairs).
 export async function applyItemSnapshot(client: Q, venueId: string, id: string, snap: ItemSnapshot, by: By): Promise<void> {
   await client.query(
     `insert into items (id, venue_id, name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, updated_by, seasons, drafts) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
@@ -264,6 +313,7 @@ export async function applyItemSnapshot(client: Q, venueId: string, id: string, 
     [id, venueId, snap.name, snap.description, snap.price, JSON.stringify(snap.variants), JSON.stringify(snap.add_ons), JSON.stringify(snap.components), snap.serves, snap.photo, snap.notes, snap.listed, snap.fa_draft, by, snap.seasons ?? [], snap.drafts ?? []]); // records written before the seasons (or the research drafts) existed read as all year (and no draft)
   await client.query('delete from item_sections where item_id = $1', [id]);
   for (const p of snap.placements ?? []) await client.query('insert into item_sections (item_id, section_id, position) select $1, $2, $3 where exists (select 1 from sections where id = $2) on conflict do nothing', [id, p.section_id, p.position]);
+  await applyPairs(client, venueId, id, snap, by); // its "Goes well with" list, and its place in the lists it was deleted from
 }
 
 // A database error as staff read it: the price rule's own words, or one plain line for anything else (a server fault: the route answers

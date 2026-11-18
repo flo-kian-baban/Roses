@@ -1,6 +1,9 @@
 // Undo. Every change wrote a record (revisions: before/after snapshots, the silent change record). Undoing record R
 // puts the row back to R.before: undoing a "create" removes the created row, undoing a "delete" brings the row back
 // with its section memberships, undoing a "reorder" puts the old order back. The undo writes a record of its own.
+// "Goes well with" (2026-11-18): an item's list comes back with the item, and an item brought back from a delete returns to the lists
+// it was in (its delete record names them); the records are undone newest first, so each item finds the ones it lists, or that list it,
+// already back or still to come with their own record.
 import type { Pool, PoolClient } from 'pg';
 import { pool } from '@/lib/db';
 type Q = Pool | PoolClient;
@@ -89,7 +92,7 @@ async function undoOne(client: PoolClient, r: Revision, by: By): Promise<Result>
 }
 
 async function currentItem(client: Q, id: string): Promise<ItemSnapshot | null> {
-  const r = (await client.query('select name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, seasons, drafts from items where id = $1', [id])).rows[0] as ItemSnapshot | undefined;
+  const r = (await client.query('select name, description, price, variants, add_ons, components, serves, photo, notes, listed, fa_draft, seasons, drafts, pairs from items where id = $1', [id])).rows[0] as ItemSnapshot | undefined;
   if (!r) return null;
   const p = (await client.query('select section_id, position from item_sections where item_id = $1 order by position', [id])).rows as ItemSnapshot['placements'];
   return { ...r, placements: p };

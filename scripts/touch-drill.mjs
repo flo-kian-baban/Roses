@@ -16,7 +16,9 @@
 // overlay: not visible to the finger on that screen); it is listed, not failed, and measured on the screen where it is uncovered.
 // An inline text link is an <a> laid out inline whose block holds other words; it is listed as exempt. Each element is measured once
 // per viewport, on the first screen where it is visible (after a page load, what was measured already is marked seen). The drill changes
-// one price for the toast and puts it back with Undo; a price not back fails the drill.
+// one price for the toast and puts it back with Undo; a price not back fails the drill. "Goes well with" (Kian via the PM, 2026-11-18): the
+// item editor's picker (its search field and every row) and the card with a pair in it (its Remove button); the drill adds one pair for
+// that and removes it again; a pair not removed fails the drill.
 //   DRILL_ADMIN_PIN=… node scripts/touch-drill.mjs --base http://127.0.0.1:<port> --out reports/checks/<stamp>/touch [--jpeg]
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -134,6 +136,7 @@ async function screen(vp, page, name, setup) {
 // after a page load: everything on the page now was measured on this viewport's first load of it, so it is marked seen, not measured again
 const markSeen = (page) => page.evaluate((SEL) => { window.__touch = window.__touch || { seen: new WeakSet(), ids: new WeakMap(), n: 0, load: Math.random().toString(36).slice(2, 8) }; for (const el of document.querySelectorAll(SEL)) window.__touch.seen.add(el); }, SEL);
 const undone = []; // the toast's price change and its Undo, per viewport
+const paired = []; // "Goes well with": the pair added for the card's row and removed again, per viewport
 const closeAll = async (page) => { for (let i = 0; i < 3; i++) { await page.keyboard.press('Escape').catch(() => {}); } await page.evaluate(() => document.querySelectorAll('details[open]').forEach((d) => d.removeAttribute('open'))); };
 
 for (const vp of VIEWPORTS) {
@@ -168,6 +171,20 @@ for (const vp of VIEWPORTS) {
     { const a = p.locator('.item-panel [data-all-allergens]').first(); if (await a.count()) { await a.scrollIntoViewIfNeeded(); await a.click(); await sleep(200); } } // the full allergen list, one tap away while a suggestion waits (2026-11-04)
     for (let k = 0; k < 3; k++) { const a = p.locator('.item-panel [data-add-details]').first(); if (!(await a.count())) break; await a.scrollIntoViewIfNeeded(); await a.click(); await sleep(150); const m = p.locator('.item-panel [data-add-detail]').first(); if (await m.count()) await m.click(); await sleep(200); } // serves, note and combo parts put in their places (2026-11-06)
   });
+  // "Goes well with" (2026-11-18): the picker (search field, rows), then the card with a pair in it (Remove); the pair is removed again
+  if (await p.locator('.item-panel [data-pairs-add]').count()) {
+    const PICKER = '[role=dialog][aria-label^="Goes well with"]'; let pair = null;
+    await screen(vp, p, 'menu: item editor, the Goes well with picker', async () => { const b = p.locator('.item-panel [data-pairs-add]').first(); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector(`${PICKER} [data-pair-pick]`); });
+    await screen(vp, p, 'menu: item editor, a pair in the Goes well with card', async () => {
+      const row = p.locator(`${PICKER} [data-pair-pick]:not([disabled])`).first(); pair = await row.getAttribute('data-pair-pick'); await row.scrollIntoViewIfNeeded(); await row.click();
+      await p.waitForSelector(PICKER, { state: 'detached', timeout: 5000 }); await p.waitForSelector(`.item-panel [data-pair-row="${pair}"]`);
+    });
+    const rm = p.locator(`.item-panel [data-pair-row="${pair}"] button[aria-label^="Remove"]`);
+    if (pair && await rm.count()) { await rm.scrollIntoViewIfNeeded(); await rm.click(); await p.waitForSelector(`.item-panel [data-pair-row="${pair}"]`, { state: 'detached', timeout: 5000 }).catch(() => {}); }
+    paired.push({ viewport: vp.id, added: !!pair, removed: !!pair && (await p.locator(`.item-panel [data-pair-row="${pair}"]`).count()) === 0 });
+    log('pairs', `${vp.id}: a pair added for the card's row and removed again: ${JSON.stringify(paired[paired.length - 1])}`);
+    await p.waitForSelector('[role=status]', { state: 'detached', timeout: 12000 }).catch(() => {}); // its "Saved · Undo" gone before the drill's own toast screen
+  } else { paired.push({ viewport: vp.id, added: false, removed: true, full: true }); log('pairs', `${vp.id}: the first item's list is full (no + Add item): the picker is not measured`); }
   const done = async () => { if (await p.locator('.item-panel').count()) { await p.locator('.item-panel [data-back]').first().click(); await p.waitForSelector('.item-panel', { state: 'detached', timeout: 5000 }); } };
   await done();
   // the toast on this page load (everything else on it is measured already, so the toast is measured within its 10 s); Undo must put the price back
@@ -227,6 +244,7 @@ for (const vp of VIEWPORTS) {
   check(`touch-${vp.id}`, m.length > 0 && u.length === 0, `${vp.label}: ${m.length} interactive elements measured on ${screens.filter((s) => s.viewport === vp.id && s.reached).length} screens, ${u.length} with a tap area under ${MIN} × ${MIN}${u.length ? `: ${u.map((x) => `${x.screen}: ${x.tag}${x.role ? `[${x.role}]` : ''} "${x.label}" ${x.tapW}×${x.tapH} (box ${x.box}; at ${x.past?.rect}: above ${x.past?.above}, below ${x.past?.below}, left ${x.past?.left}, right ${x.past?.right})`).join('; ')}` : ''}; ${exempt.filter((r) => r.viewport === vp.id).length} inline text links exempt; ${coveredOnly.filter((r) => r.viewport === vp.id).length} covered on every screen they appeared on (listed)`);
   measure(`touch targets, ${vp.label}: ${m.length} measured, ${u.length} under ${MIN} × ${MIN}, smallest tap area ${m.length ? `${Math.min(...m.map((x) => x.tapW))} px wide, ${Math.min(...m.map((x) => x.tapH))} px tall` : '—'}; ${exempt.filter((r) => r.viewport === vp.id).length} inline links exempt`);
 }
+check('touch-pair-removed', paired.length === VIEWPORTS.length && paired.every((x) => x.removed && (x.added || x.full)), `the pair added under Goes well with (for the card's row and its Remove button) is removed again: ${paired.map((x) => `${x.viewport} ${x.full ? 'list full, nothing added' : `added ${x.added}, removed ${x.removed}`}`).join('; ')}`);
 check('touch-toast-undo', undone.length === VIEWPORTS.length && undone.every((u) => u.was && u.back === u.was), `the price changed for the toast is back after Undo: ${undone.map((u) => `${u.viewport} ${u.was} → ${u.back}`).join('; ')}`);
 const missing = screens.filter((s) => !s.reached);
 check('touch-screens', missing.length === 0, `${screens.length - missing.length} of ${screens.length} screens reached (${VIEWPORTS.length} viewports × ${screens.length / VIEWPORTS.length})${missing.length ? `; not reached: ${missing.map((s) => `${s.viewport} ${s.screen} (${s.error})`).join('; ')}` : ''}`);

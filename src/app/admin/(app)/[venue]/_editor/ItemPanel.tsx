@@ -9,6 +9,8 @@
 //     only when the seasons limit the item (Kian, 2026-10-12: a season chosen hides the item everywhere outside it);
 //   Item: the photo (tapped for Change / Remove; without one, an Add photo square), the name and the description in English and Persian,
 //     each in full, and under them the note for customers when the item has one (owner and admin);
+//   Goes well with (Kian via the PM, 2026-11-18): up to 4 other items of the venue that customers see in this item's popup, under its
+//     description; rows with Remove, "+ Add item" with "n of 4", the picker (Pairs.tsx);
 //   Price (the price or the sizes; serves and combo parts when the item has them; + Add size, + Add choices) and one card per choice
 //     group (Choices.tsx);
 //   Appears in: the sections, Edit opening the section picker (SectionPicker.tsx);
@@ -31,6 +33,7 @@ import { COUNTS, LIMITS } from '@/lib/rules';
 import { Choices, CopyChoicesSheet, PriceOrSizes, groupCount } from './Choices';
 import { GoodToKnow, notesCount, notesSummary } from './GoodToKnow';
 import { SectionPicker } from './SectionPicker';
+import { Pairs } from './Pairs';
 
 // What the top bar says about the item's saves (Editor.tsx keeps it: saves under way, the ones that did not go through, a refusal, the page).
 export type SaveStatus = { state: 'saving' | 'saved' | 'failed' | 'refused' | 'unpublished'; retry?: () => void };
@@ -47,13 +50,14 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
   const [allergensOpen, setAllergensOpen] = useState(toConfirm); // open while drafts wait for Confirm (the PM, 2026-10-13); it stays as the person leaves it
   const [revealed, setRevealed] = useState<Record<Detail, boolean>>({ serves: false, note: false, parts: false }); // an empty detail put in its place by "Add …"
   const [copying, setCopying] = useState<string | null>(null); // the choice group being copied to other items
+  const [pairing, setPairing] = useState(false); // the "Goes well with" picker is open
   const [reason, setReason] = useState<string | null>(null);
   const [busy, setBusy] = useState(false); // Duplicate on its way
   const scroller = useRef<HTMLDivElement>(null), nameRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const addChoices = useRef<() => void>(() => undefined); // the Price card's "+ Add choices" starts a group in the Choices card
   useEffect(() => { if (onNotesFirst) document.querySelector('[data-group-section="allergens"]')?.scrollIntoView({ block: 'start' }); }, [item.id, onNotesFirst]);
   useEffect(() => { if (selectName) { const el = nameRef.current; if (el) { el.focus(); el.select(); } } }, [selectName]); // a copy opens with its name selected, ready to be typed over
-  useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !copying) onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose, copying]);
+  useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !copying && !pairing) onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose, copying, pairing]);
   useEffect(() => { if (!reason) return; const t = setTimeout(() => setReason(null), 6000); return () => clearTimeout(t); }, [reason]);
   // the toast's strip appears under the scroll area: a field being typed in that it now hides is brought back into view
   useEffect(() => { if (!toast) return; const a = document.activeElement as HTMLElement | null, s = scroller.current; if (a && s?.contains(a) && a.getBoundingClientRect().bottom > s.getBoundingClientRect().bottom) a.scrollIntoView({ block: 'nearest' }); }, [toast]);
@@ -109,6 +113,9 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
           <FieldRow lang="FA" draft={faDraft('description')} looksGood={() => looksGood('description.fa')} what="the Persian description"><CellText lines maxLength={LIMITS.description} label="Description (فارسی)" value={item.description.fa} dir="rtl" lang="fa" placeholder="توضیح فارسی" onCommit={(v) => patch({ description: { ...item.description, fa: v } })} /></FieldRow>
           {has.note && <NoteFields notes={item.notes} onNotes={onNotes} />}
         </div>
+
+        {/* goes well with: the items customers see in this item's popup, under its description */}
+        <Pairs item={item} sections={sections} items={items} season={season} picking={pairing} setPicking={setPairing} onPatch={patch} />
 
         {/* price & choices */}
         <PriceOrSizes item={item} onPatch={patch} hint={problem && !item.listed && !item.variants.length ? 'Add a price to show this item.' : undefined} onLooksGood={looksGood} onAddChoices={() => addChoices.current()} choicesFull={groupCount(item.add_ons) >= COUNTS.groups}

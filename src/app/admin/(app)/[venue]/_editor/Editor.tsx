@@ -250,7 +250,8 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     try { const r = await call('/api/admin/item', { ...body, id, base: version(id) }); const it = r.item as EditorItem | undefined; if (it) versions.current.set(it.id, it.updated_at); return r; }
     catch (e) { const it = e instanceof ApiFail && e.status === 409 ? (e.extra.item as EditorItem | undefined) : undefined; if (it) { versions.current.set(it.id, it.updated_at); dispatch({ type: 'item', item: it }); } throw e; }
   };
-  const itemCall = async (id: string, body: Record<string, unknown>, text: string) => { const { r, newest } = await inOrder(id, () => sendItem(id, body)); if (newest) apply(r); done(r, text, { id, alt: sectionOf(id) }); return r; };
+  // sheet: a change that customers see only in the item's popup ("Goes well with", 2026-11-18): the preview opens the popup on it
+  const itemCall = async (id: string, body: Record<string, unknown>, text: string) => { const { r, newest } = await inOrder(id, () => sendItem(id, body)); if (newest) apply(r); const p = body.patch as Record<string, unknown> | undefined; done(r, text, { id, alt: sectionOf(id), ...(p && 'pairs' in p ? { sheet: true } : {}) }); return r; };
 
   // Items. Simple patches are applied at once (the switch flips, the price shows) and put back if the server refuses.
   const itemUpdate = guardItem(async (id: string, patch: Record<string, unknown>, text: string = 'Saved') => {
@@ -298,7 +299,9 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     const it = menu.items[id]; if (!it) return;
     setConfirm({ title: 'Delete this item?', body: <>“{it.name.en}” will be removed from the menu. You can undo for 10 seconds.</>, label: 'Delete', action: async () => {
       const sec = sectionOf(id); const r = await call('/api/admin/item', { action: 'delete', id });
-      dispatch({ type: 'item-removed', id }); setOpen(null); setConfirm(null); done(r, 'Deleted', sec ? { id: sec } : null);
+      dispatch({ type: 'item-removed', id }); setOpen(null); setConfirm(null);
+      for (const it of (r.items as EditorItem[] | undefined) ?? []) { versions.current.set(it.id, it.updated_at); dispatch({ type: 'item', item: it }); } // the items that listed it under "Goes well with": their lists without it, at their new version
+      done(r, 'Deleted', sec ? { id: sec } : null);
     } });
   };
   const itemMove = guard(async (sectionId: string, id: string, index: number) => { const r = await call('/api/admin/item', { action: 'move', id, section_id: sectionId, index }); apply(r); done(r, 'Moved', { id, alt: sectionId }); });

@@ -65,6 +65,10 @@
 // functionally (plays, ≤ 900 ms, scroll and tap during it, the 150 ms fade, no console or page error; fps for information), compared
 // with Chromium. Later the same day (Kian): spring and summer versions of all ten and one choice per season, so the drill covers all
 // 40 versions, the day-one pages, the season boundaries with four different choices, and WebKit with every time run 3 times, the median judged.
+// 2026-11-18 (Kian via the PM): "Goes well with" (scripts/pairs-drill.mjs): up to 4 other items of the venue per item, shown in its popup; the
+// rules on the route and in the database, what the public page shows, the popup and the tap in English and Persian (Chromium and WebKit),
+// nothing clipped at 360 px, the card and the picker in the admin, Duplicate, the preview; the touch and layout drills cover the new card
+// and picker too.
 import fs from 'node:fs';
 import path from 'node:path';
 import net from 'node:net';
@@ -81,7 +85,7 @@ import { REVIEW_PORTS } from './scratch-target.mjs';
 loadEnv();
 const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
 const out = path.resolve('reports/checks', stamp);
-fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true }); fs.mkdirSync(path.join(out, 'preview'), { recursive: true }); fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.mkdirSync(path.join(out, 'season'), { recursive: true }); fs.mkdirSync(path.join(out, 'transition'), { recursive: true }); fs.mkdirSync(path.join(out, 'after-tap'), { recursive: true }); fs.mkdirSync(path.join(out, 'touch'), { recursive: true }); fs.mkdirSync(path.join(out, 'research'), { recursive: true });
+fs.mkdirSync(path.join(out, 'editor'), { recursive: true }); fs.mkdirSync(path.join(out, 'style'), { recursive: true }); fs.mkdirSync(path.join(out, 'preview'), { recursive: true }); fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.mkdirSync(path.join(out, 'season'), { recursive: true }); fs.mkdirSync(path.join(out, 'transition'), { recursive: true }); fs.mkdirSync(path.join(out, 'after-tap'), { recursive: true }); fs.mkdirSync(path.join(out, 'touch'), { recursive: true }); fs.mkdirSync(path.join(out, 'research'), { recursive: true }); fs.mkdirSync(path.join(out, 'pairs'), { recursive: true });
 const DIST = '.next-check';
 // Free ports, picked at start (the PM, 2026-10-09; 3100 had been taken by another project's server): the system hands out a free port for
 // each of the suite's three servers, and each is checked free on 127.0.0.1 and ::1 (the lockout drill reaches the server over IPv6).
@@ -304,7 +308,9 @@ const adminPin = String(100000 + Math.floor(Math.random() * 900000));
 const pinSalt = randomBytes(16);
 const adminPinHash = ['$scrypt$N=16384,r=8,p=1', pinSalt.toString('base64'), scryptSync(adminPin, pinSalt, 32, { N: 16384, r: 8, p: 1 }).toString('base64')].join('$');
 const SUITE_ADMIN_NAME = 'Check suite', DRILL_PIN_NAMES = ['Drill staff', 'Drill owner', 'Lockout drill (valid PIN)', 'Lockout drill (to be revoked)'];
-const DRILL_ROW_NAMES = ['Drill editor item', 'Drill copy target', 'Drill preview item', 'Drill section', 'Drill section item 1', 'Drill section item 2', 'Drill venue', 'Drill default venue'];
+const DRILL_ROW_NAMES = ['Drill editor item', 'Drill copy target', 'Drill preview item', 'Drill section', 'Drill section item 1', 'Drill section item 2', 'Drill venue', 'Drill default venue',
+  // the "Goes well with" drill's own items (scripts/pairs-drill.mjs, 2026-11-18)
+  'Drill pairs item', 'Drill pairs item (copy)', 'Drill pair one', 'Drill pair two', 'Drill pair three', 'Drill pair four with a long name that has to wrap onto a second line on a narrow phone', 'Drill pair hidden', 'Drill pair out of season', 'Drill pair temp'];
 let newVenueId = null;
 scratchEnvRef = scratchEnv;
 const commit = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim();
@@ -572,6 +578,13 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, checks: drillChecks('editor/editor-drill.json', !!(m && m.length)), evidence: ['editor/editor-drill.txt', 'editor/editor-drill.json', 'editor/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   }, 'editor');
+  // "Goes well with" (Kian via the PM, 2026-11-18): the feature's own acceptance, on items the drill makes through the admin API and removes
+  await step('Goes well with drill (up to 4 other items of the venue per item: 4 saved and a 5th refused by the route and by the database; never the item itself, an item of the other venue or one twice; one-way; the order picked; change record, Undo, a save over a newer version refused; the public popup lists only pairs that are shown and in season; a deleted item gone from every list, by the admin\'s Delete with its Undo and by a plain SQL delete; the block\'s style only on a page with a pair to show; on the iPhone 13 viewport the popup in English and in Persian (heading, names in the page\'s language, prices as the menu\'s rows show them, photos), no pair photo requested before the popup opens, a tap opening the paired item\'s popup, in Chromium and WebKit; nothing clipped at 360 px on the public popup, the admin\'s card and its picker; the card after ITEM with "n of 4", four added through the picker with the tap count and the add button gone at 4; the picker offering every item of the venue but the item itself and none of the other venue, hidden and out-of-season ones labelled; remove and add again; Duplicate copies the list; on a laptop the preview showing the item\'s popup with the list without taking the focus or adding history; a listed item deleted in the admin keeps the editor in step)', async () => {
+    const r = await run('node', ['scripts/pairs-drill.mjs', '--base', base, '--out', path.join(out, 'pairs'), '--jpeg'], { env: drillEnv, logFile: 'pairs/pairs-drill.log' });
+    const m = (r.stdout.match(/PAIRS DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
+    return { pass: r.status === 0, checks: drillChecks('pairs/pairs-drill.json', !!(m && m.length)), evidence: ['pairs/pairs-drill.txt', 'pairs/pairs-drill.json', 'pairs/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
+  }, 'pairs');
   await step('preview control bar drill (the bar in the Style tab only, at its top and in view while it scrolls on the laptop, in the bottom sheet on a phone, none on the Menu tab or in its preview; from the Menu tab on the iPhone 13 viewport: the welcome screen in another season, in the evening, in Persian in ≤ 4 taps with the customers\' page byte-identical; every switch of the bar within 300 ms on the phone and the laptop, Replay; the frame kept across tabs with the Style tab\'s screen back on return; the section list and the item popup open again after a save in the Style tab; a language tap on the previewed welcome screen; the customers\' HTML without preview markup; the season switch shows each season\'s Seasonal section in the preview, the customers\' page byte for byte unchanged)', async () => {
     const r = await run('node', ['scripts/preview-drill.mjs', '--base', base, '--out', path.join(out, 'preview'), '--jpeg'], { env: drillEnv, logFile: 'preview/preview-drill.log' });
     const m = (r.stdout.match(/PREVIEW DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
@@ -632,7 +645,7 @@ try {
     const names = [...read(`server-${port}.log`).matchAll(/\[db\] connected to database "([^"]+)"/g)].map((m) => m[1]);
     processes.push({ process: app, source: `server-${port}.log`, databases: [...new Set(names)] });
   }
-  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['research-drill', 'research/research-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['preview-drill', 'preview/preview-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['season-server', 'season/season-server.log'], ['transition-server', 'transition/transition-server.log'], ['transition-drill', 'transition/transition-drill.log'], ['after-tap-drill (live data, content cost)', 'after-tap/live/after-tap-drill.log'], ['touch-drill', 'touch/touch-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
+  for (const [name, file] of [['new-venue', 'new-venue/new-venue-drill.log'], ['new-venue (remove)', 'new-venue/new-venue-remove.log'], ['admin-drill', 'admin/admin-drill.log'], ['lockout-drill', 'lockout-drill.log'], ['revalidation-drill', 'revalidation-drill.log'], ['research-drill', 'research/research-drill.log'], ['editor-drill', 'editor/editor-drill.log'], ['pairs-drill', 'pairs/pairs-drill.log'], ['preview-drill', 'preview/preview-drill.log'], ['style-drill', 'style/style-drill.log'], ['welcome-drill', 'welcome/welcome-drill.log'], ['season-server', 'season/season-server.log'], ['transition-server', 'transition/transition-server.log'], ['transition-drill', 'transition/transition-drill.log'], ['after-tap-drill (live data, content cost)', 'after-tap/live/after-tap-drill.log'], ['touch-drill', 'touch/touch-drill.log'], ['photo-links senso', 'senso/photo-links.log'], ['photo-links kebab-land', 'kebab-land/photo-links.log']]) {
     if (!fs.existsSync(path.join(out, file))) continue;
     processes.push({ process: `roses-check:${name}`, source: file, databases: [...new Set([...read(file).matchAll(/connected to database "([^"]+)"/g)].map((m) => m[1]))] });
   }
@@ -655,7 +668,7 @@ try {
   const onWorking = (c) => c.endsWith(`→ ${workName}`);
   const wrongSample = samples.filter((x) => onWorking(x.connection) && !x.connection.startsWith('roses-check:suite-readonly →'));
   const otherRuns = samples.filter((x) => !onWorking(x.connection) && !x.connection.endsWith(`→ ${scratchName}`) && !x.connection.endsWith(`→ ${perfName}`));
-  const mustSee = [...Object.values(SERVER_APPS), 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:preview-drill', 'roses-check:style-drill', 'roses-check:welcome-drill', 'roses-check:season-server', 'roses-check:transition-server', 'roses-check:transition-drill', 'roses-check:after-tap-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill', 'roses-check:research-drill', ...(results.some((r) => r.id === 'perf-server' && r.pass) ? ['roses-check:perf-server'] : [])];
+  const mustSee = [...Object.values(SERVER_APPS), 'roses-check:admin-drill', 'roses-check:editor-drill', 'roses-check:pairs-drill', 'roses-check:preview-drill', 'roses-check:style-drill', 'roses-check:welcome-drill', 'roses-check:season-server', 'roses-check:transition-server', 'roses-check:transition-drill', 'roses-check:after-tap-drill', 'roses-check:lockout-drill', 'roses-check:revalidation-drill', 'roses-check:research-drill', ...(results.some((r) => r.id === 'perf-server' && r.pass) ? ['roses-check:perf-server'] : [])];
   const unseen = mustSee.filter((a) => !samples.some((x) => x.connection.startsWith(`${a} →`)));
   const passA = wrongProcess.length === 0 && wrongSample.length === 0 && processes.length >= 8 && unseen.length === 0;
   fs.writeFileSync(path.join(out, 'isolation.json'), JSON.stringify({ scratch: scratchName, perfFixture: perfUsed ? perfName : null, working: workName, processes, pgStatActivitySamples: samples, otherRunsSeen: otherRuns, pass: passA }, null, 2));

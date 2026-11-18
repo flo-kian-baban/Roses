@@ -2,6 +2,7 @@
 // "Goes well with" acceptance (Kian via the PM, 2026-11-18), measured by Playwright and through the admin API on a scratch server:
 //   the rules on the route and in the database: 4 can be saved and a 5th cannot; never the item itself, an item of the other venue, one
 //     that does not exist or one listed twice; one-way; the order picked; the change record with Undo; a save over a newer version refused;
+//     the Undo of a record older than the lists leaves the list alone;
 //   the public page: only pairs that are shown and in season (a hidden one and an out-of-season one left out, and back when they are);
 //     a deleted item gone from every list (the admin's Delete with its Undo, and a plain SQL delete: the database's own rule); the style
 //     of the block only on a page that has a pair to show;
@@ -128,6 +129,13 @@ try {
   const stale = await setPairs(id.A, [id.P1], { base: '2020-01-01T00:00:00.000Z' }), kept = await pairsOf(id.A);
   check('record-undo-version', rev && Number(rev.id) === Number(set.json?.revisions?.[0]) && rev.action === 'update' && same(rev.b, four) && same(rev.a, order) && undo.status === 200 && same(undone, four) && stale.status === 409 && same(stale.json?.item?.pairs, four) && same(kept, four),
     `the save wrote one change record (${rev?.action}, before ${rev?.b?.length} items, after ${rev?.a?.length}); Undo put the four back (${undo.status}, ${same(undone, four)}); a save carrying an older version of the item is refused (${stale.status}) with the item as it is now (${stale.json?.item?.pairs?.length} pairs), nothing written (${same(kept, four)})`);
+  // a change record from before the lists existed says nothing about the list: its Undo puts its own field back and leaves the list alone
+  const served = await api('/api/admin/item', { action: 'update', id: id.A, patch: { serves: '2' } });
+  await db.query(`update revisions set before = before - 'pairs', after = after - 'pairs' where id = $1`, [served.json?.revisions?.[0] ?? 0]);
+  const undoOld = await api('/api/admin/undo', { venue: VENUE, revisions: served.json?.revisions ?? [] });
+  const afterOld = (await db.query('select pairs, serves from items where id = $1', [id.A])).rows[0];
+  check('old-record-keeps-list', served.status === 200 && undoOld.status === 200 && afterOld.serves === null && same(afterOld.pairs, four),
+    `a change of another field whose record is made to look like one from before the lists existed (no list in it): its Undo (${undoOld.status}) puts that field back (${afterOld.serves === null}) and leaves the item's list as it is (${same(afterOld.pairs, four)})`);
 }
 
 // ---- 2. the public page: only what is shown and in season; a deleted item gone from every list

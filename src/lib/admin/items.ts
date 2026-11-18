@@ -77,10 +77,12 @@ export async function deletedSnapshot(client: Q, id: string): Promise<ItemSnapsh
 }
 // Puts an item's "Goes well with" back to a snapshot (Undo): its own list, less what is no longer an item of the venue; and, for an item
 // brought back from a delete, its place in the lists it was in, wherever the listing item still exists, does not list it already and
-// has room. Safe to run again once every row of an undo is back (an item restored first may list one restored after it).
+// has room. A record written before the lists existed says nothing about the list, so the item's list stays as it is.
 export async function applyPairs(client: Q, venueId: string, id: string, snap: ItemSnapshot, by: By): Promise<void> {
-  const own = await pairsThatExist(client, venueId, id, snap.pairs ?? []); // records written before the lists existed read as none
-  await client.query('update items set pairs = $2::uuid[] where id = $1 and pairs is distinct from $2::uuid[]', [id, own]);
+  if (Array.isArray(snap.pairs)) {
+    const own = await pairsThatExist(client, venueId, id, snap.pairs);
+    await client.query('update items set pairs = $2::uuid[] where id = $1 and pairs is distinct from $2::uuid[]', [id, own]);
+  }
   for (const p of snap.paired_by ?? []) {
     await client.query(
       `update items set pairs = pairs[1:$3::int] || $2::uuid || pairs[$3::int + 1:], updated_at = now(), updated_by = $4

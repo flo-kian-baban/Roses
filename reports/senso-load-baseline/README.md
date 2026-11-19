@@ -1,8 +1,15 @@
 # Senso's load-time baseline (the PM, 2026-11-19)
 
-The PM's ruling with "Goes well with", item 4: "Senso load time: after the upgrade, measure it 3 times on a quiet machine and set its baseline to that median plus 10 %."
+**Where it stands:** the limit is **9,419 ms** again (the PM's second ruling of 2026-11-19): the baseline of 2026-10-12, median 8563 ms, with its tolerance of 10 %. The three quiet-machine readings below (7959 / 7055 / 8561 ms) are kept as evidence; they are not the baseline. **To do: set the baseline again after the photo storage batch.**
 
-The check is the known miss "Senso LCP with uploaded photos" (`lighthouse-senso-lcp` in `reports/checks/known-misses.json`): Lighthouse mobile on `/senso` of the performance fixture (frozen content of 2026-10-12), three runs, judged on the median. Its baseline is that median; the ratchet fails a run whose median is more than 10 % above it.
+## The two rulings
+
+1. With "Goes well with", item 4: "Senso load time: after the upgrade, measure it 3 times on a quiet machine and set its baseline to that median plus 10 %." Done as described below: median 7959 ms, so a limit of 8754 ms. One suite run was judged against it (2026-11-19T17-18-31Z: 8561 / 5182 / 8567 ms, median 8561 ms; it passed by 193 ms).
+2. After the reply that reported those readings: "put Senso's load-time limit back to 9,419 ms. The quiet readings (7,055–8,561 ms) show this check swings by about 1.5 s, so a 190 ms margin would trip on noise. Re-baseline it after the photo storage batch." Done: `reports/checks/known-misses.json` carries the baseline of 2026-10-12 again, unchanged (run 2026-10-12T17-36-33Z: 8563 / 8565 / 8563 ms, median 8563 ms, tolerance 10 %, so up to 9419 ms), with both rulings in its notes. The first suite run judged against it again is the merge gate of "Goes well with".
+
+The swing in numbers: the three quiet readings are 1506 ms apart (7055 to 8561 ms); over all five sets of that day, 15 readings, the lowest is 5181 ms and the highest 8569 ms.
+
+The check is the known miss "Senso LCP with uploaded photos" (`lighthouse-senso-lcp` in `reports/checks/known-misses.json`): Lighthouse mobile on `/senso` of the performance fixture (frozen content of 2026-10-12), three runs, judged on the median. Its baseline is a median; the ratchet fails a run whose median is more than 10 % above it.
 
 ## What was measured
 
@@ -16,15 +23,15 @@ Lighthouse mobile on `/senso` of the performance fixture, three runs a set, on 2
 | 4 | 17:13:17Z | 8569 / 5182 / 8566 | 8566 | 0 / 0 / 0 | 10 readings, the busiest other process: Antigravity IDE Helper 168 % | not counted: 17:13:22Z Antigravity IDE Helper (Plugin) (PID 99053) 107 %; 17:13:27Z com.apple.appkit.xpc.openAndSavePanelService (PID 151) 152 %; 17:13:32Z npm exec firebase-tools@latest mcp (PID 304) 90 % … |
 | 5 | 17:16:35Z | 7959 / 7055 / 8561 | 7959 | 0 / 0 / 0 | 9 readings, the busiest other process: WindowServer 36 % | **counted** |
 
-**The baseline: 7959 ms**, the median of 7959 / 7055 / 8561 ms (set 5, the first set during which no other process was above 50 % CPU). With the tolerance of 10 % the ratchet passes a run whose median is at most 8754 ms. The LCP element in every run is the welcome screen's logo (/brand/senso-logo.png); the target itself (LCP ≤ 2500 ms) is still missed, as listed.
+**The quiet set's median: 7959 ms**, the median of 7959 / 7055 / 8561 ms (set 5, the first set during which no other process was above 50 % CPU). As a baseline with the tolerance of 10 % it passes a run whose median is at most 8754 ms. The LCP element in every run is the welcome screen's logo (/brand/senso-logo.png); the target itself (LCP ≤ 2500 ms) is still missed, as listed.
 
-It replaces the baseline of 2026-10-12 (run 2026-10-12T17-36-33Z: 8563 / 8565 / 8563 ms, median 8563, up to 9419 ms).
+It was the baseline from the first ruling to the second, in place of the baseline of 2026-10-12 (run 2026-10-12T17-36-33Z: 8563 / 8565 / 8563 ms, median 8563, up to 9419 ms), which is in force again.
 
 ## What the same check has read before, on the same content
 
 Until today every reading of this check had been one of three values, whatever the code of the last weeks: about 5185, 6532 or about 8565 ms (Lighthouse simulates the phone's network from the requests it saw; which photos it counts on the way to the logo decides the value). The quiet set added two more, 7055 and 7959 ms; the four sets taken with another process busy read the old values.
 
-What that means for the new limit of 8754 ms: a run whose median is the usual 8561 to 8573 ms passes, by about 190 ms (2 %). The old limit left 850 ms.
+What that meant for the limit of 8754 ms: a run whose median is the usual 8561 to 8573 ms passed by about 190 ms (2 %), less than the check's own swing, which is why the PM put the limit back. The limit of 9419 ms leaves about 850 ms above the usual median.
 
 | When | Readings (ms) | Median |
 |---|---|---|

@@ -1,12 +1,12 @@
 # Goes well with (Kian via the PM, 2026-11-18)
 
-Built on branch `goes-well-with`; not merged. Kian rules on the screenshots first. The rules, the data-model change and the decisions taken are in `CLAUDE.md` ("Goes well with").
+Built on branch `goes-well-with`. Kian approved the re-shot screens on 2026-11-19, no changes, and the PM accepted the block as the popup's last group; merged after that. The rules, the data-model change and the decisions taken are in `CLAUDE.md` ("Goes well with").
 
 Rulings of 2026-11-19 (Kian and the PM), built: migration 009 approved; the editor's card below PRICE and the item's choices; the popup's block below the item's own sizes and options (built as the popup's last group); the screens those two change shot again.
 
-## Screenshots (on disk only, gitignored; to be deleted after Kian's ruling)
+## Screenshots (on disk only, gitignored; deleted after Kian's ruling of 2026-11-19)
 
-`reports/goes-well-with/shots/index.html` in this worktree puts each before beside its after.
+`reports/goes-well-with/shots/index.html` put each before beside its after; `shots.mjs` makes them again.
 
 - Two items: Latte (Senso: a photo, a description, a choice group) and Roses Koobideh Kebab (Kebab Land: a photo, a description).
 - At laptop width (1440 × 900) and at 390 px (the iPhone 13 viewport): the item editor before (no card) and after with 0 and with 4 pairs, each framed on the end of Price and the item's choices, so what follows it shows; the picker; the public popup in English and in Persian, before and after, as the first screen a customer gets and as the whole popup.

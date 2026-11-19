@@ -1,0 +1,84 @@
+Layout drill PASS (8/8 checks)
+
+PASS search-row-laptop: laptop (1440 × 900), the Menu tab's search row: at the top, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 32–888 on the cards' 32–888, 12 px under the Needs attention card and 12 px over the first section (12 each, as between cards); scrolled 800 px, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 32–888 on the cards' 32–888, its top 100 under the tab row's bottom 100
+PASS layout-laptop: laptop (1440 × 900): 21 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px
+PASS search-row-390: 390 px phone (iPhone 13), the Menu tab's search row: at the top, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 12–378 on the cards' 12–378, 12 px under the Needs attention card and 12 px over the first section (12 each, as between cards); scrolled 800 px, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 12–378 on the cards' 12–378, its top 100 under the tab row's bottom 100
+PASS sideways-cut-390: 390 px phone (iPhone 13): 3 sideways row(s) measured (style: "EN" 29.3 px shown, 14.7 px hidden; style-colour: "EN" 29.3 px shown, 14.7 px hidden; style-welcome: "EN" 29.3 px shown, 14.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)
+PASS layout-390: 390 px phone (iPhone 13): 21 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px
+PASS search-row-360: 360 px phone, the Menu tab's search row: at the top, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 12–348 on the cards' 12–348, 12 px under the Needs attention card and 12 px over the first section (12 each, as between cards); scrolled 800 px, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 12–348 on the cards' 12–348, its top 100 under the tab row's bottom 100
+PASS sideways-cut-360: 360 px phone: 3 sideways row(s) measured (style: "EN" 15.3 px shown, 28.7 px hidden; style-colour: "EN" 15.3 px shown, 28.7 px hidden; style-welcome: "EN" 15.3 px shown, 28.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)
+PASS layout-360: 360 px phone: 21 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px
+
+Transcript:
+2026-11-19T17:40:19.812Z [db] connected to database "roses_check_20261119t171831z" as application "roses-check:layout-drill"
+2026-11-19T17:40:21.454Z [laptop] signin-venues: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:40:22.467Z [laptop] signin-pin: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:40:23.469Z [laptop] signin-email: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:40:24.701Z [laptop] menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:25.876Z [laptop] venue-switcher: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:27.062Z [laptop] account-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:28.345Z [laptop] section-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:29.729Z [laptop] reorder: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:30.920Z [laptop] add-item: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:32.730Z [laptop] add-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:33.920Z [laptop] rename-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:35.145Z [laptop] delete-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:36.279Z [laptop] item-editor: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:37.414Z [laptop] item-pairs: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:38.594Z [laptop] pairs-picker: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:39.651Z [laptop] style: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:40.710Z [laptop] style-colour: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:41.772Z [laptop] style-welcome: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:42.820Z [laptop] details: nothing cut, past the edges or sideways; sizes 13px 16px; radii 12px
+2026-11-19T17:40:43.827Z [laptop] team: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:40:44.825Z [laptop] add-venue: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:40:46.591Z [search-row-laptop] PASS: laptop (1440 × 900), the Menu tab's search row: at the top, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 32–888 on the cards' 32–888, 12 px under the Needs attention card and 12 px over the first section (12 each, as between cards); scrolled 800 px, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 32–888 on the cards' 32–888, its top 100 under the tab row's bottom 100
+2026-11-19T17:40:46.605Z [layout-laptop] PASS: laptop (1440 × 900): 21 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px
+2026-11-19T17:40:48.129Z [390] signin-venues: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:40:49.130Z [390] signin-pin: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:40:50.137Z [390] signin-email: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:40:51.306Z [390] menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:52.433Z [390] venue-switcher: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:53.531Z [390] account-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:54.751Z [390] section-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:56.048Z [390] reorder: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:57.183Z [390] add-item: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:58.732Z [390] add-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:40:59.845Z [390] rename-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:00.960Z [390] delete-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:02.273Z [390] item-editor: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:03.338Z [390] item-pairs: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:04.943Z [390] pairs-picker: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:06.050Z [390] style: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:07.113Z [390] style-colour: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:08.179Z [390] style-welcome: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:09.197Z [390] details: nothing cut, past the edges or sideways; sizes 13px 16px; radii 12px
+2026-11-19T17:41:10.204Z [390] team: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:41:11.211Z [390] add-venue: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:41:12.910Z [search-row-390] PASS: 390 px phone (iPhone 13), the Menu tab's search row: at the top, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 12–378 on the cards' 12–378, 12 px under the Needs attention card and 12 px over the first section (12 each, as between cards); scrolled 800 px, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 12–378 on the cards' 12–378, its top 100 under the tab row's bottom 100
+2026-11-19T17:41:12.921Z [sideways-cut-390] PASS: 390 px phone (iPhone 13): 3 sideways row(s) measured (style: "EN" 29.3 px shown, 14.7 px hidden; style-colour: "EN" 29.3 px shown, 14.7 px hidden; style-welcome: "EN" 29.3 px shown, 14.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)
+2026-11-19T17:41:12.922Z [layout-390] PASS: 390 px phone (iPhone 13): 21 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px
+2026-11-19T17:41:14.455Z [360] signin-venues: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:41:15.443Z [360] signin-pin: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:41:16.443Z [360] signin-email: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:41:17.588Z [360] menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:18.720Z [360] venue-switcher: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:19.823Z [360] account-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:21.053Z [360] section-menu: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:22.181Z [360] reorder: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:23.282Z [360] add-item: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:24.868Z [360] add-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:25.965Z [360] rename-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:27.052Z [360] delete-section: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:28.294Z [360] item-editor: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:29.365Z [360] item-pairs: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:30.473Z [360] pairs-picker: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:31.571Z [360] style: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:32.649Z [360] style-colour: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:33.710Z [360] style-welcome: nothing cut, past the edges or sideways; sizes 13px 16px 17px; radii 12px
+2026-11-19T17:41:34.736Z [360] details: nothing cut, past the edges or sideways; sizes 13px 16px; radii 12px
+2026-11-19T17:41:35.747Z [360] team: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:41:36.739Z [360] add-venue: nothing cut, past the edges or sideways; sizes 13px 16px 28px; radii 12px
+2026-11-19T17:41:38.418Z [search-row-360] PASS: 360 px phone, the Menu tab's search row: at the top, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 12–348 on the cards' 12–348, 12 px under the Needs attention card and 12 px over the first section (12 each, as between cards); scrolled 800 px, backing rgb(245, 245, 247) (the page rgb(245, 245, 247)), fields rgb(255, 255, 255) and rgb(255, 255, 255) (the cards rgb(255, 255, 255)), the fields' edges 12–348 on the cards' 12–348, its top 100 under the tab row's bottom 100
+2026-11-19T17:41:38.424Z [sideways-cut-360] PASS: 360 px phone: 3 sideways row(s) measured (style: "EN" 15.3 px shown, 28.7 px hidden; style-colour: "EN" 15.3 px shown, 28.7 px hidden; style-welcome: "EN" 15.3 px shown, 28.7 px hidden), the chip at the edge visibly cut in each (at least 12 px shown and hidden)
+2026-11-19T17:41:38.424Z [layout-360] PASS: 360 px phone: 21 screens measured; every one with nothing cut, past the edges or scrolling sideways, text in 13px, 16px, 17px, 28px only and the one radius 12px

@@ -47,9 +47,9 @@
       "target": "Lighthouse mobile run on /senso on the performance fixture (scripts/fixtures/perf-fixture.json, 2026-10-12), LCP ≤ 2500 ms on the median of the three runs (since the PM's suite fix of 2026-10-12; before, on each run) (the PM's build decision: Largest Contentful Paint ≤ 2.5 s in a Lighthouse mobile run)",
       "cause": "Since 2026-10-12 Kian has put uploaded photos on Senso's items (33 in the performance fixture of 2026-10-12, 5.45 MB, 1254 × 1254 px JPEG; the admin shrinks only above 1400 px or 700 KB; shown at 96 px in a row and 173 px in a grid card). They are served by the same server and load behind the welcome screen; Lighthouse's simulation counts them on the way to the LCP element, which is still the welcome logo (loaded in about 1.2 s). Not the code: feeb1cc gave the same on the same data (by hand, 2026-10-12), the build before the seasonal code and the seasonal branch gave the same on the data of 2026-10-12 morning (5191 / 8564 / 8562 and 8573 / 8561 / 8564 ms), and run 2026-10-12T03-57-29Z, before the uploads, measured 1503 ms. Since 2026-10-12 (the PM) this check runs on the performance fixture, so the content is frozen and a change here is the code's; Senso on the live data copy is printed as \"content cost\", information only. Kian: no change to photo quality for now.",
       "clears": "when resized photos are served (not scheduled)",
-      "listed": "2026-10-12, the PM; re-baselined on the performance fixture the same day (the PM: once; again only when Kian decides to refresh the fixture)",
+      "listed": "2026-10-12, the PM; re-baselined on the performance fixture the same day; re-baselined on 2026-11-19 on the PM's ruling (three readings on a quiet machine after the Next.js upgrade, the median plus 10 %)",
       "baseline": {
-        "run": "2026-10-12T17-36-33Z",
+        "run": "reports/senso-load-baseline/2026-11-19 (scripts/quiet-lighthouse.mjs, set 5)",
         "fixture": "2026-10-12",
         "unit": "ms",
         "tolerance": 0.1,
@@ -57,12 +57,12 @@
           "lighthouse-senso-lcp": {
             "over": 3,
             "of": 3,
-            "worst": 8565,
+            "worst": 8561,
             "unit": "ms",
-            "median": 8563
+            "median": 7959
           }
         },
-        "set": "2026-10-12, the PM: re-baselined once on the performance fixture 2026-10-12, from run 2026-10-12T17-36-33Z (the fast suite on 1d84bed, the first run on the fixture): LCP 8563 / 8565 / 8563 ms, worst 8565 ms, tolerance 10 % (up to 9422 ms). The live-data baseline it replaces: run 2026-10-12T07-54-45Z, 3 of 3 over, worst 7213 ms (22 uploaded photos). It changes again only when Kian decides to refresh the fixture. Median added 2026-10-12 (the PM's suite fix: judged on the median of 3): 8563 ms, the median of the same run's 8563 / 8565 / 8563 ms (reports/checks/2026-10-12T17-36-33Z/perf/senso/lighthouse-summary.json); tolerance 10 %: up to 9419 ms."
+        "set": "2026-11-19, the PM (\"after the upgrade, measure it 3 times on a quiet machine and set its baseline to that median plus 10 %\"): three Lighthouse runs on /senso of the performance fixture 2026-10-12, main's code after the Next.js upgrade (2dfe04f, Next 16.4.6), taken by scripts/quiet-lighthouse.mjs on a machine with no other process above 50 % CPU for 30 s before the runs and at every reading 5 s apart while they went: LCP 7959 / 7055 / 8561 ms, median 7959 ms; tolerance 10 %: up to 8754 ms. Every set and its load readings: reports/senso-load-baseline/2026-11-19/quiet-lighthouse.json. The baseline it replaces: run 2026-10-12T17-36-33Z, 8563 / 8565 / 8563 ms, median 8563 (up to 9419 ms). It changes again only on the PM's or Kian's word, or when Kian refreshes the fixture."
       }
     }
   ]

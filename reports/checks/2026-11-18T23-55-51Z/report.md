@@ -1,5 +1,7 @@
 # Check suite — 2026-11-18 23:55:51Z
 
+Note added 2026-11-19: this run was started with the coding agent's environment markers removed (AI_AGENT, CLAUDECODE, CLAUDE_CODE, CLAUDE_CODE_IS_COWORK), to get past the security notice with which Next.js 16.4.3 stopped agent-run builds. The PM ruled that out on 2026-11-19 (CLAUDE.md, process rule 7: a build stop is reported, never worked around). The commit it names, 2841e15, is the branch before its rebase onto the Next.js upgrade (local branch `goes-well-with-round-1`). Not a merge gate.
+
 **Suite: fast** (`npm run check`: the transition drill's browser checks on the four versions chosen now, the served HTML and size of all 40; not enough for a merge to main, which needs `npm run check:full`)
 
 Commit 2841e15 (the exact commit tested: the working tree had no uncommitted change outside reports/checks when the run started, reports/checks/known-misses.json included) · Node v22.23.4 · Next 16.4.3 · build dir .next-check · ports picked free at start: 63843 (server), 63844 (server with TRUST_PROXY=1), 63845 (the season drill's server), 63846 (the transition drill's server), 63847 (the performance fixture's server), never 4928 or 3000 (Kian's review server, next's own default); each listener was the process the suite spawned, and the suite stopped only the servers it started (ports.json) · database: scratch copy roses_check_20261118t235551z of roses, dropped at the end · total 1647 s

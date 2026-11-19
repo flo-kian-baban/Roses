@@ -9,10 +9,11 @@
 //     only when the seasons limit the item (Kian, 2026-10-12: a season chosen hides the item everywhere outside it);
 //   Item: the photo (tapped for Change / Remove; without one, an Add photo square), the name and the description in English and Persian,
 //     each in full, and under them the note for customers when the item has one (owner and admin);
-//   Goes well with (Kian via the PM, 2026-11-18): up to 4 other items of the venue that customers see in this item's popup, under its
-//     description; rows with Remove, "+ Add item" with "n of 4", the picker (Pairs.tsx);
 //   Price (the price or the sizes; serves and combo parts when the item has them; + Add size, + Add choices) and one card per choice
 //     group (Choices.tsx);
+//   Goes well with (Kian via the PM, 2026-11-18; below Price and its choices since the PM's ruling of 2026-11-19, so a just-added item
+//     keeps its description and its price above the "Added · Undo" strip): up to 4 other items of the venue that customers see at the end
+//     of this item's popup; rows with Remove, "+ Add item" with "n of 4", the picker (Pairs.tsx);
 //   Appears in: the sections, Edit opening the section picker (SectionPicker.tsx);
 //   Allergens & diet: owner and admin (staff see one line; the route answers them 403); one card, open while research drafts wait for
 //     Confirm, closed otherwise (GoodToKnow.tsx; an item opened from the "Allergens to confirm" filter opens on it);
@@ -20,7 +21,8 @@
 //     empty field in its place, the cursor in it), Duplicate item, Delete item (confirmed).
 // The item's place within a section is set in the Menu list (Reorder items in the section's menu; a laptop also drags). A field drafted at
 // import or by research shows "Draft" and "Looks good" on a line under it; Looks good clears that field's flag only. Every field saves
-// itself on change; while "Saved · Undo" shows, the scroll area ends above it, so it never covers a control.
+// itself on change; while a toast shows ("Saved · Undo", "Added · Undo", the red "Not saved…"), the scroll area ends above it, in a strip as
+// tall as the toast is drawn plus 8 px, so no control is ever under it (the PM's rule of 2026-11-19).
 import { cloneElement, useEffect, useRef, useState } from 'react';
 import type { Bi, Component, EditorItem, EditorSection, Notes, Photo as PhotoData, SeasonId } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
@@ -40,7 +42,7 @@ export type SaveStatus = { state: 'saving' | 'saved' | 'failed' | 'refused' | 'u
 
 export type ItemPanelProps = {
   item: EditorItem; venueId: string; sections: EditorSection[]; items: Record<string, EditorItem>; canNotes: boolean; column?: boolean; season: SeasonId; notesFirst?: boolean;
-  selectName?: boolean; toast?: boolean; save: SaveStatus;
+  selectName?: boolean; toast?: number; save: SaveStatus; // toast: the height of the toast showing, in px (0: none)
   onPatch: (patch: Record<string, unknown>) => Promise<void>; onNotes: (notes: Notes) => Promise<void>; onConfirm: () => Promise<void>; onCopy: (group: string, ids: string[]) => Promise<void>; onDelete: () => void;
   onLooksGood: (field: string) => Promise<void>; onDuplicate: () => Promise<void>; onClose: () => void;
 };
@@ -114,9 +116,6 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
           {has.note && <NoteFields notes={item.notes} onNotes={onNotes} />}
         </div>
 
-        {/* goes well with: the items customers see in this item's popup, under its description */}
-        <Pairs item={item} sections={sections} items={items} season={season} picking={pairing} setPicking={setPairing} onPatch={patch} />
-
         {/* price & choices */}
         <PriceOrSizes item={item} onPatch={patch} hint={problem && !item.listed && !item.variants.length ? 'Add a price to show this item.' : undefined} onLooksGood={looksGood} onAddChoices={() => addChoices.current()} choicesFull={groupCount(item.add_ons) >= COUNTS.groups}
           details={<>
@@ -124,6 +123,9 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
             {has.parts && <Parts item={item} start={revealed.parts} onPatch={patch} onLooksGood={looksGood} />}
           </>} />
         <Choices item={item} onPatch={patch} onCopy={setCopying} onLooksGood={looksGood} addRef={addChoices} />
+
+        {/* goes well with: the items customers see at the end of this item's popup (below Price and its choices: the PM, 2026-11-19) */}
+        <Pairs item={item} sections={sections} items={items} season={season} picking={pairing} setPicking={setPairing} onPatch={patch} />
 
         {/* where it appears */}
         <div data-where="">
@@ -154,7 +156,7 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
         </div>
         <p className="px-3 pt-1.5 text-[13px] text-ink-muted">Duplicate makes a hidden copy, “{item.name.en} (copy)”, with the same details.</p>
       </div>
-      {toast && <div aria-hidden="true" data-toast-zone="" className="shrink-0 border-t border-line bg-fill" style={{ height: 'calc(max(1.25rem, env(safe-area-inset-bottom)) + 64px)' }} />}
+      {!!toast && <div aria-hidden="true" data-toast-zone="" className="shrink-0 border-t border-line bg-fill" style={{ height: `calc(max(1.25rem, env(safe-area-inset-bottom)) + ${toast + 8}px)` }} />}
       {copying !== null && <CopyChoicesSheet item={item} group={copying} sections={sections} items={items} onCopy={(ids) => onCopy(copying, ids)} onClose={() => setCopying(null)} />}
     </div>
   );

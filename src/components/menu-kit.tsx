@@ -82,12 +82,13 @@ function Group({ title, sub, children, ...rest }: { title: ReactNode; sub?: Reac
 // images in the template never load until the sheet opens. Layout (Kian, 2026-10-08, after the Uber Eats reference): the
 // title block (name, the price line with "Serves", the description), then one banded group per kind: Sizes, each option
 // group (Required / Optional), Includes, and the owner's notes under Good to know. Styles: .sheet-* in src/styles/public.css.
-// "Goes well with" (Kian via the PM, 2026-11-18; src/lib/pairs.ts): directly under the description, before the item's own groups, the
-// items it is paired with that are on the page. The template carries the heading and one empty row per pair with the paired item's
-// id only (data-pair): the script below fills each row, when the popup opens, from that item's own row on the page (its name in both
-// languages, its price line as the menu shows it, its photo if it has one), as a button that opens that item's own popup. So a pair
-// costs the page about 60 bytes whatever its name, and nothing of it (no photo) is fetched before a popup is opened. Styles:
-// PAIRS_CSS, written by MenuDialogs.
+// "Goes well with" (Kian via the PM, 2026-11-18; src/lib/pairs.ts): the items it is paired with that are on the page, as the last
+// group of the popup (the PM's ruling of 2026-11-19: below the item's own sizes and options; everything that is the item's own comes
+// first, Includes and Good to know too, so its allergen notes stay with it). The template carries the heading and one empty row per
+// pair with the paired item's id only (data-pair): the script below fills each row, when the popup opens, from that item's own row on
+// the page (its name in both languages, its price line as the menu shows it, its photo if it has one), as a button that opens that
+// item's own popup. So a pair costs the page about 60 bytes whatever its name, and nothing of it (no photo) is fetched before a popup
+// is opened. Styles: PAIRS_CSS, written by MenuDialogs.
 function Detail({ item }: { item: Item }) {
   const groups = new Map<string, Item['add_ons']>();
   for (const a of item.add_ons) { const k = a.group.en ?? ''; groups.set(k, [...(groups.get(k) ?? []), a]); }
@@ -105,11 +106,6 @@ function Detail({ item }: { item: Item }) {
           )}
           <Bi as="p" text={item.description} className="sheet-desc" />
         </div>
-        {item.pairs && item.pairs.length > 0 && (
-          <Group data-pairs="" title={<><span lang="en">{PAIRS_TITLE.en}</span><span lang="fa" dir="rtl">{PAIRS_TITLE.fa}</span></>}>
-            <ul className="pairs">{item.pairs.map((id) => <li key={id} data-pair={id} />)}</ul>
-          </Group>
-        )}
         {item.variants.length > 0 && (
           <Group title={<><span lang="en">Sizes</span><span lang="fa" dir="rtl">اندازه‌ها</span></>}>
             <ul className="sheet-rows">{item.variants.map((v, n) => <li key={n}><Bi text={v.label} />{v.price != null && <Amount>{price(v.price)}</Amount>}</li>)}</ul>
@@ -126,13 +122,18 @@ function Detail({ item }: { item: Item }) {
           </Group>
         )}
         <GoodToKnow item={item} />
+        {item.pairs && item.pairs.length > 0 && (
+          <Group data-pairs="" title={<><span lang="en">{PAIRS_TITLE.en}</span><span lang="fa" dir="rtl">{PAIRS_TITLE.fa}</span></>}>
+            <ul className="pairs">{item.pairs.map((id) => <li key={id} data-pair={id} />)}</ul>
+          </Group>
+        )}
       </div>
     </template>
   );
 }
 
 // The owner's allergen, dietary and halal notes (ruling 10: optional per item, set by the owner or an admin; Kian, 2026-10-08:
-// shown to customers in the popup). The last group of the popup, under Good to know; only what is set appears: halal as a
+// shown to customers in the popup). The last of the item's own groups, under Good to know; only what is set appears: halal as a
 // chip, each dietary word as a chip, the allergens as "Contains …", then the free note in both languages. Nothing of it on
 // the rows or cards. Since 2026-10-12 (Kian via the PM): "Contains: …" in English and Persian, the allergen and dietary words in Persian
 // from src/lib/allergens.ts; notes still drafted from research never get here (src/lib/menu.ts removes them until they are confirmed).

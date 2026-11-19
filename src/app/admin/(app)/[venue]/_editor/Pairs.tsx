@@ -1,12 +1,13 @@
 'use client';
-// "Goes well with" (Kian via the PM, 2026-11-18): the item editor's card, directly after ITEM, and its picker. Up to 4 other items of the
-// same venue that go well with this one; customers see them in this item's popup, under its description (src/components/menu-kit.tsx).
+// "Goes well with" (Kian via the PM, 2026-11-18): the item editor's card and its picker. Up to 4 other items of the same venue that go
+// well with this one; customers see them at the bottom of this item's popup, below its own sizes and options (src/components/menu-kit.tsx).
+// The card sits below PRICE and its choices (the PM's ruling of 2026-11-19; first built directly after ITEM, where it pushed a just-added
+// item's price row under the "Added · Undo" strip).
 //   The card: one row per pair, in the order picked (photo, name, price, Remove), then "+ Add item" with "n of 4"; at 4 the button is
 //     gone and a line in its place says how to add another. Order is the order picked: remove and add again to change it. A pair that
 //     customers do not see now (hidden, out of season, in no shown section) says so under its name, in the Menu list's words: it stays
 //     in the list and the public page leaves it out until it is back on the menu (one line under the card says so, only then).
-//     Empty, the card is its one row and nothing else: it sits between ITEM and PRICE, and a just-added item must keep its description
-//     and its price on the first screen of a phone (the editor drill's t-add); what the list is for is said in the picker.
+//     Empty, the card is its one row and nothing else; what the list is for is said in the picker.
 //   The picker: a sheet with a search field and this venue's items grouped by section, in the menu's order (the Seasonal section named
 //     as customers see it now; an item in two sections under both; items in no section last). The item itself is not offered; the ones
 //     already in the list are shown as Added; hidden and out-of-season items are listed and labelled. A tap adds the item at the end of
@@ -82,7 +83,7 @@ function PairPicker({ item, taken, sections, items, ctx, onPick, onClose }: {
   const pick = async (id: string) => { setBusy(id); setErr(null); try { await onPick(id); onClose(); } catch (e) { setErr((e as Error).message); setBusy(null); } };
   return (
     <Sheet title={`Goes well with “${item.name.en ?? 'this item'}”`} onClose={onClose} wide>
-      <p className="mb-3 text-[13px] text-ink-muted">Pick an item to add, up to {MAX} in all. Customers see them in this item’s popup, under the description.</p>
+      <p className="mb-3 text-[13px] text-ink-muted">Pick an item to add, up to {MAX} in all. Customers see them at the bottom of this item’s popup.</p>
       <label className="relative block">
         <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-muted" />
         <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search" aria-label="Search this venue’s items" autoComplete="off"

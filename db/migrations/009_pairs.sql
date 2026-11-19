@@ -1,5 +1,5 @@
--- "Goes well with" (Kian via the PM, 2026-11-18; built on its branch, this data-model change waits for Kian's ruling with it): up to 4
--- other items of the same venue per item, in the order picked, shown to customers in the item's popup under its description. One-way:
+-- "Goes well with" (Kian via the PM, 2026-11-18; this data-model change approved by Kian on 2026-11-19): up to 4
+-- other items of the same venue per item, in the order picked, shown to customers at the bottom of the item's popup. One-way:
 -- A listing B says nothing about B's own list.
 -- A column on the item, like its seasons and its draft flags, so the list travels with the item through every save, change record,
 -- Undo and Duplicate. The database keeps the rules that need no lookup (at most 4, never the item itself) and the one that must hold

@@ -55,6 +55,35 @@ export const MEASURE = () => {
 // Every admin screen, as [key, title, signed in?, setup(page), whole page too?], shared by scripts/layout-drill.mjs and
 // reports/admin-cleanup/shots.mjs. sec: a section of Senso's own order with items (for its menu, the reorder and the sheets).
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// The toast rule (the PM, 2026-11-19): while the "Added · Undo" strip or any toast shows, no tappable control sits under it. UNDER_TOAST
+// runs in the page and returns what a tap would reach at every second pixel of the toast and, in the item editor, of the strip kept free
+// for it (data-toast-zone; counted while the toast sits in it: with a sheet open the toast is at the top of the screen and the strip is
+// behind the sheet), were they not there: `under` lists every control found (a link, button, field, switch, label or anything with
+// such a role, not disabled). The toast's own buttons are not counted, nor is the dim behind an open sheet (a button as large as the
+// screen, whose tap closes the sheet: the toast is over it wherever it is).
+export const UNDER_TOAST = () => {
+  const toast = document.querySelector('.toast');
+  if (!toast) return { toast: null, zone: null, under: [], points: 0, view: `${innerWidth} × ${innerHeight}` };
+  const strip = document.querySelector('.item-panel [data-toast-zone]'), tr = toast.getBoundingClientRect(), zr = strip ? strip.getBoundingClientRect() : null;
+  const zone = zr && tr.bottom > zr.top && tr.top < zr.bottom ? strip : null;
+  const CONTROL = 'a[href], button, input, textarea, select, summary, label, [role=button], [role=switch], [role=checkbox], [role=radio], [role=tab], [role=menuitem], [role=option]';
+  const own = (el) => toast.contains(el) || (!!zone && zone.contains(el));
+  const dim = (el) => { const r = el.getBoundingClientRect(); return r.width >= innerWidth && r.height >= innerHeight; };
+  const box = (el) => { const r = el.getBoundingClientRect(); return { top: Math.round(r.top), bottom: Math.round(r.bottom), left: Math.round(r.left), right: Math.round(r.right) }; };
+  const under = new Map(); let points = 0;
+  for (const area of [toast, zone]) {
+    if (!area) continue;
+    const r = area.getBoundingClientRect();
+    for (let y = Math.max(0, Math.ceil(r.top)); y < Math.min(innerHeight, r.bottom); y += 2) for (let x = Math.max(0, Math.ceil(r.left)); x < Math.min(innerWidth, r.right); x += 2) {
+      points++;
+      const first = document.elementsFromPoint(x, y).find((el) => !own(el)); // what a tap here would reach without the toast and its strip
+      const control = first && first.closest(CONTROL);
+      if (!control || own(control) || control.matches(':disabled') || dim(control) || under.has(control)) continue;
+      under.set(control, `${control.tagName.toLowerCase()} "${(control.getAttribute('aria-label') || control.textContent || '').trim().replace(/\s+/g, ' ').replace(/[^\s"@]+@[^\s"@]+/g, '<email>').slice(0, 40)}" at ${x},${y}`);
+    }
+  }
+  return { toast: { ...box(toast), text: toast.innerText.replace(/\s+/g, ' ').trim() }, zone: zone ? box(zone) : null, under: [...under.values()], points, view: `${innerWidth} × ${innerHeight}` };
+};
 export function adminScreens({ base, pin, sec }) {
   const signin = async (page) => { await page.goto(`${base}/admin/senso`); if (await page.locator('input[name=pin]').count()) { await page.fill('input[name=pin]', pin); await page.click('button[type=submit]'); await page.waitForURL(`${base}/admin/senso`); } await page.waitForSelector('[data-item]'); };
   const settle = async (page) => { await page.waitForLoadState('networkidle').catch(() => {}); await page.evaluate(() => document.fonts.ready); await sleep(450); };

@@ -6,13 +6,15 @@
 //   the public page: only pairs that are shown and in season (a hidden one and an out-of-season one left out, and back when they are);
 //     a deleted item gone from every list (the admin's Delete with its Undo, and a plain SQL delete: the database's own rule); the style
 //     of the block only on a page that has a pair to show;
-//   customers (iPhone 13 viewport, Chromium; WebKit too): the heading and the pairs in English and in Persian, each with its name in the
+//   customers (iPhone 13 viewport, Chromium; WebKit too): the block as the last group of the popup, below the item's own sizes, options,
+//     combo parts and notes (the PM's ruling of 2026-11-19); the heading and the pairs in English and in Persian, each with its name in the
 //     page's language, its price as its row in the menu shows it and its photo if it has one (the popup's template carries the paired
 //     items' ids only; the page's script fills each row from that item's own row); no pair photo requested before the popup is
 //     opened; a tap opens the paired item's popup (its name, its photo, at its top; no new history entry; Escape closes it);
 //     nothing clipped at 360 px in either language;
-//   the admin (iPhone 13 viewport): the card after ITEM with "n of 4", four added through the picker with the tap count, the add button
-//     gone at 4; the picker offers every item of the venue but the item itself and none of the other venue, hidden and out-of-season ones
+//   the admin (iPhone 13 viewport): the card below PRICE and its choices (the PM's ruling of 2026-11-19) with "n of 4", four added
+//     through the picker with the tap count, the add button gone at 4; while "Saved · Undo" shows after an add or a remove, and with the
+//     picker open over it, no tappable control under the toast or its strip (390 × 664 and 360 px); the picker offers every item of the venue but the item itself and none of the other venue, hidden and out-of-season ones
 //     labelled, the ones in the list as Added; remove and add again puts an item last; nothing clipped at 360 px (the card, the picker);
 //     Duplicate copies the list; on a laptop the preview shows the item's popup with the list after a save, without taking the focus or
 //     adding history entries; deleting a listed item updates the lists on screen so the next save goes through.
@@ -24,7 +26,7 @@ import path from 'node:path';
 import { chromium, webkit, devices } from 'playwright';
 import { connectDb } from './load-env.mjs';
 import { scratchTarget } from './scratch-target.mjs';
-import { MEASURE as LAYOUT, RADIUS, SIZES } from './layout-rules.mjs';
+import { MEASURE as LAYOUT, RADIUS, SIZES, UNDER_TOAST } from './layout-rules.mjs';
 
 // The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
 const { args } = await scratchTarget('scripts/pairs-drill.mjs', { options: { base: 'server', out: 'path', jpeg: 'flag' }, db: true, env: ['DRILL_ADMIN_PIN'] });
@@ -87,10 +89,15 @@ const make = async (key, section, price) => {
 };
 await make('A', first, 5);
 for (const [key, price] of [['P1', 6.5], ['P2', 7], ['P3', 4], ['P4', 8.25], ['PH', 3], ['PS', 3.5]]) await make(key, last, price);
-{ // the item with a description (the block goes under it); P3 with two sizes (its price line in the menu is its sizes); PH hidden; PS out
-  // of season; P1 with a photo under an address of its own
-  const d = await api('/api/admin/item', { action: 'update', id: id.A, patch: { description: { en: 'Made by the drill, with a description to sit under.', fa: 'ساخته‌ی آزمون، با توضیحی که فهرست زیر آن می‌آید.' } } });
-  if (d.status !== 200) throw new Error(`setup failed: description ${d.status}`);
+{ // the item with a description and every group of its own (two sizes, a choice, a combo part, the owner's notes), so the block's place
+  // below them can be read; P3 with two sizes (its price line in the menu is its sizes); PH hidden; PS out of season; P1 with a photo
+  // under an address of its own
+  const d = await api('/api/admin/item', { action: 'update', id: id.A, patch: { description: { en: 'Made by the drill, with sizes, a choice, a part and a note of its own.', fa: 'ساخته‌ی آزمون، با اندازه، گزینه، بخش و یادداشت خودش.' },
+    price: null, variants: [{ label: { en: 'Regular', fa: 'معمولی' }, price: 5 }, { label: { en: 'Large', fa: 'بزرگ' }, price: 6.5 }],
+    add_ons: [{ group: { en: 'Drill milk', fa: 'شیر آزمون' }, label: { en: 'Oat', fa: 'جو دوسر' }, price: 1, required: false }],
+    components: [{ item_id: null, label: { en: 'Drill part', fa: 'بخش آزمون' }, qty: 2 }] } });
+  const n = await api('/api/admin/item', { action: 'notes', id: id.A, notes: { allergens: ['milk'], dietary: ['Vegetarian'], halal: true, text: { en: null, fa: null } } });
+  if (d.status !== 200 || n.status !== 200) throw new Error(`setup failed: the item's own groups ${d.status} ${JSON.stringify(d.json?.error ?? '')}, its notes ${n.status} ${JSON.stringify(n.json?.error ?? '')}`);
   const a = await api('/api/admin/item', { action: 'update', id: id.P3, patch: { price: null, variants: [{ label: { en: 'Small', fa: 'کوچک' }, price: 4 }, { label: { en: 'Large', fa: 'بزرگ' }, price: 6 }] } });
   const b = await api('/api/admin/item', { action: 'update', id: id.PH, patch: { listed: false } });
   const c = await api('/api/admin/item', { action: 'update', id: id.PS, patch: { seasons: [offSeason] } });
@@ -202,7 +209,7 @@ const FOUR = [id.P1, id.P2, id.P3, id.P4];
     const text = (el) => (el ? el.innerText.replace(/\s+/g, ' ').trim() : null);
     const rowPrice = (pid) => { const li = document.querySelector(`main li.item[data-id="${pid}"]`), line = li && li.querySelector('h3 + p'); if (!line) return null; const lang = document.documentElement.dataset.lang; let s = ''; const walk = (n) => { for (const c of n.childNodes) { if (c.nodeType === 3) s += c.textContent; else if (c.nodeType === 1 && !(c.getAttribute('lang') && c.getAttribute('lang') !== lang)) walk(c); } }; walk(line); return s.replace(/\s+/g, ' ').trim(); };
     return { open: sheet.open, title: text(sheet.querySelector('.sheet-title')), heading: g ? text(g.querySelector('h3')) : null, scrollTop: sheet.scrollTop, hero: sheet.querySelector('#sheet-hero img')?.getAttribute('src') ?? null,
-      afterDesc: g ? !!g.previousElementSibling && g.previousElementSibling.classList.contains('sheet-head') && g.previousElementSibling.lastElementChild?.classList.contains('sheet-desc') === true : null,
+      order: [...sheet.querySelectorAll('#sheet-content .sheet-group')].map((x) => text(x.querySelector('h3'))), last: g ? g === g.parentElement.lastElementChild : null,
       pairs: g ? [...g.querySelectorAll('li[data-pair]')].map((b) => ({ id: b.getAttribute('data-pair'), tag: b.children.length === 1 ? b.firstElementChild.tagName : `${b.children.length} children`, name: text(b.querySelector('.pair-name')), price: text(b.querySelector('.pair-price')), rowPrice: rowPrice(b.getAttribute('data-pair')), img: b.querySelector('img')?.getAttribute('src') ?? null })) : [] };
   };
   const visit = async (engine, lang, device = DEVICE) => {
@@ -213,6 +220,8 @@ const FOUR = [id.P1, id.P2, id.P3, id.P4];
     return { ctx, page, requests, errors };
   };
   const asked = (v, url) => v.requests.some((u) => u.endsWith(url));
+  // the popup's groups, top to bottom: the item's own (its sizes, its choice group, its combo parts, the owner's notes), then the block
+  const ORDER = { en: ['Sizes', 'Drill milk', 'Includes', 'Good to know', 'Goes well with'], fa: ['اندازه‌ها', 'شیر آزمون', 'شامل', 'نکات', 'پیشنهاد همراه'] };
   const openItem = async (page, pid) => { const li = page.locator(`main li.item[data-id="${pid}"]`).first(); await li.scrollIntoViewIfNeeded(); await li.click(); await page.waitForSelector('dialog#sheet[open] #sheet-content .sheet-title'); await sleep(450); };
   const tapPair = async (page, pid) => { const b = page.locator(`#sheet-content [data-pair="${pid}"]`); await b.scrollIntoViewIfNeeded(); await b.click(); };
 
@@ -227,8 +236,8 @@ const FOUR = [id.P1, id.P2, id.P3, id.P4];
     const loaded = await page.evaluate((pid) => { const i = document.querySelector(`#sheet-content [data-pair="${pid}"] img`); return i ? { w: i.naturalWidth, box: `${Math.round(i.getBoundingClientRect().width)}×${Math.round(i.getBoundingClientRect().height)}` } : null; }, id.P1);
     const rows = s.pairs.map((x) => `${x.name} | ${x.price}${x.img ? ' | photo' : ''}`).join('; ');
     const okRows = same(s.pairs.map((x) => x.id), FOUR) && s.pairs.every((x) => x.tag === 'BUTTON' && x.name === E[x.id][0] && x.price === E[x.id][1] && x.price === x.rowPrice) // tag: each row holds one button && !!s.pairs[0].img && s.pairs[0].img.endsWith(P1_PHOTO) && s.pairs[1].img === null;
-    check(`popup-${lang}`, s.open && s.heading === (lang === 'en' ? 'Goes well with' : 'پیشنهاد همراه') && s.afterDesc === true && okRows,
-      `${lang === 'en' ? 'English' : 'Persian'}, iPhone 13 viewport: the item's popup shows “${s.heading}” directly under the description (${s.afterDesc}), then the four pairs in the order picked, each a button with its name in the page's language (the one without a Persian name in English) and its price exactly as its row in the menu shows it (${s.pairs.every((x) => x.price === x.rowPrice)}; the one with sizes: “${s.pairs[2]?.price}”), a photo where the item has one (the first: ${s.pairs[0]?.img ? 'shown' : 'MISSING'}; the second, which has none: ${s.pairs[1]?.img === null ? 'no image' : 'AN IMAGE'}): ${rows}`);
+    check(`popup-${lang}`, s.open && s.heading === ORDER[lang][4] && s.last === true && same(s.order, ORDER[lang]) && okRows,
+      `${lang === 'en' ? 'English' : 'Persian'}, iPhone 13 viewport: the item's popup shows its own groups first, then “${s.heading}” as the last group (${s.last}; top to bottom: ${s.order.join(' › ')}), with the four pairs in the order picked, each a button with its name in the page's language (the one without a Persian name in English) and its price exactly as its row in the menu shows it (${s.pairs.every((x) => x.price === x.rowPrice)}; the one with sizes: “${s.pairs[2]?.price}”), a photo where the item has one (the first: ${s.pairs[0]?.img ? 'shown' : 'MISSING'}; the second, which has none: ${s.pairs[1]?.img === null ? 'no image' : 'AN IMAGE'}): ${rows}`);
     if (lang === 'en') {
       check('photos-when-opened', early.asked === false && early.imgs === 0 && photo !== null && !!loaded && loaded.w > 0,
         `before any popup is opened, with the item's row on screen: the pair's photo not requested (${early.asked}) and no pair image in the page (${early.imgs}); once the item's popup is open it is requested (${photo === null ? 'NOT within 4 s' : `${photo} ms after`}) and shown (${loaded ? `${loaded.w} px wide, drawn ${loaded.box}` : 'no image'})`);
@@ -325,7 +334,10 @@ const openEditor = async (page, name) => {
   await page.waitForSelector(`.item-panel[aria-label="Edit ${name}"]`); await sleep(350);
 };
 const PICKER = '[role=dialog][aria-label^="Goes well with"]';
-const card = (page) => page.evaluate(() => { const c = document.querySelector('.item-panel [data-pairs]'); return c ? { rows: [...c.querySelectorAll('[data-pair-row]')].map((r) => ({ id: r.getAttribute('data-pair-row'), why: r.querySelector('[data-pair-why]')?.textContent ?? null })), count: c.querySelector('[data-pairs-count]')?.textContent ?? null, add: !!c.querySelector('[data-pairs-add]'), full: !!c.querySelector('[data-pairs-full]'), afterItem: c.previousElementSibling?.hasAttribute('data-item-card') ?? false, heading: c.querySelector('h3')?.textContent ?? null } : null; });
+// the toast rule (the PM, 2026-11-19): what lies under the toast and its strip while it shows (scripts/layout-rules.mjs UNDER_TOAST)
+const underToast = async (page) => { await page.waitForSelector('.toast', { timeout: 4000 }).catch(() => {}); await sleep(300); return page.evaluate(UNDER_TOAST); };
+const toastSeen = [];
+const card = (page) => page.evaluate(() => { const c = document.querySelector('.item-panel [data-pairs]'); return c ? { rows: [...c.querySelectorAll('[data-pair-row]')].map((r) => ({ id: r.getAttribute('data-pair-row'), why: r.querySelector('[data-pair-why]')?.textContent ?? null })), count: c.querySelector('[data-pairs-count]')?.textContent ?? null, add: !!c.querySelector('[data-pairs-add]'), full: !!c.querySelector('[data-pairs-full]'), below: c.previousElementSibling?.hasAttribute('data-choices') ? 'choices' : c.previousElementSibling?.hasAttribute('data-price-choices') ? 'price' : (c.previousElementSibling?.tagName ?? null), aboveWhere: c.nextElementSibling?.hasAttribute('data-where') ?? false, heading: c.querySelector('h3')?.textContent ?? null } : null; });
 {
   await setPairs(id.A, []); await setPairs(id.P1, []);
   await p.reload(); await p.waitForSelector('[data-item]');
@@ -340,8 +352,8 @@ const card = (page) => page.evaluate(() => { const c = document.querySelector('.
   const missing = [...venueIds].filter((x) => x !== id.A && !ids.has(x)), foreign = [...ids].filter((x) => otherIds.has(x) || !venueIds.has(x));
   const sections = [...new Set(offered.map((o) => o.section))];
   await snap(p, 'picker');
-  check('picker-offers', empty?.heading === 'Goes well with' && empty.afterItem && empty.rows.length === 0 && empty.count === `0 of ${MAX}` && empty.add && !ids.has(id.A) && foreign.length === 0 && missing.length === 0 && labelOf('PH') === 'Hidden' && labelOf('PS') === 'Out of season' && labelOf('P1') === null && sections.includes(last.name),
-    `the card “${empty?.heading}” directly after ITEM (${empty?.afterItem}) with “${empty?.count}” beside + Add item; the picker lists ${ids.size} items in ${sections.length} sections: every item of ${VENUE} but the item itself (${missing.length} missing, the item itself offered: ${ids.has(id.A)}), none of ${OTHER} (${foreign.length}); the hidden one is listed and labelled “${labelOf('PH')}”, the out-of-season one “${labelOf('PS')}”, a shown one has no label`);
+  check('picker-offers', empty?.heading === 'Goes well with' && empty.below === 'choices' && empty.aboveWhere && empty.rows.length === 0 && empty.count === `0 of ${MAX}` && empty.add && !ids.has(id.A) && foreign.length === 0 && missing.length === 0 && labelOf('PH') === 'Hidden' && labelOf('PS') === 'Out of season' && labelOf('P1') === null && sections.includes(last.name),
+    `the card “${empty?.heading}” below PRICE and the item's choices (directly after: ${empty?.below}) and above Appears in (${empty?.aboveWhere}), with “${empty?.count}” beside + Add item; the picker lists ${ids.size} items in ${sections.length} sections: every item of ${VENUE} but the item itself (${missing.length} missing, the item itself offered: ${ids.has(id.A)}), none of ${OTHER} (${foreign.length}); the hidden one is listed and labelled “${labelOf('PH')}”, the out-of-season one “${labelOf('PS')}”, a shown one has no label`);
   await p.locator(`${PICKER} button[aria-label="Close"]`).last().click(); await p.waitForSelector(PICKER, { state: 'detached', timeout: 5000 });
   // four through the picker, with the taps counted; the first found with the search field
   taps = 0;
@@ -356,6 +368,7 @@ const card = (page) => page.evaluate(() => { const c = document.querySelector('.
     const c = await card(p); said.push(`${n}: ${c?.rows.length} rows, “${c?.count}”${saved.ok ? '' : ' (NOT saved)'}`);
   }
   const full = await card(p), picked = [id.P1, id.P2, id.PH, id.P4], saved = await pairsOf(id.A);
+  toastSeen.push(['390 × 664, the fourth just added', await underToast(p)]);
   await p.locator('.item-panel [data-pairs]').scrollIntoViewIfNeeded(); await sleep(300); await snap(p, 'editor-4-pairs');
   const fifth = await setPairs(id.A, [...picked, id.P3]);
   check('four-then-no-more', same(saved, picked) && same(full?.rows.map((r) => r.id), picked) && full.count === `${MAX} of ${MAX}` && !full.add && full.full && full.rows[2].why === 'Hidden' && full.rows[0].why === null && fifth.status === 400 && same(await pairsOf(id.A), picked),
@@ -365,7 +378,9 @@ const card = (page) => page.evaluate(() => { const c = document.querySelector('.
   await p.click(`.item-panel [data-pair-row="${id.P2}"] button[aria-label^="Remove"]`);
   const three = await waitDb('select pairs from items where id = $1', [id.A], (r) => r?.pairs?.length === 3);
   const c3 = await card(p);
+  toastSeen.push(['390 × 664, one just removed', await underToast(p)]);
   await p.click('.item-panel [data-pairs-add]'); await p.waitForSelector(PICKER);
+  await sleep(350); toastSeen.push(['390 × 664, the picker opened while it shows', await underToast(p)]);
   const added = await p.evaluate((pid) => { const b = document.querySelector(`[data-pair-pick="${pid}"]`); return b ? { label: b.querySelector('[data-pair-label]')?.textContent ?? null, disabled: b.disabled } : null; }, id.P1);
   await p.locator(`[data-pair-pick="${id.P2}"]`).first().scrollIntoViewIfNeeded(); await p.locator(`[data-pair-pick="${id.P2}"]`).first().click(); await p.waitForSelector(PICKER, { state: 'detached', timeout: 5000 });
   const again = await waitDb('select pairs from items where id = $1', [id.A], (r) => r?.pairs?.length === 4);
@@ -380,12 +395,19 @@ const card = (page) => page.evaluate(() => { const c = document.querySelector('.
   await q.locator('.item-panel [data-pairs]').scrollIntoViewIfNeeded(); await sleep(400);
   const m1 = await q.evaluate(LAYOUT); await snap(q, 'editor-360');
   await q.click(`.item-panel [data-pair-row="${id.P2}"] button[aria-label^="Remove"]`); await waitDb('select pairs from items where id = $1', [id.A], (r) => r?.pairs?.length === 3);
+  toastSeen.push(['360 px, one just removed', await underToast(q)]);
   await q.waitForSelector('.item-panel [data-pairs-add]'); await q.click('.item-panel [data-pairs-add]'); await q.waitForSelector(PICKER);
   await q.locator(`[data-pair-pick="${id.P4}"]`).first().scrollIntoViewIfNeeded(); await sleep(400);
+  toastSeen.push(['360 px, the picker opened while it shows', await underToast(q)]);
   const m2 = await q.evaluate(LAYOUT); await snap(q, 'picker-360');
   const bad = (m) => [...m.found, ...m.sizes.filter((x) => !SIZES.includes(x)).map((x) => `text ${x}`), ...m.radii.filter((x) => x !== RADIUS).map((x) => `radius ${x}`)];
   check('admin-360', bad(m1).length === 0 && bad(m2).length === 0, `360 px phone, the admin's layout rules (scripts/layout-rules.mjs) on the item editor with four pairs, one with an 84-character name: ${bad(m1).length ? bad(m1).slice(0, 3).join('; ') : 'nothing past the edges, cut short or scrolling sideways, the admin\'s text sizes and one radius'}; with the picker open on that long name: ${bad(m2).length ? bad(m2).slice(0, 3).join('; ') : 'the same'}`);
   await ctx.close();
+  // the toast rule where this feature shows a toast: with the editor open the toast sits in the strip kept free for it; with the picker
+  // open it is at the top of the screen, over the dim
+  const strip = (m) => (m.zone ? `in the editor's strip (${m.zone.top}–${m.zone.bottom} px)` : 'at the top, the sheet open');
+  check('toast-nothing-under', toastSeen.length === 5 && toastSeen.every(([, m]) => m.toast && m.under.length === 0) && toastSeen.filter(([what]) => !what.includes('picker')).every(([, m]) => !!m.zone) && toastSeen.filter(([what]) => what.includes('picker')).every(([, m]) => !m.zone && m.toast.top < 100),
+    `while a toast shows, no tappable control under it or its strip (a tap tried at every second pixel): ${toastSeen.map(([what, m]) => `${what} (${m.view}): ${m.toast ? `“${m.toast.text}” at ${m.toast.top}–${m.toast.bottom} px, ${strip(m)}, ${m.points} points, under it: ${m.under.length ? m.under.slice(0, 3).join('; ') : 'none'}` : 'NO TOAST SEEN'}`).join(' | ')}`);
 }
 { // Duplicate copies the list; the copy is in nobody's list
   await setPairs(id.A, [id.P1, id.P2, id.P3]);

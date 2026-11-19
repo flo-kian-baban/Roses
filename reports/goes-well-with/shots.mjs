@@ -1,15 +1,20 @@
 #!/usr/bin/env node
 // "Goes well with" (Kian via the PM, 2026-11-18): before/after screenshots for Kian's ruling, at laptop width (1440 × 900) and at 390 px
 // (the iPhone 13 viewport), for one Senso item and one Kebab Land item:
-//   the item editor: before (no card); after, with 0 pairs and with 4 (the card directly after ITEM; on the laptop the fourth is added
-//     through the picker, so the preview beside the editor shows the item's popup with the list, as after any such save);
+//   the item editor: before (no card); after, with 0 pairs and with 4 (the card below PRICE and the item's choices: the PM's ruling of
+//     2026-11-19; on the laptop the fourth is added through the picker, so the preview beside the editor shows the item's popup with
+//     the list, as after any such save); every editor shot is framed on the end of Price and the choices, so what follows it shows;
 //   the picker (after only: there was none);
-//   the public popup in English and in Persian, before and after: the first screen as a customer gets it, and the whole popup.
+//   the public popup in English and in Persian, before and after: the first screen as a customer gets it, and the whole popup (the
+//     block is its last group, below the item's own sizes and options: the PM's ruling of 2026-11-19).
+// --only editor or --only popup shoots that part alone (the rulings' re-shoot of 2026-11-19: every after shot again, and the editor's
+// before shots again with the new framing, on the upgraded main; the popup's before shots of 2026-11-18 stand, the customers' pages
+// being byte for byte the same on both Next.js versions).
 // The pairs are example data set in the scratch copy only, through the admin API; nothing here touches the working database.
 // Screenshots go to reports/goes-well-with/shots/ (gitignored, deleted after Kian's ruling), with an index.html that puts each before
 // beside its after once both labels have been shot.
 // Needs a scratch server of each build on one scratch copy of the database (with migration 009) and an admin PIN valid on any venue:
-//   DATABASE_URL=… DRILL_ADMIN_PIN=… node reports/goes-well-with/shots.mjs --base http://127.0.0.1:<port> --label before|after --out reports/goes-well-with/shots
+//   DATABASE_URL=… DRILL_ADMIN_PIN=… node reports/goes-well-with/shots.mjs --base http://127.0.0.1:<port> --label before|after --out reports/goes-well-with/shots [--only editor|popup]
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium, devices } from 'playwright';
@@ -17,8 +22,8 @@ import { connectDb } from '../../scripts/load-env.mjs';
 import { scratchTarget } from '../../scripts/scratch-target.mjs';
 
 // The target is a scratch server, or the script stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
-const { args } = await scratchTarget('reports/goes-well-with/shots.mjs', { options: { base: 'server', label: ['before', 'after'], out: 'path' }, db: true, env: ['DRILL_ADMIN_PIN'] });
-const base = args.base, label = args.label, out = path.resolve(args.out), pin = process.env.DRILL_ADMIN_PIN;
+const { args } = await scratchTarget('reports/goes-well-with/shots.mjs', { options: { base: 'server', label: ['before', 'after'], out: 'path', only: ['editor', 'popup'] }, optional: ['only'], db: true, env: ['DRILL_ADMIN_PIN'] });
+const base = args.base, label = args.label, out = path.resolve(args.out), pin = process.env.DRILL_ADMIN_PIN, only = args.only ?? null;
 await fs.mkdir(out, { recursive: true });
 const db = await connectDb('goes-well-with-shots');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -50,14 +55,15 @@ async function openEditor(page, c) {
   const b = page.locator(`[data-item="${c.id}"] button[aria-label^="Edit"]`).first(); await b.scrollIntoViewIfNeeded(); await b.click();
   await page.waitForSelector(`.item-panel[aria-label="Edit ${c.name}"]`); await settle(page);
 }
-// the editor framed the same way in every shot: the end of the ITEM card a little under the editor's top bar, so what follows it shows
-const frameEditor = (page) => page.evaluate(() => { const s = document.querySelector('.item-panel [data-editor-scroll]'), card = document.querySelector('.item-panel [data-item-card]'); if (s && card) s.scrollTop += card.getBoundingClientRect().bottom - s.getBoundingClientRect().top - 200; });
+// the editor framed the same way in every shot, before and after: the end of Price and the item's choices 200 px under the editor's
+// top bar, so what follows it shows (after: the GOES WELL WITH card, then Appears in; before: Appears in)
+const frameEditor = (page) => page.evaluate(() => { const s = document.querySelector('.item-panel [data-editor-scroll]'), end = document.querySelector('.item-panel [data-choices]') ?? document.querySelector('.item-panel [data-price-choices]'); if (s && end) s.scrollTop += end.getBoundingClientRect().bottom - s.getBoundingClientRect().top - 200; });
 let cookie = null;
 const api = async (p, body) => { const r = await fetch(base + p, { method: 'POST', headers: { 'content-type': 'application/json', cookie }, body: JSON.stringify(body) }); return { status: r.status, json: await r.json().catch(() => null) }; };
 const setPairs = async (c, ids) => { const r = await api('/api/admin/item', { action: 'update', id: c.id, patch: { pairs: ids } }); if (r.status !== 200) throw new Error(`pairs of ${c.name}: ${r.status} ${JSON.stringify(r.json)}`); };
 
 // ---- the admin
-for (const v of VIEWS) {
+for (const v of only === 'popup' ? [] : VIEWS) {
   const ctx = await browser.newContext(v.ctx), page = await ctx.newPage();
   page.on('pageerror', (e) => console.log(`pageerror (${v.id}): ${e.message}`));
   await signin(page, CASES[0].venue);
@@ -83,7 +89,7 @@ for (const v of VIEWS) {
   await ctx.close();
 }
 // ---- the public page (after: with the four pairs saved above)
-for (const v of VIEWS) {
+for (const v of only === 'editor' ? [] : VIEWS) {
   for (const c of CASES) for (const lang of ['en', 'fa']) {
     const ctx = await browser.newContext(v.ctx), page = await ctx.newPage();
     page.on('pageerror', (e) => console.log(`pageerror (${v.id} public): ${e.message}`));
@@ -119,7 +125,7 @@ if (await have(`before-${CASES[0].key}-laptop-editor.png`) && await have(`after-
       }
     }
   }
-  await fs.writeFile(path.join(out, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Goes well with: before and after</title><style>body{margin:0;padding:20px;font:15px/1.45 -apple-system,system-ui,sans-serif;background:#f5f5f7;color:#1d1d1f}h1{font-size:24px;margin:0 0 6px}h2{margin:44px 0 0;font-size:20px}h2 small{display:block;font-weight:400;font-size:14px;color:#6e6e73}h3{margin:28px 0 0;font-size:16px}h4{margin:18px 0 6px;font-size:13px;color:#6e6e73;font-weight:600;text-transform:uppercase;letter-spacing:.04em}.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;align-items:start}.row.v390{grid-template-columns:repeat(3,minmax(0,300px))}.row.whole.vlaptop{grid-template-columns:repeat(2,minmax(0,420px))}figure{margin:0}figcaption{font-weight:600;margin-bottom:4px}img{width:100%;display:block;border:1px solid #d2d2d7;border-radius:8px;background:#fff}p{max-width:70ch}</style></head><body><h1>Goes well with: before and after</h1><p>Before: main as of 41cc706. After: branch <code>goes-well-with</code>. Both builds on one scratch copy of the working database; the pairs are example data set in that copy only. Click an image for its full size. The whole-popup shots are taken on a screen tall enough to show all of the popup at once; the first-screen shots are what a customer gets on opening.</p>${parts.join('')}</body></html>`);
+  await fs.writeFile(path.join(out, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Goes well with: before and after</title><style>body{margin:0;padding:20px;font:15px/1.45 -apple-system,system-ui,sans-serif;background:#f5f5f7;color:#1d1d1f}h1{font-size:24px;margin:0 0 6px}h2{margin:44px 0 0;font-size:20px}h2 small{display:block;font-weight:400;font-size:14px;color:#6e6e73}h3{margin:28px 0 0;font-size:16px}h4{margin:18px 0 6px;font-size:13px;color:#6e6e73;font-weight:600;text-transform:uppercase;letter-spacing:.04em}.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;align-items:start}.row.v390{grid-template-columns:repeat(3,minmax(0,300px))}.row.whole.vlaptop{grid-template-columns:repeat(2,minmax(0,420px))}figure{margin:0}figcaption{font-weight:600;margin-bottom:4px}img{width:100%;display:block;border:1px solid #d2d2d7;border-radius:8px;background:#fff}p{max-width:70ch}</style></head><body><h1>Goes well with: before and after</h1><p>Before: main. After: branch <code>goes-well-with</code> with the rulings of 2026-11-19: the card below Price and the item’s choices, the block at the bottom of the popup, below the item’s own sizes and options. Shot again on 2026-11-19: every After, and the editor’s Before (framed like its After, on the end of Price and the choices, on main after the Next.js upgrade). The popup’s Before shots are those of 2026-11-18 (main at 41cc706; the customers’ pages are byte for byte the same after the upgrade). All builds on one scratch copy of the working database; the pairs are example data set in that copy only. Click an image for its full size. The whole-popup shots are taken on a screen tall enough to show all of the popup at once; the first-screen shots are what a customer gets on opening.</p>${parts.join('')}</body></html>`);
   console.log('index.html written');
 }
 console.log(`${shots.length} ${label} screenshots in ${out}`);

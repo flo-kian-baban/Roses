@@ -1,5 +1,6 @@
 // "Goes well with" (Kian via the PM, 2026-11-18): up to 4 other items of the same venue that go well with an item, picked in the admin
-// (the item editor's GOES WELL WITH card), shown to customers in the item's popup under its description, each with its photo (if any),
+// (the item editor's GOES WELL WITH card), shown to customers as the last group of the item's popup, below its own sizes and options
+// (the PM's ruling of 2026-11-19; first built directly under the description), each with its photo (if any),
 // its name in the page's language and its price as the menu's rows show it; a tap opens that item's own popup. One-way and in the
 // order picked. Only pairs that are on the page themselves are shown (src/lib/menu.ts leaves the rest out silently). The popup's
 // template carries the heading and the paired items' ids; the menu kit's script fills each row from that item's own row on the page

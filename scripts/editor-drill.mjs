@@ -24,6 +24,7 @@ import path from 'node:path';
 import { chromium, devices } from 'playwright';
 import { connectDb } from './load-env.mjs';
 import { scratchTarget } from './scratch-target.mjs';
+import { UNDER_TOAST } from './layout-rules.mjs';
 
 // The target is a scratch server, or the drill stops before sending anything (the PM, 2026-11-06; scripts/scratch-target.mjs).
 const { args } = await scratchTarget('scripts/editor-drill.mjs', { options: { base: 'server', out: 'path', dist: 'path', jpeg: 'flag' }, db: true, env: ['DRILL_ADMIN_PIN'] });
@@ -52,7 +53,17 @@ async function api(p, body, cookie) { const r = await fetch(base + p, { method: 
 // order of the items of one section on the public page (data-id of every li.item inside that <section>)
 const publicOrder = (html, sectionId) => { const m = html.match(new RegExp(`<section[^>]*data-id="${sectionId}"[\\s\\S]*?</section>`)); return m ? [...m[0].matchAll(/<li class="item[^"]*"[^>]*data-id="([^"]+)"/g)].map((x) => x[1]) : null; };
 
-const NAME = 'Drill editor item';
+// The toast rule (the PM, 2026-11-19): while the "Added · Undo" strip or any toast shows, no tappable control sits under it. toastRule
+// reads, with the toast up, what a tap would reach under the toast and the strip the item editor keeps free for it (UNDER_TOAST in
+// scripts/layout-rules.mjs), and where the editor's description and price row end; t-toast-rule judges what was seen.
+const toastRule = async (page) => {
+  await page.waitForSelector('.toast', { timeout: 4000 }).catch(() => {}); await sleep(300);
+  const ends = await page.evaluate(() => { const b = (sel) => { const r = document.querySelector(sel)?.getBoundingClientRect(); return r ? Math.round(r.bottom) : null; }; return { desc: b('.item-panel textarea[aria-label="Description"]'), price: b('.item-panel [data-price-row]') }; });
+  return { ...(await page.evaluate(UNDER_TOAST)), ...ends };
+};
+const toastRuleSeen = [];
+const NAME = 'Drill editor item', STRIP = 'Drill strip item';
+await db.query(`delete from items where venue_id = $1 and name->>'en' = $2`, [VENUE, STRIP]);
 await db.query(`delete from items where venue_id = $1 and name->>'en' = $2`, [VENUE, NAME]);
 const sec = (await db.query(`select id, name->>'en' as name from sections where venue_id = $1 and listed and not seasonal order by position limit 1`, [VENUE])).rows[0]; // a section of the venue's own order (the Seasonal section, 2026-10-12, stays first and has its own drill)
 let itemId = null;
@@ -75,6 +86,7 @@ let taps = 0; const tap = async (sel) => { taps++; await p.click(sel); };
   // (and "+ Size") are on its first screen, with no More to open; Done closes it
   const opened = await p.waitForSelector(`.item-panel[aria-label="Edit ${NAME}"]`, { timeout: 5000 }).then(() => true).catch(() => false);
   const moreOpen = opened && await p.evaluate(() => { const v = (s) => { const r = document.querySelector(s)?.getBoundingClientRect(); return !!r && r.top >= 0 && r.bottom <= innerHeight; }; return v('.item-panel textarea[aria-label="Description"]') && v('.item-panel [data-price-row]'); });
+  if (opened) toastRuleSeen.push({ what: '390 × 664, an item just added', added: true, m: await toastRule(p) }); // "Added · Undo" is up
   if (opened) { await p.click('.item-panel [data-back]'); await p.waitForSelector('.item-panel', { state: 'detached', timeout: 5000 }).catch(() => {}); }
   const row = (await db.query(`select i.id, i.listed, i.price, x.section_id, x.position, (select max(position) from item_sections where section_id = x.section_id) as last from items i join item_sections x on x.item_id = i.id where i.venue_id = $1 and i.name->>'en' = $2`, [VENUE, NAME])).rows[0];
   itemId = row?.id;
@@ -916,6 +928,40 @@ const errorToast = async (p) => { const t = p.locator('[data-toast-error]'); con
     await api('/api/admin/item', { action: 'update', id, patch: { price: before == null ? null : Number(before) } }, await cookieOf(ph));
   } else check('t-toast-clear', false, 'the last row of the section has sizes, no price in place');
   await ph.close();
+}
+{ // the toast rule (the PM, 2026-11-19), with the iPhone 13's reading taken when the drill's item was added: an item added on a 360 px
+  // phone (the suite's 360 × 780, and a short one, 360 × 640, as information), and a save that does not go through (the red toast)
+  for (const [w, h, info] of [[360, 780, false], [360, 640, true]]) {
+    const ph = await browser.newContext({ viewport: { width: w, height: h }, isMobile: true, hasTouch: true }); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+    await signin(p, VENUE); const ck = await cookieOf(ph);
+    await p.click(`[aria-label="Add item to ${sec.name}"]`);
+    await p.fill('[role=dialog] input[name=name]', STRIP); await p.fill('[role=dialog] input[name=price]', '4.5'); await p.press('[role=dialog] input[name=price]', 'Enter');
+    const opened = await p.waitForSelector(`.item-panel[aria-label="Edit ${STRIP}"]`, { timeout: 5000 }).then(() => true).catch(() => false);
+    toastRuleSeen.push({ what: `${w} × ${h}, an item just added`, added: true, info, m: opened ? await toastRule(p) : null });
+    await snap(p, `added-strip-${w}x${h}`);
+    const made = (await db.query(`select id from items where venue_id = $1 and name->>'en' = $2`, [VENUE, STRIP])).rows;
+    for (const r of made) await api('/api/admin/item', { action: 'delete', id: r.id }, ck);
+    await ph.close();
+  }
+  { const ph = await browser.newContext(DEVICE); const p = await ph.newPage(); p.on('pageerror', (e) => log('pageerror', e.message));
+    await signin(p, VENUE); const ck = await cookieOf(ph);
+    await openEditor(p);
+    await p.route('**/api/admin/item', (r) => r.abort());
+    await p.locator('.item-panel [data-status] input[role=switch]').click();
+    const t = await errorToast(p);
+    toastRuleSeen.push({ what: '390 × 664, a save that did not go through', m: t.seen ? await toastRule(p) : null });
+    await p.unroute('**/api/admin/item');
+    await p.click('[data-toast-error] [data-try-again]').catch(() => {});
+    await waitDb('select listed from items where id=$1', [itemId], (r) => r?.listed === false, 6000);
+    await api('/api/admin/item', { action: 'update', id: itemId, patch: { listed: true } }, ck);
+    await ph.close();
+  }
+  const fine = (x) => !!x.m && !!x.m.toast && !!x.m.zone && x.m.zone.top <= x.m.toast.top && x.m.under.length === 0
+    && (!x.added || (/^Added/.test(x.m.toast.text) && x.m.desc !== null && x.m.price !== null && x.m.desc <= x.m.zone.top && x.m.price <= x.m.zone.top));
+  const say = (x) => !x.m ? `${x.what}: NOT MEASURED (no editor or no toast)` : `${x.what} (${x.m.view}): ${x.m.toast ? `“${x.m.toast.text}” at ${x.m.toast.top}–${x.m.toast.bottom} px` : 'NO TOAST'}, the strip kept free ${x.m.zone ? `${x.m.zone.top}–${x.m.zone.bottom} px` : 'MISSING'}${x.added ? `; the description ends at ${x.m.desc} px and the price row at ${x.m.price} px` : ''}; a tap tried at ${x.m.points} points of the toast and the strip reaches ${x.m.under.length ? x.m.under.slice(0, 3).join('; ') : 'no control'}`;
+  const judged = toastRuleSeen.filter((x) => !x.info), told = toastRuleSeen.filter((x) => x.info);
+  check('t-toast-rule', judged.length === 3 && judged.every(fine), `while a toast shows in the item editor, no tappable control under it or its strip, and a just-added item's description and price end above the strip: ${judged.map(say).join(' | ')}`);
+  for (const x of told) measure(`the toast rule on a short 360 px phone, information only (${fine(x) ? 'met' : 'MISSED'}): ${say(x)}`);
 }
 await laptop.close();
 await api('/api/admin/item', { action: 'delete', id: itemId }, cookie);

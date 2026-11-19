@@ -94,16 +94,23 @@ export function StyleTab({ venueId, version, onSaved, onFail, onApply, onLive, o
   };
   // On a phone (the controls in the bottom sheet), opening a colour scrolls the sheet so its swatches (Auto, the venue's colours, Custom) are in
   // view (the PM, 2026-10-09); the sheet stays at half while a colour is open, so the preview keeps its share. After the sheet's height settles.
+  // The same when the sheet's body gets shorter while the colour is open (the toast rule, the PM, 2026-11-19: after a colour is saved the
+  // body ends above the strip kept free for the toast), so the swatches stay in view for the next try.
   useEffect(() => {
     if (!openToken) return;
-    const t = setTimeout(() => {
+    const reveal = () => {
       const el = document.querySelector<HTMLElement>(`[data-style-token="${openToken}"] [data-style-swatches]`), box = el?.closest<HTMLElement>('[data-style-sheet-body]');
       if (!el || !box) return;
       const b = box.getBoundingClientRect(), r = el.getBoundingClientRect(), pad = Math.max(0, Math.min(6, (b.height - r.height) / 2)); // a margin only where it still fits (a small phone's sheet has room for the swatches alone)
       const delta = r.bottom + pad > b.bottom ? Math.min(r.bottom + pad - b.bottom, r.top - pad - b.top) : r.top - pad < b.top ? r.top - pad - b.top : 0;
       if (delta) box.scrollTo({ top: box.scrollTop + delta, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-    }, 260);
-    return () => clearTimeout(t);
+    };
+    let t = setTimeout(reveal, 260);
+    const body = document.querySelector<HTMLElement>('[data-style-sheet-body]');
+    let height = body?.clientHeight ?? 0;
+    const ro = body ? new ResizeObserver(() => { const h = body.clientHeight; if (h < height) { clearTimeout(t); t = setTimeout(reveal, 60); } height = h; }) : null;
+    if (body) ro!.observe(body);
+    return () => { clearTimeout(t); ro?.disconnect(); };
   }, [openToken]);
   // A tap on a region in the preview opens its group here and scrolls to it, once per tap (never again when the data or the
   // preview reload after a save). A tap on the group that is already open only re-outlines it: the open colour stays.

@@ -10,25 +10,32 @@
 // 24 px above the sheet's edge (over the bottom of the preview, which stays visible), so it meets the finger over 44 px without making the
 // header taller: on a small phone every pixel of the header comes out of the controls' room at half.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { toastStrip } from './ui';
 
 export type Detent = 'collapsed' | 'half' | 'full';
 const ORDER: Detent[] = ['collapsed', 'half', 'full'];
 
-export function BottomSheet({ detent, onDetent, max = 'full', top, header, children, label }: { detent: Detent; onDetent: (d: Detent) => void; max?: Detent; top: number; header: React.ReactNode; children: React.ReactNode; label: string }) {
+// zone: the height of the toast showing (0: none). The toast rule (the PM, 2026-11-19): the toast lies at the bottom of the screen, over
+// this sheet, so the sheet keeps a strip free for it under its body, which ends above it (at half and full the sheet keeps its height
+// and the body gives up the room); when the sheet is down it is its header and the strip, so the toast is under the handle and the
+// controls, never over them (2026-11-15 to 19 it sat 12 px above the sheet instead, over the preview and the handle's tap area).
+export function BottomSheet({ detent, onDetent, max = 'full', top, header, children, label, zone = 0 }: { detent: Detent; onDetent: (d: Detent) => void; max?: Detent; top: number; header: React.ReactNode; children: React.ReactNode; label: string; zone?: number }) {
   const headRef = useRef<HTMLDivElement>(null);
   const [vh, setVh] = useState(0);
   const [headH, setHeadH] = useState(120);
   const drag = useRef<{ y0: number; h0: number; moved: boolean } | null>(null);
   const [dragging, setDragging] = useState<number | null>(null); // the height while the finger is on the handle
-  // The header's height is also written on the page (--style-sheet-head): while the sheet is down, the "Saved · Undo" toast sits just
-  // above it instead of over its handle and controls (globals.css; found 2026-11-15, when the header became 72 px and its handle fell
-  // under the toast, so a tap meant for it could land on Undo).
   useLayoutEffect(() => {
-    const f = () => { setVh(window.innerHeight); if (headRef.current) { setHeadH(headRef.current.offsetHeight); document.body.style.setProperty('--style-sheet-head', `${headRef.current.offsetHeight}px`); } };
+    const f = () => { setVh(window.innerHeight); if (headRef.current) setHeadH(headRef.current.offsetHeight); };
     f(); window.addEventListener('resize', f); const ro = headRef.current ? new ResizeObserver(f) : null; if (headRef.current) ro!.observe(headRef.current);
-    return () => { window.removeEventListener('resize', f); ro?.disconnect(); document.body.style.removeProperty('--style-sheet-head'); };
+    return () => { window.removeEventListener('resize', f); ro?.disconnect(); };
   }, []);
-  const heights: Record<Detent, number> = { collapsed: headH, half: Math.max(headH, Math.floor(vh * 0.55 - top)), full: Math.max(headH, vh - top) };
+  // the strip's height as drawn (it includes the phone's own bottom inset), read before the paint that shows it
+  const zoneRef = useRef<HTMLDivElement>(null);
+  const [zoneH, setZoneH] = useState(0);
+  useLayoutEffect(() => { setZoneH(zone > 0 && zoneRef.current ? zoneRef.current.offsetHeight : 0); }, [zone, vh]);
+  const least = headH + zoneH; // never shorter than the header and the strip
+  const heights: Record<Detent, number> = { collapsed: least, half: Math.max(least, Math.floor(vh * 0.55 - top)), full: Math.max(least, vh - top) };
   const allowed = ORDER.slice(0, ORDER.indexOf(max) + 1);
   useEffect(() => { if (!allowed.includes(detent)) onDetent(max); }, [max]);
   const height = dragging ?? heights[allowed.includes(detent) ? detent : max];
@@ -44,6 +51,8 @@ export function BottomSheet({ detent, onDetent, max = 'full', top, header, child
         {header}
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain border-t border-line" data-style-sheet-body>{children}</div>
+      {/* -mt-px: its top line lies on the body's own (one line, not two, when the body has no height: the sheet down) */}
+      {zone > 0 && <div ref={zoneRef} aria-hidden="true" data-toast-zone="" className="relative -mt-px shrink-0 border-t border-line bg-canvas" style={{ height: toastStrip(zone) }} />}
     </div>
   );
 }

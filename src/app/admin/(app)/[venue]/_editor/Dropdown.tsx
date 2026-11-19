@@ -28,10 +28,13 @@ export function Dropdown<T extends string>({ kind, label, choices, value, placeh
   const current = choices.find((c) => c.id === value) ?? null;
 
   // The card under the pill, or above it when it does not fit below and there is more room above; 8 px inside the screen's edges.
+  // While a toast shows under the pill, the room below ends at the strip kept free for it (the toast rule, the PM, 2026-11-19: the
+  // card's rows are never under the toast), so a card that would reach it opens above the pill.
   const place = () => {
     const b = btn.current?.getBoundingClientRect(), c = card.current; if (!b || !c) return;
     const h = c.offsetHeight, w = Math.max(c.offsetWidth, b.width);
-    const below = innerHeight - b.bottom - 12, above = b.top - 12;
+    const t = document.querySelector('.toast')?.getBoundingClientRect(), floor = t && t.top >= b.bottom ? t.top - 8 : innerHeight;
+    const below = floor - b.bottom - 12, above = b.top - 12;
     const left = Math.round(Math.max(8, Math.min(b.left, innerWidth - 8 - w)));
     setPos(h > below && above > below ? { left, minWidth: Math.round(b.width), bottom: Math.round(innerHeight - b.top + 4) } : { left, minWidth: Math.round(b.width), top: Math.round(b.bottom + 4) });
   };
@@ -52,9 +55,12 @@ export function Dropdown<T extends string>({ kind, label, choices, value, placeh
     const blur = () => setOpen(false); // a tap in the preview's frame takes the focus out of this window
     document.addEventListener('pointerdown', outside, true); document.addEventListener('keydown', key, true);
     window.addEventListener('scroll', follow, true); window.addEventListener('resize', follow); window.addEventListener('blur', blur);
+    // a toast that comes or goes while the card is open changes the room under the pill (the sheet's strip): placed again
+    const seen = new MutationObserver((ms) => { if (ms.some((m) => [...m.addedNodes, ...m.removedNodes].some((n) => n instanceof HTMLElement && n.classList.contains('toast')))) follow(); });
+    const root = btn.current?.closest('.admin') ?? document.body; seen.observe(root, { childList: true, subtree: true });
     return () => {
       document.removeEventListener('pointerdown', outside, true); document.removeEventListener('keydown', key, true);
-      window.removeEventListener('scroll', follow, true); window.removeEventListener('resize', follow); window.removeEventListener('blur', blur); cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', follow, true); window.removeEventListener('resize', follow); window.removeEventListener('blur', blur); cancelAnimationFrame(raf); seen.disconnect();
     };
   }, [open]);
 

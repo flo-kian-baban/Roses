@@ -29,7 +29,7 @@ import { Icon } from '../../../_ui/icons';
 import { SEASON_NAMES, listingProblem, notesToConfirm, seasonState } from './state';
 import { uploadImage } from './upload';
 import { retryable } from './api';
-import { Switch } from './ui';
+import { Switch, ToastStrip } from './ui';
 import { CellText, DraftLine, Heading, LangTag, cardCls, headingStyle, headingText, segCls, textBtn } from './kit';
 import { COUNTS, LIMITS } from '@/lib/rules';
 import { Choices, CopyChoicesSheet, PriceOrSizes, groupCount } from './Choices';
@@ -59,7 +59,9 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
   const addChoices = useRef<() => void>(() => undefined); // the Price card's "+ Add choices" starts a group in the Choices card
   useEffect(() => { if (onNotesFirst) document.querySelector('[data-group-section="allergens"]')?.scrollIntoView({ block: 'start' }); }, [item.id, onNotesFirst]);
   useEffect(() => { if (selectName) { const el = nameRef.current; if (el) { el.focus(); el.select(); } } }, [selectName]); // a copy opens with its name selected, ready to be typed over
-  useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !copying && !pairing) onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose, copying, pairing]);
+  // Escape closes the editor, unless a sheet lies over it: then it closes that sheet only (its own handler). Any sheet: the section
+  // picker and Delete item's question were not known here, so Escape closed them and the editor with them (found 2026-11-19).
+  useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !copying && !pairing && !document.querySelector('[data-sheet]')) onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose, copying, pairing]);
   useEffect(() => { if (!reason) return; const t = setTimeout(() => setReason(null), 6000); return () => clearTimeout(t); }, [reason]);
   // the toast's strip appears under the scroll area: a field being typed in that it now hides is brought back into view
   useEffect(() => { if (!toast) return; const a = document.activeElement as HTMLElement | null, s = scroller.current; if (a && s?.contains(a) && a.getBoundingClientRect().bottom > s.getBoundingClientRect().bottom) a.scrollIntoView({ block: 'nearest' }); }, [toast]);
@@ -156,7 +158,7 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
         </div>
         <p className="px-3 pt-1.5 text-[13px] text-ink-muted">Duplicate makes a hidden copy, “{item.name.en} (copy)”, with the same details.</p>
       </div>
-      {!!toast && <div aria-hidden="true" data-toast-zone="" className="shrink-0 border-t border-line bg-fill" style={{ height: `calc(max(1.25rem, env(safe-area-inset-bottom)) + ${toast + 8}px)` }} />}
+      <ToastStrip h={toast ?? 0} className="bg-fill" />
       {copying !== null && <CopyChoicesSheet item={item} group={copying} sections={sections} items={items} onCopy={(ids) => onCopy(copying, ids)} onClose={() => setCopying(null)} />}
     </div>
   );

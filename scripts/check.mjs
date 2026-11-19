@@ -69,6 +69,9 @@
 // rules on the route and in the database, what the public page shows, the popup and the tap in English and Persian (Chromium and WebKit),
 // nothing clipped at 360 px, the card and the picker in the admin, Duplicate, the preview; the touch and layout drills cover the new card
 // and picker too.
+// 2026-11-19 (the PM): the toast rule on every admin screen (scripts/toast-drill.mjs): while a toast or its strip shows, no tappable control
+// under it, at 390 × 664 and at 360 px, with the one-line toast of a save, the red one of a save that did not go through and the longest
+// one, on the Menu, Details and Style tabs, the item editor, the sheets, the menus and the full-screen preview.
 import fs from 'node:fs';
 import path from 'node:path';
 import net from 'node:net';
@@ -310,7 +313,9 @@ const adminPinHash = ['$scrypt$N=16384,r=8,p=1', pinSalt.toString('base64'), scr
 const SUITE_ADMIN_NAME = 'Check suite', DRILL_PIN_NAMES = ['Drill staff', 'Drill owner', 'Lockout drill (valid PIN)', 'Lockout drill (to be revoked)'];
 const DRILL_ROW_NAMES = ['Drill editor item', 'Drill strip item', 'Drill copy target', 'Drill preview item', 'Drill section', 'Drill section item 1', 'Drill section item 2', 'Drill venue', 'Drill default venue',
   // the "Goes well with" drill's own items (scripts/pairs-drill.mjs, 2026-11-18)
-  'Drill pairs item', 'Drill pairs item (copy)', 'Drill pair one', 'Drill pair two', 'Drill pair three', 'Drill pair four with a long name that has to wrap onto a second line on a narrow phone', 'Drill pair hidden', 'Drill pair out of season', 'Drill pair temp'];
+  'Drill pairs item', 'Drill pairs item (copy)', 'Drill pair one', 'Drill pair two', 'Drill pair three', 'Drill pair four with a long name that has to wrap onto a second line on a narrow phone', 'Drill pair hidden', 'Drill pair out of season', 'Drill pair temp',
+  // the toast drill's own section and items (scripts/toast-drill.mjs, 2026-11-19)
+  'Drill toast section', 'Drill toast item 1', 'Drill toast item 2', 'Drill toast item 3'];
 let newVenueId = null;
 scratchEnvRef = scratchEnv;
 const commit = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim();
@@ -585,6 +590,13 @@ try {
     const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
     return { pass: r.status === 0, checks: drillChecks('pairs/pairs-drill.json', !!(m && m.length)), evidence: ['pairs/pairs-drill.txt', 'pairs/pairs-drill.json', 'pairs/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
   }, 'pairs');
+  // The toast rule on every admin screen (the PM, 2026-11-19), on a section and items the drill makes through the admin API and removes
+  await step('toast drill (the PM, 2026-11-19: while a toast or its strip shows, no tappable control sits under it on any admin screen; at 390 × 664 and at 360 px, with the one-line toast of a save, the red toast of a save that did not go through and the longest toast, a tap tried at every second pixel of the toast and its strip on every screen a toast can show on: the Menu tab at the row just changed, at its top, mid-way and at its end, the venue switcher and the account menu, a section\'s menu opened low on the screen, a section being reordered, the Add item, Add section, Rename and Delete section sheets, the full-screen preview, the item editor with its Goes well with card and its sheets, the Details tab, the Style tab\'s sheet down, at half and full with a colour open, the dropdowns of the preview controls and the Layout group; at the bottom the toast wholly in a solid strip with 8 px above it, with a sheet open at the top with the sheet at least 8 px under it; the Menu row just changed above the strip; the page as tall with the toast as without; at the page\'s end every control above the strip; the open colour\'s swatches in view when a colour\'s save does not go through; no toast on the screens outside the page editor; a laptop measured for information)', async () => {
+    const r = await run('node', ['scripts/toast-drill.mjs', '--base', base, '--out', path.join(out, 'toast'), '--jpeg'], { env: drillEnv, logFile: 'toast/toast-drill.log' });
+    const m = (r.stdout.match(/TOAST DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];
+    const measures = [...r.stdout.matchAll(/^MEASURE: (.*)$/gm)].map((x) => x[1]);
+    return { pass: r.status === 0, checks: drillChecks('toast/toast-drill.json', !!(m && m.length)), evidence: ['toast/toast-drill.txt', 'toast/toast-drill.json', 'toast/*.jpg'], note: `${m || `exit ${r.status}`}; ${measures.join('; ')}` };
+  }, 'toast');
   await step('preview control bar drill (the bar in the Style tab only, at its top and in view while it scrolls on the laptop, in the bottom sheet on a phone, none on the Menu tab or in its preview; from the Menu tab on the iPhone 13 viewport: the welcome screen in another season, in the evening, in Persian in ≤ 4 taps with the customers\' page byte-identical; every switch of the bar within 300 ms on the phone and the laptop, Replay; the frame kept across tabs with the Style tab\'s screen back on return; the section list and the item popup open again after a save in the Style tab; a language tap on the previewed welcome screen; the customers\' HTML without preview markup; the season switch shows each season\'s Seasonal section in the preview, the customers\' page byte for byte unchanged)', async () => {
     const r = await run('node', ['scripts/preview-drill.mjs', '--base', base, '--out', path.join(out, 'preview'), '--jpeg'], { env: drillEnv, logFile: 'preview/preview-drill.log' });
     const m = (r.stdout.match(/PREVIEW DRILL (PASS|FAIL) \((\d+)\/(\d+)\)/) || [])[0];

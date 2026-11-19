@@ -318,10 +318,13 @@ try {
   await step('production build (.next-check)', async () => { const r = await run('npx', ['next', 'build'], { env: { NEXT_DIST_DIR: DIST, ROSES_APP_NAME: 'roses-check:build' }, logFile: 'build.log' }); return { pass: r.status === 0, evidence: ['build.log'], note: r.status === 0 ? 'next build ok' : `exit ${r.status}` }; }, 'build');
   if (!results.at(-1).pass) throw new Error('build failed; stopping');
   // pre-go-live audit (2026-11-02, S1-07 and S1-15): no production dependency with an advisory known at the audit. Next.js 16.0.0–16.4.0 carry
-  // GHSA-2464-fhr4-w9xw and GHSA-673q-mjm6-r5xr (critical) and GHSA-p3m5-59mp-jv5r (high); zod 3 carries a high one and was never imported (removed)
-  await step('production dependencies without the advisories found at the pre-go-live audit: next installed ≥ 16.4.1 and pinned to that exact release in package.json (GHSA-2464-fhr4-w9xw, GHSA-673q-mjm6-r5xr, GHSA-p3m5-59mp-jv5r); zod not a production dependency', async () => {
+  // GHSA-2464-fhr4-w9xw and GHSA-673q-mjm6-r5xr (critical) and GHSA-p3m5-59mp-jv5r (high); zod 3 carries a high one and was never imported (removed).
+  // Security upgrade (Kian, 2026-11-19): the seven advisories published with Next.js 16.4.5 on 2026-11-03 reach 16.x up to 16.4.4 (GHSA-mfr8-8qww-v76h,
+  // GHSA-vc7v-qv4w-wrv8, GHSA-vvgp-ww4w-46vf, GHSA-rhh4-g77r-r9qj, GHSA-pc58-hwjq-p385, GHSA-7qx7-33qx-rqx2, GHSA-f3mh-rxg3-f5g2), so the floor is 16.4.5.
+  // A fixed floor: it does not see an advisory published after it was written (`npm audit --omit=dev` and the release notes do; the runbook's go-live list).
+  await step('production dependencies without the known advisories: next installed ≥ 16.4.5 and pinned to that exact release in package.json (the pre-go-live audit\'s GHSA-2464-fhr4-w9xw, GHSA-673q-mjm6-r5xr and GHSA-p3m5-59mp-jv5r, fixed in 16.4.1, and the seven advisories of 2026-11-03, fixed in 16.4.5); zod not a production dependency', async () => {
     const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8')), installed = JSON.parse(fs.readFileSync('node_modules/next/package.json', 'utf8')).version, declared = pkg.dependencies.next;
-    const [a, b, c] = installed.split(/[.-]/).map(Number); const fixed = a > 16 || (a === 16 && (b > 4 || (b === 4 && c >= 1)));
+    const [a, b, c] = installed.split(/[.-]/).map(Number); const fixed = a > 16 || (a === 16 && (b > 4 || (b === 4 && c >= 5)));
     return { pass: fixed && declared === installed && !pkg.dependencies.zod, note: `installed next ${installed}; package.json "${declared}"; zod a production dependency: ${!!pkg.dependencies.zod}` };
   }, 'dependency-advisories');
   // pre-go-live audit (the PM's fix batch, 2026-11-03, S1-12 and S1-13): Node 22 declared for the host (engines) and run by the suite; every

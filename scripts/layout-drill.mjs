@@ -2,7 +2,8 @@
 // The admin's layout rules on every screen (the PM, 2026-11-06: the item editor's rules of 2026-11-04, its t-calm-layout, extended to the
 // whole admin). On a laptop (1440 × 900), a 390 px phone (the iPhone 13 viewport) and a 360 px phone, each screen of the admin (the
 // three sign-in screens; the Menu tab with an alert, the venue switcher and the account menu open, a section's menu, a section being
-// reordered, the Add item, Add section, Rename and Delete section sheets; the item editor; the Style tab, a colour open, the Welcome
+// reordered, the Add item, Add section, Rename and Delete section sheets; the item editor, its Goes well with card holding three pairs
+// with the venue's longest names (set by the drill, put back at the end) and its picker; the Style tab, a colour open, the Welcome
 // group open; Details; Team; Add venue) is measured by scripts/layout-rules.mjs: nothing past the screen's edges, cut by its box, cut
 // short or scrolling sideways; the text sizes 13, 16 and 17 px and the page title's (28 px); one corner radius (12 px) on what the admin
 // draws. One check per screen width. On the two phones also: every row that scrolls sideways (the preview bar in the Style tab's sheet)
@@ -32,6 +33,10 @@ const sec = (await db.query(`select id, name->>'en' as name from sections where 
 // an open alert, so the alerts card is measured too (removed at the end)
 await db.query(`delete from admin_alerts where message like 'Layout drill:%'`);
 await db.query(`insert into admin_alerts (venue_id, kind, message) values ('senso', 'lockout-cap', 'Layout drill: 50 wrong PINs on this venue in the last hour')`);
+// "Goes well with" (Kian via the PM, 2026-11-18): the item the editor screens open gets three pairs, the venue's longest names, so the
+// card's rows are measured where names wrap; its own list is put back at the end
+const soup = (await db.query(`select id, pairs from items where venue_id = 'senso' and name->>'en' = 'Pumpkin Soup' order by listed desc limit 1`)).rows[0];
+if (soup) await db.query(`update items set pairs = array(select id from items where venue_id = 'senso' and id <> $1 order by length(name->>'en') desc, id limit 3) where id = $1`, [soup.id]);
 const { SCREENS, signin, settle } = adminScreens({ base, pin, sec });
 const VIEWS = [
   { id: 'laptop', title: 'laptop (1440 × 900)', ctx: { viewport: { width: 1440, height: 900 } } },
@@ -82,6 +87,7 @@ for (const v of VIEWS) {
   all.push({ view: v.id, rows });
 }
 await browser.close();
+if (soup) await db.query('update items set pairs = $2::uuid[] where id = $1', [soup.id, soup.pairs]); // the item's own list back
 await db.query(`delete from admin_alerts where message like 'Layout drill:%'`); await db.end();
 const pass = results.every((r) => r.ok);
 await fs.writeFile(path.join(out, 'layout-drill.json'), JSON.stringify({ base, at: new Date().toISOString(), pass, results, views: all, transcript }, null, 2));

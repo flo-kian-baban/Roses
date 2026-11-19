@@ -11,6 +11,9 @@
 //     each in full, and under them the note for customers when the item has one (owner and admin);
 //   Price (the price or the sizes; serves and combo parts when the item has them; + Add size, + Add choices) and one card per choice
 //     group (Choices.tsx);
+//   Goes well with (Kian via the PM, 2026-11-18; below Price and its choices since the PM's ruling of 2026-11-19, so a just-added item
+//     keeps its description and its price above the "Added · Undo" strip): up to 4 other items of the venue that customers see at the end
+//     of this item's popup; rows with Remove, "+ Add item" with "n of 4", the picker (Pairs.tsx);
 //   Appears in: the sections, Edit opening the section picker (SectionPicker.tsx);
 //   Allergens & diet: owner and admin (staff see one line; the route answers them 403); one card, open while research drafts wait for
 //     Confirm, closed otherwise (GoodToKnow.tsx; an item opened from the "Allergens to confirm" filter opens on it);
@@ -18,7 +21,8 @@
 //     empty field in its place, the cursor in it), Duplicate item, Delete item (confirmed).
 // The item's place within a section is set in the Menu list (Reorder items in the section's menu; a laptop also drags). A field drafted at
 // import or by research shows "Draft" and "Looks good" on a line under it; Looks good clears that field's flag only. Every field saves
-// itself on change; while "Saved · Undo" shows, the scroll area ends above it, so it never covers a control.
+// itself on change; while a toast shows ("Saved · Undo", "Added · Undo", the red "Not saved…"), the scroll area ends above it, in a strip as
+// tall as the toast is drawn plus 8 px, so no control is ever under it (the PM's rule of 2026-11-19).
 import { cloneElement, useEffect, useRef, useState } from 'react';
 import type { Bi, Component, EditorItem, EditorSection, Notes, Photo as PhotoData, SeasonId } from '@/lib/types';
 import { Icon } from '../../../_ui/icons';
@@ -31,13 +35,14 @@ import { COUNTS, LIMITS } from '@/lib/rules';
 import { Choices, CopyChoicesSheet, PriceOrSizes, groupCount } from './Choices';
 import { GoodToKnow, notesCount, notesSummary } from './GoodToKnow';
 import { SectionPicker } from './SectionPicker';
+import { Pairs } from './Pairs';
 
 // What the top bar says about the item's saves (Editor.tsx keeps it: saves under way, the ones that did not go through, a refusal, the page).
 export type SaveStatus = { state: 'saving' | 'saved' | 'failed' | 'refused' | 'unpublished'; retry?: () => void };
 
 export type ItemPanelProps = {
   item: EditorItem; venueId: string; sections: EditorSection[]; items: Record<string, EditorItem>; canNotes: boolean; column?: boolean; season: SeasonId; notesFirst?: boolean;
-  selectName?: boolean; toast?: boolean; save: SaveStatus;
+  selectName?: boolean; toast?: number; save: SaveStatus; // toast: the height of the toast showing, in px (0: none)
   onPatch: (patch: Record<string, unknown>) => Promise<void>; onNotes: (notes: Notes) => Promise<void>; onConfirm: () => Promise<void>; onCopy: (group: string, ids: string[]) => Promise<void>; onDelete: () => void;
   onLooksGood: (field: string) => Promise<void>; onDuplicate: () => Promise<void>; onClose: () => void;
 };
@@ -47,13 +52,14 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
   const [allergensOpen, setAllergensOpen] = useState(toConfirm); // open while drafts wait for Confirm (the PM, 2026-10-13); it stays as the person leaves it
   const [revealed, setRevealed] = useState<Record<Detail, boolean>>({ serves: false, note: false, parts: false }); // an empty detail put in its place by "Add …"
   const [copying, setCopying] = useState<string | null>(null); // the choice group being copied to other items
+  const [pairing, setPairing] = useState(false); // the "Goes well with" picker is open
   const [reason, setReason] = useState<string | null>(null);
   const [busy, setBusy] = useState(false); // Duplicate on its way
   const scroller = useRef<HTMLDivElement>(null), nameRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const addChoices = useRef<() => void>(() => undefined); // the Price card's "+ Add choices" starts a group in the Choices card
   useEffect(() => { if (onNotesFirst) document.querySelector('[data-group-section="allergens"]')?.scrollIntoView({ block: 'start' }); }, [item.id, onNotesFirst]);
   useEffect(() => { if (selectName) { const el = nameRef.current; if (el) { el.focus(); el.select(); } } }, [selectName]); // a copy opens with its name selected, ready to be typed over
-  useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !copying) onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose, copying]);
+  useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !copying && !pairing) onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose, copying, pairing]);
   useEffect(() => { if (!reason) return; const t = setTimeout(() => setReason(null), 6000); return () => clearTimeout(t); }, [reason]);
   // the toast's strip appears under the scroll area: a field being typed in that it now hides is brought back into view
   useEffect(() => { if (!toast) return; const a = document.activeElement as HTMLElement | null, s = scroller.current; if (a && s?.contains(a) && a.getBoundingClientRect().bottom > s.getBoundingClientRect().bottom) a.scrollIntoView({ block: 'nearest' }); }, [toast]);
@@ -118,6 +124,9 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
           </>} />
         <Choices item={item} onPatch={patch} onCopy={setCopying} onLooksGood={looksGood} addRef={addChoices} />
 
+        {/* goes well with: the items customers see at the end of this item's popup (below Price and its choices: the PM, 2026-11-19) */}
+        <Pairs item={item} sections={sections} items={items} season={season} picking={pairing} setPicking={setPairing} onPatch={patch} />
+
         {/* where it appears */}
         <div data-where="">
           <Heading>Appears in</Heading>
@@ -147,7 +156,7 @@ export function ItemPanel({ item, venueId, sections, items, canNotes, column, se
         </div>
         <p className="px-3 pt-1.5 text-[13px] text-ink-muted">Duplicate makes a hidden copy, “{item.name.en} (copy)”, with the same details.</p>
       </div>
-      {toast && <div aria-hidden="true" data-toast-zone="" className="shrink-0 border-t border-line bg-fill" style={{ height: 'calc(max(1.25rem, env(safe-area-inset-bottom)) + 64px)' }} />}
+      {!!toast && <div aria-hidden="true" data-toast-zone="" className="shrink-0 border-t border-line bg-fill" style={{ height: `calc(max(1.25rem, env(safe-area-inset-bottom)) + ${toast + 8}px)` }} />}
       {copying !== null && <CopyChoicesSheet item={item} group={copying} sections={sections} items={items} onCopy={(ids) => onCopy(copying, ids)} onClose={() => setCopying(null)} />}
     </div>
   );

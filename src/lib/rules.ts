@@ -15,8 +15,9 @@ export function listingProblem(i: { price: string | number | null; variants: Var
 // location fields 200. Decisions taken here, for the PM to confirm: a section's note and the allergen note's text as a description (500),
 // "serves" and a combo part's label as a label (60), a venue's name as a name (100), a choice group's name as a choice label (60).
 export const LIMITS = { name: 100, description: 500, label: 60, section: 60, note: 500, tagline: 160, location: 200, venueName: 100 } as const;
-// Counts: at most 20 sizes, 10 choice groups of 20 choices each, 20 combo parts.
-export const COUNTS = { sizes: 20, groups: 10, options: 20, parts: 20 } as const;
+// Counts: at most 20 sizes, 10 choice groups of 20 choices each, 20 combo parts; at most 4 items under "Goes well with" (Kian via the
+// PM, 2026-11-18; the database checks the same, migration 009).
+export const COUNTS = { sizes: 20, groups: 10, options: 20, parts: 20, pairs: 4 } as const;
 
 // The hosts the menus' linked photos come from (imported; until the photos are served from our own storage): a new linked photo must be on
 // one of them (pre-go-live audit S2-04), and the customers' pages load images from them and from this site only (S2-10).

@@ -1,0 +1,564 @@
+{
+  "at": "2026-11-19T17:17:12.556Z",
+  "url": "http://127.0.0.1:53702/senso",
+  "node": "v22.23.4",
+  "next": "16.4.6",
+  "limit": "50 % CPU",
+  "warmed": {
+    "pageBytes": 244204,
+    "uploads": 33
+  },
+  "sets": [
+    {
+      "set": 1,
+      "at": "2026-11-19T17:06:12.430Z",
+      "seconds": 45,
+      "lcpMs": [
+        5181,
+        8563,
+        8568
+      ],
+      "median": 8563,
+      "tbtMs": [
+        0,
+        0,
+        0
+      ],
+      "performance": [
+        81,
+        75,
+        75
+      ],
+      "images": [
+        27,
+        27,
+        27
+      ],
+      "imageKB": [
+        6515,
+        6515,
+        6515
+      ],
+      "lcpElement": [
+        "/brand/senso-logo.png"
+      ],
+      "waitedSeconds": 31,
+      "load1": 22.24,
+      "readings": [
+        {
+          "at": "2026-11-19T17:06:12.430Z",
+          "other": "Cursor Helper (Renderer) 73 %",
+          "own": "node 2 %"
+        },
+        {
+          "at": "2026-11-19T17:06:17.489Z",
+          "other": "mdworker_shared 22 %",
+          "own": "Google Chrome Helper (Aperitif) 12 %"
+        },
+        {
+          "at": "2026-11-19T17:06:22.489Z",
+          "other": "WindowServer 35 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 24 %"
+        },
+        {
+          "at": "2026-11-19T17:06:27.486Z",
+          "other": "mdworker_shared 21 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 6 %"
+        },
+        {
+          "at": "2026-11-19T17:06:32.505Z",
+          "other": "WindowServer 26 %",
+          "own": "Google Chrome 1 %"
+        },
+        {
+          "at": "2026-11-19T17:06:37.476Z",
+          "other": "WindowServer 20 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 97 %"
+        },
+        {
+          "at": "2026-11-19T17:06:42.478Z",
+          "other": "fseventsd 20 %",
+          "own": "Google Chrome 71 %"
+        },
+        {
+          "at": "2026-11-19T17:06:47.484Z",
+          "other": "WindowServer 40 %",
+          "own": "Google Chrome Helper (Aperitif) 12 %"
+        },
+        {
+          "at": "2026-11-19T17:06:52.493Z",
+          "other": "Google Chrome Helper (Aperitif Renderer) 100 %",
+          "own": "node 76 %"
+        },
+        {
+          "at": "2026-11-19T17:06:57.402Z",
+          "other": "Google Chrome Helper (Aperitif) 71 %",
+          "own": "ps 0 %"
+        }
+      ],
+      "busiestOtherCpu": 100.4,
+      "over": [
+        "17:06:12Z Cursor Helper (Renderer) (PID 65093) 73 %",
+        "17:06:52Z Google Chrome Helper (Aperitif Renderer) (PID 86682) 100 %",
+        "17:06:57Z Google Chrome Helper (Aperitif) (PID 1557) 71 %"
+      ],
+      "quiet": false
+    },
+    {
+      "set": 2,
+      "at": "2026-11-19T17:08:59.650Z",
+      "seconds": 36,
+      "lcpMs": [
+        8562,
+        8561,
+        8563
+      ],
+      "median": 8562,
+      "tbtMs": [
+        0,
+        0,
+        0
+      ],
+      "performance": [
+        75,
+        75,
+        75
+      ],
+      "images": [
+        27,
+        27,
+        27
+      ],
+      "imageKB": [
+        6515,
+        6515,
+        6515
+      ],
+      "lcpElement": [
+        "/brand/senso-logo.png"
+      ],
+      "waitedSeconds": 122,
+      "load1": 16.84,
+      "readings": [
+        {
+          "at": "2026-11-19T17:08:59.650Z",
+          "other": "mds_stores 42 %",
+          "own": "node 3 %"
+        },
+        {
+          "at": "2026-11-19T17:09:04.716Z",
+          "other": "mds_stores 54 %",
+          "own": "Google Chrome Helper (Aperitif) 14 %"
+        },
+        {
+          "at": "2026-11-19T17:09:09.695Z",
+          "other": "spotlightknowledged 40 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 27 %"
+        },
+        {
+          "at": "2026-11-19T17:09:14.697Z",
+          "other": "Google Chrome Helper (Aperitif Renderer) 96 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 16 %"
+        },
+        {
+          "at": "2026-11-19T17:09:19.691Z",
+          "other": "mds_stores 91 %",
+          "own": "node 57 %"
+        },
+        {
+          "at": "2026-11-19T17:09:24.705Z",
+          "other": "Docker Desktop Helper (Renderer) 47 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 61 %"
+        },
+        {
+          "at": "2026-11-19T17:09:29.692Z",
+          "other": "mds_stores 95 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 99 %"
+        },
+        {
+          "at": "2026-11-19T17:09:34.726Z",
+          "other": "Claude Helper (Renderer) 100 %",
+          "own": "node 7 %"
+        },
+        {
+          "at": "2026-11-19T17:09:35.589Z",
+          "other": "Cursor Helper (Renderer) 82 %",
+          "own": "ps 0 %"
+        }
+      ],
+      "busiestOtherCpu": 100.2,
+      "over": [
+        "17:09:04Z mds_stores (PID 793) 54 %",
+        "17:09:14Z Google Chrome Helper (Aperitif Renderer) (PID 42837) 96 %",
+        "17:09:19Z mds_stores (PID 793) 91 %",
+        "17:09:29Z mds_stores (PID 793) 95 %",
+        "17:09:34Z Claude Helper (Renderer) (PID 23259) 100 %",
+        "17:09:35Z Cursor Helper (Renderer) (PID 65093) 82 %"
+      ],
+      "quiet": false
+    },
+    {
+      "set": 3,
+      "at": "2026-11-19T17:11:07.051Z",
+      "seconds": 37,
+      "lcpMs": [
+        8562,
+        8562,
+        8561
+      ],
+      "median": 8562,
+      "tbtMs": [
+        0,
+        0,
+        0
+      ],
+      "performance": [
+        75,
+        75,
+        75
+      ],
+      "images": [
+        27,
+        27,
+        27
+      ],
+      "imageKB": [
+        6515,
+        6515,
+        6515
+      ],
+      "lcpElement": [
+        "/brand/senso-logo.png"
+      ],
+      "waitedSeconds": 91,
+      "load1": 4.48,
+      "readings": [
+        {
+          "at": "2026-11-19T17:11:07.051Z",
+          "other": "claude 4 %",
+          "own": "node 3 %"
+        },
+        {
+          "at": "2026-11-19T17:11:12.111Z",
+          "other": "WindowServer 23 %",
+          "own": "Google Chrome Helper (Aperitif) 24 %"
+        },
+        {
+          "at": "2026-11-19T17:11:17.103Z",
+          "other": "WindowServer 10 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 13 %"
+        },
+        {
+          "at": "2026-11-19T17:11:22.100Z",
+          "other": "WindowServer 8 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 59 %"
+        },
+        {
+          "at": "2026-11-19T17:11:27.094Z",
+          "other": "Google Chrome Helper (Aperitif Renderer) 67 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 100 %"
+        },
+        {
+          "at": "2026-11-19T17:11:32.095Z",
+          "other": "contactsd 124 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 88 %"
+        },
+        {
+          "at": "2026-11-19T17:11:37.099Z",
+          "other": "contactsd 40 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 86 %"
+        },
+        {
+          "at": "2026-11-19T17:11:42.097Z",
+          "other": "contactsd 54 %",
+          "own": "node 39 %"
+        },
+        {
+          "at": "2026-11-19T17:11:43.842Z",
+          "other": "contactsd 70 %",
+          "own": "ps 0 %"
+        }
+      ],
+      "busiestOtherCpu": 124.1,
+      "over": [
+        "17:11:27Z Google Chrome Helper (Aperitif Renderer) (PID 42837) 67 %",
+        "17:11:32Z contactsd (PID 15384) 124 %",
+        "17:11:42Z contactsd (PID 15384) 54 %",
+        "17:11:43Z contactsd (PID 15384) 70 %"
+      ],
+      "quiet": false
+    },
+    {
+      "set": 4,
+      "at": "2026-11-19T17:13:17.560Z",
+      "seconds": 43,
+      "lcpMs": [
+        8569,
+        5182,
+        8566
+      ],
+      "median": 8566,
+      "tbtMs": [
+        0,
+        0,
+        0
+      ],
+      "performance": [
+        75,
+        81,
+        75
+      ],
+      "images": [
+        27,
+        27,
+        27
+      ],
+      "imageKB": [
+        6515,
+        6515,
+        6515
+      ],
+      "lcpElement": [
+        "/brand/senso-logo.png"
+      ],
+      "waitedSeconds": 94,
+      "load1": 7.23,
+      "readings": [
+        {
+          "at": "2026-11-19T17:13:17.560Z",
+          "other": "WindowServer 32 %",
+          "own": "node 2 %"
+        },
+        {
+          "at": "2026-11-19T17:13:22.643Z",
+          "other": "Antigravity IDE Helper (Plugin) 107 %",
+          "own": "node 1 %"
+        },
+        {
+          "at": "2026-11-19T17:13:27.991Z",
+          "other": "com.apple.appkit.xpc.openAndSavePanelService 152 %",
+          "own": "Google Chrome Helper (Aperitif) 14 %"
+        },
+        {
+          "at": "2026-11-19T17:13:32.615Z",
+          "other": "npm exec firebase-tools@latest mcp 90 %",
+          "own": "node 55 %"
+        },
+        {
+          "at": "2026-11-19T17:13:37.609Z",
+          "other": "mds 46 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 59 %"
+        },
+        {
+          "at": "2026-11-19T17:13:42.613Z",
+          "other": "Antigravity IDE Helper 168 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 98 %"
+        },
+        {
+          "at": "2026-11-19T17:13:47.609Z",
+          "other": "Google Chrome Helper (Aperitif Renderer) 90 %",
+          "own": "Google Chrome 59 %"
+        },
+        {
+          "at": "2026-11-19T17:13:52.614Z",
+          "other": "Antigravity IDE Helper (Renderer) 152 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 57 %"
+        },
+        {
+          "at": "2026-11-19T17:13:57.647Z",
+          "other": "Antigravity IDE Helper (Renderer) 118 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 12 %"
+        },
+        {
+          "at": "2026-11-19T17:14:00.806Z",
+          "other": "Antigravity IDE Helper (Renderer) 101 %",
+          "own": "ps 0 %"
+        }
+      ],
+      "busiestOtherCpu": 168.4,
+      "over": [
+        "17:13:22Z Antigravity IDE Helper (Plugin) (PID 99053) 107 %",
+        "17:13:27Z com.apple.appkit.xpc.openAndSavePanelService (PID 151) 152 %",
+        "17:13:32Z npm exec firebase-tools@latest mcp (PID 304) 90 %",
+        "17:13:42Z Antigravity IDE Helper (PID 99082) 168 %",
+        "17:13:47Z Google Chrome Helper (Aperitif Renderer) (PID 5741) 90 %",
+        "17:13:52Z Antigravity IDE Helper (Renderer) (PID 98681) 152 %",
+        "17:13:57Z Antigravity IDE Helper (Renderer) (PID 98681) 118 %",
+        "17:14:00Z Antigravity IDE Helper (Renderer) (PID 98681) 101 %"
+      ],
+      "quiet": false
+    },
+    {
+      "set": 5,
+      "at": "2026-11-19T17:16:35.163Z",
+      "seconds": 37,
+      "lcpMs": [
+        7959,
+        7055,
+        8561
+      ],
+      "median": 7959,
+      "tbtMs": [
+        0,
+        0,
+        0
+      ],
+      "performance": [
+        76,
+        77,
+        75
+      ],
+      "images": [
+        27,
+        27,
+        27
+      ],
+      "imageKB": [
+        6515,
+        6515,
+        6515
+      ],
+      "lcpElement": [
+        "/brand/senso-logo.png"
+      ],
+      "waitedSeconds": 154,
+      "load1": 11.54,
+      "readings": [
+        {
+          "at": "2026-11-19T17:16:35.163Z",
+          "other": "Docker Desktop Helper (Renderer) 18 %",
+          "own": "node 3 %"
+        },
+        {
+          "at": "2026-11-19T17:16:40.234Z",
+          "other": "WindowServer 22 %",
+          "own": "Google Chrome Helper (Aperitif) 21 %"
+        },
+        {
+          "at": "2026-11-19T17:16:45.223Z",
+          "other": "WindowServer 13 %",
+          "own": "node 25 %"
+        },
+        {
+          "at": "2026-11-19T17:16:50.212Z",
+          "other": "WindowServer 36 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 40 %"
+        },
+        {
+          "at": "2026-11-19T17:16:55.209Z",
+          "other": "WindowServer 27 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 100 %"
+        },
+        {
+          "at": "2026-11-19T17:17:00.208Z",
+          "other": "fontd 36 %",
+          "own": "Google Chrome 76 %"
+        },
+        {
+          "at": "2026-11-19T17:17:05.210Z",
+          "other": "WindowServer 12 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 67 %"
+        },
+        {
+          "at": "2026-11-19T17:17:10.213Z",
+          "other": "WindowServer 14 %",
+          "own": "Google Chrome Helper (Aperitif Renderer) 79 %"
+        },
+        {
+          "at": "2026-11-19T17:17:12.556Z",
+          "other": "claude 33 %",
+          "own": "node 0 %"
+        }
+      ],
+      "busiestOtherCpu": 36.4,
+      "over": [],
+      "quiet": true
+    }
+  ],
+  "counted": {
+    "set": 5,
+    "at": "2026-11-19T17:16:35.163Z",
+    "seconds": 37,
+    "lcpMs": [
+      7959,
+      7055,
+      8561
+    ],
+    "median": 7959,
+    "tbtMs": [
+      0,
+      0,
+      0
+    ],
+    "performance": [
+      76,
+      77,
+      75
+    ],
+    "images": [
+      27,
+      27,
+      27
+    ],
+    "imageKB": [
+      6515,
+      6515,
+      6515
+    ],
+    "lcpElement": [
+      "/brand/senso-logo.png"
+    ],
+    "waitedSeconds": 154,
+    "load1": 11.54,
+    "readings": [
+      {
+        "at": "2026-11-19T17:16:35.163Z",
+        "other": "Docker Desktop Helper (Renderer) 18 %",
+        "own": "node 3 %"
+      },
+      {
+        "at": "2026-11-19T17:16:40.234Z",
+        "other": "WindowServer 22 %",
+        "own": "Google Chrome Helper (Aperitif) 21 %"
+      },
+      {
+        "at": "2026-11-19T17:16:45.223Z",
+        "other": "WindowServer 13 %",
+        "own": "node 25 %"
+      },
+      {
+        "at": "2026-11-19T17:16:50.212Z",
+        "other": "WindowServer 36 %",
+        "own": "Google Chrome Helper (Aperitif Renderer) 40 %"
+      },
+      {
+        "at": "2026-11-19T17:16:55.209Z",
+        "other": "WindowServer 27 %",
+        "own": "Google Chrome Helper (Aperitif Renderer) 100 %"
+      },
+      {
+        "at": "2026-11-19T17:17:00.208Z",
+        "other": "fontd 36 %",
+        "own": "Google Chrome 76 %"
+      },
+      {
+        "at": "2026-11-19T17:17:05.210Z",
+        "other": "WindowServer 12 %",
+        "own": "Google Chrome Helper (Aperitif Renderer) 67 %"
+      },
+      {
+        "at": "2026-11-19T17:17:10.213Z",
+        "other": "WindowServer 14 %",
+        "own": "Google Chrome Helper (Aperitif Renderer) 79 %"
+      },
+      {
+        "at": "2026-11-19T17:17:12.556Z",
+        "other": "claude 33 %",
+        "own": "node 0 %"
+      }
+    ],
+    "busiestOtherCpu": 36.4,
+    "over": [],
+    "quiet": true
+  }
+}

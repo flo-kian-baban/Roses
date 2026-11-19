@@ -23,7 +23,8 @@ import { slotOf, type Season, type Slot } from '@/lib/welcome';
 import { Icon } from '../../../_ui/icons';
 import type { PageNow, View } from './view';
 
-export type Focus = { id: string; alt?: string | null } | null;
+// sheet: the change shows only in the item's popup ("Goes well with", Kian via the PM, 2026-11-18), so the frame opens the popup on the item.
+export type Focus = { id: string; alt?: string | null; sheet?: boolean } | null;
 export type Region = GroupId;
 // What was tapped inside the preview: an item row, a section heading or the page header (Menu tab); a page region (Style tab);
 // a language button on the previewed welcome screen (any tab: the preview then opens the menu in that language, as customers get it).
@@ -115,7 +116,7 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
     if (pickRef.current) attachPick(d, (p) => pickRef.current?.(p), () => styleModeRef.current);
     if (varsRef.current) applyVars(d, varsRef.current);
     applyScreen(d, v); // the same screen as before the save: the welcome screen, the popup or the section list open again
-    if (!showFocus(d, focusRef.current)) d.defaultView?.scrollTo({ top: scrollRef.current, behavior: 'auto' }); // the item just edited, or the same position
+    if (!showFocus(d, focusRef.current, v.screen === 'menu' || v.screen === 'sheet')) d.defaultView?.scrollTo({ top: scrollRef.current, behavior: 'auto' }); // the item just edited (its popup too, for a change that shows only there), or the same position
     if (regionRef.current.region) applyRegion(d, regionRef.current.region, activeRef.current === null); // the first load of this preview (the phone overlay opening) scrolls to the open group's region; a reload after a save keeps its place
     if (playWanted.current) h.classList.add('roses-play-still'); // a transition just chosen plays from this fresh page: its welcome card settled from its first visible frame, as in the frame it replaces (no entrance starting over under the cross-fade)
     activeRef.current = slot; setActive(slot); setLoading(false); reloading.current = false;
@@ -414,7 +415,9 @@ function applyVars(d: Document, vars: Record<string, string> | null) {
   else live?.remove();
 }
 // Positions the frame on the element with that id (the item; or the section when the item is hidden) and outlines it briefly. Returns false when neither is on the page.
-function showFocus(d: Document, f: Focus): boolean {
+// With f.sheet (a change that shows only in the item's popup: "Goes well with"), the item's popup is opened on it too, when the preview
+// is on the menu or the popup (sheetOk: never over the welcome screen or the section list of the Style tab's screens).
+function showFocus(d: Document, f: Focus, sheetOk = false): boolean {
   previewStyle(d);
   d.querySelectorAll('.roses-preview-focus').forEach((el) => el.classList.remove('roses-preview-focus'));
   if (!f) return false;
@@ -424,5 +427,32 @@ function showFocus(d: Document, f: Focus): boolean {
   const w = d.defaultView; if (!w) return true;
   const r = el.getBoundingClientRect();
   w.scrollTo({ top: Math.max(0, w.scrollY + r.top - Math.max(72, (w.innerHeight - r.height) / 2)), behavior: 'auto' });
+  if (f.sheet && sheetOk) openSheet(d, f.id);
+  return true;
+}
+// The item's popup opened in the frame as a tap on its row opens it for customers (the page's own handler), for a change that shows only
+// there ("Goes well with", Kian via the PM, 2026-11-18: the live preview shows the list), scrolled so the list is in view. Two things the
+// page does for customers are held back, because here the admin opened it, not a person: the popup adds no entry to the history (the
+// page pushes one so that Back closes it; in the frame that entry would sit in the admin page's own history, one per save), and the
+// focus stays where it was in the admin (a modal popup takes the focus into the frame: a field being typed in would lose it).
+function openSheet(d: Document, id: string): boolean {
+  const w = d.defaultView, li = d.querySelector(`main li.item[data-id="${id}"]`) as HTMLElement | null;
+  const sheet = d.getElementById('sheet') as HTMLDialogElement | null;
+  if (!w || !li || !sheet) return false;
+  const was = document.activeElement as HTMLElement | null, frame = w.frameElement as HTMLElement | null;
+  const history = w.history as History & { pushState: History['pushState'] }, push = history.pushState;
+  history.pushState = () => undefined;
+  try { synthetic(d, () => li.click()); } finally { history.pushState = push; }
+  if (!sheet.open) return false;
+  d.documentElement.dataset.rosesSheetItem = id;
+  if (frame && document.activeElement === frame) { if (was && was !== document.body && was.isConnected) was.focus({ preventScroll: true }); else frame.blur(); }
+  // after the page's own "open at the top" (set again a frame later), the list is brought into view inside the popup; the popup scrolls,
+  // never the frame's window or the admin page around it
+  w.requestAnimationFrame(() => w.requestAnimationFrame(() => {
+    const g = sheet.querySelector('[data-pairs]'); if (!g || !sheet.open) return;
+    const gr = g.getBoundingClientRect(), sr = sheet.getBoundingClientRect();
+    const by = Math.min(gr.bottom - sr.bottom + 16, gr.top - sr.top - 56); // its end in view, its heading never above the popup's top row
+    if (by > 0) sheet.scrollTop += by;
+  }));
   return true;
 }

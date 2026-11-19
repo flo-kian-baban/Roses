@@ -16,9 +16,11 @@ export type Venue = { id: string; name: Bi; tagline: Bi; locations: Location[]; 
 export type AddOn = { group: Bi; label: Bi; price: number; required: boolean };
 export type Variant = { label: Bi; price: number | null };
 export type Component = { item_id: string | null; label: Bi; qty: number };
+// pairs: "Goes well with" (Kian via the PM, 2026-11-18): the ids of the up to 4 items the item is paired with that are on the page
+// themselves (shown, in a shown section, in season), in the order picked; the rest are left out by src/lib/menu.ts. Absent when none.
 export type Item = {
   id: string; name: Bi; description: Bi; price: number | null; variants: Variant[]; add_ons: AddOn[]; components: Component[];
-  serves: string | null; photo: Photo | null; notes: Notes; listed: boolean; fa_draft: string[]; position: number;
+  serves: string | null; photo: Photo | null; notes: Notes; listed: boolean; fa_draft: string[]; position: number; pairs?: string[];
 };
 // How a section is shown to customers (Kian, 2026-10-08): 'list' = full-width rows with a small square photo; 'grid' = two columns with bigger photos.
 export type SectionLayout = 'list' | 'grid';
@@ -37,6 +39,7 @@ export type EditorItem = {
   id: string; name: Bi; description: Bi; price: number | null; variants: Variant[]; add_ons: AddOn[]; components: Component[];
   serves: string | null; photo: Photo | null; notes: Notes; listed: boolean; fa_draft: string[]; placements: Placement[]; seasons: SeasonId[];
   drafts: string[]; basis: Basis | null; updated_at: string; // the version the editor holds (pre-go-live audit D-03)
+  pairs: string[]; // "Goes well with" (2026-11-18): the ids of up to 4 other items of the venue, in the order picked
 };
 export type EditorSection = { id: string; name: Bi; note: Bi; position: number; listed: boolean; fa_draft: string[]; layout: SectionLayout; seasonal: boolean; item_ids: string[] };
 export type EditorMenu = { sections: EditorSection[]; items: Record<string, EditorItem>; orphans: string[] };

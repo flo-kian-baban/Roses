@@ -2,8 +2,10 @@
 //   create  { action:'create', venue, section_id, name:{en,fa}, price, photo:{url,key,width,height} | photo_url, seasons?, key? }   shown when it has a price;
 //           key: the editor's key for this one "+ Add item" (D-05): sent again, it answers the item it already created (repeated: true)
 //           added to the Seasonal section without seasons, it is tagged with the season of today in Toronto (Kian, 2026-10-12)
-//   update  { action:'update', id, patch:{ name, description, price, variants, add_ons, components, serves, photo:{url,alt}, listed, section_ids, seasons } }
+//   update  { action:'update', id, patch:{ name, description, price, variants, add_ons, components, serves, photo:{url,alt}, listed, section_ids, seasons, pairs } }
 //           seasons: any of fall, winter, spring, summer (none = all year)
+//           pairs: "Goes well with" (Kian via the PM, 2026-11-18): the ids of up to 4 other items of the same venue, in the order picked,
+//           each once, never the item itself; one-way (the listed items' own lists are not touched)
 //   notes   { action:'notes', id, notes }                                            owner or admin only (403)
 //   confirm { action:'confirm', id }   owner or admin only (403): the allergen and dietary notes drafted from research are confirmed as
 //           they stand (Kian, 2026-10-12): their draft flags go, so the public popup shows them ("Contains: …"); one record, Undo puts them back
@@ -16,12 +18,12 @@
 //           dietary drafts stay with Confirm (owner and admin only)
 //   duplicate { action:'duplicate', id }   a hidden copy "<name> (copy)" in the same sections, right after the original (Kian, 2026-10-13);
 //           one 'create' record (Undo removes it); answers the copy and the new order of each of its sections
-//   delete  { action:'delete', id }
+//   delete  { action:'delete', id }   also answers items: the other items the delete changed (it left their "Goes well with" lists)
 //   get     { action:'get', id }   the item as it is now (D-05)
 import { jsonRoute, ApiError, refusal, revalidateVenue, arrOf, biOf, boolOf, idOf, idsOf, isObj, moneyOf, photoOf, str, textOf, type JsonBody } from '@/lib/admin/api';
 import { canEditNotes, canEditVenue } from '@/lib/admin/auth';
 import { byOf } from '@/lib/admin/revisions';
-import { copyChoices, createItem, deleteItem, duplicateItem, editorItem, getItem, moveItem, updateItem, type ItemPatch, type Notes } from '@/lib/admin/items';
+import { copyChoices, createItem, deleteItem, duplicateItem, editorItem, getItem, moveItem, updateItem, type Deleted, type ItemPatch, type Notes } from '@/lib/admin/items';
 import type { AddOn, Component, SeasonId, Variant } from '@/lib/types';
 import { getSection } from '@/lib/admin/sections';
 import { SEASON_IDS } from '@/lib/seasonal';
@@ -70,7 +72,17 @@ async function readParts(v: unknown, venueId: string): Promise<Component[]> {
   return parts;
 }
 
-async function readPatch(p: JsonBody, item: { venue_id: string; photo: { url: string } | null }): Promise<ItemPatch> {
+// "Goes well with" (the PM, 2026-11-18): at most 4 items, each once, never the item itself. That each one is an item of this venue is
+// checked with the save itself, under a lock (src/lib/admin/items.ts updateItem), so one deleted at that moment is refused too.
+function readPairs(v: unknown, self: string): string[] {
+  const ids = idsOf(v, 'pairs').map((x) => x.toLowerCase());
+  if (ids.length > COUNTS.pairs) throw new ApiError(400, `At most ${COUNTS.pairs} items under “Goes well with”`);
+  if (new Set(ids).size !== ids.length) throw new ApiError(400, 'An item can be under “Goes well with” once');
+  if (ids.includes(self.toLowerCase())) throw new ApiError(400, 'An item cannot go well with itself');
+  return ids;
+}
+
+async function readPatch(p: JsonBody, item: { id: string; venue_id: string; photo: { url: string } | null }): Promise<ItemPatch> {
   const out: ItemPatch = {};
   if ('name' in p) { out.name = biOf(p.name, 'The name', LIMITS.name); if (!out.name.en) throw new ApiError(400, 'The English name is required'); }
   if ('description' in p) out.description = biOf(p.description, 'The description', LIMITS.description, { lines: true });
@@ -83,6 +95,7 @@ async function readPatch(p: JsonBody, item: { venue_id: string; photo: { url: st
   if ('photo' in p) out.photo = photoOf(p.photo, { en: null, fa: null }, item.photo?.url ?? null);
   if ('section_ids' in p) out.section_ids = idsOf(p.section_ids, 'section_ids');
   if ('seasons' in p) out.seasons = readSeasons(p.seasons);
+  if ('pairs' in p) out.pairs = readPairs(p.pairs, item.id);
   return out;
 }
 
@@ -121,7 +134,7 @@ export default jsonRoute(async ({ res, session, body }) => {
   // get (pre-go-live audit D-05): the item as it is now, read again after a save whose answer was lost, so the editor shows what the
   // server holds (the save may have gone through) instead of putting back its own older copy
   if (body.action === 'get') return { revisions: [], item: await editorItem(id) };
-  let r;
+  let r: Deleted;
   const base = str(body.base); // the version of the item the editor holds (D-03): a save over a newer change is refused with 409 and the item as it is now
   if (body.action === 'update') { if (!isObj(body.patch)) throw new ApiError(400, 'patch: expected an object'); r = await updateItem(id, await readPatch(body.patch, item), by, base); }
   else if (body.action === 'notes') { if (!canEditNotes(session)) throw new ApiError(403, 'Allergen, dietary and halal notes are set by the owner or an admin only'); r = await updateItem(id, { notes: readNotes(body.notes) }, by, base); }
@@ -155,5 +168,7 @@ export default jsonRoute(async ({ res, session, body }) => {
   else throw new ApiError(400, 'unknown action');
   if (!r.ok) throw refusal(r, r.conflict ? { item: await editorItem(id) } : {});
   await revalidateVenue(res, item.venue_id);
-  return { revisions: r.revision ? [r.revision] : [], item: body.action === 'delete' ? null : await editorItem(id) };
+  // a delete also changed the items that listed the deleted one under "Goes well with": the editor reads them again (their new version)
+  const affected = r.affected?.length ? { items: (await Promise.all(r.affected.map((x) => editorItem(x)))).filter(Boolean) } : {};
+  return { revisions: r.revision ? [r.revision] : [], item: body.action === 'delete' ? null : await editorItem(id), ...affected };
 });

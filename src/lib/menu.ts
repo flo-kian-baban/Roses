@@ -17,6 +17,10 @@ export async function getVenue(id: string): Promise<Venue | null> {
 // items tagged for the season itself. The Seasonal section comes first, titled by the season (src/lib/seasonal.ts). A venue with no
 // seasonal item gets exactly the sections and items it got before the feature. Allergen and dietary notes still drafted from research
 // (items.drafts, Kian's ruling of 2026-10-12) are removed here, so they never reach a public page until an owner or admin confirms them.
+// "Goes well with" (Kian via the PM, 2026-11-18; items.pairs, src/lib/pairs.ts): each item carries the ids of the items it is paired
+// with that are on this page themselves (shown, in a shown section, in season: one of the items returned here), in the order picked; a
+// pair that is hidden or out of season is left out silently, so every pair has a row on the page to be shown from and a popup to open.
+// An item with no pair to show carries no list.
 const IN_SEASON = `(case when s.seasonal then $2 = any(i.seasons) else (cardinality(i.seasons) = 0 or $2 = any(i.seasons)) end)`;
 export async function getPublicMenu(venueId: string, showDrafts: boolean, season: SeasonId): Promise<Section[]> {
   const sections = await query<Section>(
@@ -25,17 +29,26 @@ export async function getPublicMenu(venueId: string, showDrafts: boolean, season
       where s.venue_id = $1 and s.listed
         and exists (select 1 from item_sections x join items i on i.id = x.item_id where x.section_id = s.id and i.listed and ${IN_SEASON})
       order by s.seasonal desc, s.position`, [venueId, season]);
-  const items = await query<Item & { section_id: string; drafts: string[] }>(
-    `select i.id, i.name, i.description, i.price, i.variants, i.add_ons, i.components, i.serves, i.photo, i.notes, i.listed, i.fa_draft, i.drafts, x.position, x.section_id
+  const items = await query<Item & { section_id: string; drafts: string[]; pair_ids: string[] }>(
+    `select i.id, i.name, i.description, i.price, i.variants, i.add_ons, i.components, i.serves, i.photo, i.notes, i.listed, i.fa_draft, i.drafts, i.pairs as pair_ids, x.position, x.section_id
        from item_sections x join items i on i.id = x.item_id join sections s on s.id = x.section_id
       where i.venue_id = $1 and i.listed and ${IN_SEASON}
       order by x.position, i.name->>'en'`, [venueId, season]);
-  return sections.map((s) => {
+  const wanted = new Map<string, string[]>(); // item → the ids it is paired with
+  const out = sections.map((s) => {
     const sec = stripDrafts(s, showDrafts);
     if (s.seasonal) sec.name = SEASONAL_TITLES[season];
-    sec.items = items.filter((i) => i.section_id === s.id).map(({ drafts, ...i }) => stripDrafts({ ...i, notes: confirmedNotes(i.notes, drafts) }, showDrafts));
+    sec.items = items.filter((i) => i.section_id === s.id).map(({ drafts, pair_ids, ...i }) => { if (pair_ids?.length) wanted.set(i.id, pair_ids); return stripDrafts({ ...i, notes: confirmedNotes(i.notes, drafts) }, showDrafts); });
     return sec;
   });
+  if (!wanted.size) return out;
+  const onPage = new Set<string>(); // every item of the page
+  for (const s of out) for (const i of s.items) onPage.add(i.id);
+  for (const s of out) s.items = s.items.map((i) => {
+    const pairs = (wanted.get(i.id) ?? []).filter((id) => onPage.has(id));
+    return pairs.length ? { ...i, pairs } : i;
+  });
+  return out;
 }
 
 // When drafts are switched off for a venue, drafted Persian falls back to English (every field that can carry a draft).

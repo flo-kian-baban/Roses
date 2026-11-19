@@ -8,6 +8,7 @@ import type { ReactNode } from 'react';
 import type { Item, Section } from '@/lib/types';
 import { price } from '@/lib/format';
 import { allergenFa, dietaryFa } from '@/lib/allergens';
+import { PAIRS_CSS, PAIRS_TITLE } from '@/lib/pairs';
 import { Bi } from './Bi';
 
 export const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9؀-ۿ]+/g, '-').replace(/^-|-$/g, '');
@@ -68,7 +69,7 @@ const Amount = ({ children, extra }: { children: ReactNode; extra?: boolean }) =
 // One group of the popup (Uber Eats-style): a full-width band with the heading and a small line under it, then its rows.
 // A <div>, not a <section>: the templates sit inside the page's own <section> elements, and the drills read the item order
 // of a section from the HTML up to its closing tag (a nested </section> cut that short, check run 2026-10-08T18-24-33Z).
-function Group({ title, sub, children, ...rest }: { title: ReactNode; sub?: ReactNode; children: ReactNode; 'data-notes'?: string }) {
+function Group({ title, sub, children, ...rest }: { title: ReactNode; sub?: ReactNode; children: ReactNode; 'data-notes'?: string; 'data-pairs'?: string }) {
   return (
     <div className="sheet-group" {...rest}>
       <div className="sheet-band"><h3>{title}</h3>{sub && <p>{sub}</p>}</div>
@@ -81,6 +82,13 @@ function Group({ title, sub, children, ...rest }: { title: ReactNode; sub?: Reac
 // images in the template never load until the sheet opens. Layout (Kian, 2026-10-08, after the Uber Eats reference): the
 // title block (name, the price line with "Serves", the description), then one banded group per kind: Sizes, each option
 // group (Required / Optional), Includes, and the owner's notes under Good to know. Styles: .sheet-* in src/styles/public.css.
+// "Goes well with" (Kian via the PM, 2026-11-18; src/lib/pairs.ts): the items it is paired with that are on the page, as the last
+// group of the popup (the PM's ruling of 2026-11-19: below the item's own sizes and options; everything that is the item's own comes
+// first, Includes and Good to know too, so its allergen notes stay with it). The template carries the heading and one empty row per
+// pair with the paired item's id only (data-pair): the script below fills each row, when the popup opens, from that item's own row on
+// the page (its name in both languages, its price line as the menu shows it, its photo if it has one), as a button that opens that
+// item's own popup. So a pair costs the page about 60 bytes whatever its name, and nothing of it (no photo) is fetched before a popup
+// is opened. Styles: PAIRS_CSS, written by MenuDialogs.
 function Detail({ item }: { item: Item }) {
   const groups = new Map<string, Item['add_ons']>();
   for (const a of item.add_ons) { const k = a.group.en ?? ''; groups.set(k, [...(groups.get(k) ?? []), a]); }
@@ -114,13 +122,18 @@ function Detail({ item }: { item: Item }) {
           </Group>
         )}
         <GoodToKnow item={item} />
+        {item.pairs && item.pairs.length > 0 && (
+          <Group data-pairs="" title={<><span lang="en">{PAIRS_TITLE.en}</span><span lang="fa" dir="rtl">{PAIRS_TITLE.fa}</span></>}>
+            <ul className="pairs">{item.pairs.map((id) => <li key={id} data-pair={id} />)}</ul>
+          </Group>
+        )}
       </div>
     </template>
   );
 }
 
 // The owner's allergen, dietary and halal notes (ruling 10: optional per item, set by the owner or an admin; Kian, 2026-10-08:
-// shown to customers in the popup). The last group of the popup, under Good to know; only what is set appears: halal as a
+// shown to customers in the popup). The last of the item's own groups, under Good to know; only what is set appears: halal as a
 // chip, each dietary word as a chip, the allergens as "Contains …", then the free note in both languages. Nothing of it on
 // the rows or cards. Since 2026-10-12 (Kian via the PM): "Contains: …" in English and Persian, the allergen and dietary words in Persian
 // from src/lib/allergens.ts; notes still drafted from research never get here (src/lib/menu.ts removes them until they are confirmed).
@@ -191,10 +204,13 @@ export function ItemList({ section: s, first, photos = true, className = '' }: {
   );
 }
 
-// The two native dialogs (item sheet, section list) and the one inline script. Rendered after <main>.
+// The two native dialogs (item sheet, section list) and the one inline script. Rendered after <main>. Before them, only on a page
+// where an item has a pair to show, the style of "Goes well with" (src/lib/pairs.ts, 2026-11-18).
 export function MenuDialogs({ sections }: { sections: Section[] }) {
+  const pairs = sections.some((s) => s.items.some((i) => i.pairs && i.pairs.length > 0));
   return (
     <>
+      {pairs && <style id="pairs-style" dangerouslySetInnerHTML={{ __html: PAIRS_CSS }} />}
       <dialog id="sheet" className="sheet" aria-label="Item">
         <div className="sheet-top"><div id="sheet-hero" className="sheet-hero" /><button type="button" id="sheet-close" className="sheet-close" aria-label="Close"><CloseIcon /></button></div>
         <div id="sheet-content" tabIndex={-1} autoFocus />
@@ -252,12 +268,27 @@ export function MenuDialogs({ sections }: { sections: Section[] }) {
 // html[data-pointer] while the last input was a touch or a click, so an item that gets focus back when its popup closes shows no ring
 // unless the keyboard is used (#10); a photo whose host does not answer becomes the grey placeholder instead of a broken-image icon (the
 // popup's photo is left out instead) (#7).
+// "Goes well with" (Kian via the PM, 2026-11-18). pairs(): when a popup's content is put in, each of its empty pair rows (li[data-pair],
+// the paired item's id) is filled from that item's own row on the page (the first, when it is in two sections): a button holding the
+// row's name as it stands (both languages; the page's language rule shows one), the row's price line as it stands (so the price reads
+// exactly as in the menu, sizes included) and, when the row has a photo, that photo at 56 px, created here, so it is requested only
+// now. A row whose item is not on the page is dropped (the server lists only items that are). A tap on a pair opens that item's own
+// popup the way its row in the menu does: the same open(), so the popup's content and photo become that item's, at its top; the popup
+// itself is already up, so it slides in again from the bottom edge with the new item (its entrance run again; nothing under reduced
+// motion) while the dim stays, and the focus goes to the new content. Close, a tap on the dim, Escape and Back close the popup as
+// before (one history entry, whatever the number of pairs followed). The same script on every page (a page without pairs finds no row
+// to fill and never gets the tap), so the admin preview can swap in another season's menu under the page's own Content-Security-Policy.
 const menuScript = `(function(){var sheet=document.getElementById('sheet'),hero=document.getElementById('sheet-hero'),content=document.getElementById('sheet-content');
 var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if(sheet&&sheet.showModal){var closing=false;
 var hide=function(){if(!sheet.open||closing)return;if(reduced){sheet.close();return}closing=true;sheet.classList.add('closing');var done=function(){if(!closing)return;closing=false;sheet.classList.remove('closing');sheet.close()};sheet.addEventListener('animationend',done,{once:true});setTimeout(done,400)};
-var open=function(li){var tpl=li.querySelector('template.detail');if(!tpl)return;sheet.scrollTop=0;content.replaceChildren(tpl.content.cloneNode(true));hero.replaceChildren();var p=li.getAttribute('data-photo');if(p){var img=document.createElement('img');img.src=p;img.alt='';img.decoding='async';hero.appendChild(img);hero.hidden=false}else{hero.hidden=true}sheet.classList.toggle('has-photo',!!p);if(closing){closing=false;sheet.classList.remove('closing')}if(!sheet.open){sheet.showModal();history.pushState({sheet:1},'')}sheet.scrollTop=0;requestAnimationFrame(function(){sheet.scrollTop=0})};
+var row=function(x){return document.querySelector('main li.item[data-id="'+x.getAttribute('data-pair')+'"]')};
+var pairs=function(){[].forEach.call(content.querySelectorAll('li[data-pair]'),function(x){var r=row(x),h=r&&r.querySelector('h3');if(!h){x.remove();return}var l=h.nextElementSibling,p=r.getAttribute('data-photo');
+x.innerHTML='<button type="button" class="pair" aria-haspopup="dialog"><span class="pair-text"><span class="pair-name">'+h.innerHTML+'</span><span class="pair-price">'+(l&&l.tagName==='P'&&l.className.indexOf('rows-price')>0?l.innerHTML:'')+'</span></span></button>';
+if(p){var i=document.createElement('img');i.loading='lazy';i.decoding='async';i.alt='';i.width=i.height=56;i.src=p;x.firstChild.appendChild(i)}})};
+var open=function(li){var tpl=li.querySelector('template.detail');if(!tpl)return;sheet.scrollTop=0;content.replaceChildren(tpl.content.cloneNode(true));pairs();hero.replaceChildren();var p=li.getAttribute('data-photo');if(p){var img=document.createElement('img');img.src=p;img.alt='';img.decoding='async';hero.appendChild(img);hero.hidden=false}else{hero.hidden=true}sheet.classList.toggle('has-photo',!!p);if(closing){closing=false;sheet.classList.remove('closing')}if(!sheet.open){sheet.showModal();history.pushState({sheet:1},'')}sheet.scrollTop=0;requestAnimationFrame(function(){sheet.scrollTop=0})};
 document.querySelectorAll('li.item').forEach(function(li){li.addEventListener('click',function(){open(li)});li.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open(li)}})});
+content.addEventListener('click',function(e){var x=e.target.closest&&e.target.closest('li[data-pair]'),li=x&&row(x);if(!li)return;open(li);if(!reduced){sheet.style.animation='none';void sheet.offsetWidth;sheet.style.animation=''}content.focus({preventScroll:true})});
 document.getElementById('sheet-close').addEventListener('click',function(){hide()});sheet.addEventListener('click',function(e){if(e.target===sheet)hide()});sheet.addEventListener('cancel',function(e){e.preventDefault();hide()});
 sheet.addEventListener('close',function(){if(history.state&&history.state.sheet)history.back()});window.addEventListener('popstate',function(){if(sheet.open)hide()});
 var list=document.getElementById('sections-dialog'),btn=document.getElementById('tabs-list');if(list&&btn&&list.showModal){var listClosing=false;

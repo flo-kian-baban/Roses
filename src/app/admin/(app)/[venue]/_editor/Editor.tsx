@@ -41,6 +41,7 @@ export type DeleteMode = { items: 'move'; target: string } | { items: 'delete' }
 
 type ItemSaves = { busy: number; failed: { key: number; again: () => Promise<void> }[]; refused: number };
 const NO_SAVES: ItemSaves = { busy: 0, failed: [], refused: 0 };
+const TOAST_LINE = 56; // a one-line toast's height (its 44 px button and 6 px above and below)
 const UNDO_ARM_MS = 600; // Undo answers taps from 600 ms after its toast appears (pre-go-live audit D-09)
 // Whether an item read back from the server holds a patch (D-05): every field the patch sets, as the server stores it.
 const norm = (v: unknown): string => JSON.stringify(v ?? null, (_k, x) => (typeof x === 'string' && x.trim() === '' ? null : x));
@@ -78,6 +79,16 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   // Undo answers taps from 600 ms after its toast appears (pre-go-live audit D-09: a second tap on "+ Add item" landed on it, 3 of 7 runs)
   const [armed, setArmed] = useState(false);
   useEffect(() => { setArmed(false); if (!toast) return; const t = setTimeout(() => setArmed(true), UNDO_ARM_MS); return () => clearTimeout(t); }, [toast?.key]);
+  // The toast's height as drawn (the PM's rule of 2026-11-19: no tappable control under a toast): a long message wraps onto a second line
+  // on a phone (the red "Not saved. No connection…" is 84 px tall on a 390 px screen, not 56), so the strip the item editor keeps free
+  // under its scroll area follows the toast instead of assuming one line (it covered "+ Add size" and "+ Add choices" by 20 px).
+  const toastEl = useRef<HTMLDivElement>(null);
+  const [toastH, setToastH] = useState(0);
+  useEffect(() => {
+    const el = toastEl.current; if (!el) { setToastH(0); return; }
+    const read = () => setToastH(Math.ceil(el.getBoundingClientRect().height));
+    read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect();
+  }, [toast?.key]);
   const [focus, setFocus] = useState<Focus>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -250,7 +261,8 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     try { const r = await call('/api/admin/item', { ...body, id, base: version(id) }); const it = r.item as EditorItem | undefined; if (it) versions.current.set(it.id, it.updated_at); return r; }
     catch (e) { const it = e instanceof ApiFail && e.status === 409 ? (e.extra.item as EditorItem | undefined) : undefined; if (it) { versions.current.set(it.id, it.updated_at); dispatch({ type: 'item', item: it }); } throw e; }
   };
-  const itemCall = async (id: string, body: Record<string, unknown>, text: string) => { const { r, newest } = await inOrder(id, () => sendItem(id, body)); if (newest) apply(r); done(r, text, { id, alt: sectionOf(id) }); return r; };
+  // sheet: a change that customers see only in the item's popup ("Goes well with", 2026-11-18): the preview opens the popup on it
+  const itemCall = async (id: string, body: Record<string, unknown>, text: string) => { const { r, newest } = await inOrder(id, () => sendItem(id, body)); if (newest) apply(r); const p = body.patch as Record<string, unknown> | undefined; done(r, text, { id, alt: sectionOf(id), ...(p && 'pairs' in p ? { sheet: true } : {}) }); return r; };
 
   // Items. Simple patches are applied at once (the switch flips, the price shows) and put back if the server refuses.
   const itemUpdate = guardItem(async (id: string, patch: Record<string, unknown>, text: string = 'Saved') => {
@@ -298,7 +310,9 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     const it = menu.items[id]; if (!it) return;
     setConfirm({ title: 'Delete this item?', body: <>“{it.name.en}” will be removed from the menu. You can undo for 10 seconds.</>, label: 'Delete', action: async () => {
       const sec = sectionOf(id); const r = await call('/api/admin/item', { action: 'delete', id });
-      dispatch({ type: 'item-removed', id }); setOpen(null); setConfirm(null); done(r, 'Deleted', sec ? { id: sec } : null);
+      dispatch({ type: 'item-removed', id }); setOpen(null); setConfirm(null);
+      for (const it of (r.items as EditorItem[] | undefined) ?? []) { versions.current.set(it.id, it.updated_at); dispatch({ type: 'item', item: it }); } // the items that listed it under "Goes well with": their lists without it, at their new version
+      done(r, 'Deleted', sec ? { id: sec } : null);
     } });
   };
   const itemMove = guard(async (sectionId: string, id: string, index: number) => { const r = await call('/api/admin/item', { action: 'move', id, section_id: sectionId, index }); apply(r); done(r, 'Moved', { id, alt: sectionId }); });
@@ -359,7 +373,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const bar = (phone: boolean) => <PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone={phone} />;
   const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onFail={fail} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} previewSeason={season ?? now.season} onPlay={playTransition} />;
 
-  const panel = openItem && <ItemPanel key={openItem.id} selectName={!!open?.selectName} toast={!!toast} item={openItem} venueId={venue.id} season={today} sections={menu.sections} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onLooksGood={(f) => itemLooksGood(openItem.id, f)} onDuplicate={() => itemDuplicate(openItem.id)} onDelete={() => itemDelete(openItem.id)} save={saveStatus(openItem.id)} onClose={() => setOpen(null)} />;
+  const panel = openItem && <ItemPanel key={openItem.id} selectName={!!open?.selectName} toast={toast ? Math.max(toastH, TOAST_LINE) : 0} item={openItem} venueId={venue.id} season={today} sections={menu.sections} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onLooksGood={(f) => itemLooksGood(openItem.id, f)} onDuplicate={() => itemDuplicate(openItem.id)} onDelete={() => itemDelete(openItem.id)} save={saveStatus(openItem.id)} onClose={() => setOpen(null)} />;
   return (
     <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
       <div className="relative min-w-0">
@@ -409,7 +423,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
       {deleting && menu.sections.some((s) => s.id === deleting) && <DeleteSectionSheet section={menu.sections.find((s) => s.id === deleting)!} others={menu.sections.filter((s) => s.id !== deleting && !s.seasonal)} items={menu.items} onClose={() => setDeleting(null)} onDelete={(mode) => sectionDeleteWith(deleting, mode)} />}
       {confirm && <ConfirmSheet title={confirm.title} body={confirm.body} label={confirm.label} onConfirm={confirm.action} onClose={() => setConfirm(null)} />}
       {toast && (
-        <div className={`toast fixed bottom-5 left-1/2 z-[80] flex w-max max-w-[calc(100vw-24px)] -translate-x-1/2 items-center gap-1 rounded-xl py-1.5 pl-4 pr-1.5 text-base font-medium text-canvas shadow-pop ${toast.error ? 'bg-danger' : 'bg-ink'}`} role={toast.error ? 'alert' : 'status'} data-toast-error={toast.error ? '' : undefined} style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}>
+        <div ref={toastEl} className={`toast fixed bottom-5 left-1/2 z-[80] flex w-max max-w-[calc(100vw-24px)] -translate-x-1/2 items-center gap-1 rounded-xl py-1.5 pl-4 pr-1.5 text-base font-medium text-canvas shadow-pop ${toast.error ? 'bg-danger' : 'bg-ink'}`} role={toast.error ? 'alert' : 'status'} data-toast-error={toast.error ? '' : undefined} style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}>
           <span>{toast.text}</span>
           {toast.retry && <><button type="button" onClick={() => { const again = toast.retry!; setToast(null); void again().catch(() => undefined); }} className="flex h-11 shrink-0 items-center gap-1 rounded-xl px-3 font-semibold hover:bg-canvas/15" data-try-again>Try again</button><button type="button" onClick={() => setToast(null)} aria-label="Close" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl hover:bg-canvas/15"><Icon name="close" className="h-4 w-4" /></button></>}
           {/* a tap within 600 ms of the toast appearing is the end of the tap that made it (a second tap on "+ Add item"), not an Undo (D-09) */}

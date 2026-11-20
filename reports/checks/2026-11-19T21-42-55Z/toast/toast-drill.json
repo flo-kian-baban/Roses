@@ -1,0 +1,4068 @@
+{
+ "base": "http://127.0.0.1:52874",
+ "at": "2026-11-19T22:04:13.702Z",
+ "results": [
+  {
+   "step": "toast-rule-390",
+   "ok": true,
+   "text": "390 × 664: 66 readings on every screen a toast can show on (16 with the one-line toast of a save, 34 with the red toast of a save that did not go through, 16 with the longest toast (the customers' page not updated); toast heights: saved 56 px, red 84 px, long 132 px): no tappable control under the toast or its strip; at the bottom the toast wholly in a solid strip with 8 px above it, with a sheet open at the top with the sheet at least 8 px under it. e.g. Menu, mid-way: toast 560–644 px, strip 552–664 px | the Add item sheet: toast 12–96 px, the sheet from 184 px | Details, at its end: toast 560–644 px, strip 552–664 px, the lowest control ends at 536 px | Style, the sheet down: toast 560–644 px, strip 552–664 px"
+  },
+  {
+   "step": "toast-rule-360",
+   "ok": true,
+   "text": "360 px (360 × 780): 66 readings on every screen a toast can show on (16 with the one-line toast of a save, 34 with the red toast of a save that did not go through, 16 with the longest toast (the customers' page not updated); toast heights: saved 56 px, red 84 px, long 156 px): no tappable control under the toast or its strip; at the bottom the toast wholly in a solid strip with 8 px above it, with a sheet open at the top with the sheet at least 8 px under it. e.g. Menu, mid-way: toast 676–760 px, strip 668–780 px | the Add item sheet: toast 12–96 px, the sheet from 280 px | Details, at its end: toast 676–760 px, strip 668–780 px, the lowest control ends at 652 px | Style, the sheet down: toast 676–760 px, strip 668–780 px"
+  },
+  {
+   "step": "toast-row-above-strip",
+   "ok": true,
+   "text": "the Menu row just changed ends above the strip: 390 × 664: the row ends at 408 px, the strip starts at 580 px; 360 px (360 × 780): the row ends at 510 px, the strip starts at 696 px"
+  },
+  {
+   "step": "toast-page-not-moved",
+   "ok": true,
+   "text": "the strip takes no room in the page (its height with the one-line toast up and without): 390 × 664 Menu 26820 → 26820 px; 360 px (360 × 780) Menu 32162 → 32162 px; 390 × 664 Details 1345 → 1345 px; 360 px (360 × 780) Details 1404 → 1404 px"
+  },
+  {
+   "step": "toast-end-of-page-clear",
+   "ok": true,
+   "text": "at the page's end every control is above the strip, whatever the toast's height (12 readings): 390 × 664 [saved] Menu: the lowest control ends at 536 px, the strip starts at 580 px; 390 × 664 [saved] Details: the lowest control ends at 536 px, the strip starts at 580 px; 390 × 664 [red] Menu: the lowest control ends at 536 px, the strip starts at 552 px; 390 × 664 [red] Details: the lowest control ends at 536 px, the strip starts at 552 px; 390 × 664 [long] Menu: the lowest control ends at 504 px, the strip starts at 504 px; 390 × 664 [long] Details: the lowest control ends at 504 px, the strip starts at 504 px; 360 px (360 × 780) [saved] Menu: the lowest control ends at 652 px, the strip starts at 696 px; 360 px (360 × 780) [saved] Details: the lowest control ends at 652 px, the strip starts at 696 px; 360 px (360 × 780) [red] Menu: the lowest control ends at 652 px, the strip starts at 668 px; 360 px (360 × 780) [red] Details: the lowest control ends at 652 px, the strip starts at 668 px; 360 px (360 × 780) [long] Menu: the lowest control ends at 596 px, the strip starts at 596 px; 360 px (360 × 780) [long] Details: the lowest control ends at 596 px, the strip starts at 596 px"
+  },
+  {
+   "step": "toast-swatches-in-view",
+   "ok": true,
+   "text": "a colour's save that does not go through on the phone (the Style sheet at half): the sheet's body ends at the strip and the open colour's swatches stay in view in it (wholly, or from the body's top edge where it is shorter than they are): 390 × 664: swatches 564–658 px before, 471–565 px with the toast (the body 471–553 px, the strip from 552 px); 360 px (360 × 780): swatches 680–774 px before, 569–663 px with the toast (the body 523–669 px, the strip from 668 px)"
+  },
+  {
+   "step": "toast-none-elsewhere",
+   "ok": true,
+   "text": "the screens outside the page editor have no toast and no strip: Sign-in: venue picker 0, Sign-in: PIN 0, Sign-in: email and password 0, Team 0, Add venue 0"
+  },
+  {
+   "step": "toast-drill-clean",
+   "ok": true,
+   "text": "the drill's section and items removed, the tagline as before (\"Experience the Best Breakfast & Drink with Us\")"
+  }
+ ],
+ "measures": [
+  "laptop 1440 × 900, information only: Menu, the one-line toast: toast 634–806 px across, its strip 0–920 px across, 0 of the toast's 2408 points over no strip; under the toast or a strip: no control",
+  "laptop 1440 × 900, information only: the item editor, the one-line toast: toast 634–806 px across, its strip 481–920 px across, 0 of the toast's 2408 points over no strip; under the toast or a strip: no control",
+  "laptop 1440 × 900, information only: Menu, the red toast: toast 427–1013 px across, its strip 0–920 px across, 1316 of the toast's 8204 points over no strip; under the toast or a strip: iframe \"Preview of the customers' page\" at 1011,824",
+  "laptop 1440 × 900, information only: the item editor, the red toast: toast 427–1013 px across, its strip 481–920 px across, 1316 of the toast's 8204 points over no strip; under the toast or a strip: iframe \"Preview of the customers' page\" at 1011,824",
+  "laptop 1440 × 900, information only: Details, the red toast: toast 427–1013 px across, its strip 0–920 px across, 1316 of the toast's 8204 points over no strip; under the toast or a strip: iframe \"Preview of the customers' page\" at 1011,824",
+  "laptop 1440 × 900, information only: Style, the red toast: toast 427–1013 px across, its strip 0–920 px across, 1316 of the toast's 8204 points over no strip; under the toast or a strip: iframe \"Preview of the customers' page\" at 1011,824",
+  "laptop 1280 × 800, information only: Menu, the one-line toast: toast 554–726 px across, its strip 0–760 px across, 0 of the toast's 2408 points over no strip; under the toast or a strip: no control",
+  "laptop 1280 × 800, information only: the item editor, the one-line toast: toast 554–726 px across, its strip 321–760 px across, 0 of the toast's 2408 points over no strip; under the toast or a strip: no control",
+  "laptop 1280 × 800, information only: Menu, the red toast: toast 347–933 px across, its strip 0–760 px across, 2436 of the toast's 8204 points over no strip; under the toast or a strip: iframe \"Preview of the customers' page\" at 875,724",
+  "laptop 1280 × 800, information only: the item editor, the red toast: toast 347–933 px across, its strip 321–760 px across, 2436 of the toast's 8204 points over no strip; under the toast or a strip: no control",
+  "laptop 1280 × 800, information only: Details, the red toast: toast 347–933 px across, its strip 0–760 px across, 2436 of the toast's 8204 points over no strip; under the toast or a strip: iframe \"Preview of the customers' page\" at 875,724",
+  "laptop 1280 × 800, information only: Style, the red toast: toast 347–933 px across, its strip 0–760 px across, 2436 of the toast's 8204 points over no strip; under the toast or a strip: iframe \"Preview of the customers' page\" at 875,724"
+ ],
+ "seen": [
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "Menu, at the row just changed",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 111,
+     "right": 279,
+     "text": "Shown · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10570,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null,
+   "row": 408
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "Menu, mid-way",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 109,
+     "right": 281,
+     "text": "Hidden · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10598,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "Menu, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 111,
+     "right": 279,
+     "text": "Shown · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10570,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null,
+   "lowest": 536
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "a section's menu, opened low on the screen",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 109,
+     "right": 281,
+     "text": "Hidden · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10598,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "the Add item sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 68,
+     "left": 111,
+     "right": 279,
+     "text": "Shown · Undo"
+    },
+    "zone": null,
+    "under": [],
+    "points": 2380,
+    "bare": 2380,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 184
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "the full-screen preview",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 109,
+     "right": 281,
+     "text": "Hidden · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10598,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "the item editor, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 113,
+     "right": 277,
+     "text": "Saved · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10486,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "the item editor, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 113,
+     "right": 277,
+     "text": "Saved · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10486,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "the Goes well with picker",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 68,
+     "left": 113,
+     "right": 277,
+     "text": "Saved · Undo"
+    },
+    "zone": null,
+    "under": [],
+    "points": 2296,
+    "bare": 2296,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 85
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "Details, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 113,
+     "right": 277,
+     "text": "Saved · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10486,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null,
+   "pageBefore": 1345,
+   "pageWith": 1345
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "Details, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 113,
+     "right": 277,
+     "text": "Saved · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10486,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null,
+   "lowest": 536
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "Details, the tagline put back",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 113,
+     "right": 277,
+     "text": "Saved · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10486,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "Style, the sheet at full",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 120,
+     "right": 270,
+     "text": "Grid · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10290,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "Style, the sheet down",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 120,
+     "right": 270,
+     "text": "Grid · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10290,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "Style, the sheet at half",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 120,
+     "right": 270,
+     "text": "Grid · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10290,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "saved",
+   "screen": "Style, the layout put back",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 588,
+     "bottom": 644,
+     "left": 122,
+     "right": 268,
+     "text": "List · Undo"
+    },
+    "zone": {
+     "top": 580,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 10234,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Menu, at the row just changed",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Menu, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Menu, mid-way",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Menu, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null,
+   "lowest": 536
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the venue switcher open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the account menu open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "a section's menu, opened low on the screen",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "a section being reordered",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the Add item sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7686,
+    "bare": 7686,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 184
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the Add section sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7686,
+    "bare": 7686,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 382
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the Rename section sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7686,
+    "bare": 7686,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 151
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the Delete section sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7686,
+    "bare": 7686,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 300
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the full-screen preview",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the item editor, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the item editor, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the item editor, its Goes well with card",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the Goes well with picker",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7686,
+    "bare": 7686,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 104
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the section picker",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7686,
+    "bare": 7686,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 104
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "the Delete item sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7686,
+    "bare": 7686,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 452
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Details, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Details, mid-way",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Details, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null,
+   "lowest": 536
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, the sheet at half",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, the sheet at full",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, the sheet down",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, the sheet down, the screen dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, the sheet down, the lang dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, the sheet down, the season dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, the sheet down, the slot dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, the sheet at half, the screen dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, the sheet at half, the slot dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, a colour open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, the Layout group",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "Menu, at the row just changed",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "Menu, mid-way",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "Menu, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null,
+   "lowest": 504
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "the Add item sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 144,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": null,
+    "under": [],
+    "points": 12078,
+    "bare": 12078,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 184
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "the full-screen preview",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "the item editor, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "the item editor, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "the Goes well with picker",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 144,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": null,
+    "under": [],
+    "points": 12078,
+    "bare": 12078,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 152
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "the section picker",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 144,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": null,
+    "under": [],
+    "points": 12078,
+    "bare": 12078,
+    "sheet": true,
+    "view": "390 × 664"
+   },
+   "card": 152
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "Details, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "Details, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null,
+   "lowest": 504
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "Style, the sheet at half",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "Style, the sheet at full",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "Style, the sheet down",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "Style, the sheet down, the season dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "long",
+   "screen": "Style, the sheet at half, the screen dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 512,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 504,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 27678,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   },
+   "card": null
+  },
+  {
+   "view": "390 × 664",
+   "kind": "red",
+   "screen": "Style, a colour's save did not go through",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 560,
+     "bottom": 644,
+     "left": 12,
+     "right": 378,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 552,
+     "bottom": 664,
+     "left": 0,
+     "right": 390,
+     "solid": true
+    },
+    "under": [],
+    "points": 18606,
+    "bare": 0,
+    "sheet": false,
+    "view": "390 × 664"
+   }
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "Menu, at the row just changed",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 96,
+     "right": 264,
+     "text": "Shown · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9940,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null,
+   "row": 510
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "Menu, mid-way",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 94,
+     "right": 266,
+     "text": "Hidden · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9968,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "Menu, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 96,
+     "right": 264,
+     "text": "Shown · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9940,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null,
+   "lowest": 652
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "a section's menu, opened low on the screen",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 94,
+     "right": 266,
+     "text": "Hidden · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9968,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "the Add item sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 68,
+     "left": 96,
+     "right": 264,
+     "text": "Shown · Undo"
+    },
+    "zone": null,
+    "under": [],
+    "points": 2380,
+    "bare": 2380,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 280
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "the full-screen preview",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 94,
+     "right": 266,
+     "text": "Hidden · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9968,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "the item editor, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 98,
+     "right": 262,
+     "text": "Saved · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9856,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "the item editor, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 98,
+     "right": 262,
+     "text": "Saved · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9856,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "the Goes well with picker",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 68,
+     "left": 98,
+     "right": 262,
+     "text": "Saved · Undo"
+    },
+    "zone": null,
+    "under": [],
+    "points": 2296,
+    "bare": 2296,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 136
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "Details, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 98,
+     "right": 262,
+     "text": "Saved · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9856,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null,
+   "pageBefore": 1404,
+   "pageWith": 1404
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "Details, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 98,
+     "right": 262,
+     "text": "Saved · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9856,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null,
+   "lowest": 652
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "Details, the tagline put back",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 98,
+     "right": 262,
+     "text": "Saved · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9856,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "Style, the sheet at full",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 105,
+     "right": 255,
+     "text": "Grid · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9660,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "Style, the sheet down",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 105,
+     "right": 255,
+     "text": "Grid · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9660,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "Style, the sheet at half",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 105,
+     "right": 255,
+     "text": "Grid · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9660,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "saved",
+   "screen": "Style, the layout put back",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 704,
+     "bottom": 760,
+     "left": 107,
+     "right": 253,
+     "text": "List · Undo"
+    },
+    "zone": {
+     "top": 696,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 9604,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Menu, at the row just changed",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Menu, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Menu, mid-way",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Menu, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null,
+   "lowest": 652
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the venue switcher open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the account menu open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "a section's menu, opened low on the screen",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "a section being reordered",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the Add item sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7056,
+    "bare": 7056,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 280
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the Add section sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7056,
+    "bare": 7056,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 498
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the Rename section sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7056,
+    "bare": 7056,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 267
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the Delete section sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7056,
+    "bare": 7056,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 384
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the full-screen preview",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the item editor, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the item editor, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the item editor, its Goes well with card",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the Goes well with picker",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7056,
+    "bare": 7056,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 136
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the section picker",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7056,
+    "bare": 7056,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 104
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "the Delete item sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 96,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": null,
+    "under": [],
+    "points": 7056,
+    "bare": 7056,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 568
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Details, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Details, mid-way",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Details, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null,
+   "lowest": 652
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, the sheet at half",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, the sheet at full",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, the sheet down",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, the sheet down, the screen dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, the sheet down, the lang dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, the sheet down, the season dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, the sheet down, the slot dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, the sheet at half, the screen dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, the sheet at half, the slot dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, a colour open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, the Layout group",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "Menu, at the row just changed",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "Menu, mid-way",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "Menu, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null,
+   "lowest": 596
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "the Add item sheet",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 168,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": null,
+    "under": [],
+    "points": 13104,
+    "bare": 13104,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 280
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "the full-screen preview",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "the item editor, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "the item editor, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "the Goes well with picker",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 168,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": null,
+    "under": [],
+    "points": 13104,
+    "bare": 13104,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 176
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "the section picker",
+   "top": true,
+   "m": {
+    "toast": {
+     "top": 12,
+     "bottom": 168,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": null,
+    "under": [],
+    "points": 13104,
+    "bare": 13104,
+    "sheet": true,
+    "view": "360 × 780"
+   },
+   "card": 176
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "Details, at its top",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "Details, at its end",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null,
+   "lowest": 596
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "Style, the sheet at half",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "Style, the sheet at full",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "Style, the sheet down",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "Style, the sheet down, the season dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "long",
+   "screen": "Style, the sheet at half, the screen dropdown open",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 604,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Shown, but the customers' page did not update. Try again · Undo"
+    },
+    "zone": {
+     "top": 596,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 29664,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   },
+   "card": null
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "kind": "red",
+   "screen": "Style, a colour's save did not go through",
+   "top": false,
+   "m": {
+    "toast": {
+     "top": 676,
+     "bottom": 760,
+     "left": 12,
+     "right": 348,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 668,
+     "bottom": 780,
+     "left": 0,
+     "right": 360,
+     "solid": true
+    },
+    "under": [],
+    "points": 17136,
+    "bare": 0,
+    "sheet": false,
+    "view": "360 × 780"
+   }
+  }
+ ],
+ "moved": [
+  {
+   "view": "390 × 664",
+   "tab": "Menu",
+   "before": 26820,
+   "with": 26820
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "tab": "Menu",
+   "before": 32162,
+   "with": 32162
+  },
+  {
+   "view": "390 × 664",
+   "tab": "Details",
+   "before": 1345,
+   "with": 1345
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "tab": "Details",
+   "before": 1404,
+   "with": 1404
+  }
+ ],
+ "swatches": [
+  {
+   "view": "390 × 664",
+   "before": {
+    "top": 564,
+    "bottom": 658,
+    "body": [
+     471,
+     664
+    ]
+   },
+   "after": {
+    "top": 471,
+    "bottom": 565,
+    "body": [
+     471,
+     553
+    ]
+   },
+   "toast": {
+    "top": 560,
+    "bottom": 644,
+    "left": 12,
+    "right": 378,
+    "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+   },
+   "zone": {
+    "top": 552,
+    "bottom": 664,
+    "left": 0,
+    "right": 390,
+    "solid": true
+   },
+   "under": [],
+   "bare": 0,
+   "tapped": true
+  },
+  {
+   "view": "360 px (360 × 780)",
+   "before": {
+    "top": 680,
+    "bottom": 774,
+    "body": [
+     523,
+     780
+    ]
+   },
+   "after": {
+    "top": 569,
+    "bottom": 663,
+    "body": [
+     523,
+     669
+    ]
+   },
+   "toast": {
+    "top": 676,
+    "bottom": 760,
+    "left": 12,
+    "right": 348,
+    "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+   },
+   "zone": {
+    "top": 668,
+    "bottom": 780,
+    "left": 0,
+    "right": 360,
+    "solid": true
+   },
+   "under": [],
+   "bare": 0,
+   "tapped": true
+  }
+ ],
+ "none": [
+  {
+   "name": "Sign-in: venue picker",
+   "toast": 0
+  },
+  {
+   "name": "Sign-in: PIN",
+   "toast": 0
+  },
+  {
+   "name": "Sign-in: email and password",
+   "toast": 0
+  },
+  {
+   "name": "Team",
+   "toast": 0
+  },
+  {
+   "name": "Add venue",
+   "toast": 0
+  }
+ ],
+ "laptop": [
+  {
+   "view": "1440 × 900",
+   "screen": "Menu, the one-line toast",
+   "m": {
+    "toast": {
+     "top": 824,
+     "bottom": 880,
+     "left": 634,
+     "right": 806,
+     "text": "Hidden · Undo"
+    },
+    "zone": {
+     "top": 816,
+     "bottom": 900,
+     "left": 0,
+     "right": 920,
+     "solid": true
+    },
+    "under": [],
+    "points": 21728,
+    "bare": 0,
+    "sheet": false,
+    "view": "1440 × 900"
+   }
+  },
+  {
+   "view": "1440 × 900",
+   "screen": "the item editor, the one-line toast",
+   "m": {
+    "toast": {
+     "top": 824,
+     "bottom": 880,
+     "left": 634,
+     "right": 806,
+     "text": "Hidden · Undo"
+    },
+    "zone": {
+     "top": 816,
+     "bottom": 900,
+     "left": 481,
+     "right": 920,
+     "solid": true
+    },
+    "under": [],
+    "points": 11648,
+    "bare": 0,
+    "sheet": false,
+    "view": "1440 × 900"
+   }
+  },
+  {
+   "view": "1440 × 900",
+   "screen": "Menu, the red toast",
+   "m": {
+    "toast": {
+     "top": 824,
+     "bottom": 880,
+     "left": 427,
+     "right": 1013,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 816,
+     "bottom": 900,
+     "left": 0,
+     "right": 920,
+     "solid": true
+    },
+    "under": [
+     "iframe \"Preview of the customers' page\" at 1011,824"
+    ],
+    "points": 27552,
+    "bare": 1316,
+    "sheet": false,
+    "view": "1440 × 900"
+   }
+  },
+  {
+   "view": "1440 × 900",
+   "screen": "the item editor, the red toast",
+   "m": {
+    "toast": {
+     "top": 824,
+     "bottom": 880,
+     "left": 427,
+     "right": 1013,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 816,
+     "bottom": 900,
+     "left": 481,
+     "right": 920,
+     "solid": true
+    },
+    "under": [
+     "iframe \"Preview of the customers' page\" at 1011,824"
+    ],
+    "points": 17472,
+    "bare": 1316,
+    "sheet": false,
+    "view": "1440 × 900"
+   }
+  },
+  {
+   "view": "1440 × 900",
+   "screen": "Details, the red toast",
+   "m": {
+    "toast": {
+     "top": 824,
+     "bottom": 880,
+     "left": 427,
+     "right": 1013,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 816,
+     "bottom": 900,
+     "left": 0,
+     "right": 920,
+     "solid": true
+    },
+    "under": [
+     "iframe \"Preview of the customers' page\" at 1011,824"
+    ],
+    "points": 27552,
+    "bare": 1316,
+    "sheet": false,
+    "view": "1440 × 900"
+   }
+  },
+  {
+   "view": "1440 × 900",
+   "screen": "Style, the red toast",
+   "m": {
+    "toast": {
+     "top": 824,
+     "bottom": 880,
+     "left": 427,
+     "right": 1013,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 816,
+     "bottom": 900,
+     "left": 0,
+     "right": 920,
+     "solid": true
+    },
+    "under": [
+     "iframe \"Preview of the customers' page\" at 1011,824"
+    ],
+    "points": 27552,
+    "bare": 1316,
+    "sheet": false,
+    "view": "1440 × 900"
+   }
+  },
+  {
+   "view": "1280 × 800",
+   "screen": "Menu, the one-line toast",
+   "m": {
+    "toast": {
+     "top": 724,
+     "bottom": 780,
+     "left": 554,
+     "right": 726,
+     "text": "Hidden · Undo"
+    },
+    "zone": {
+     "top": 716,
+     "bottom": 800,
+     "left": 0,
+     "right": 760,
+     "solid": true
+    },
+    "under": [],
+    "points": 18368,
+    "bare": 0,
+    "sheet": false,
+    "view": "1280 × 800"
+   }
+  },
+  {
+   "view": "1280 × 800",
+   "screen": "the item editor, the one-line toast",
+   "m": {
+    "toast": {
+     "top": 724,
+     "bottom": 780,
+     "left": 554,
+     "right": 726,
+     "text": "Hidden · Undo"
+    },
+    "zone": {
+     "top": 716,
+     "bottom": 800,
+     "left": 321,
+     "right": 760,
+     "solid": true
+    },
+    "under": [],
+    "points": 11648,
+    "bare": 0,
+    "sheet": false,
+    "view": "1280 × 800"
+   }
+  },
+  {
+   "view": "1280 × 800",
+   "screen": "Menu, the red toast",
+   "m": {
+    "toast": {
+     "top": 724,
+     "bottom": 780,
+     "left": 347,
+     "right": 933,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 716,
+     "bottom": 800,
+     "left": 0,
+     "right": 760,
+     "solid": true
+    },
+    "under": [
+     "iframe \"Preview of the customers' page\" at 875,724"
+    ],
+    "points": 24192,
+    "bare": 2436,
+    "sheet": false,
+    "view": "1280 × 800"
+   }
+  },
+  {
+   "view": "1280 × 800",
+   "screen": "the item editor, the red toast",
+   "m": {
+    "toast": {
+     "top": 724,
+     "bottom": 780,
+     "left": 347,
+     "right": 933,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 716,
+     "bottom": 800,
+     "left": 321,
+     "right": 760,
+     "solid": true
+    },
+    "under": [],
+    "points": 17472,
+    "bare": 2436,
+    "sheet": false,
+    "view": "1280 × 800"
+   }
+  },
+  {
+   "view": "1280 × 800",
+   "screen": "Details, the red toast",
+   "m": {
+    "toast": {
+     "top": 724,
+     "bottom": 780,
+     "left": 347,
+     "right": 933,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 716,
+     "bottom": 800,
+     "left": 0,
+     "right": 760,
+     "solid": true
+    },
+    "under": [
+     "iframe \"Preview of the customers' page\" at 875,724"
+    ],
+    "points": 24192,
+    "bare": 2436,
+    "sheet": false,
+    "view": "1280 × 800"
+   }
+  },
+  {
+   "view": "1280 × 800",
+   "screen": "Style, the red toast",
+   "m": {
+    "toast": {
+     "top": 724,
+     "bottom": 780,
+     "left": 347,
+     "right": 933,
+     "text": "Not saved. No connection. Check the Wi-Fi and try again. Try again"
+    },
+    "zone": {
+     "top": 716,
+     "bottom": 800,
+     "left": 0,
+     "right": 760,
+     "solid": true
+    },
+    "under": [
+     "iframe \"Preview of the customers' page\" at 875,724"
+    ],
+    "points": 24192,
+    "bare": 2436,
+    "sheet": false,
+    "view": "1280 × 800"
+   }
+  }
+ ]
+}

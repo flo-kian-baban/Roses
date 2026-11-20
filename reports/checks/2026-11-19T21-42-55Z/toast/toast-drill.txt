@@ -1,0 +1,157 @@
+Toast drill — 2026-11-19T22:04:13.702Z — http://127.0.0.1:52874
+
+PASS  toast-rule-390: 390 × 664: 66 readings on every screen a toast can show on (16 with the one-line toast of a save, 34 with the red toast of a save that did not go through, 16 with the longest toast (the customers' page not updated); toast heights: saved 56 px, red 84 px, long 132 px): no tappable control under the toast or its strip; at the bottom the toast wholly in a solid strip with 8 px above it, with a sheet open at the top with the sheet at least 8 px under it. e.g. Menu, mid-way: toast 560–644 px, strip 552–664 px | the Add item sheet: toast 12–96 px, the sheet from 184 px | Details, at its end: toast 560–644 px, strip 552–664 px, the lowest control ends at 536 px | Style, the sheet down: toast 560–644 px, strip 552–664 px
+PASS  toast-rule-360: 360 px (360 × 780): 66 readings on every screen a toast can show on (16 with the one-line toast of a save, 34 with the red toast of a save that did not go through, 16 with the longest toast (the customers' page not updated); toast heights: saved 56 px, red 84 px, long 156 px): no tappable control under the toast or its strip; at the bottom the toast wholly in a solid strip with 8 px above it, with a sheet open at the top with the sheet at least 8 px under it. e.g. Menu, mid-way: toast 676–760 px, strip 668–780 px | the Add item sheet: toast 12–96 px, the sheet from 280 px | Details, at its end: toast 676–760 px, strip 668–780 px, the lowest control ends at 652 px | Style, the sheet down: toast 676–760 px, strip 668–780 px
+PASS  toast-row-above-strip: the Menu row just changed ends above the strip: 390 × 664: the row ends at 408 px, the strip starts at 580 px; 360 px (360 × 780): the row ends at 510 px, the strip starts at 696 px
+PASS  toast-page-not-moved: the strip takes no room in the page (its height with the one-line toast up and without): 390 × 664 Menu 26820 → 26820 px; 360 px (360 × 780) Menu 32162 → 32162 px; 390 × 664 Details 1345 → 1345 px; 360 px (360 × 780) Details 1404 → 1404 px
+PASS  toast-end-of-page-clear: at the page's end every control is above the strip, whatever the toast's height (12 readings): 390 × 664 [saved] Menu: the lowest control ends at 536 px, the strip starts at 580 px; 390 × 664 [saved] Details: the lowest control ends at 536 px, the strip starts at 580 px; 390 × 664 [red] Menu: the lowest control ends at 536 px, the strip starts at 552 px; 390 × 664 [red] Details: the lowest control ends at 536 px, the strip starts at 552 px; 390 × 664 [long] Menu: the lowest control ends at 504 px, the strip starts at 504 px; 390 × 664 [long] Details: the lowest control ends at 504 px, the strip starts at 504 px; 360 px (360 × 780) [saved] Menu: the lowest control ends at 652 px, the strip starts at 696 px; 360 px (360 × 780) [saved] Details: the lowest control ends at 652 px, the strip starts at 696 px; 360 px (360 × 780) [red] Menu: the lowest control ends at 652 px, the strip starts at 668 px; 360 px (360 × 780) [red] Details: the lowest control ends at 652 px, the strip starts at 668 px; 360 px (360 × 780) [long] Menu: the lowest control ends at 596 px, the strip starts at 596 px; 360 px (360 × 780) [long] Details: the lowest control ends at 596 px, the strip starts at 596 px
+PASS  toast-swatches-in-view: a colour's save that does not go through on the phone (the Style sheet at half): the sheet's body ends at the strip and the open colour's swatches stay in view in it (wholly, or from the body's top edge where it is shorter than they are): 390 × 664: swatches 564–658 px before, 471–565 px with the toast (the body 471–553 px, the strip from 552 px); 360 px (360 × 780): swatches 680–774 px before, 569–663 px with the toast (the body 523–669 px, the strip from 668 px)
+PASS  toast-none-elsewhere: the screens outside the page editor have no toast and no strip: Sign-in: venue picker 0, Sign-in: PIN 0, Sign-in: email and password 0, Team 0, Add venue 0
+PASS  toast-drill-clean: the drill's section and items removed, the tagline as before ("Experience the Best Breakfast & Drink with Us")
+
+MEASURE  laptop 1440 × 900, information only: Menu, the one-line toast: toast 634–806 px across, its strip 0–920 px across, 0 of the toast's 2408 points over no strip; under the toast or a strip: no control
+MEASURE  laptop 1440 × 900, information only: the item editor, the one-line toast: toast 634–806 px across, its strip 481–920 px across, 0 of the toast's 2408 points over no strip; under the toast or a strip: no control
+MEASURE  laptop 1440 × 900, information only: Menu, the red toast: toast 427–1013 px across, its strip 0–920 px across, 1316 of the toast's 8204 points over no strip; under the toast or a strip: iframe "Preview of the customers' page" at 1011,824
+MEASURE  laptop 1440 × 900, information only: the item editor, the red toast: toast 427–1013 px across, its strip 481–920 px across, 1316 of the toast's 8204 points over no strip; under the toast or a strip: iframe "Preview of the customers' page" at 1011,824
+MEASURE  laptop 1440 × 900, information only: Details, the red toast: toast 427–1013 px across, its strip 0–920 px across, 1316 of the toast's 8204 points over no strip; under the toast or a strip: iframe "Preview of the customers' page" at 1011,824
+MEASURE  laptop 1440 × 900, information only: Style, the red toast: toast 427–1013 px across, its strip 0–920 px across, 1316 of the toast's 8204 points over no strip; under the toast or a strip: iframe "Preview of the customers' page" at 1011,824
+MEASURE  laptop 1280 × 800, information only: Menu, the one-line toast: toast 554–726 px across, its strip 0–760 px across, 0 of the toast's 2408 points over no strip; under the toast or a strip: no control
+MEASURE  laptop 1280 × 800, information only: the item editor, the one-line toast: toast 554–726 px across, its strip 321–760 px across, 0 of the toast's 2408 points over no strip; under the toast or a strip: no control
+MEASURE  laptop 1280 × 800, information only: Menu, the red toast: toast 347–933 px across, its strip 0–760 px across, 2436 of the toast's 8204 points over no strip; under the toast or a strip: iframe "Preview of the customers' page" at 875,724
+MEASURE  laptop 1280 × 800, information only: the item editor, the red toast: toast 347–933 px across, its strip 321–760 px across, 2436 of the toast's 8204 points over no strip; under the toast or a strip: no control
+MEASURE  laptop 1280 × 800, information only: Details, the red toast: toast 347–933 px across, its strip 0–760 px across, 2436 of the toast's 8204 points over no strip; under the toast or a strip: iframe "Preview of the customers' page" at 875,724
+MEASURE  laptop 1280 × 800, information only: Style, the red toast: toast 347–933 px across, its strip 0–760 px across, 2436 of the toast's 8204 points over no strip; under the toast or a strip: iframe "Preview of the customers' page" at 875,724
+
+Every reading:
+  ok   390 × 664 [saved] Menu, at the row just changed: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [saved] Menu, mid-way: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [saved] Menu, at its end: toast 588–644 px, strip 580–664 px, the lowest control ends at 536 px
+  ok   390 × 664 [saved] a section's menu, opened low on the screen: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [saved] the Add item sheet: toast 12–68 px, the sheet from 184 px
+  ok   390 × 664 [saved] the full-screen preview: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [saved] the item editor, at its top: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [saved] the item editor, at its end: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [saved] the Goes well with picker: toast 12–68 px, the sheet from 85 px
+  ok   390 × 664 [saved] Details, at its top: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [saved] Details, at its end: toast 588–644 px, strip 580–664 px, the lowest control ends at 536 px
+  ok   390 × 664 [saved] Details, the tagline put back: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [saved] Style, the sheet at full: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [saved] Style, the sheet down: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [saved] Style, the sheet at half: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [saved] Style, the layout put back: toast 588–644 px, strip 580–664 px
+  ok   390 × 664 [red] Menu, at the row just changed: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Menu, at its top: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Menu, mid-way: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Menu, at its end: toast 560–644 px, strip 552–664 px, the lowest control ends at 536 px
+  ok   390 × 664 [red] the venue switcher open: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] the account menu open: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] a section's menu, opened low on the screen: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] a section being reordered: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] the Add item sheet: toast 12–96 px, the sheet from 184 px
+  ok   390 × 664 [red] the Add section sheet: toast 12–96 px, the sheet from 382 px
+  ok   390 × 664 [red] the Rename section sheet: toast 12–96 px, the sheet from 151 px
+  ok   390 × 664 [red] the Delete section sheet: toast 12–96 px, the sheet from 300 px
+  ok   390 × 664 [red] the full-screen preview: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] the item editor, at its top: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] the item editor, at its end: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] the item editor, its Goes well with card: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] the Goes well with picker: toast 12–96 px, the sheet from 104 px
+  ok   390 × 664 [red] the section picker: toast 12–96 px, the sheet from 104 px
+  ok   390 × 664 [red] the Delete item sheet: toast 12–96 px, the sheet from 452 px
+  ok   390 × 664 [red] Details, at its top: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Details, mid-way: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Details, at its end: toast 560–644 px, strip 552–664 px, the lowest control ends at 536 px
+  ok   390 × 664 [red] Style, the sheet at half: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Style, the sheet at full: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Style, the sheet down: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Style, the sheet down, the screen dropdown open: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Style, the sheet down, the lang dropdown open: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Style, the sheet down, the season dropdown open: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Style, the sheet down, the slot dropdown open: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Style, the sheet at half, the screen dropdown open: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Style, the sheet at half, the slot dropdown open: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Style, a colour open: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [red] Style, the Layout group: toast 560–644 px, strip 552–664 px
+  ok   390 × 664 [long] Menu, at the row just changed: toast 512–644 px, strip 504–664 px
+  ok   390 × 664 [long] Menu, mid-way: toast 512–644 px, strip 504–664 px
+  ok   390 × 664 [long] Menu, at its end: toast 512–644 px, strip 504–664 px, the lowest control ends at 504 px
+  ok   390 × 664 [long] the Add item sheet: toast 12–144 px, the sheet from 184 px
+  ok   390 × 664 [long] the full-screen preview: toast 512–644 px, strip 504–664 px
+  ok   390 × 664 [long] the item editor, at its top: toast 512–644 px, strip 504–664 px
+  ok   390 × 664 [long] the item editor, at its end: toast 512–644 px, strip 504–664 px
+  ok   390 × 664 [long] the Goes well with picker: toast 12–144 px, the sheet from 152 px
+  ok   390 × 664 [long] the section picker: toast 12–144 px, the sheet from 152 px
+  ok   390 × 664 [long] Details, at its top: toast 512–644 px, strip 504–664 px
+  ok   390 × 664 [long] Details, at its end: toast 512–644 px, strip 504–664 px, the lowest control ends at 504 px
+  ok   390 × 664 [long] Style, the sheet at half: toast 512–644 px, strip 504–664 px
+  ok   390 × 664 [long] Style, the sheet at full: toast 512–644 px, strip 504–664 px
+  ok   390 × 664 [long] Style, the sheet down: toast 512–644 px, strip 504–664 px
+  ok   390 × 664 [long] Style, the sheet down, the season dropdown open: toast 512–644 px, strip 504–664 px
+  ok   390 × 664 [long] Style, the sheet at half, the screen dropdown open: toast 512–644 px, strip 504–664 px
+  ok   390 × 664 [red] Style, a colour's save did not go through: toast 560–644 px, strip 552–664 px
+  ok   360 px (360 × 780) [saved] Menu, at the row just changed: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [saved] Menu, mid-way: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [saved] Menu, at its end: toast 704–760 px, strip 696–780 px, the lowest control ends at 652 px
+  ok   360 px (360 × 780) [saved] a section's menu, opened low on the screen: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [saved] the Add item sheet: toast 12–68 px, the sheet from 280 px
+  ok   360 px (360 × 780) [saved] the full-screen preview: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [saved] the item editor, at its top: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [saved] the item editor, at its end: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [saved] the Goes well with picker: toast 12–68 px, the sheet from 136 px
+  ok   360 px (360 × 780) [saved] Details, at its top: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [saved] Details, at its end: toast 704–760 px, strip 696–780 px, the lowest control ends at 652 px
+  ok   360 px (360 × 780) [saved] Details, the tagline put back: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [saved] Style, the sheet at full: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [saved] Style, the sheet down: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [saved] Style, the sheet at half: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [saved] Style, the layout put back: toast 704–760 px, strip 696–780 px
+  ok   360 px (360 × 780) [red] Menu, at the row just changed: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Menu, at its top: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Menu, mid-way: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Menu, at its end: toast 676–760 px, strip 668–780 px, the lowest control ends at 652 px
+  ok   360 px (360 × 780) [red] the venue switcher open: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] the account menu open: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] a section's menu, opened low on the screen: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] a section being reordered: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] the Add item sheet: toast 12–96 px, the sheet from 280 px
+  ok   360 px (360 × 780) [red] the Add section sheet: toast 12–96 px, the sheet from 498 px
+  ok   360 px (360 × 780) [red] the Rename section sheet: toast 12–96 px, the sheet from 267 px
+  ok   360 px (360 × 780) [red] the Delete section sheet: toast 12–96 px, the sheet from 384 px
+  ok   360 px (360 × 780) [red] the full-screen preview: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] the item editor, at its top: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] the item editor, at its end: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] the item editor, its Goes well with card: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] the Goes well with picker: toast 12–96 px, the sheet from 136 px
+  ok   360 px (360 × 780) [red] the section picker: toast 12–96 px, the sheet from 104 px
+  ok   360 px (360 × 780) [red] the Delete item sheet: toast 12–96 px, the sheet from 568 px
+  ok   360 px (360 × 780) [red] Details, at its top: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Details, mid-way: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Details, at its end: toast 676–760 px, strip 668–780 px, the lowest control ends at 652 px
+  ok   360 px (360 × 780) [red] Style, the sheet at half: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Style, the sheet at full: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Style, the sheet down: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Style, the sheet down, the screen dropdown open: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Style, the sheet down, the lang dropdown open: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Style, the sheet down, the season dropdown open: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Style, the sheet down, the slot dropdown open: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Style, the sheet at half, the screen dropdown open: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Style, the sheet at half, the slot dropdown open: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Style, a colour open: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [red] Style, the Layout group: toast 676–760 px, strip 668–780 px
+  ok   360 px (360 × 780) [long] Menu, at the row just changed: toast 604–760 px, strip 596–780 px
+  ok   360 px (360 × 780) [long] Menu, mid-way: toast 604–760 px, strip 596–780 px
+  ok   360 px (360 × 780) [long] Menu, at its end: toast 604–760 px, strip 596–780 px, the lowest control ends at 596 px
+  ok   360 px (360 × 780) [long] the Add item sheet: toast 12–168 px, the sheet from 280 px
+  ok   360 px (360 × 780) [long] the full-screen preview: toast 604–760 px, strip 596–780 px
+  ok   360 px (360 × 780) [long] the item editor, at its top: toast 604–760 px, strip 596–780 px
+  ok   360 px (360 × 780) [long] the item editor, at its end: toast 604–760 px, strip 596–780 px
+  ok   360 px (360 × 780) [long] the Goes well with picker: toast 12–168 px, the sheet from 176 px
+  ok   360 px (360 × 780) [long] the section picker: toast 12–168 px, the sheet from 176 px
+  ok   360 px (360 × 780) [long] Details, at its top: toast 604–760 px, strip 596–780 px
+  ok   360 px (360 × 780) [long] Details, at its end: toast 604–760 px, strip 596–780 px, the lowest control ends at 596 px
+  ok   360 px (360 × 780) [long] Style, the sheet at half: toast 604–760 px, strip 596–780 px
+  ok   360 px (360 × 780) [long] Style, the sheet at full: toast 604–760 px, strip 596–780 px
+  ok   360 px (360 × 780) [long] Style, the sheet down: toast 604–760 px, strip 596–780 px
+  ok   360 px (360 × 780) [long] Style, the sheet down, the season dropdown open: toast 604–760 px, strip 596–780 px
+  ok   360 px (360 × 780) [long] Style, the sheet at half, the screen dropdown open: toast 604–760 px, strip 596–780 px
+  ok   360 px (360 × 780) [red] Style, a colour's save did not go through: toast 676–760 px, strip 668–780 px

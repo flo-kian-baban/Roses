@@ -29,7 +29,7 @@ import { SCREENS, type PageNow, type Screen, type View, type ViewPatch } from '.
 import { StyleTab, type Picked, type StyleSnapshot } from './StyleTab';
 import type { Season, Slot } from '@/lib/welcome';
 import { DetailsTab } from './DetailsTab';
-import { ConfirmSheet, Sheet, TextField, btnDanger, btnPrimary, btnSecondary, fieldCls } from './ui';
+import { ConfirmSheet, Sheet, TextField, ToastStrip, btnDanger, btnPrimary, btnSecondary, fieldCls, toastStrip } from './ui';
 import { parsePrice } from '@/lib/rules';
 
 export type Me = { name: string; role: 'admin' | 'owner' | 'staff'; canNotes: boolean; canManage: boolean };
@@ -80,8 +80,8 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const [armed, setArmed] = useState(false);
   useEffect(() => { setArmed(false); if (!toast) return; const t = setTimeout(() => setArmed(true), UNDO_ARM_MS); return () => clearTimeout(t); }, [toast?.key]);
   // The toast's height as drawn (the PM's rule of 2026-11-19: no tappable control under a toast): a long message wraps onto a second line
-  // on a phone (the red "Not saved. No connection…" is 84 px tall on a 390 px screen, not 56), so the strip the item editor keeps free
-  // under its scroll area follows the toast instead of assuming one line (it covered "+ Add size" and "+ Add choices" by 20 px).
+  // on a phone (the red "Not saved. No connection…" is 84 px tall on a 390 px screen, not 56), so the strip kept free for it follows the
+  // toast instead of assuming one line (in the item editor it covered "+ Add size" and "+ Add choices" by 20 px).
   const toastEl = useRef<HTMLDivElement>(null);
   const [toastH, setToastH] = useState(0);
   useEffect(() => {
@@ -89,6 +89,11 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
     const read = () => setToastH(Math.ceil(el.getBoundingClientRect().height));
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect();
   }, [toast?.key]);
+  // The strip's height on every admin screen (the PM, 2026-11-19: the rule holds everywhere): `zone` is the toast's height while one
+  // shows, 0 otherwise. Each place the toast can lie over keeps a strip of that height free at the bottom of what scrolls there (ui.tsx,
+  // ToastStrip); the page also carries it as --toast-h, for the sheets, which end under the toast when it is at the top (globals.css).
+  const zone = toast ? Math.max(toastH, TOAST_LINE) : 0;
+  useEffect(() => { if (!zone) return; document.body.style.setProperty('--toast-h', `${zone}px`); return () => { document.body.style.removeProperty('--toast-h'); }; }, [zone]);
   const [focus, setFocus] = useState<Focus>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -373,10 +378,15 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
   const bar = (phone: boolean) => <PreviewBar view={view} onView={onView} now={now} compare={{ on: compare, set: setCompare }} phone={phone} />;
   const styleTab = me.canManage && <StyleTab venueId={venue.id} version={reloadKey} onSaved={savedElsewhere} onFail={fail} onApply={apply} onLive={previewLive} onDefaults={previewDefaults} onRegion={previewRegion} onEditing={setEditing} picked={picked} sections={menu.sections} onLayout={sectionLayout} snapshot={styleSnapshot} onSnapshot={setStyleSnapshot} previewSeason={season ?? now.season} onPlay={playTransition} />;
 
-  const panel = openItem && <ItemPanel key={openItem.id} selectName={!!open?.selectName} toast={toast ? Math.max(toastH, TOAST_LINE) : 0} item={openItem} venueId={venue.id} season={today} sections={menu.sections} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onLooksGood={(f) => itemLooksGood(openItem.id, f)} onDuplicate={() => itemDuplicate(openItem.id)} onDelete={() => itemDelete(openItem.id)} save={saveStatus(openItem.id)} onClose={() => setOpen(null)} />;
+  const panel = openItem && <ItemPanel key={openItem.id} selectName={!!open?.selectName} toast={zone} item={openItem} venueId={venue.id} season={today} sections={menu.sections} items={menu.items} canNotes={me.canNotes} column={wide} notesFirst={filter === 'allergens'} onPatch={(p) => itemUpdate(openItem.id, p)} onCopy={(g, ids) => itemCopyChoices(openItem.id, g, ids)} onNotes={(n) => itemNotes(openItem.id, n)} onConfirm={() => itemConfirm(openItem.id)} onLooksGood={(f) => itemLooksGood(openItem.id, f)} onDuplicate={() => itemDuplicate(openItem.id)} onDelete={() => itemDelete(openItem.id)} save={saveStatus(openItem.id)} onClose={() => setOpen(null)} />;
   return (
     <div className={`lg:grid ${openItem && wide ? 'lg:grid-cols-[minmax(0,1fr)_440px_520px]' : 'lg:grid-cols-[minmax(0,1fr)_520px]'}`}>
-      <div className="relative min-w-0">
+      {/* While a toast shows, the tabs that scroll with the page (Menu, Details, Style on a laptop) end above its strip: a band stuck to
+          the bottom of this column in the page's own grey, like the item editor's. It takes no room in the page (the tabs end with 128 px
+          of their own, enough for a toast of two lines; a taller one adds the difference), so nothing moves when it comes or goes. Not
+          under the phone's Style layout (its sheet has the strip) nor under an item editor that lies over the page (it has its own). */}
+      <div className="relative min-w-0" style={zone > 0 && !phoneStyle ? { paddingBottom: `max(0px, calc(${toastStrip(zone)} - 8rem))` } : undefined}>
+        {zone > 0 && !phoneStyle && !(openItem && !wide) && <ToastStrip h={zone} className={`toast-band fixed bottom-0 left-0 right-0 z-[45] bg-fill ${openItem && wide ? 'lg:right-[960px]' : 'lg:right-[520px]'}`} />}
         {/* The rows' bottom line is drawn inside (an inset shadow), so a 44 px row holds a 44 px button and the tabs' 44 px tap areas (the PM, 2026-10-09). */}
         <div className={`glass sticky top-14 z-30 flex h-11 items-center gap-1 px-3 sm:px-5 shadow-[inset_0_-1px_0_var(--color-line)] ${phoneStyle ? 'hidden' : ''}`}>
           {tabLink('menu', 'Menu')}
@@ -391,8 +401,11 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
               onToggleSection={(id, listed) => sectionUpdate(id, { listed }, listed ? 'Shown' : 'Hidden')} onRename={(id) => setRenaming(id)} onMoveSection={sectionMove}
               onDeleteSection={sectionDelete} onReorderSections={sectionReorder} onMoveItem={itemMove} />}
         {tab === 'style' && !phoneStyle && me.canManage && <>
-          {/* The preview bar at the top of the Style tab, under the tab row; it stays in view while the colours scroll (Kian, 2026-10-10). */}
-          <div className="glass sticky top-[100px] z-20 shadow-[inset_0_-1px_0_var(--color-line)]" data-style-bar><div className="mx-auto w-full max-w-3xl px-4 py-2 sm:px-6">{bar(false)}</div></div>
+          {/* The preview controls at the top of the Style tab, under the tab row; they stay in view while the colours scroll (Kian, 2026-10-10).
+              One row like the Menu tab's search row (Kian, 2026-11-15): the backing is the page's own grey, opaque, so it never shows as a
+              band of its own and still hides what scrolls under it; the controls are white like the cards and line up with their edges
+              (the Style tab's own width and padding), 60 px in all as the search row; the colours start 12 px under them (StyleTab, lg:pt-1). */}
+          <div className="sticky top-[6.25rem] z-20 bg-fill" data-style-bar><div className="mx-auto w-full max-w-3xl px-3 py-2 sm:px-5">{bar(false)}</div></div>
           {styleTab}
         </>}
         {tab === 'details' && me.canManage && <DetailsTab venue={venue} version={reloadKey} onSaved={savedElsewhere} onFail={fail} />}
@@ -406,7 +419,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
         <div className="fixed inset-x-0 bottom-0 top-14 z-30 flex flex-col bg-canvas" data-style-phone>
           <div className="glass flex h-11 shrink-0 items-center gap-1 px-3 shadow-[inset_0_-1px_0_var(--color-line)]">{tabLink('menu', 'Menu')}{tabLink('style', 'Style')}{tabLink('details', 'Details')}</div>
           <div className="relative min-h-0 flex-1"><div className="absolute inset-0"><Preview ref={previewB} {...previewProps} frame={false} /></div></div>
-          <BottomSheet detent={detent} onDetent={setDetent} max={editing ? 'half' : 'full'} top={PHONE_TOP} label="Style controls" header={bar(true)}>
+          <BottomSheet detent={detent} onDetent={setDetent} max={editing ? 'half' : 'full'} top={PHONE_TOP} label="Style controls" header={bar(true)} zone={zone}>
             {styleTab}
           </BottomSheet>
         </div>
@@ -416,7 +429,7 @@ export function Editor({ venue, me, initial, tab: initialTab, today }: { venue: 
         <button type="button" aria-label="Close the item" onClick={() => setOpen(null)} className="fixed inset-0 z-40 hidden bg-scrim-light lg:block" />
         {panel}
       </>}
-      {previewOpen && !phoneStyle && <div className="fixed inset-0 z-[60] lg:hidden"><Preview ref={previewB} {...previewProps} frame={false} onClose={() => setPreviewOpen(false)} /></div>}
+      {previewOpen && !phoneStyle && <div className="fixed inset-0 z-[60] lg:hidden"><Preview ref={previewB} {...previewProps} frame={false} zone={zone} onClose={() => setPreviewOpen(false)} /></div>}
       {adding && <AddItemSheet venueId={venue.id} sectionName={menu.sections.find((s) => s.id === adding)?.name.en ?? ''} seasonNote={menu.sections.find((s) => s.id === adding)?.seasonal ? SEASON_NAMES[today] : null} onClose={() => setAdding(null)} onAdd={async (d) => { await itemCreate(adding, d); setAdding(null); }} />}
       {addingSection && <AddSectionSheet onClose={() => setAddingSection(false)} onAdd={sectionCreate} />}
       {renaming && menu.sections.some((s) => s.id === renaming) && <RenameSheet section={menu.sections.find((s) => s.id === renaming)!} onClose={() => setRenaming(null)} onPatch={(p) => sectionUpdate(renaming, p)} />}

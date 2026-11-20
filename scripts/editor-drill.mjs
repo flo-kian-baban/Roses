@@ -506,7 +506,12 @@ const listedIds = async () => new Set((await db.query('select id from items wher
     check('t-toast-clear', clear.zone && clear.scrollBottom <= clear.toastTop + 0.5 && clear.over.length === 0, `while "Saved · Undo" shows: the editor's scroll area ends at ${clear.scrollBottom} px, the toast starts at ${clear.toastTop} px (the strip kept free: ${clear.zone}); controls of the editor under the toast: ${clear.over.length ? clear.over.join(', ') : 'none'}`);
     taps++; await p.getByRole('button', { name: 'Looks good: the Persian description' }).click();
     const w2 = await waitDb('select drafts, fa_draft, description, name from items where id=$1', [itemId], (r) => !r?.fa_draft?.includes('description'));
-    const tagGone = (await p.locator('.item-panel').getByRole('button', { name: /^Looks good: the (English|Persian) description$/ }).count()) === 0;
+    // the button goes when the save's answer arrives, after the database write (the route regenerates the public page before it answers):
+    // its end state is waited for, up to 5 s, not read the instant the database shows the change (run 2026-11-16T05-57-44Z, the machine
+    // under memory pressure: a slower regeneration, the button read before the answer came)
+    const tags = p.locator('.item-panel').getByRole('button', { name: /^Looks good: the (English|Persian) description$/ });
+    for (const t = Date.now(); Date.now() - t < 5000 && (await tags.count()) > 0;) await sleep(50);
+    const tagGone = (await tags.count()) === 0;
     await p.click('[role=status] button:has-text("Undo")'); await p.waitForSelector('[role=status]:has-text("Undone")', { timeout: 5000 }).catch(() => {});
     const w3 = await waitDb('select drafts, fa_draft from items where id=$1', [itemId], (r) => r?.fa_draft?.includes('description'));
     const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
@@ -962,6 +967,24 @@ const errorToast = async (p) => { const t = p.locator('[data-toast-error]'); con
   const judged = toastRuleSeen.filter((x) => !x.info), told = toastRuleSeen.filter((x) => x.info);
   check('t-toast-rule', judged.length === 3 && judged.every(fine), `while a toast shows in the item editor, no tappable control under it or its strip, and a just-added item's description and price end above the strip: ${judged.map(say).join(' | ')}`);
   for (const x of told) measure(`the toast rule on a short 360 px phone, information only (${fine(x) ? 'met' : 'MISSED'}): ${say(x)}`);
+}
+{ // Escape with a sheet over the item editor closes that sheet only (found 2026-11-19: with the section picker or Delete item's question
+  // open it closed the editor too, since the editor only knew of two of its sheets); once no sheet is open, Escape closes the editor
+  const seen = [];
+  try {
+    await l.goto(`${base}/admin/${VENUE}`); await l.waitForSelector(`[data-item="${itemId}"]`);
+    await l.locator(`[data-item="${itemId}"] button[aria-label^="Edit"]`).scrollIntoViewIfNeeded(); await l.click(`[data-item="${itemId}"] button[aria-label^="Edit"]`); await l.waitForSelector('.item-panel');
+    const state = async () => ({ sheet: await l.locator('[data-sheet]').count(), editor: await l.locator('.item-panel').count() });
+    for (const [name, open] of [
+      ['the section picker', async () => { await l.locator('.item-panel [data-section-picker]').scrollIntoViewIfNeeded(); await l.click('.item-panel [data-section-picker]'); }],
+      ['Delete item', async () => { await l.locator('.item-panel button:has-text("Delete item")').scrollIntoViewIfNeeded(); await l.click('.item-panel button:has-text("Delete item")'); }],
+      ['the Goes well with picker', async () => { await l.locator('.item-panel [data-pairs-add]').scrollIntoViewIfNeeded(); await l.click('.item-panel [data-pairs-add]'); }],
+    ]) { await open(); await l.waitForSelector('[data-sheet]'); const up = await state(); await l.keyboard.press('Escape'); await sleep(350); seen.push({ name, up, after: await state() }); }
+    await l.keyboard.press('Escape'); await sleep(350); seen.push({ name: 'no sheet', up: { sheet: 0, editor: 1 }, after: await state() });
+  } catch (e) { seen.push({ name: 'not reached', error: e.message.split('\n')[0] }); }
+  const sheets = seen.filter((x) => x.name !== 'no sheet'), last = seen.find((x) => x.name === 'no sheet');
+  check('t-escape-sheet', sheets.length === 3 && sheets.every((x) => !x.error && x.up.sheet === 1 && x.after.sheet === 0 && x.after.editor === 1) && !!last && last.after.editor === 0,
+    `Escape closes the sheet over the item editor and leaves the editor open: ${sheets.map((x) => x.error ? `${x.name}: ${x.error}` : `${x.name}: sheet ${x.up.sheet} → ${x.after.sheet}, editor ${x.after.editor}`).join('; ')}; with no sheet open, Escape closes the editor: ${last ? last.after.editor === 0 : 'not reached'}`);
 }
 await laptop.close();
 await api('/api/admin/item', { action: 'delete', id: itemId }, cookie);

@@ -63,6 +63,17 @@ export function TextField({ value, onCommit, label, placeholder, dir, lang, mult
   );
 }
 
+// The toast rule (the PM, 2026-11-19: while a toast or its strip shows, no tappable control sits under it, on any admin screen). The
+// strip is kept free at the bottom of whatever scrolls under the toast: as tall as the toast is drawn (h, in px), with the toast's own
+// distance from the screen's bottom edge under it and 8 px above it. Where it is used: the item editor (under its scroll area), the
+// Menu, Details and laptop Style tabs (a band stuck to the bottom of the page: Editor.tsx), the phone's Style sheet (under its body:
+// BottomSheet.tsx) and the phone's full-screen preview (under the page: Preview.tsx). With a sheet open the toast is at the top of
+// the screen instead, and the sheet ends under it (globals.css).
+export const toastStrip = (h: number) => `calc(max(1.25rem, env(safe-area-inset-bottom)) + ${h + 8}px)`;
+export function ToastStrip({ h, className = '' }: { h: number; className?: string }) {
+  return h > 0 ? <div aria-hidden="true" data-toast-zone="" className={`shrink-0 border-t border-line ${className}`} style={{ height: toastStrip(h) }} /> : null;
+}
+
 // Bottom sheet on phones, a centred card on laptops. Escape and the backdrop close it. Rendered into the admin's own wrapper (.admin,
 // so its styles still apply) at the top of the page: a sheet opened from inside the item editor would otherwise paint in the editor's
 // layer (on a wide screen the editor is a sticky column, its own stacking context), under the Menu tab's sticky bars and the top bar,
@@ -72,7 +83,7 @@ export function Sheet({ title, onClose, children, wide }: { title: string; onClo
   const sheet = (
     <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={title} data-sheet="">
       <button type="button" className="backdrop-in absolute inset-0 bg-scrim" onClick={onClose} aria-label="Close" />
-      <div className={`sheet-in relative max-h-[92dvh] w-full overflow-y-auto rounded-t-xl bg-canvas p-5 shadow-pop sm:rounded-xl ${wide ? 'sm:w-[36rem]' : 'sm:w-[26rem]'}`} style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}>
+      <div data-sheet-card="" className={`sheet-in relative max-h-[92dvh] w-full overflow-y-auto rounded-t-xl bg-canvas p-5 shadow-pop sm:rounded-xl ${wide ? 'sm:w-[36rem]' : 'sm:w-[26rem]'}`} style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}>
         <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-[17px] font-semibold [overflow-wrap:anywhere]">{title}</h2><button type="button" onClick={onClose} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-fill text-ink-muted hover:text-ink" aria-label="Close"><Icon name="close" className="h-5 w-5" /></button></div>
         {children}
       </div>

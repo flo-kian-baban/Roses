@@ -7,9 +7,9 @@
 //   under three of the four "Needs attention" chips, under the icon and the title of "No PINs yet").
 // Left out, as not the admin's own interface: the customers' page in the preview (the iframe) and the iPhone frame around it. Form
 // controls keep their own drawing (the iOS switch's pill, the check box and the radio dot: .switch, .check) and a person's initials
-// their circle ([data-avatar]). A row of chips made to scroll sideways on a phone (the
-// preview bar in the Style tab's sheet) says so with data-scrolls-sideways and is not counted as cut; sideways: for each such row that
-// scrolls, the chip its right edge cuts with the row at its start, and how much of it shows and is hidden (the PM, 2026-11-06: it stays
+// their circle ([data-avatar]). A row made to scroll sideways on a phone (the
+// preview controls in the Style tab's sheet) says so with data-scrolls-sideways and is not counted as cut; sideways: for each such row that
+// scrolls, the control its right edge cuts with the row at its start, and how much of it shows and is hidden (the PM, 2026-11-06: it stays
 // visibly cut, so staff can tell the row scrolls; CUT_MIN px each at least).
 export const TITLE = '28px'; // the one page-title size
 export const SIZES = ['13px', '16px', '17px', TITLE];
@@ -45,7 +45,7 @@ export const MEASURE = () => {
   const sideways = [...document.querySelectorAll('[data-scrolls-sideways]')].filter((row) => !outside(row) && row.getBoundingClientRect().width > 0 && row.scrollWidth > row.clientWidth + 1).map((row) => {
     const at = row.scrollLeft; row.scrollLeft = 0;
     const edge = row.getBoundingClientRect().right; let cut = { chip: null, shown: 0, hidden: 0 };
-    for (const b of row.querySelectorAll('button')) { const r = b.getBoundingClientRect(); if (r.left < edge && r.right > edge) { cut = { chip: (b.textContent || b.getAttribute('aria-label') || '').trim().slice(0, 20), shown: Math.round((edge - r.left) * 10) / 10, hidden: Math.round((r.right - edge) * 10) / 10 }; break; } }
+    for (const b of row.querySelectorAll('button')) { const r = b.getBoundingClientRect(); if (r.left < edge && r.right > edge) { cut = { chip: (b.getAttribute('aria-label') || b.textContent || '').trim().slice(0, 40), shown: Math.round((edge - r.left) * 10) / 10, hidden: Math.round((r.right - edge) * 10) / 10 }; break; } }
     row.scrollLeft = at;
     return cut;
   });
@@ -55,34 +55,55 @@ export const MEASURE = () => {
 // Every admin screen, as [key, title, signed in?, setup(page), whole page too?], shared by scripts/layout-drill.mjs and
 // reports/admin-cleanup/shots.mjs. sec: a section of Senso's own order with items (for its menu, the reorder and the sheets).
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-// The toast rule (the PM, 2026-11-19): while the "Added · Undo" strip or any toast shows, no tappable control sits under it. UNDER_TOAST
-// runs in the page and returns what a tap would reach at every second pixel of the toast and, in the item editor, of the strip kept free
-// for it (data-toast-zone; counted while the toast sits in it: with a sheet open the toast is at the top of the screen and the strip is
-// behind the sheet), were they not there: `under` lists every control found (a link, button, field, switch, label or anything with
-// such a role, not disabled). The toast's own buttons are not counted, nor is the dim behind an open sheet (a button as large as the
-// screen, whose tap closes the sheet: the toast is over it wherever it is).
+// The toast rule (the PM, 2026-11-19): while a toast or its strip shows, no tappable control sits under it, on any admin screen.
+// UNDER_TOAST runs in the page and, at every second pixel of the toast and of the strip kept free for it, finds what a tap would reach
+// were the toast not there. `under` lists every control found: a link, button, field, switch, label, anything with such a role (not
+// disabled), and the preview's frame (the customers' page in it answers taps). How it looks:
+//   - the strip is the element marked data-toast-zone that lies behind the toast's middle (the item editor's, the page's band on the
+//     Menu, Details and laptop Style tabs, the phone Style sheet's, the full-screen preview's); none when a sheet is open (the toast is
+//     at the top of the screen then, over the dim);
+//   - at a point of the toast, the toast itself is looked through; the look stops at the strip when the strip is drawn solid (zone.solid:
+//     an opaque background, fully visible): what scrolls behind a solid strip is hidden by it and cannot be tapped, as behind the screen's
+//     edge. `bare` counts the toast's points that are over no strip (0 when the toast lies wholly in one; on a laptop its ends can
+//     lie over a neighbouring column's strip, which counts like its own);
+//   - at a point of the strip, anything drawn over it other than the toast counts (a menu or card that reaches into the strip);
+//   - not counted: the toast's own buttons, and a button as large as the screen (the dim behind an open sheet or beside the item
+//     editor on a laptop, whose tap closes it: the toast is over it wherever it is).
 export const UNDER_TOAST = () => {
+  const view = `${innerWidth} × ${innerHeight}`;
   const toast = document.querySelector('.toast');
-  if (!toast) return { toast: null, zone: null, under: [], points: 0, view: `${innerWidth} × ${innerHeight}` };
-  const strip = document.querySelector('.item-panel [data-toast-zone]'), tr = toast.getBoundingClientRect(), zr = strip ? strip.getBoundingClientRect() : null;
-  const zone = zr && tr.bottom > zr.top && tr.top < zr.bottom ? strip : null;
-  const CONTROL = 'a[href], button, input, textarea, select, summary, label, [role=button], [role=switch], [role=checkbox], [role=radio], [role=tab], [role=menuitem], [role=option]';
-  const own = (el) => toast.contains(el) || (!!zone && zone.contains(el));
+  if (!toast) return { toast: null, zone: null, under: [], points: 0, bare: 0, sheet: !!document.querySelector('[data-sheet]'), view };
+  const tr = toast.getBoundingClientRect();
+  const zone = document.elementsFromPoint((tr.left + tr.right) / 2, (tr.top + tr.bottom) / 2).find((el) => el.matches('[data-toast-zone]')) ?? null;
+  const alpha = (c) => { if (c === 'transparent') return 0; const slash = c.match(/\/\s*([\d.]+%?)\s*\)/); if (slash) return slash[1].endsWith('%') ? parseFloat(slash[1]) / 100 : Number(slash[1]); const m = c.match(/^rgba\(([^)]+)\)/); return m && m[1].split(',').length === 4 ? Number(m[1].split(',')[3]) : 1; };
+  const solid = (el) => { for (let e = el; e && e !== document.documentElement; e = e.parentElement) { const cs = getComputedStyle(e); if (Number(cs.opacity) < 1 || cs.visibility !== 'visible') return false; } return alpha(getComputedStyle(el).backgroundColor) === 1; };
+  const zoneSolid = !!zone && solid(zone);
+  const CONTROL = 'a[href], button, input, textarea, select, summary, label, iframe, [role=button], [role=switch], [role=checkbox], [role=radio], [role=tab], [role=menuitem], [role=menuitemradio], [role=option]';
   const dim = (el) => { const r = el.getBoundingClientRect(); return r.width >= innerWidth && r.height >= innerHeight; };
   const box = (el) => { const r = el.getBoundingClientRect(); return { top: Math.round(r.top), bottom: Math.round(r.bottom), left: Math.round(r.left), right: Math.round(r.right) }; };
-  const under = new Map(); let points = 0;
-  for (const area of [toast, zone]) {
-    if (!area) continue;
-    const r = area.getBoundingClientRect();
-    for (let y = Math.max(0, Math.ceil(r.top)); y < Math.min(innerHeight, r.bottom); y += 2) for (let x = Math.max(0, Math.ceil(r.left)); x < Math.min(innerWidth, r.right); x += 2) {
-      points++;
-      const first = document.elementsFromPoint(x, y).find((el) => !own(el)); // what a tap here would reach without the toast and its strip
-      const control = first && first.closest(CONTROL);
-      if (!control || own(control) || control.matches(':disabled') || dim(control) || under.has(control)) continue;
-      under.set(control, `${control.tagName.toLowerCase()} "${(control.getAttribute('aria-label') || control.textContent || '').trim().replace(/\s+/g, ' ').replace(/[^\s"@]+@[^\s"@]+/g, '<email>').slice(0, 40)}" at ${x},${y}`);
+  const name = (c) => `${c.tagName.toLowerCase()} "${(c.getAttribute('aria-label') || c.getAttribute('title') || c.textContent || '').trim().replace(/\s+/g, ' ').replace(/[^\s"@]+@[^\s"@]+/g, '<email>').slice(0, 40)}"`;
+  const under = new Map(); let points = 0, bare = 0;
+  const solidOf = new Map(), isSolid = (el) => { if (!solidOf.has(el)) solidOf.set(el, el === zone ? zoneSolid : solid(el)); return solidOf.get(el); };
+  // The toast is taken out of the hit test for the reading (put back at the end), so one hit test a point says what a tap would reach
+  // without it; the whole list of what lies at the point is only needed behind a strip that is not solid.
+  const was = toast.style.pointerEvents; toast.style.pointerEvents = 'none';
+  try {
+    for (const area of [toast, zone]) {
+      if (!area) continue;
+      const r = area.getBoundingClientRect();
+      for (let y = Math.max(0, Math.ceil(r.top)); y < Math.min(innerHeight, r.bottom); y += 2) for (let x = Math.max(0, Math.ceil(r.left)); x < Math.min(innerWidth, r.right); x += 2) {
+        points++;
+        let first = document.elementFromPoint(x, y);
+        const strip = first && first.closest('[data-toast-zone]');
+        if (strip) { if (isSolid(strip)) continue; first = document.elementsFromPoint(x, y).find((el) => !toast.contains(el) && !el.matches('[data-toast-zone]')) ?? null; }
+        else if (area === toast) bare++;
+        const control = first && first.closest(CONTROL);
+        if (!control || toast.contains(control) || control.matches(':disabled') || dim(control) || under.has(control)) continue;
+        under.set(control, `${name(control)} at ${x},${y}`);
+      }
     }
-  }
-  return { toast: { ...box(toast), text: toast.innerText.replace(/\s+/g, ' ').trim() }, zone: zone ? box(zone) : null, under: [...under.values()], points, view: `${innerWidth} × ${innerHeight}` };
+  } finally { toast.style.pointerEvents = was; }
+  return { toast: { ...box(toast), text: toast.innerText.replace(/\s+/g, ' ').trim() }, zone: zone ? { ...box(zone), solid: zoneSolid } : null, under: [...under.values()], points, bare, sheet: !!document.querySelector('[data-sheet]'), view };
 };
 export function adminScreens({ base, pin, sec }) {
   const signin = async (page) => { await page.goto(`${base}/admin/senso`); if (await page.locator('input[name=pin]').count()) { await page.fill('input[name=pin]', pin); await page.click('button[type=submit]'); await page.waitForURL(`${base}/admin/senso`); } await page.waitForSelector('[data-item]'); };
@@ -111,6 +132,8 @@ export function adminScreens({ base, pin, sec }) {
     ['style', 'Style tab', true, style, true],
     ['style-colour', 'Style: a colour open', true, async (p) => { await style(p); await p.click('[data-style-group="tabs"] > button'); await p.waitForSelector('[data-style-token="tabs.bg"] [data-style-swatches]'); /* opening the group opens its first colour */ }],
     ['style-welcome', 'Style: Welcome group open', true, async (p) => { await style(p); const b = p.locator('[data-style-group="welcome"] > button'); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[data-style-group="welcome"][data-open]'); }],
+    // the preview controls' dropdowns (Kian, 2026-11-15): the Season one, with its line under the choices (the widest card)
+    ['style-dropdown', 'Style: the Season dropdown open', true, async (p) => { await style(p); const b = p.locator('[data-preview-pick="season"]'); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[data-preview-menu="season"] [role=menuitemradio]'); }],
     ['details', 'Details tab', true, async (p) => { await p.goto(`${base}/admin/senso?tab=details`); await p.waitForSelector('[data-details-tab]'); }, true],
     ['team', 'Team', true, async (p) => { await p.goto(`${base}/admin/team`); await p.waitForSelector('input[name=name]'); }, true],
     ['add-venue', 'Add venue', true, async (p) => { await p.goto(`${base}/admin/new`); await p.waitForSelector('input[aria-label="Venue name"]'); }],

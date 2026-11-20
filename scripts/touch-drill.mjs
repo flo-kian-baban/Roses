@@ -6,7 +6,8 @@
 // add-item sheet, the item editor with its two groups (Allergens & diet, Other) open, the price being edited, the preview overlay and the Saved · Undo toast;
 // the item editor again for an item with add-ons on Senso, and on Kebab Land's Menu tab for an item with sizes and one with combo
 // parts, chosen from the database so their row buttons are on screen; the delete confirmation), the Style tab (the phone's bottom sheet: its
-// default with the Layout group, a colour open, the Welcome group, the sheet at full height), the Details tab, Team and + Add venue.
+// default with the Layout group, each of the four preview dropdowns open, a colour open, the Welcome group, the sheet at full height), the
+// Details tab, Team and + Add venue.
 // The tap area is measured the way a finger meets it: each element is scrolled into view; along the two lines through its centre its extent
 // is its own box joined with its labels' boxes (a label taps its input) and its ::before/::after pads (an invisible pad counts), and that
 // extent counts only if document.elementFromPoint at every whole pixel at least 1 px inside its edges lands on the element, on something
@@ -218,6 +219,11 @@ for (const vp of VIEWPORTS) {
   await p.goto(`${base}/admin/senso`); await p.waitForSelector('[data-item]'); await markSeen(p); // nothing was deleted: the confirmation is left by the page load
   // the Style tab (the phone layout: preview on top, controls in the bottom sheet)
   await screen(vp, p, 'style', async () => { await p.click('a[href="/admin/senso?tab=style"]'); await p.waitForSelector('[data-style-sheet]'); await p.waitForSelector('[data-style-group="tabs"]'); });
+  // the preview controls' dropdowns in the sheet's header (Kian, 2026-11-15): each one's card of choices, measured open
+  for (const [k, name] of [['screen', 'Screen'], ['lang', 'Language'], ['season', 'Season'], ['slot', 'Time of day']]) {
+    await screen(vp, p, `style: the ${name} dropdown open`, async () => { const b = p.locator(`[data-preview-pick="${k}"]`); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector(`[data-preview-menu="${k}"] [role=menuitemradio]`); });
+    await closeAll(p); await p.waitForSelector('[data-preview-menu]', { state: 'detached', timeout: 3000 }).catch(() => {});
+  }
   await screen(vp, p, 'style: a colour open', async () => { await p.click('[data-style-group="tabs"] > button'); await p.waitForSelector('[data-style-token="tabs.bg"] input[type=color]'); });
   await screen(vp, p, 'style: Welcome group open', async () => { const b = p.locator('[data-style-group="welcome"] > button'); await b.scrollIntoViewIfNeeded(); await b.click(); await p.waitForSelector('[data-style-group="welcome"][data-open]'); });
   await screen(vp, p, 'style: sheet at full height', async () => {

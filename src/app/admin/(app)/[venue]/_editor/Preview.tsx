@@ -18,6 +18,7 @@
 // default colours) is applied live to the frame's CSS variables before it is saved (setVars). The controls on the left are the
 // master: the frame only ever follows them; it never changes the open group by itself.
 import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
+import { ToastStrip } from './ui';
 import type { GroupId } from '@/venues/tokens';
 import { slotOf, type Season, type Slot } from '@/lib/welcome';
 import { Icon } from '../../../_ui/icons';
@@ -39,8 +40,9 @@ const W = 440, H = 956, RAIL = 5, BEZEL = 13, STATUS = 54, EDGE = RAIL + BEZEL, 
 type Props = {
   venueId: string; reloadKey: number; focus: Focus; view: View; onNow: (now: PageNow) => void;
   frame: boolean; onClose?: () => void; onPick?: (p: Pick) => void; styleMode?: boolean; region?: RegionState; onPlayed?: () => void;
+  zone?: number; // the height of the toast showing (0: none): the phone's full-screen preview ends above the strip kept free for it
 };
-export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venueId, reloadKey, focus, view, onNow, frame, onClose, onPick, styleMode = false, region = NO_REGION, onPlayed }, handle) {
+export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venueId, reloadKey, focus, view, onNow, frame, onClose, onPick, styleMode = false, region = NO_REGION, onPlayed, zone = 0 }, handle) {
   const refA = useRef<HTMLIFrameElement>(null), refB = useRef<HTMLIFrameElement>(null);
   const frames = [refA, refB];
   const [active, setActive] = useState<0 | 1 | null>(null);
@@ -160,6 +162,8 @@ export const Preview = forwardRef<PreviewHandle, Props>(function Preview({ venue
           </div>
         )}
         <div className="relative min-h-0 flex-1" data-preview-area>{iframes}</div>
+        {/* the toast rule (the PM, 2026-11-19): the page is tappable (tap to edit), so it ends above the toast's strip while one shows */}
+        {onClose && <ToastStrip h={zone} className="bg-fill" />}
       </div>
     );
   }
